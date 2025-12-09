@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause } from 'lucide-react';
+import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
@@ -22,11 +22,12 @@ export default function Page11({ onNavigate }: PageProps) {
   const [loading, setLoading] = useState(true);
   const [selectedAsset, setSelectedAsset] = useState<AIAsset | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(180);
+  const [duration, setDuration] = useState(120);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(100);
   const [ratio, setRatio] = useState('16:9');
   const [size, setSize] = useState('1080p');
+  const [showScriptModal, setShowScriptModal] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -63,11 +64,23 @@ export default function Page11({ onNavigate }: PageProps) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const handleDurationChange = (newDuration: number) => {
+    setDuration(newDuration);
+    setShowScriptModal(true);
+  };
+
+  const handleScriptResponse = (createScript: boolean) => {
+    setShowScriptModal(false);
+    if (createScript) {
+      console.log('Creating scenes and script...');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-full w-full mx-auto flex-1 flex flex-col">
-          <h1 className="text-3xl font-black text-purple-400 mb-4 text-center">DOXY THE SCHOOL BULLY - Editor Dashboard</h1>
+          <h1 className="text-3xl font-black text-purple-400 mb-4 text-center">Editor Dashboard</h1>
 
           <div className="grid grid-cols-12 gap-4 flex-1">
             <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
@@ -151,7 +164,7 @@ export default function Page11({ onNavigate }: PageProps) {
                     />
                     <div className="flex justify-between text-xs text-slate-500 mt-1">
                       <span>0:00</span>
-                      <span>180:00</span>
+                      <span>120:00</span>
                     </div>
                   </div>
                 </div>
@@ -218,12 +231,12 @@ export default function Page11({ onNavigate }: PageProps) {
                     <input
                       type="range"
                       min="0"
-                      max="180"
+                      max="120"
                       value={duration}
-                      onChange={(e) => setDuration(parseInt(e.target.value))}
+                      onChange={(e) => handleDurationChange(parseInt(e.target.value))}
                       className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer mt-3"
                     />
-                    <div className="text-xs text-slate-400 mt-1 text-center">Max: 180 minutes</div>
+                    <div className="text-xs text-slate-400 mt-1 text-center">Max: 120 minutes</div>
                   </div>
                 </div>
               </div>
@@ -248,6 +261,35 @@ export default function Page11({ onNavigate }: PageProps) {
           </div>
         </div>
       </div>
+
+      {showScriptModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-gradient-to-br from-purple-900/90 to-black/90 border-2 border-purple-400 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <div className="text-center mb-6">
+              <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+              <h2 className="text-2xl font-bold text-white mb-3">Create Scenes & Script?</h2>
+              <p className="text-white/80 text-lg">
+                Do You Wish App To Create Scenes And Script?
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={() => handleScriptResponse(false)}
+                className="flex-1 bg-black hover:bg-gray-900 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all border border-purple-500/50"
+              >
+                NO
+              </button>
+              <button
+                onClick={() => handleScriptResponse(true)}
+                className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
+              >
+                YES
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <QuickAccess onNavigate={onNavigate} />
       <Footer />
     </div>
