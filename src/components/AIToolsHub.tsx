@@ -7,9 +7,10 @@ interface AIToolsHubProps {
   tools: string[];
   pageNumber: number;
   onNavigate: (page: number) => void;
+  onOpenAssetPage: (toolName: string, mode: 'upload' | 'create') => void;
 }
 
-export default function AIToolsHub({ tools, pageNumber, onNavigate }: AIToolsHubProps) {
+export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetPage }: AIToolsHubProps) {
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -102,6 +103,10 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate }: AIToolsHub
         <AIToolModal
           toolName={selectedTool}
           onClose={() => setSelectedTool(null)}
+          onOpenAssetPage={(mode) => {
+            onOpenAssetPage(selectedTool, mode);
+            setSelectedTool(null);
+          }}
         />
       )}
     </div>
