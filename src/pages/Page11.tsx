@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile, getAssets } from '../lib/storage';
+import { initializeGoogleDrive, openGooglePicker, downloadGoogleDriveFile } from '../lib/googleDrive';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
 
@@ -38,6 +39,7 @@ export default function Page11({ onNavigate }: PageProps) {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [uploadSource, setUploadSource] = useState<'local' | 'google'>('local');
+  const [googleDriveReady, setGoogleDriveReady] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(120);
@@ -52,6 +54,14 @@ export default function Page11({ onNavigate }: PageProps) {
       loadAssets();
     }
   }, [user]);
+
+  useEffect(() => {
+    initializeGoogleDrive().then((ready) => {
+      setGoogleDriveReady(ready);
+    }).catch(() => {
+      setGoogleDriveReady(false);
+    });
+  }, []);
 
   const loadAssets = async () => {
     if (!user) return;
@@ -115,8 +125,54 @@ export default function Page11({ onNavigate }: PageProps) {
     }
   };
 
-  const handleGoogleDriveUpload = () => {
-    alert('Google Drive integration coming soon! This will allow you to connect your Google Drive and import files directly.');
+  const handleGoogleDriveUpload = async () => {
+    if (!googleDriveReady) {
+      alert('Google Drive is loading. Please wait a moment and try again.');
+      return;
+    }
+
+    if (!user) {
+      alert('Please sign in to upload files.');
+      return;
+    }
+
+    openGooglePicker(async (files) => {
+      setUploading(true);
+      try {
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const file of files) {
+          try {
+            const blob = await downloadGoogleDriveFile(file.id, file.name, file.mimeType);
+            const newFile = new File([blob], file.name, { type: file.mimeType });
+            const result = await uploadFile(newFile, user.id);
+
+            if (result.success) {
+              successCount++;
+            } else {
+              failCount++;
+            }
+          } catch (error) {
+            console.error('Error uploading file:', file.name, error);
+            failCount++;
+          }
+        }
+
+        if (successCount > 0) {
+          await loadAssets();
+        }
+
+        if (failCount > 0) {
+          alert(`Uploaded ${successCount} of ${files.length} files successfully`);
+        }
+      } catch (error) {
+        console.error('Google Drive upload error:', error);
+        alert('Failed to upload files from Google Drive');
+      } finally {
+        setUploading(false);
+      }
+    });
   };
 
   const handleUploadClick = () => {
