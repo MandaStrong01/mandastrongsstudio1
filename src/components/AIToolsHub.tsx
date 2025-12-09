@@ -50,7 +50,7 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
                   onClick={() => setSelectedTool(tool)}
                   className="bg-purple-900/20 border border-purple-500/30 hover:border-purple-400 hover:bg-purple-900/40 rounded-lg p-5 transition-all cursor-pointer text-left h-24 flex items-center justify-center"
                 >
-                  <h3 className="font-semibold text-white text-sm leading-tight text-center">
+                  <h3 className="font-semibold text-white text-base leading-tight text-center">
                     {tool}
                   </h3>
                 </button>

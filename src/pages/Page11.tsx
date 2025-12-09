@@ -235,10 +235,18 @@ export default function Page11({ onNavigate }: PageProps) {
                 id="media-upload"
                 type="file"
                 multiple
-                accept="image/*,video/*,audio/*"
+                accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
                 className="hidden"
                 onChange={handleFileUpload}
               />
+
+              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 mb-4">
+                <p className="text-xs text-purple-200 leading-relaxed">
+                  <span className="font-semibold block mb-1">Permissions Needed:</span>
+                  Upload images, videos, and audio files from your device or connect your Google Drive to access your cloud files directly.
+                </p>
+              </div>
+
               <div className="space-y-2 overflow-y-auto max-h-[70vh]">
                 {loading ? (
                   <div className="text-center py-8">

@@ -65,7 +65,11 @@ export function openGooglePicker(callback: (files: any[]) => void) {
 }
 
 function createPicker(callback: (files: any[]) => void) {
-  const view = new google.picker.DocsView(google.picker.ViewId.DOCS_IMAGES_AND_VIDEOS)
+  const imagesView = new google.picker.DocsView(google.picker.ViewId.DOCS_IMAGES_AND_VIDEOS)
+    .setIncludeFolders(true)
+    .setSelectFolderEnabled(false);
+
+  const docsView = new google.picker.DocsView(google.picker.ViewId.DOCS)
     .setIncludeFolders(true)
     .setSelectFolderEnabled(false);
 
@@ -74,10 +78,8 @@ function createPicker(callback: (files: any[]) => void) {
     .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
     .setAppId(GOOGLE_CLIENT_ID)
     .setOAuthToken(accessToken!)
-    .addView(view)
-    .addView(new google.picker.DocsView()
-      .setIncludeFolders(true)
-      .setSelectFolderEnabled(false))
+    .addView(imagesView)
+    .addView(docsView)
     .setDeveloperKey(GOOGLE_API_KEY)
     .setCallback((data: any) => {
       if (data.action === google.picker.Action.PICKED) {
