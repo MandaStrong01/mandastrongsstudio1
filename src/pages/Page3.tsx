@@ -198,12 +198,18 @@ export default function Page3({ onNavigate }: PageProps) {
           </button>
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex justify-center gap-4">
           <button
             onClick={() => onNavigate(2)}
             className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
           >
             Back
+          </button>
+          <button
+            onClick={() => onNavigate(4)}
+            className="bg-purple-600 text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all border border-purple-500"
+          >
+            Next
           </button>
         </div>
       </div>
