@@ -98,17 +98,6 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
                 </p>
               </div>
 
-              {isLastPage && (
-                <div className="mt-8 text-center">
-                  <button
-                    onClick={onGetStarted}
-                    className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-4 rounded-lg transition-colors text-lg"
-                  >
-                    Get Started
-                    <ArrowRight className="w-5 h-5" />
-                  </button>
-                </div>
-              )}
             </div>
           </div>
 
