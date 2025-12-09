@@ -66,6 +66,8 @@ export default function Page11({ onNavigate }: PageProps) {
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-full w-full mx-auto flex-1 flex flex-col">
+          <h1 className="text-3xl font-black text-purple-400 mb-4 text-center">DOXY THE SCHOOL BULLY - Editor Dashboard</h1>
+
           <div className="grid grid-cols-12 gap-4 flex-1">
             <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
               <h2 className="text-xl font-bold mb-4 text-purple-400">MEDIA BOX</h2>

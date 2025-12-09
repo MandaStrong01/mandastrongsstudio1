@@ -15,7 +15,7 @@ export default function Page12({ onNavigate }: PageProps) {
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col">
-          <h1 className="text-3xl font-black text-purple-400 mb-4 text-center">DOXY THE SCHOOL BULLY - Editor Dashboard</h1>
+          <h1 className="text-3xl font-black text-purple-400 mb-4 text-center">DOXY THE SCHOOL BULLY - Timeline Editor</h1>
 
           <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4 mb-4 flex-1">
             <div className="aspect-video bg-black rounded-lg border border-purple-500/30 mb-4 flex items-center justify-center">
