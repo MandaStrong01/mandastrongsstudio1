@@ -35,8 +35,8 @@ export default function Page1({ onNavigate }: PageProps) {
           </span>
         </h1>
 
-        <p className="text-2xl md:text-3xl font-bold italic mb-12 text-white">
-          Welcome To The All-In-One Make-A-Movie-With-Two-Hours-Duration <span className="text-purple-400">App!</span>
+        <p className="text-2xl md:text-3xl font-bold italic mb-12 text-purple-400">
+          Welcome To The All-In-One Make-A-Movie-With-Two-Hours-Duration App!
         </p>
 
         <div className="flex flex-wrap gap-4 justify-center">
