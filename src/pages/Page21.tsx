@@ -24,34 +24,52 @@ export default function Page21({ onNavigate }: PageProps) {
               </video>
             </div>
 
-            <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight text-purple-400">
-              THANK YOU!
+            <h1 className="text-6xl md:text-7xl font-black mb-8 tracking-tight text-purple-400">
+              THAT'S ALL FOLKS!
             </h1>
 
-            <div className="max-w-3xl mx-auto mb-8 text-left bg-purple-900/20 rounded-lg p-6 border border-purple-500/30">
-              <p className="text-lg text-white/90 mb-4 leading-relaxed">
-                Thank you for exploring MandaStrong Studio! This platform was created to empower storytellers
-                like you to bring your visions to life. Every film you create, every story you tell, makes a
-                difference in the world.
+            <div className="max-w-4xl mx-auto mb-8 text-center bg-gradient-to-br from-purple-900/40 to-black/40 rounded-2xl p-12 border-2 border-purple-400/50 shadow-2xl">
+              <p className="text-2xl text-white font-semibold mb-6 leading-relaxed">
+                Thank you for exploring MandaStrong Studio!
               </p>
-              <p className="text-lg text-white/90 mb-4 leading-relaxed">
-                Your creativity and passion inspire us every day. Keep creating, keep innovating, and remember
-                that your unique voice matters. We're honored to be part of your creative journey.
+              <p className="text-xl text-white/90 leading-relaxed">
+                This platform was created to empower storytellers like you to bring your visions to life.
+                Every film you create, every story you tell, makes a difference in the world.
               </p>
-              <p className="text-lg text-purple-400 font-semibold">
-                Support our mission and find exclusive tools at{' '}
+            </div>
+
+            <button
+              onClick={() => window.open('https://mandastrong.etsy.com/guide', '_blank')}
+              className="w-full max-w-2xl mx-auto mb-6 bg-black/50 hover:bg-purple-900/40 rounded-xl p-6 border border-purple-500/30 transition-all cursor-pointer group"
+            >
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <BookOpen className="w-6 h-6 text-purple-400 group-hover:scale-110 transition-transform" />
+                <h2 className="text-2xl font-bold text-purple-400">Full User Guide To MandaStrong Studio</h2>
+              </div>
+              <p className="text-sm text-white/60">Click to access the complete guide</p>
+            </button>
+
+            <div className="max-w-2xl mx-auto mb-8 bg-black/30 rounded-xl p-6 border border-purple-500/20">
+              <h3 className="text-xl font-bold text-purple-400 mb-4">About MandaStrong</h3>
+              <p className="text-white/80 leading-relaxed mb-4">
+                MandaStrong Studio is more than just a platform—it's part of a humanitarian mission to support
+                creators and communities worldwide. A portion of all proceeds goes toward charitable initiatives
+                helping those in need.
+              </p>
+              <p className="text-white/80 leading-relaxed">
+                Learn more about our mission and find exclusive creative tools at{' '}
                 <a
-                  href="https://MandaStrong1.Etsy.com"
+                  href="https://MandaStrong.Etsy.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-purple-300 hover:text-purple-200 underline transition-colors"
+                  className="text-purple-300 hover:text-purple-200 underline font-semibold transition-colors"
                 >
-                  MandaStrong1.Etsy.com
+                  MandaStrong.Etsy.com
                 </a>
               </p>
             </div>
 
-            <div className="bg-black/50 rounded-2xl p-8 border border-purple-500/30 mb-6">
+            <div className="bg-black/50 rounded-2xl p-8 border border-purple-500/30 mb-6 hidden">
               <div className="flex items-center justify-center gap-3 mb-6">
                 <BookOpen className="w-8 h-8 text-purple-400" />
                 <h2 className="text-3xl font-bold text-purple-400">Full User Guide To MandaStrong Studio</h2>

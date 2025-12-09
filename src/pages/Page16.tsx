@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Film, Palette, Droplet, Sun, Contrast, Download, Save, Sparkles, Play, Pause } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Film, Palette, Droplet, Sun, Contrast, Download, Save, Sparkles, Play, Pause, Activity, Maximize2, Circle, Zap, Flame, SplitSquareHorizontal } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
@@ -27,6 +27,13 @@ export default function Page16({ onNavigate }: PageProps) {
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [saturation, setSaturation] = useState(100);
+  const [shadows, setShadows] = useState(50);
+  const [midtones, setMidtones] = useState(50);
+  const [highlights, setHighlights] = useState(50);
+  const [sharpness, setSharpness] = useState(50);
+  const [denoise, setDenoise] = useState(false);
+  const [filmGrain, setFilmGrain] = useState(0);
+  const [splitView, setSplitView] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -205,7 +212,59 @@ export default function Page16({ onNavigate }: PageProps) {
                 </div>
 
                 <div className="pt-4 border-t border-purple-500/30">
-                  <label className="text-sm font-semibold mb-2 block">Color Presets / LUTs</label>
+                  <label className="flex items-center gap-2 text-sm font-semibold mb-3">
+                    <Palette className="w-4 h-4 text-purple-400" />
+                    Color Wheels
+                  </label>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Shadows: {shadows}</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={shadows}
+                        onChange={(e) => setShadows(parseInt(e.target.value))}
+                        className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Midtones: {midtones}</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={midtones}
+                        onChange={(e) => setMidtones(parseInt(e.target.value))}
+                        className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Highlights: {highlights}</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={highlights}
+                        onChange={(e) => setHighlights(parseInt(e.target.value))}
+                        className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Activity className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Curves Adjustment</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Palette className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">HSL by Color</span>
+                </button>
+
+                <div className="pt-4 border-t border-purple-500/30">
+                  <label className="text-sm font-semibold mb-2 block">Color Grading LUTs</label>
                   <div className="space-y-2">
                     <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Cinematic
@@ -222,8 +281,67 @@ export default function Page16({ onNavigate }: PageProps) {
                     <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Cool Tone
                     </button>
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
+                      Import Custom LUT
+                    </button>
                   </div>
                 </div>
+
+                <div className="pt-4 border-t border-purple-500/30">
+                  <label className="flex items-center gap-2 text-sm font-semibold mb-2">
+                    <Maximize2 className="w-4 h-4 text-purple-400" />
+                    Sharpness/Clarity: {sharpness}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={sharpness}
+                    onChange={(e) => setSharpness(parseInt(e.target.value))}
+                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+
+                <button
+                  onClick={() => setDenoise(!denoise)}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${denoise ? 'bg-purple-600 border-purple-400' : 'bg-purple-900/30 hover:bg-purple-900/50 border-purple-500/30'}`}
+                >
+                  <Sparkles className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Denoise</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Circle className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Chromatic Aberration</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Flame className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Light Leaks Overlay</span>
+                </button>
+
+                <div className="pt-4 border-t border-purple-500/30">
+                  <label className="flex items-center gap-2 text-sm font-semibold mb-2">
+                    <Zap className="w-4 h-4 text-purple-400" />
+                    Film Grain: {filmGrain}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={filmGrain}
+                    onChange={(e) => setFilmGrain(parseInt(e.target.value))}
+                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+
+                <button
+                  onClick={() => setSplitView(!splitView)}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${splitView ? 'bg-purple-600 border-purple-400' : 'bg-purple-900/30 hover:bg-purple-900/50 border-purple-500/30'}`}
+                >
+                  <SplitSquareHorizontal className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Split Before/After View</span>
+                </button>
 
                 <div className="pt-4 border-t border-purple-500/30">
                   <label className="text-sm font-semibold mb-2 block">Visual Effects</label>
@@ -236,9 +354,6 @@ export default function Page16({ onNavigate }: PageProps) {
                     </button>
                     <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Lens Flare
-                    </button>
-                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
-                      Film Grain
                     </button>
                   </div>
                 </div>

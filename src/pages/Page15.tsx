@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Film, Wand2, Zap, Sparkles, Play, Pause } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Film, Wand2, Zap, Sparkles, Play, Pause, Layers3, Aperture, Camera, Move, Clock, Wind, Users } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
@@ -26,6 +26,9 @@ export default function Page15({ onNavigate }: PageProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [animationStyle, setAnimationStyle] = useState('smooth');
   const [animationSpeed, setAnimationSpeed] = useState(50);
+  const [fps, setFps] = useState(30);
+  const [depthStrength, setDepthStrength] = useState(50);
+  const [motionBlur, setMotionBlur] = useState(0);
 
   useEffect(() => {
     if (user) {
@@ -180,12 +183,94 @@ export default function Page15({ onNavigate }: PageProps) {
 
                 <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
                   <Zap className="w-5 h-5 text-purple-400" />
-                  <span className="font-semibold">Character Animation</span>
+                  <span className="font-semibold">Morphing Effects</span>
                 </button>
 
                 <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
                   <Sparkles className="w-5 h-5 text-purple-400" />
-                  <span className="font-semibold">Lip Sync</span>
+                  <span className="font-semibold">Particle Effects</span>
+                </button>
+
+                <div className="pt-4 border-t border-purple-500/30">
+                  <label className="flex items-center gap-2 text-sm font-semibold mb-2">
+                    <Aperture className="w-4 h-4 text-purple-400" />
+                    Frame Interpolation (FPS): {fps}
+                  </label>
+                  <input
+                    type="range"
+                    min="24"
+                    max="120"
+                    step="6"
+                    value={fps}
+                    onChange={(e) => setFps(parseInt(e.target.value))}
+                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <div className="flex justify-between text-xs text-slate-500 mt-1">
+                    <span>24</span>
+                    <span>60</span>
+                    <span>120</span>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-purple-500/30">
+                  <label className="flex items-center gap-2 text-sm font-semibold mb-2">
+                    <Layers3 className="w-4 h-4 text-purple-400" />
+                    Depth/Parallax: {depthStrength}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={depthStrength}
+                    onChange={(e) => setDepthStrength(parseInt(e.target.value))}
+                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+
+                <div className="pt-4 border-t border-purple-500/30">
+                  <label className="flex items-center gap-2 text-sm font-semibold mb-2">
+                    <Camera className="w-4 h-4 text-purple-400" />
+                    Camera Movements
+                  </label>
+                  <div className="space-y-2">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
+                      Pan
+                    </button>
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
+                      Tilt
+                    </button>
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
+                      Zoom
+                    </button>
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
+                      Dolly
+                    </button>
+                  </div>
+                </div>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Clock className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Time Remapping</span>
+                </button>
+
+                <div className="pt-4 border-t border-purple-500/30">
+                  <label className="flex items-center gap-2 text-sm font-semibold mb-2">
+                    <Wind className="w-4 h-4 text-purple-400" />
+                    Motion Blur: {motionBlur}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={motionBlur}
+                    onChange={(e) => setMotionBlur(parseInt(e.target.value))}
+                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Users className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Puppet Tool (Character)</span>
                 </button>
 
                 <div className="pt-4 border-t border-purple-500/30">
