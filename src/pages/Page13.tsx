@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Film, Volume2, Mic, Music, Sparkles, Play, Pause } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Film, Volume2, Mic, Music, Sparkles, Play, Pause, VolumeX, Sliders, Headphones, Radio, BarChart3, Layers } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
@@ -26,6 +26,13 @@ export default function Page13({ onNavigate }: PageProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(100);
   const [audioType, setAudioType] = useState('music');
+  const [audioDucking, setAudioDucking] = useState(false);
+  const [noiseReduction, setNoiseReduction] = useState(false);
+  const [bass, setBass] = useState(50);
+  const [mid, setMid] = useState(50);
+  const [treble, setTreble] = useState(50);
+  const [compressor, setCompressor] = useState(false);
+  const [normalize, setNormalize] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -179,12 +186,98 @@ export default function Page13({ onNavigate }: PageProps) {
 
                 <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
                   <Mic className="w-5 h-5 text-purple-400" />
-                  <span className="font-semibold">Record Voice</span>
+                  <span className="font-semibold">Voiceover Recording</span>
                 </button>
 
                 <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
                   <Sparkles className="w-5 h-5 text-purple-400" />
                   <span className="font-semibold">Generate AI Voice</span>
+                </button>
+
+                <div className="pt-4 border-t border-purple-500/30">
+                  <button
+                    onClick={() => setAudioDucking(!audioDucking)}
+                    className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all mb-2 ${audioDucking ? 'bg-purple-600 border-purple-400' : 'bg-purple-900/30 hover:bg-purple-900/50 border-purple-500/30'}`}
+                  >
+                    <VolumeX className="w-5 h-5 text-purple-400" />
+                    <span className="font-semibold">Audio Ducking</span>
+                  </button>
+
+                  <button
+                    onClick={() => setNoiseReduction(!noiseReduction)}
+                    className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${noiseReduction ? 'bg-purple-600 border-purple-400' : 'bg-purple-900/30 hover:bg-purple-900/50 border-purple-500/30'}`}
+                  >
+                    <Radio className="w-5 h-5 text-purple-400" />
+                    <span className="font-semibold">Noise Reduction</span>
+                  </button>
+                </div>
+
+                <div className="pt-4 border-t border-purple-500/30">
+                  <label className="flex items-center gap-2 text-sm font-semibold mb-3">
+                    <Sliders className="w-4 h-4 text-purple-400" />
+                    Equalizer
+                  </label>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Bass: {bass}</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={bass}
+                        onChange={(e) => setBass(parseInt(e.target.value))}
+                        className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Mid: {mid}</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={mid}
+                        onChange={(e) => setMid(parseInt(e.target.value))}
+                        className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Treble: {treble}</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={treble}
+                        onChange={(e) => setTreble(parseInt(e.target.value))}
+                        className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setCompressor(!compressor)}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${compressor ? 'bg-purple-600 border-purple-400' : 'bg-purple-900/30 hover:bg-purple-900/50 border-purple-500/30'}`}
+                >
+                  <BarChart3 className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Compressor</span>
+                </button>
+
+                <button
+                  onClick={() => setNormalize(!normalize)}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${normalize ? 'bg-purple-600 border-purple-400' : 'bg-purple-900/30 hover:bg-purple-900/50 border-purple-500/30'}`}
+                >
+                  <Headphones className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Normalize Audio</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Layers className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Multi-track Mixer</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Music className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Audio Sync Tools</span>
                 </button>
 
                 <div className="pt-4 border-t border-purple-500/30">

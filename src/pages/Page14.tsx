@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Film, Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline, Sparkles, Play, Pause } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Film, Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline, Sparkles, Play, Pause, Minus, Circle, Box, Layers, Spline, Cuboid } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
@@ -28,6 +28,12 @@ export default function Page14({ onNavigate }: PageProps) {
   const [fontSize, setFontSize] = useState(24);
   const [textColor, setTextColor] = useState('#ffffff');
   const [fontFamily, setFontFamily] = useState('Arial');
+  const [strokeWidth, setStrokeWidth] = useState(0);
+  const [strokeColor, setStrokeColor] = useState('#000000');
+  const [shadowOffset, setShadowOffset] = useState(0);
+  const [shadowBlur, setShadowBlur] = useState(0);
+  const [shadowOpacity, setShadowOpacity] = useState(100);
+  const [text3D, setText3D] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -234,22 +240,119 @@ export default function Page14({ onNavigate }: PageProps) {
                 </div>
 
                 <div className="pt-4 border-t border-purple-500/30">
-                  <label className="text-sm font-semibold mb-2 block">Text Presets</label>
+                  <label className="text-sm font-semibold mb-2 block">Text Animation Presets</label>
                   <div className="space-y-2">
                     <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
-                      Title Card
+                      Fade In
                     </button>
                     <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
-                      Lower Third
+                      Slide In
                     </button>
                     <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
-                      Caption
+                      Typewriter
                     </button>
                     <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
-                      End Credits
+                      Bounce
+                    </button>
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
+                      Zoom In
                     </button>
                   </div>
                 </div>
+
+                <div className="pt-4 border-t border-purple-500/30">
+                  <label className="flex items-center gap-2 text-sm font-semibold mb-2">
+                    <Minus className="w-4 h-4 text-purple-400" />
+                    Stroke Width: {strokeWidth}px
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="10"
+                    value={strokeWidth}
+                    onChange={(e) => setStrokeWidth(parseInt(e.target.value))}
+                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <div className="mt-2">
+                    <label className="text-xs text-slate-400 mb-1 block">Stroke Color</label>
+                    <input
+                      type="color"
+                      value={strokeColor}
+                      onChange={(e) => setStrokeColor(e.target.value)}
+                      className="w-full h-8 bg-black border border-purple-500/50 rounded-lg cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-purple-500/30">
+                  <label className="flex items-center gap-2 text-sm font-semibold mb-2">
+                    <Circle className="w-4 h-4 text-purple-400" />
+                    Shadow Controls
+                  </label>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Offset: {shadowOffset}px</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="20"
+                        value={shadowOffset}
+                        onChange={(e) => setShadowOffset(parseInt(e.target.value))}
+                        className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Blur: {shadowBlur}px</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="20"
+                        value={shadowBlur}
+                        onChange={(e) => setShadowBlur(parseInt(e.target.value))}
+                        className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Opacity: {shadowOpacity}%</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={shadowOpacity}
+                        onChange={(e) => setShadowOpacity(parseInt(e.target.value))}
+                        className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Box className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Text Background Options</span>
+                </button>
+
+                <button
+                  onClick={() => setText3D(!text3D)}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${text3D ? 'bg-purple-600 border-purple-400' : 'bg-purple-900/30 hover:bg-purple-900/50 border-purple-500/30'}`}
+                >
+                  <Cuboid className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">3D Text</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Spline className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Text Path/Curve Tools</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Layers className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Multiple Text Layers</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Type className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Text Masking</span>
+                </button>
 
                 <button className="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 border border-purple-500/30 rounded-lg p-3 transition-all">
                   <Sparkles className="w-5 h-5" />

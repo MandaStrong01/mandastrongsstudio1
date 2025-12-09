@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Film, Scissors, Crop, Music, FileText, Sparkles, Volume2, Maximize, Play, Pause } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Film, Scissors, Crop, Music, FileText, Sparkles, Volume2, Maximize, Play, Pause, Rewind, FastForward, RotateCcw, Shield, Target, Key, Grid3X3, PictureInPicture2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
@@ -27,6 +27,9 @@ export default function Page12({ onNavigate }: PageProps) {
   const [volume, setVolume] = useState(100);
   const [ratio, setRatio] = useState('16:9');
   const [size, setSize] = useState('1080p');
+  const [speed, setSpeed] = useState(1);
+  const [reverseVideo, setReverseVideo] = useState(false);
+  const [stabilization, setStabilization] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -182,6 +185,83 @@ export default function Page12({ onNavigate }: PageProps) {
                 <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
                   <FileText className="w-5 h-5 text-purple-400" />
                   <span className="font-semibold">Subtitles</span>
+                </button>
+
+                <div className="pt-4 border-t border-purple-500/30">
+                  <label className="text-sm font-semibold mb-2 block">Speed Controls</label>
+                  <div className="grid grid-cols-5 gap-1 mb-2">
+                    <button
+                      onClick={() => setSpeed(0.25)}
+                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 0.25 ? 'bg-purple-600' : 'bg-purple-900/30 hover:bg-purple-900/50'} border border-purple-500/30`}
+                    >
+                      0.25x
+                    </button>
+                    <button
+                      onClick={() => setSpeed(0.5)}
+                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 0.5 ? 'bg-purple-600' : 'bg-purple-900/30 hover:bg-purple-900/50'} border border-purple-500/30`}
+                    >
+                      0.5x
+                    </button>
+                    <button
+                      onClick={() => setSpeed(1)}
+                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 1 ? 'bg-purple-600' : 'bg-purple-900/30 hover:bg-purple-900/50'} border border-purple-500/30`}
+                    >
+                      1x
+                    </button>
+                    <button
+                      onClick={() => setSpeed(2)}
+                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 2 ? 'bg-purple-600' : 'bg-purple-900/30 hover:bg-purple-900/50'} border border-purple-500/30`}
+                    >
+                      2x
+                    </button>
+                    <button
+                      onClick={() => setSpeed(4)}
+                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 4 ? 'bg-purple-600' : 'bg-purple-900/30 hover:bg-purple-900/50'} border border-purple-500/30`}
+                    >
+                      4x
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setReverseVideo(!reverseVideo)}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${reverseVideo ? 'bg-purple-600 border-purple-400' : 'bg-purple-900/30 hover:bg-purple-900/50 border-purple-500/30'}`}
+                >
+                  <RotateCcw className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Reverse Video</span>
+                </button>
+
+                <button
+                  onClick={() => setStabilization(!stabilization)}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${stabilization ? 'bg-purple-600 border-purple-400' : 'bg-purple-900/30 hover:bg-purple-900/50 border-purple-500/30'}`}
+                >
+                  <Shield className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Stabilization</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Sparkles className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Green Screen/Chroma Key</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Target className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Motion Tracking</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Key className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Keyframe Animation</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Grid3X3 className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Split Screen Effects</span>
+                </button>
+
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <PictureInPicture2 className="w-5 h-5 text-purple-400" />
+                  <span className="font-semibold">Picture-in-Picture</span>
                 </button>
 
                 <div className="pt-4 border-t border-purple-500/30">
