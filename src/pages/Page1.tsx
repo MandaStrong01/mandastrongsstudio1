@@ -26,7 +26,9 @@ export default function Page1({ onNavigate }: PageProps) {
         </div>
 
         <h1 className="text-7xl md:text-8xl font-black mb-6 tracking-tight">
-          MANDASTRONG'S
+          <span className="bg-gradient-to-r from-purple-400 via-purple-300 to-purple-400 bg-clip-text text-transparent">
+            MANDASTRONG'S
+          </span>
           <br />
           <span className="bg-gradient-to-r from-purple-400 via-purple-300 to-purple-400 bg-clip-text text-transparent">
             STUDIO
@@ -34,7 +36,7 @@ export default function Page1({ onNavigate }: PageProps) {
         </h1>
 
         <p className="text-2xl md:text-3xl font-bold italic mb-12 text-white">
-          Welcome To The All-In-One Make-A-Movie-With-Two-Hours-Duration App!
+          Welcome To The All-In-One Make-A-Movie-With-Two-Hours-Duration <span className="text-purple-400">App!</span>
         </p>
 
         <div className="flex flex-wrap gap-4 justify-center">
