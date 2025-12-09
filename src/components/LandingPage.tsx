@@ -62,14 +62,14 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 px-4 py-8">
       <div className="max-w-4xl w-full">
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-12 text-white text-center">
+          <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-8 py-12 text-white text-center">
             <div className="flex justify-center mb-4">
               <div className="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
                 <Film className="w-10 h-10 text-white" />
               </div>
             </div>
             <h1 className="text-4xl font-bold mb-3">{page.title}</h1>
-            <p className="text-xl text-blue-100">{page.subtitle}</p>
+            <p className="text-xl text-purple-100">{page.subtitle}</p>
           </div>
 
           <div className="px-8 py-12">
@@ -80,9 +80,9 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
                     key={index}
                     className={`h-2 rounded-full transition-all duration-300 ${
                       index === currentPage
-                        ? 'w-12 bg-blue-600'
+                        ? 'w-12 bg-purple-600'
                         : index < currentPage
-                        ? 'w-8 bg-blue-400'
+                        ? 'w-8 bg-purple-400'
                         : 'w-8 bg-slate-300 dark:bg-slate-600'
                     }`}
                   />
@@ -128,7 +128,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
 
             <button
               onClick={goToNext}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              className="flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
             >
               {isLastPage ? 'Get Started' : 'Next'}
               {isLastPage ? <ArrowRight className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}

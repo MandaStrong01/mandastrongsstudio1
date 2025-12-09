@@ -70,7 +70,7 @@ export function Studio() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded-lg">
+              <div className="bg-purple-600 p-2 rounded-lg">
                 <Film className="w-6 h-6 text-white" />
               </div>
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -80,7 +80,7 @@ export function Studio() {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setShowTutorial(!showTutorial)}
-                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                className="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium"
               >
                 {showTutorial ? 'Hide Tutorial' : 'Show Tutorial'}
               </button>
@@ -107,7 +107,7 @@ export function Studio() {
               </h2>
               <button
                 onClick={createNewProject}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 <Plus className="w-5 h-5" />
                 New Project

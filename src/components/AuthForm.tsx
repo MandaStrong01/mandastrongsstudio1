@@ -36,7 +36,7 @@ export function AuthForm() {
         <div className="bg-white dark:bg-slate-800 shadow-2xl rounded-2xl p-8 space-y-6">
           <div className="text-center space-y-2">
             <div className="flex justify-center mb-4">
-              <div className="bg-blue-600 p-3 rounded-xl">
+              <div className="bg-purple-600 p-3 rounded-xl">
                 <Film className="w-8 h-8 text-white" />
               </div>
             </div>
@@ -65,7 +65,7 @@ export function AuthForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                 placeholder="you@example.com"
               />
             </div>
@@ -81,7 +81,7 @@ export function AuthForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                 placeholder="••••••••"
               />
             </div>
@@ -89,7 +89,7 @@ export function AuthForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Sign Up'}
             </button>
@@ -101,7 +101,7 @@ export function AuthForm() {
                 setIsLogin(!isLogin);
                 setError('');
               }}
-              className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              className="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
             >
               {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
             </button>

@@ -89,7 +89,7 @@ export function ProjectDashboard({ projects, onUpdate }: ProjectDashboardProps) 
 
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
               <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                className="bg-purple-600 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${(project.current_phase / 3) * 100}%` }}
               />
             </div>
@@ -97,7 +97,7 @@ export function ProjectDashboard({ projects, onUpdate }: ProjectDashboardProps) 
             <div className="flex gap-2 pt-2">
               <button
                 onClick={() => setSelectedProject(project)}
-                className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 <Edit2 className="w-4 h-4" />
                 Edit
