@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft, ArrowRight, Sparkles, Search } from 'lucide-react';
 import AIToolModal from './AIToolModal';
 import Footer from './Footer';
+import QuickAccess from './QuickAccess';
 
 interface AIToolsHubProps {
   tools: string[];
@@ -38,12 +39,7 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
 
             <h1 className="text-4xl font-black text-purple-400 mx-auto">AI TOOL BOARD</h1>
 
-            <button
-              onClick={() => onNavigate(3)}
-              className="ml-4 px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold transition-all"
-            >
-              Quick Access
-            </button>
+            <div className="ml-4 w-48"></div>
           </div>
 
           <div className="bg-black/30 backdrop-blur-sm p-6 rounded-2xl border border-purple-500/30 mb-6 flex-1 overflow-y-auto">
@@ -82,6 +78,8 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
       </div>
 
       <Footer />
+
+      <QuickAccess onNavigate={onNavigate} />
 
       {selectedTool && (
         <AIToolModal

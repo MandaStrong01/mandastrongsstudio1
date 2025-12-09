@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, FileText, Shield } from 'lucide-react';
 import Footer from '../components/Footer';
+import QuickAccess from '../components/QuickAccess';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -80,6 +81,7 @@ export default function Page18({ onNavigate }: PageProps) {
           </div>
         </div>
       </div>
+      <QuickAccess onNavigate={onNavigate} />
       <Footer />
     </div>
   );

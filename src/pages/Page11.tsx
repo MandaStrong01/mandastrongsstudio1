@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause }
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
+import QuickAccess from '../components/QuickAccess';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -247,6 +248,7 @@ export default function Page11({ onNavigate }: PageProps) {
           </div>
         </div>
       </div>
+      <QuickAccess onNavigate={onNavigate} />
       <Footer />
     </div>
   );
