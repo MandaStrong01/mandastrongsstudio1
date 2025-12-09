@@ -9,8 +9,8 @@ export default function Page14({ onNavigate }: PageProps) {
     <PageTemplate
       onNavigate={onNavigate}
       pageNumber={14}
-      title="COLOR GRADING"
-      description="Perfect the look and feel of your movie with professional color grading."
+      title="TITLE & TEXT CREATOR"
+      description="Create title cards, captions, and lower thirds"
     />
   );
 }

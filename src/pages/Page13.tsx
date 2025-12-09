@@ -9,8 +9,8 @@ export default function Page13({ onNavigate }: PageProps) {
     <PageTemplate
       onNavigate={onNavigate}
       pageNumber={13}
-      title="VISUAL EFFECTS"
-      description="Enhance your movie with stunning visual effects and filters."
+      title="SOUND & VOICE STUDIO"
+      description="Background music, voiceover, and AI speech generation"
     />
   );
 }

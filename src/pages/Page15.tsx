@@ -9,8 +9,8 @@ export default function Page15({ onNavigate }: PageProps) {
     <PageTemplate
       onNavigate={onNavigate}
       pageNumber={15}
-      title="TITLES & CREDITS"
-      description="Add professional titles, credits, and text overlays to your film."
+      title="AI ANIMATION LAB"
+      description="Animate still images and characters with AI"
     />
   );
 }

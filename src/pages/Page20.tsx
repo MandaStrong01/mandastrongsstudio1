@@ -9,8 +9,8 @@ export default function Page20({ onNavigate }: PageProps) {
     <PageTemplate
       onNavigate={onNavigate}
       pageNumber={20}
-      title="ANALYTICS"
-      description="Track views, engagement, and performance of your published films."
+      title="CREATOR CREDITS"
+      description="Credits for all contributors to MandaStrong Studio"
     />
   );
 }

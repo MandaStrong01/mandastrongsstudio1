@@ -9,8 +9,8 @@ export default function Page19({ onNavigate }: PageProps) {
     <PageTemplate
       onNavigate={onNavigate}
       pageNumber={19}
-      title="PUBLISHING"
-      description="Publish your movie to various platforms and social media."
+      title="COMMUNITY / SUPPORT"
+      description="Showcase projects, FAQs, and direct help with Agent Grok"
     />
   );
 }

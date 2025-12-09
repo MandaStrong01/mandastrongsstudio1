@@ -9,8 +9,8 @@ export default function Page17({ onNavigate }: PageProps) {
     <PageTemplate
       onNavigate={onNavigate}
       pageNumber={17}
-      title="PROJECT LIBRARY"
-      description="Manage and organize all your movie projects in one place."
+      title="RENDER / EXPORT"
+      description="Render final movie up to 1080p, 2 hour max with progress bar"
     />
   );
 }

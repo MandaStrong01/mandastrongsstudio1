@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { LogIn, UserPlus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import Footer from '../components/Footer';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -57,8 +58,9 @@ export default function Page3({ onNavigate }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-6xl">
+    <div className="min-h-screen bg-black text-white flex flex-col">
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-6xl">
         <h1 className="text-5xl md:text-6xl font-black text-center mb-12 tracking-tight text-purple-400">
           LOGIN / REGISTER / CHOOSE PLAN
         </h1>
@@ -212,7 +214,9 @@ export default function Page3({ onNavigate }: PageProps) {
             Next
           </button>
         </div>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 }

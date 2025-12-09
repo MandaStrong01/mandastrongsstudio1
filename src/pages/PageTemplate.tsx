@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import Footer from '../components/Footer';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -9,8 +10,9 @@ interface PageProps {
 
 export default function PageTemplate({ onNavigate, pageNumber, title, description }: PageProps) {
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4">
-      <div className="text-center max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
+      <div className="flex-1 flex flex-col items-center justify-center px-4">
+        <div className="text-center max-w-4xl">
         <h1 className="text-6xl md:text-7xl font-black mb-6 tracking-tight text-purple-400">
           {title}
         </h1>
@@ -41,7 +43,9 @@ export default function PageTemplate({ onNavigate, pageNumber, title, descriptio
             </button>
           )}
         </div>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 }

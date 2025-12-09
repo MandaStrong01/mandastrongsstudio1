@@ -9,8 +9,8 @@ export default function Page16({ onNavigate }: PageProps) {
     <PageTemplate
       onNavigate={onNavigate}
       pageNumber={16}
-      title="RENDERING"
-      description="Export your finished movie in high quality formats."
+      title="COLOR GRADE / VISUAL FX"
+      description="Apply LUTs, filters, transitions, and effects"
     />
   );
 }

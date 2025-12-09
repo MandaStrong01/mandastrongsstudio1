@@ -9,8 +9,8 @@ export default function Page18({ onNavigate }: PageProps) {
     <PageTemplate
       onNavigate={onNavigate}
       pageNumber={18}
-      title="COLLABORATION"
-      description="Share and collaborate on projects with your team."
+      title="PUBLISH / SHARE"
+      description="Publish link, download, and share on social media"
     />
   );
 }
