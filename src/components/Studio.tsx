@@ -26,10 +26,6 @@ export function Studio() {
 
       if (error) throw error;
       setProjects(data || []);
-
-      if (!data || data.length === 0) {
-        setShowTutorial(true);
-      }
     } catch (error) {
       console.error('Error loading projects:', error);
     } finally {
