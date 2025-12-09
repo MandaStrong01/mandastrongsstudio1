@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, X, Upload } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { uploadFile, getAssets } from '../lib/storage';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
 
@@ -16,11 +17,27 @@ interface AIAsset {
   created_at: string;
 }
 
+interface MediaAsset {
+  id: string;
+  file_name: string;
+  file_type: string;
+  file_url: string;
+  asset_type: string;
+  created_at: string;
+}
+
+type Asset = AIAsset | MediaAsset;
+
+function isMediaAsset(asset: Asset): asset is MediaAsset {
+  return 'file_name' in asset;
+}
+
 export default function Page11({ onNavigate }: PageProps) {
   const { user } = useAuth();
-  const [assets, setAssets] = useState<AIAsset[]>([]);
+  const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedAsset, setSelectedAsset] = useState<AIAsset | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(120);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -40,21 +57,60 @@ export default function Page11({ onNavigate }: PageProps) {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('ai_tool_outputs')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+      const [aiAssetsResult, mediaAssetsResult] = await Promise.all([
+        supabase
+          .from('ai_tool_outputs')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('assets')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+      ]);
 
-      if (error) throw error;
-      setAssets(data || []);
-      if (data && data.length > 0) {
-        setSelectedAsset(data[0]);
+      const aiAssets = aiAssetsResult.data || [];
+      const mediaAssets = mediaAssetsResult.data || [];
+
+      const allAssets = [...mediaAssets, ...aiAssets].sort((a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+
+      setAssets(allAssets);
+      if (allAssets.length > 0) {
+        setSelectedAsset(allAssets[0]);
       }
     } catch (error) {
       console.error('Error loading assets:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || !user) return;
+
+    setUploading(true);
+    try {
+      const uploadPromises = Array.from(files).map(file => uploadFile(file, user.id));
+      const results = await Promise.all(uploadPromises);
+
+      const successCount = results.filter(r => r.success).length;
+      if (successCount > 0) {
+        await loadAssets();
+      }
+
+      if (results.some(r => !r.success)) {
+        alert(`${successCount} of ${files.length} files uploaded successfully`);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload files');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -88,10 +144,11 @@ export default function Page11({ onNavigate }: PageProps) {
                 <h2 className="text-xl font-bold text-purple-400">MEDIA BOX</h2>
                 <button
                   onClick={() => document.getElementById('media-upload')?.click()}
-                  className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 px-3 py-2 rounded-lg transition-all text-sm font-semibold"
+                  disabled={uploading}
+                  className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed px-3 py-2 rounded-lg transition-all text-sm font-semibold"
                 >
                   <Upload className="w-4 h-4" />
-                  Upload
+                  {uploading ? 'Uploading...' : 'Upload'}
                 </button>
                 <input
                   id="media-upload"
@@ -99,12 +156,7 @@ export default function Page11({ onNavigate }: PageProps) {
                   multiple
                   accept="image/*,video/*,audio/*"
                   className="hidden"
-                  onChange={(e) => {
-                    const files = e.target.files;
-                    if (files) {
-                      console.log('Files selected:', files);
-                    }
-                  }}
+                  onChange={handleFileUpload}
                 />
               </div>
               <div className="space-y-2 overflow-y-auto max-h-[70vh]">
@@ -119,23 +171,32 @@ export default function Page11({ onNavigate }: PageProps) {
                     <p className="text-sm text-slate-400">No assets yet</p>
                   </div>
                 ) : (
-                  assets.map((asset) => (
-                    <button
-                      key={asset.id}
-                      onClick={() => setSelectedAsset(asset)}
-                      className={`w-full bg-purple-900/20 border rounded-lg p-3 text-left transition-all hover:bg-purple-900/40 ${
-                        selectedAsset?.id === asset.id ? 'border-purple-400 bg-purple-900/40' : 'border-purple-500/30'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <Sparkles className="w-4 h-4 text-purple-400" />
-                        <h3 className="font-semibold text-sm truncate">{asset.tool_name}</h3>
-                      </div>
-                      <p className="text-xs text-slate-400">
-                        {new Date(asset.created_at).toLocaleDateString()}
-                      </p>
-                    </button>
-                  ))
+                  assets.map((asset) => {
+                    const isMedia = isMediaAsset(asset);
+                    return (
+                      <button
+                        key={asset.id}
+                        onClick={() => setSelectedAsset(asset)}
+                        className={`w-full bg-purple-900/20 border rounded-lg p-3 text-left transition-all hover:bg-purple-900/40 ${
+                          selectedAsset?.id === asset.id ? 'border-purple-400 bg-purple-900/40' : 'border-purple-500/30'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          {isMedia ? (
+                            <File className="w-4 h-4 text-purple-400" />
+                          ) : (
+                            <Sparkles className="w-4 h-4 text-purple-400" />
+                          )}
+                          <h3 className="font-semibold text-sm truncate">
+                            {isMedia ? asset.file_name : asset.tool_name}
+                          </h3>
+                        </div>
+                        <p className="text-xs text-slate-400">
+                          {new Date(asset.created_at).toLocaleDateString()}
+                        </p>
+                      </button>
+                    );
+                  })
                 )}
               </div>
             </div>
@@ -143,15 +204,43 @@ export default function Page11({ onNavigate }: PageProps) {
             <div className="col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4 flex flex-col">
               <h2 className="text-xl font-bold mb-4 text-purple-400">VIEWER</h2>
               <div className="flex-1 flex flex-col">
-                <div className="aspect-video bg-black rounded-lg border border-purple-500/30 mb-4 flex items-center justify-center">
+                <div className="aspect-video bg-black rounded-lg border border-purple-500/30 mb-4 flex items-center justify-center overflow-hidden">
                   {selectedAsset ? (
-                    <div className="text-center p-8">
-                      <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
-                      <h3 className="text-lg font-bold mb-2">{selectedAsset.tool_name}</h3>
-                      <pre className="text-sm text-slate-300 font-sans max-h-48 overflow-y-auto text-left">
-                        {JSON.stringify(selectedAsset.output_data, null, 2)}
-                      </pre>
-                    </div>
+                    isMediaAsset(selectedAsset) ? (
+                      selectedAsset.asset_type === 'image' ? (
+                        <img
+                          src={selectedAsset.file_url}
+                          alt={selectedAsset.file_name}
+                          className="max-w-full max-h-full object-contain"
+                        />
+                      ) : selectedAsset.asset_type === 'video' ? (
+                        <video
+                          src={selectedAsset.file_url}
+                          controls
+                          className="max-w-full max-h-full"
+                        />
+                      ) : selectedAsset.asset_type === 'audio' ? (
+                        <div className="text-center p-8">
+                          <Volume2 className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+                          <h3 className="text-lg font-bold mb-4">{selectedAsset.file_name}</h3>
+                          <audio src={selectedAsset.file_url} controls className="w-full" />
+                        </div>
+                      ) : (
+                        <div className="text-center p-8">
+                          <File className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+                          <h3 className="text-lg font-bold mb-2">{selectedAsset.file_name}</h3>
+                          <p className="text-sm text-slate-400">{selectedAsset.file_type}</p>
+                        </div>
+                      )
+                    ) : (
+                      <div className="text-center p-8">
+                        <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+                        <h3 className="text-lg font-bold mb-2">{selectedAsset.tool_name}</h3>
+                        <pre className="text-sm text-slate-300 font-sans max-h-48 overflow-y-auto text-left">
+                          {JSON.stringify(selectedAsset.output_data, null, 2)}
+                        </pre>
+                      </div>
+                    )
                   ) : (
                     <div className="text-center">
                       <File className="w-16 h-16 mx-auto mb-4 text-slate-600" />
