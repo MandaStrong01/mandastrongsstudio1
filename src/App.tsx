@@ -21,9 +21,11 @@ import Page18 from './pages/Page18';
 import Page19 from './pages/Page19';
 import Page20 from './pages/Page20';
 import Page21 from './pages/Page21';
+import Page22 from './pages/Page22';
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [assetPageData, setAssetPageData] = useState<{ toolName: string; mode: 'upload' | 'create' } | null>(null);
   const { user, loading } = useAuth();
 
   useEffect(() => {
@@ -36,8 +38,14 @@ function AppContent() {
     if (page >= 4 && !user) {
       setCurrentPage(3);
     } else {
+      setAssetPageData(null);
       setCurrentPage(page);
     }
+  };
+
+  const openAssetPage = (toolName: string, mode: 'upload' | 'create') => {
+    setAssetPageData({ toolName, mode });
+    setCurrentPage(22);
   };
 
   if (loading) {
@@ -52,12 +60,12 @@ function AppContent() {
     <Page1 key={1} onNavigate={navigate} />,
     <Page2 key={2} onNavigate={navigate} />,
     <Page3 key={3} onNavigate={navigate} />,
-    <Page4 key={4} onNavigate={navigate} />,
-    <Page5 key={5} onNavigate={navigate} />,
-    <Page6 key={6} onNavigate={navigate} />,
-    <Page7 key={7} onNavigate={navigate} />,
-    <Page8 key={8} onNavigate={navigate} />,
-    <Page9 key={9} onNavigate={navigate} />,
+    <Page4 key={4} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
+    <Page5 key={5} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
+    <Page6 key={6} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
+    <Page7 key={7} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
+    <Page8 key={8} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
+    <Page9 key={9} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
     <Page10 key={10} onNavigate={navigate} />,
     <Page11 key={11} onNavigate={navigate} />,
     <Page12 key={12} onNavigate={navigate} />,
@@ -70,6 +78,7 @@ function AppContent() {
     <Page19 key={19} onNavigate={navigate} />,
     <Page20 key={20} onNavigate={navigate} />,
     <Page21 key={21} onNavigate={navigate} />,
+    <Page22 key={22} onNavigate={navigate} toolName={assetPageData?.toolName} mode={assetPageData?.mode} />,
   ];
 
   return <>{pages[currentPage - 1]}</>;
