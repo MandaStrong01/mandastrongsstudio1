@@ -126,7 +126,7 @@ export default function Page11({ onNavigate }: PageProps) {
                     <div className="text-center p-8">
                       <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
                       <h3 className="text-lg font-bold mb-2">{selectedAsset.tool_name}</h3>
-                      <pre className="text-sm text-slate-300 whitespace-pre-wrap font-sans max-h-48 overflow-y-auto text-left">
+                      <pre className="text-sm text-slate-300 font-sans max-h-48 overflow-y-auto text-left">
                         {JSON.stringify(selectedAsset.output_data, null, 2)}
                       </pre>
                     </div>
