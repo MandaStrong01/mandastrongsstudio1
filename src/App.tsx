@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LandingPage } from './components/LandingPage';
 import { AuthForm } from './components/AuthForm';
 import { Studio } from './components/Studio';
 
 function AppContent() {
   const { user, loading } = useAuth();
+  const [showAuth, setShowAuth] = useState(false);
 
   if (loading) {
     return (
@@ -13,7 +16,15 @@ function AppContent() {
     );
   }
 
-  return user ? <Studio /> : <AuthForm />;
+  if (user) {
+    return <Studio />;
+  }
+
+  if (!showAuth) {
+    return <LandingPage onGetStarted={() => setShowAuth(true)} />;
+  }
+
+  return <AuthForm />;
 }
 
 function App() {
