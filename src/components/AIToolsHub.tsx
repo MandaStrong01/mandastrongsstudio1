@@ -42,15 +42,15 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
             <div className="ml-4 w-48"></div>
           </div>
 
-          <div className="bg-black/30 backdrop-blur-sm p-6 rounded-2xl border border-purple-500/30 mb-6 flex-1 overflow-y-auto">
-            <div className="grid grid-cols-12 gap-2">
+          <div className="bg-black/30 backdrop-blur-sm p-6 rounded-2xl border border-purple-500/30 mb-6 flex-1 overflow-y-auto max-h-[600px]">
+            <div className="grid grid-cols-4 gap-4">
               {filteredTools.map((tool, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedTool(tool)}
-                  className="bg-purple-900/20 border border-purple-500/30 hover:border-purple-400 hover:bg-purple-900/40 rounded-lg p-3 transition-all cursor-pointer text-left"
+                  className="bg-purple-900/20 border border-purple-500/30 hover:border-purple-400 hover:bg-purple-900/40 rounded-lg p-5 transition-all cursor-pointer text-left h-24 flex items-center justify-center"
                 >
-                  <h3 className="font-semibold text-white text-xs leading-tight">
+                  <h3 className="font-semibold text-white text-sm leading-tight text-center">
                     {tool}
                   </h3>
                 </button>

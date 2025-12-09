@@ -37,6 +37,7 @@ export default function Page11({ onNavigate }: PageProps) {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [uploadSource, setUploadSource] = useState<'local' | 'google'>('local');
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(120);
@@ -114,6 +115,18 @@ export default function Page11({ onNavigate }: PageProps) {
     }
   };
 
+  const handleGoogleDriveUpload = () => {
+    alert('Google Drive integration coming soon! This will allow you to connect your Google Drive and import files directly.');
+  };
+
+  const handleUploadClick = () => {
+    if (uploadSource === 'google') {
+      handleGoogleDriveUpload();
+    } else {
+      document.getElementById('media-upload')?.click();
+    }
+  };
+
   const formatTime = (minutes: number) => {
     const mins = Math.floor(minutes);
     const secs = Math.floor((minutes - mins) * 60);
@@ -140,25 +153,36 @@ export default function Page11({ onNavigate }: PageProps) {
 
           <div className="grid grid-cols-12 gap-4 flex-1">
             <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-purple-400">MEDIA BOX</h2>
-                <button
-                  onClick={() => document.getElementById('media-upload')?.click()}
-                  disabled={uploading}
-                  className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed px-3 py-2 rounded-lg transition-all text-sm font-semibold"
+              <h2 className="text-xl font-bold text-purple-400 mb-4">MEDIA BOX</h2>
+
+              <div className="mb-4">
+                <label className="block text-sm font-semibold mb-2 text-purple-300">Upload Source</label>
+                <select
+                  value={uploadSource}
+                  onChange={(e) => setUploadSource(e.target.value as 'local' | 'google')}
+                  className="w-full bg-black/50 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-400"
                 >
-                  <Upload className="w-4 h-4" />
-                  {uploading ? 'Uploading...' : 'Upload'}
-                </button>
-                <input
-                  id="media-upload"
-                  type="file"
-                  multiple
-                  accept="image/*,video/*,audio/*"
-                  className="hidden"
-                  onChange={handleFileUpload}
-                />
+                  <option value="local">Shots/Videos Files</option>
+                  <option value="google">Google Drive</option>
+                </select>
               </div>
+
+              <button
+                onClick={handleUploadClick}
+                disabled={uploading}
+                className="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed px-3 py-2 rounded-lg transition-all text-sm font-semibold mb-4"
+              >
+                <Upload className="w-4 h-4" />
+                {uploading ? 'Uploading...' : uploadSource === 'google' ? 'Connect Google Drive' : 'Upload Files'}
+              </button>
+              <input
+                id="media-upload"
+                type="file"
+                multiple
+                accept="image/*,video/*,audio/*"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
               <div className="space-y-2 overflow-y-auto max-h-[70vh]">
                 {loading ? (
                   <div className="text-center py-8">
