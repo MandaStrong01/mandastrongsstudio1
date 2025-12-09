@@ -451,6 +451,13 @@ export default function Page11({ onNavigate }: PageProps) {
               Back
             </button>
             <button
+              onClick={() => console.log('Generate clicked')}
+              className="flex items-center gap-2 bg-green-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-green-500 transition-all"
+            >
+              <Sparkles className="w-5 h-5" />
+              Generate
+            </button>
+            <button
               onClick={() => onNavigate(12)}
               className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
             >
