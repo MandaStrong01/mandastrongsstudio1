@@ -58,15 +58,11 @@ export default function Page3({ onNavigate }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-6xl">
-        <h1 className="text-5xl md:text-6xl font-black text-center mb-12 tracking-tight text-purple-400">
-          LOGIN / REGISTER / CHOOSE PLAN
-        </h1>
-
         <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-4xl mx-auto">
-          <div className="bg-purple-900/20 backdrop-blur-sm p-8 rounded-2xl border border-purple-500/50">
+          <div className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl p-8 rounded-3xl border-2 border-purple-500/60 shadow-2xl shadow-purple-900/50">
             <div className="flex items-center gap-2 mb-6 justify-center">
               <LogIn className="w-6 h-6" />
               <h2 className="text-2xl font-bold">LOGIN</h2>
@@ -104,7 +100,7 @@ export default function Page3({ onNavigate }: PageProps) {
             </form>
           </div>
 
-          <div className="bg-purple-900/20 backdrop-blur-sm p-8 rounded-2xl border border-purple-500/50">
+          <div className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl p-8 rounded-3xl border-2 border-purple-500/60 shadow-2xl shadow-purple-900/50">
             <div className="flex items-center gap-2 mb-6 justify-center">
               <UserPlus className="w-6 h-6" />
               <h2 className="text-2xl font-bold">REGISTER</h2>
@@ -165,7 +161,7 @@ export default function Page3({ onNavigate }: PageProps) {
         <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
           <button
             onClick={() => openStripeLink('https://buy.stripe.com/fZubJ35BE3B53oH00')}
-            className="bg-purple-900/20 backdrop-blur-sm border border-purple-500/50 hover:bg-purple-900/40 text-white font-bold py-6 px-6 rounded-2xl transition-all"
+            className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-purple-900/30"
           >
             <div className="text-center">
               <div className="text-3xl font-black mb-2">BASIC</div>
@@ -177,7 +173,7 @@ export default function Page3({ onNavigate }: PageProps) {
 
           <button
             onClick={() => openStripeLink('https://buy.stripe.com/14A00l8NQ0oT01')}
-            className="bg-purple-900/20 backdrop-blur-sm border border-purple-500/50 hover:bg-purple-900/40 text-white font-bold py-6 px-6 rounded-2xl transition-all"
+            className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-purple-900/30"
           >
             <div className="text-center">
               <div className="text-3xl font-black mb-2">PRO</div>
@@ -189,7 +185,7 @@ export default function Page3({ onNavigate }: PageProps) {
 
           <button
             onClick={() => openStripeLink('https://buy.stripe.com/4gM5kFaVY02')}
-            className="bg-purple-900/20 backdrop-blur-sm border border-purple-500/50 hover:bg-purple-900/40 text-white font-bold py-6 px-6 rounded-2xl transition-all"
+            className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-purple-900/30"
           >
             <div className="text-center">
               <div className="text-3xl font-black mb-2">STUDIO</div>

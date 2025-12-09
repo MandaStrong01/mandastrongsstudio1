@@ -1,4 +1,4 @@
-import { Home, ArrowLeft } from 'lucide-react';
+import { Home, ArrowLeft, BookOpen } from 'lucide-react';
 import Footer from '../components/Footer';
 
 interface PageProps {
@@ -24,21 +24,21 @@ export default function Page21({ onNavigate }: PageProps) {
             </div>
 
             <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight text-purple-400">
-              THANK YOU CREATORS!
+              THANK YOU!
             </h1>
 
             <div className="max-w-3xl mx-auto mb-8 text-left bg-purple-900/20 rounded-lg p-6 border border-purple-500/30">
               <p className="text-lg text-white/90 mb-4 leading-relaxed">
-                Thank you for being part of the MandaStrong Studio journey! Your creativity and passion
-                bring stories to life. This platform was built to empower creators like you to make
-                professional films without barriers.
+                Thank you for exploring MandaStrong Studio! This platform was created to empower storytellers
+                like you to bring your visions to life. Every film you create, every story you tell, makes a
+                difference in the world.
               </p>
               <p className="text-lg text-white/90 mb-4 leading-relaxed">
-                Every project you create, every story you tell, makes a difference. Keep creating,
-                keep inspiring, and remember that your voice matters.
+                Your creativity and passion inspire us every day. Keep creating, keep innovating, and remember
+                that your unique voice matters. We're honored to be part of your creative journey.
               </p>
               <p className="text-lg text-purple-400 font-semibold">
-                Support our mission and find exclusive creator tools at{' '}
+                Support our mission and find exclusive tools at{' '}
                 <a
                   href="https://MandaStrong1.Etsy.com"
                   target="_blank"
@@ -50,30 +50,45 @@ export default function Page21({ onNavigate }: PageProps) {
               </p>
             </div>
 
-            <div className="bg-black/50 rounded-lg p-6 border border-purple-500/30 mb-6">
-              <h2 className="text-2xl font-bold mb-4 text-purple-400">User Guide</h2>
-              <ul className="text-left space-y-2 text-white/80">
-                <li className="flex items-start gap-2">
-                  <span className="text-purple-400 mt-1">•</span>
-                  <span>Use the Back and Next buttons to navigate between pages</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-purple-400 mt-1">•</span>
-                  <span>Access Agent Grok on every page after login for live chat assistance</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-purple-400 mt-1">•</span>
-                  <span>Pages 4-9 contain 720 AI tools to enhance your creative workflow</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-purple-400 mt-1">•</span>
-                  <span>Your generated assets are automatically saved to the Media Box</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-purple-400 mt-1">•</span>
-                  <span>Maximum film duration is 180 minutes depending on your plan</span>
-                </li>
-              </ul>
+            <div className="bg-black/50 rounded-2xl p-8 border border-purple-500/30 mb-6">
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <BookOpen className="w-8 h-8 text-purple-400" />
+                <h2 className="text-3xl font-bold text-purple-400">Full User Guide To MandaStrong Studio</h2>
+              </div>
+              <div className="grid md:grid-cols-2 gap-6 text-left">
+                <div className="space-y-3">
+                  <h3 className="font-bold text-purple-400 mb-2">Navigation</h3>
+                  <p className="text-white/80 text-sm">• Use Back and Next buttons to navigate between pages</p>
+                  <p className="text-white/80 text-sm">• Pages 1-3: Welcome, Story & Concept, Login/Register</p>
+                  <p className="text-white/80 text-sm">• Pages 4-9: AI Tool Board with 720 creative tools</p>
+                  <p className="text-white/80 text-sm">• Page 10: Upload your existing movie</p>
+                  <p className="text-white/80 text-sm">• Page 11: Media Box with all generated assets</p>
+                </div>
+                <div className="space-y-3">
+                  <h3 className="font-bold text-purple-400 mb-2">Editing & Export</h3>
+                  <p className="text-white/80 text-sm">• Pages 12-16: Professional editing tools with timeline</p>
+                  <p className="text-white/80 text-sm">• Page 17: Full screen preview of your finished film</p>
+                  <p className="text-white/80 text-sm">• Page 18: Terms of Service and Disclaimer</p>
+                  <p className="text-white/80 text-sm">• Page 19: Agent Grok 24/7 Help Desk</p>
+                  <p className="text-white/80 text-sm">• Page 20: Community Hub to share your work</p>
+                </div>
+                <div className="space-y-3">
+                  <h3 className="font-bold text-purple-400 mb-2">Tools & Features</h3>
+                  <p className="text-white/80 text-sm">• Search Bar: Find specific AI tools quickly</p>
+                  <p className="text-white/80 text-sm">• Upload/Create buttons: Generate or import assets</p>
+                  <p className="text-white/80 text-sm">• Timeline: 4 tracks (SRT, VIDEO, AUDIO, TEXT)</p>
+                  <p className="text-white/80 text-sm">• Maximum duration: 180 minutes (3 hours)</p>
+                  <p className="text-white/80 text-sm">• All assets auto-save to Media Box on Page 11</p>
+                </div>
+                <div className="space-y-3">
+                  <h3 className="font-bold text-purple-400 mb-2">Subscription Plans</h3>
+                  <p className="text-white/80 text-sm">• BASIC ($10/mo): 30-minute films</p>
+                  <p className="text-white/80 text-sm">• PRO ($20/mo): 1-hour films</p>
+                  <p className="text-white/80 text-sm">• STUDIO ($30/mo): 2.5-hour films</p>
+                  <p className="text-white/80 text-sm">• All plans include access to 720 AI tools</p>
+                  <p className="text-white/80 text-sm">• Cancel anytime with 30-day refund policy</p>
+                </div>
+              </div>
             </div>
           </div>
 
