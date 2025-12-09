@@ -47,33 +47,17 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
           </div>
 
           <div className="bg-black/30 backdrop-blur-sm p-6 rounded-2xl border border-purple-500/30 mb-6 flex-1 overflow-y-auto">
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-12 gap-2">
               {filteredTools.map((tool, index) => (
-                <div
+                <button
                   key={index}
-                  className="bg-purple-900/20 border border-purple-500/30 hover:border-purple-400 hover:bg-purple-900/40 rounded-lg p-4 transition-all group"
+                  onClick={() => setSelectedTool(tool)}
+                  className="bg-purple-900/20 border border-purple-500/30 hover:border-purple-400 hover:bg-purple-900/40 rounded-lg p-3 transition-all cursor-pointer text-left"
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-4 h-4 text-purple-400 group-hover:scale-110 transition-transform" />
-                  </div>
-                  <h3 className="font-semibold text-white text-sm leading-tight mb-3">
+                  <h3 className="font-semibold text-white text-xs leading-tight">
                     {tool}
                   </h3>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setSelectedTool(tool)}
-                      className="flex-1 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold py-1.5 px-2 rounded transition-all"
-                    >
-                      Upload
-                    </button>
-                    <button
-                      onClick={() => setSelectedTool(tool)}
-                      className="flex-1 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold py-1.5 px-2 rounded transition-all"
-                    >
-                      Create
-                    </button>
-                  </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
