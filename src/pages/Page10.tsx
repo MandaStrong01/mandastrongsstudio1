@@ -205,7 +205,7 @@ export default function Page10({ onNavigate }: PageProps) {
         </div>
       </div>
       <QuickAccess onNavigate={onNavigate} />
-      <Footer />
+      <Footer showDoxyCredit={true} />
     </div>
   );
 }
