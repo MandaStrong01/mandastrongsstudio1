@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, X, Upload } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
@@ -84,7 +84,29 @@ export default function Page11({ onNavigate }: PageProps) {
 
           <div className="grid grid-cols-12 gap-4 flex-1">
             <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
-              <h2 className="text-xl font-bold mb-4 text-purple-400">MEDIA BOX</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-purple-400">MEDIA BOX</h2>
+                <button
+                  onClick={() => document.getElementById('media-upload')?.click()}
+                  className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 px-3 py-2 rounded-lg transition-all text-sm font-semibold"
+                >
+                  <Upload className="w-4 h-4" />
+                  Upload
+                </button>
+                <input
+                  id="media-upload"
+                  type="file"
+                  multiple
+                  accept="image/*,video/*,audio/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (files) {
+                      console.log('Files selected:', files);
+                    }
+                  }}
+                />
+              </div>
               <div className="space-y-2 overflow-y-auto max-h-[70vh]">
                 {loading ? (
                   <div className="text-center py-8">
