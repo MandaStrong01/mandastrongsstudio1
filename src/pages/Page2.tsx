@@ -25,7 +25,7 @@ export default function Page2({ onNavigate }: PageProps) {
           </div>
         </div>
 
-        <h1 className="text-7xl md:text-8xl font-black mb-6 tracking-tight">
+        <h1 className="text-7xl md:text-8xl font-black mb-6 tracking-tight text-purple-400">
           MANDASTRONG'S
           <br />
           <span className="bg-gradient-to-r from-purple-400 via-purple-300 to-purple-400 bg-clip-text text-transparent">
@@ -33,11 +33,11 @@ export default function Page2({ onNavigate }: PageProps) {
           </span>
         </h1>
 
-        <p className="text-2xl md:text-3xl font-bold italic mb-6 text-white">
+        <p className="text-2xl md:text-3xl font-bold italic mb-6 text-purple-400">
           Welcome!
         </p>
 
-        <p className="text-xl md:text-2xl font-semibold mb-12 text-white">
+        <p className="text-xl md:text-2xl font-semibold mb-12 text-purple-400">
           Make Awesome Family Movies Or Put Your Dreams Into Film Reality! Enjoy!
         </p>
 

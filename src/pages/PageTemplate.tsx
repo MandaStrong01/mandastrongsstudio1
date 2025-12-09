@@ -11,12 +11,12 @@ export default function PageTemplate({ onNavigate, pageNumber, title, descriptio
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4">
       <div className="text-center max-w-4xl">
-        <h1 className="text-6xl md:text-7xl font-black mb-6 tracking-tight">
+        <h1 className="text-6xl md:text-7xl font-black mb-6 tracking-tight text-purple-400">
           {title}
         </h1>
 
         {description && (
-          <p className="text-xl md:text-2xl text-white mb-12">
+          <p className="text-xl md:text-2xl text-purple-400 mb-12">
             {description}
           </p>
         )}

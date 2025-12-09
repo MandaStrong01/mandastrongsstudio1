@@ -59,7 +59,7 @@ export default function Page3({ onNavigate }: PageProps) {
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4 py-12">
       <div className="w-full max-w-6xl">
-        <h1 className="text-5xl md:text-6xl font-black text-center mb-12 tracking-tight">
+        <h1 className="text-5xl md:text-6xl font-black text-center mb-12 tracking-tight text-purple-400">
           LOGIN / REGISTER / CHOOSE PLAN
         </h1>
 
@@ -156,7 +156,7 @@ export default function Page3({ onNavigate }: PageProps) {
         </div>
 
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-center mb-6">SUBSCRIPTION PLANS</h2>
+          <h2 className="text-3xl font-bold text-center mb-6 text-purple-400">SUBSCRIPTION PLANS</h2>
           <p className="text-center text-white/70 mb-8">Choose the plan that fits your creative vision</p>
         </div>
 
