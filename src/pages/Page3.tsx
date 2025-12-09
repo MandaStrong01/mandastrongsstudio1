@@ -60,8 +60,8 @@ export default function Page3({ onNavigate }: PageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-6xl">
-        <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-4xl mx-auto">
+        <div className="w-full max-w-6xl flex flex-col">
+        <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-4xl mx-auto items-start">
           <div className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl p-8 rounded-3xl border-2 border-purple-500/60 shadow-2xl shadow-purple-900/50">
             <div className="flex items-center gap-2 mb-6 justify-center">
               <LogIn className="w-6 h-6" />
