@@ -6,6 +6,13 @@ Google Drive is greyed out because you need to add 2 codes to your `.env` file.
 
 ---
 
+## IMPORTANT: USE THE RIGHT EMAIL
+
+**Sign in to Google Cloud Console with:** SimplyLilibet@gmail.com
+**Your Project Number is:** 56819
+
+---
+
 ## THE SOLUTION
 
 ### PART 1: Get Your Codes from Google
@@ -14,11 +21,11 @@ Google Drive is greyed out because you need to add 2 codes to your `.env` file.
    ```
    https://console.cloud.google.com
    ```
+   **USE EMAIL:** SimplyLilibet@gmail.com
 
-2. **Create a new project:**
-   - Click "New Project" at the top
-   - Name it: MandaStrong
-   - Click "Create"
+2. **Select your existing project:**
+   - You should see Project Number: 56819
+   - If you don't see it, click the project dropdown and select it
 
 3. **Turn on 2 features:**
    - Go to: APIs & Services → Library

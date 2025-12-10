@@ -4,15 +4,17 @@ This guide will help you set up Google Drive integration for your MandaStrong ap
 
 ## Prerequisites
 
-You need a Google Cloud Platform (GCP) account. If you don't have one, create it at [console.cloud.google.com](https://console.cloud.google.com)
+**IMPORTANT:**
+- Sign in to Google Cloud Console with: **SimplyLilibet@gmail.com**
+- Your existing Project Number: **56819**
+- No organization
 
-## Step 1: Create a Google Cloud Project
+## Step 1: Access Your Google Cloud Project
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Click on the project dropdown at the top
-3. Click "New Project"
-4. Enter a project name (e.g., "MandaStrong")
-5. Click "Create"
+2. **Sign in with:** SimplyLilibet@gmail.com
+3. Click on the project dropdown at the top
+4. Select your existing project (Project Number: 56819)
 
 ## Step 2: Enable Required APIs
 

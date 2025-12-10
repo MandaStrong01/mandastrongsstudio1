@@ -4,20 +4,24 @@
 
 Your `.env` file still has placeholder values that need to be replaced with real Google API credentials.
 
+## CRITICAL INFORMATION
+
+**Google Cloud Console Email:** SimplyLilibet@gmail.com
+**Project Number:** 56819
+**Organization:** None
+
 ## Quick Fix - Get Google Drive Working
 
 ### Step 1: Go to Google Cloud Console
 
 1. Visit [console.cloud.google.com](https://console.cloud.google.com)
-2. Sign in with your Google account
+2. **Sign in with:** SimplyLilibet@gmail.com
 
-### Step 2: Create a New Project
+### Step 2: Select Your Existing Project
 
 1. Click the project dropdown at the top
-2. Click "New Project"
-3. Name it "MandaStrong" (or anything you want)
-4. Click "Create"
-5. Wait for the project to be created, then select it
+2. Select your project (Project Number: 56819)
+3. If you don't see it, make sure you're signed in with SimplyLilibet@gmail.com
 
 ### Step 3: Enable the Required APIs
 
