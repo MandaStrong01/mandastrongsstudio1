@@ -8,6 +8,24 @@ export interface UploadResult {
   assetId?: string;
 }
 
+export async function getUserTeam(userId: string): Promise<string | null> {
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user?.email) return null;
+
+  const { data, error } = await supabase
+    .from('team_members')
+    .select('team_id')
+    .or(`user_id.eq.${userId},email.eq.${userData.user.email}`)
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return data.team_id;
+}
+
 export async function uploadFile(file: File, userId: string): Promise<UploadResult> {
   try {
     const timestamp = Date.now();
@@ -38,10 +56,13 @@ export async function uploadFile(file: File, userId: string): Promise<UploadResu
       ? 'audio'
       : 'other';
 
+    const teamId = await getUserTeam(userId);
+
     const { data: assetData, error: assetError } = await supabase
       .from('assets')
       .insert({
         user_id: userId,
+        team_id: teamId,
         file_name: file.name,
         file_type: file.type,
         file_url: publicUrl,
@@ -100,11 +121,20 @@ export async function deleteFile(assetId: string, filePath: string): Promise<boo
 }
 
 export async function getAssets(userId: string) {
-  const { data, error } = await supabase
+  const teamId = await getUserTeam(userId);
+
+  let query = supabase
     .from('assets')
     .select('*')
-    .eq('user_id', userId)
     .order('created_at', { ascending: false });
+
+  if (teamId) {
+    query = query.or(`user_id.eq.${userId},team_id.eq.${teamId}`);
+  } else {
+    query = query.eq('user_id', userId);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('Get assets error:', error);
