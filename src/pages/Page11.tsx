@@ -53,6 +53,7 @@ export default function Page11({ onNavigate }: PageProps) {
   const [generatedOutput, setGeneratedOutput] = useState<any>(null);
   const [showAIDurationModal, setShowAIDurationModal] = useState(false);
   const [aiCalculating, setAiCalculating] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -185,6 +186,47 @@ export default function Page11({ onNavigate }: PageProps) {
       handleGoogleDriveUpload();
     } else {
       document.getElementById('media-upload')?.click();
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0 || !user) return;
+
+    setUploading(true);
+    try {
+      const uploadPromises = Array.from(files).map(file => uploadFile(file, user.id));
+      const results = await Promise.all(uploadPromises);
+
+      const successCount = results.filter(r => r.success).length;
+      if (successCount > 0) {
+        await loadAssets();
+      }
+
+      if (results.some(r => !r.success)) {
+        alert(`${successCount} of ${files.length} files uploaded successfully`);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload files');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -330,8 +372,27 @@ export default function Page11({ onNavigate }: PageProps) {
           <h1 className="text-2xl md:text-3xl font-black text-purple-400 mb-4 text-center">Editor Dashboard</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
-            <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
+            <div
+              className={`relative lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border p-4 transition-all ${
+                isDragging
+                  ? 'border-purple-400 border-4 bg-purple-900/40'
+                  : 'border-purple-500/30'
+              }`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
               <h2 className="text-xl font-bold text-purple-400 mb-4">MEDIA BOX</h2>
+
+              {isDragging && (
+                <div className="absolute inset-4 bg-purple-900/60 backdrop-blur-sm border-4 border-dashed border-purple-400 rounded-2xl flex items-center justify-center z-10 pointer-events-none">
+                  <div className="text-center">
+                    <Upload className="w-16 h-16 mx-auto mb-3 text-purple-400 animate-bounce" />
+                    <p className="text-xl font-bold text-purple-400">Drop files here</p>
+                    <p className="text-sm text-purple-300 mt-2">Images, videos, audio, and documents</p>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-3 mb-4">
                 <button
