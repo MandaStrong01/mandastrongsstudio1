@@ -33,6 +33,7 @@ export default function Page11({ onNavigate }: PageProps) {
   const [showAIDurationModal, setShowAIDurationModal] = useState(false);
   const [aiCalculating, setAiCalculating] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
     if (user) {
@@ -89,8 +90,14 @@ export default function Page11({ onNavigate }: PageProps) {
     if (!files || !user) return;
 
     setUploading(true);
+    setUploadProgress({});
+
     try {
-      const uploadPromises = Array.from(files).map(file => uploadFile(file, user.id));
+      const uploadPromises = Array.from(files).map(file =>
+        uploadFile(file, user.id, (progress) => {
+          setUploadProgress(prev => ({ ...prev, [file.name]: progress }));
+        })
+      );
       const results = await Promise.all(uploadPromises);
 
       const successCount = results.filter(r => r.success).length;
@@ -102,10 +109,10 @@ export default function Page11({ onNavigate }: PageProps) {
         alert(`${successCount} of ${files.length} files uploaded successfully`);
       }
     } catch (error) {
-      console.error('Upload error:', error);
       alert('Failed to upload files');
     } finally {
       setUploading(false);
+      setUploadProgress({});
       e.target.value = '';
     }
   };
@@ -189,8 +196,14 @@ export default function Page11({ onNavigate }: PageProps) {
     if (!files || files.length === 0 || !user) return;
 
     setUploading(true);
+    setUploadProgress({});
+
     try {
-      const uploadPromises = Array.from(files).map(file => uploadFile(file, user.id));
+      const uploadPromises = Array.from(files).map(file =>
+        uploadFile(file, user.id, (progress) => {
+          setUploadProgress(prev => ({ ...prev, [file.name]: progress }));
+        })
+      );
       const results = await Promise.all(uploadPromises);
 
       const successCount = results.filter(r => r.success).length;
@@ -202,10 +215,10 @@ export default function Page11({ onNavigate }: PageProps) {
         alert(`${successCount} of ${files.length} files uploaded successfully`);
       }
     } catch (error) {
-      console.error('Upload error:', error);
       alert('Failed to upload files');
     } finally {
       setUploading(false);
+      setUploadProgress({});
     }
   };
 
@@ -368,7 +381,32 @@ export default function Page11({ onNavigate }: PageProps) {
                   <div className="text-center">
                     <Upload className="w-16 h-16 mx-auto mb-3 text-purple-400 animate-bounce" />
                     <p className="text-xl font-bold text-purple-400">Drop files here</p>
-                    <p className="text-sm text-purple-300 mt-2">Images, videos, audio, and documents</p>
+                    <p className="text-sm text-purple-300 mt-2">Images auto-compress for faster uploads</p>
+                  </div>
+                </div>
+              )}
+
+              {uploading && Object.keys(uploadProgress).length > 0 && (
+                <div className="absolute inset-4 bg-black/90 backdrop-blur-sm rounded-2xl flex items-center justify-center z-20 p-6">
+                  <div className="w-full max-w-md">
+                    <div className="text-center mb-4">
+                      <Loader2 className="w-12 h-12 mx-auto mb-2 text-purple-400 animate-spin" />
+                      <p className="text-lg font-bold text-white">Uploading files...</p>
+                    </div>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {Object.entries(uploadProgress).map(([fileName, progress]) => (
+                        <div key={fileName} className="bg-purple-900/20 rounded-lg p-3">
+                          <p className="text-xs text-white/90 mb-1 truncate">{fileName}</p>
+                          <div className="w-full bg-purple-900/50 rounded-full h-2">
+                            <div
+                              className="bg-gradient-to-r from-purple-600 to-purple-400 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-purple-300 mt-1 text-right">{Math.round(progress)}%</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}

@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { optimizeFile } from './compression';
 
 export interface UploadResult {
   success: boolean;
@@ -6,6 +7,11 @@ export interface UploadResult {
   thumbnailUrl?: string;
   error?: string;
   assetId?: string;
+}
+
+export interface UploadProgress {
+  progress: number;
+  fileName: string;
 }
 
 export async function getUserTeam(userId: string): Promise<string | null> {
@@ -26,22 +32,32 @@ export async function getUserTeam(userId: string): Promise<string | null> {
   return data.team_id;
 }
 
-export async function uploadFile(file: File, userId: string): Promise<UploadResult> {
+export async function uploadFile(
+  file: File,
+  userId: string,
+  onProgress?: (progress: number) => void
+): Promise<UploadResult> {
   try {
+    if (onProgress) onProgress(10);
+
+    const optimizedFile = await optimizeFile(file);
+
+    if (onProgress) onProgress(30);
+
     const timestamp = Date.now();
-    const fileExt = file.name.split('.').pop();
     const fileName = `${userId}/${timestamp}_${file.name}`;
 
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('media-assets')
-      .upload(fileName, file, {
+      .upload(fileName, optimizedFile, {
         cacheControl: '3600',
         upsert: false,
         contentType: file.type,
       });
 
+    if (onProgress) onProgress(70);
+
     if (uploadError) {
-      console.error('Upload error:', uploadError);
       return { success: false, error: uploadError.message };
     }
 
@@ -59,6 +75,8 @@ export async function uploadFile(file: File, userId: string): Promise<UploadResu
 
     const teamId = await getUserTeam(userId);
 
+    if (onProgress) onProgress(85);
+
     const { data: assetData, error: assetError } = await supabase
       .from('assets')
       .insert({
@@ -67,15 +85,16 @@ export async function uploadFile(file: File, userId: string): Promise<UploadResu
         file_name: file.name,
         file_type: file.type,
         file_url: publicUrl,
-        file_size: file.size,
+        file_size: optimizedFile.size,
         asset_type: assetType,
         title: file.name,
       })
       .select()
       .single();
 
+    if (onProgress) onProgress(100);
+
     if (assetError) {
-      console.error('Asset DB error:', assetError);
       return { success: false, error: assetError.message };
     }
 
@@ -85,12 +104,23 @@ export async function uploadFile(file: File, userId: string): Promise<UploadResu
       assetId: assetData.id,
     };
   } catch (err) {
-    console.error('Upload exception:', err);
     return {
       success: false,
       error: err instanceof Error ? err.message : 'Unknown error',
     };
   }
+}
+
+export async function uploadFiles(
+  files: File[],
+  userId: string,
+  onProgress?: (fileName: string, progress: number) => void
+): Promise<UploadResult[]> {
+  const uploadPromises = files.map(file =>
+    uploadFile(file, userId, onProgress ? (p) => onProgress(file.name, p) : undefined)
+  );
+
+  return Promise.all(uploadPromises);
 }
 
 export async function deleteFile(assetId: string, filePath: string): Promise<boolean> {
