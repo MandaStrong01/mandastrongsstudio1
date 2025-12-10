@@ -46,18 +46,6 @@ export default function Page1({ onNavigate }: PageProps) {
           >
             Next
           </button>
-          <button
-            onClick={() => onNavigate(3)}
-            className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500 shadow-xl"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => onNavigate(3)}
-            className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500 shadow-xl"
-          >
-            Register
-          </button>
         </div>
       </div>
     </div>

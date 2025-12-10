@@ -38,7 +38,7 @@ export default function Page11({ onNavigate }: PageProps) {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [uploadSource, setUploadSource] = useState<'local' | 'google'>('local');
+  const [uploadSource, setUploadSource] = useState<'local' | 'photos-videos' | 'google'>('local');
   const [googleDriveReady, setGoogleDriveReady] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
@@ -337,11 +337,12 @@ export default function Page11({ onNavigate }: PageProps) {
                 <label className="block text-sm font-semibold mb-2 text-purple-300">Upload Source</label>
                 <select
                   value={uploadSource}
-                  onChange={(e) => setUploadSource(e.target.value as 'local' | 'google')}
+                  onChange={(e) => setUploadSource(e.target.value as 'local' | 'photos-videos' | 'google')}
                   className="w-full bg-black/50 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-400"
                 >
-                  <option value="local">Shots/Videos Files</option>
-                  <option value="google">Google Drive</option>
+                  <option value="local">Upload Files</option>
+                  <option value="photos-videos">Upload Photos/Videos</option>
+                  <option value="google">Upload Google Drive</option>
                 </select>
               </div>
 
@@ -351,13 +352,13 @@ export default function Page11({ onNavigate }: PageProps) {
                 className="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed px-3 py-2 rounded-lg transition-all text-sm font-semibold mb-4"
               >
                 <Upload className="w-4 h-4" />
-                {uploading ? 'Uploading...' : uploadSource === 'google' ? 'Connect Google Drive' : 'Upload Files'}
+                {uploading ? 'Uploading...' : uploadSource === 'google' ? 'Connect Google Drive' : uploadSource === 'photos-videos' ? 'Upload Photos/Videos' : 'Upload Files'}
               </button>
               <input
                 id="media-upload"
                 type="file"
                 multiple
-                accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
+                accept={uploadSource === 'photos-videos' ? 'image/*,video/*' : 'image/*,video/*,audio/*,.pdf,.doc,.docx,.txt'}
                 className="hidden"
                 onChange={handleFileUpload}
               />
