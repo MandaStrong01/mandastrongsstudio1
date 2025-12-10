@@ -23,8 +23,8 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex-1 max-w-md">
+          <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
+            <div className="w-full md:flex-1 md:max-w-md">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
                 <input
@@ -37,13 +37,13 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
               </div>
             </div>
 
-            <h1 className="text-4xl font-black text-purple-400 mx-auto">AI TOOL BOARD</h1>
+            <h1 className="text-2xl md:text-4xl font-black text-purple-400 text-center">AI TOOL BOARD</h1>
 
-            <div className="ml-4 w-48"></div>
+            <div className="hidden md:block md:w-48"></div>
           </div>
 
-          <div className="bg-black/30 backdrop-blur-sm p-6 rounded-2xl border border-purple-500/30 mb-6 flex-1 overflow-y-auto max-h-[600px]">
-            <div className="grid grid-cols-4 gap-4">
+          <div className="bg-black/30 backdrop-blur-sm p-4 md:p-6 rounded-2xl border border-purple-500/30 mb-6 flex-1 overflow-y-auto max-h-[600px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {filteredTools.map((tool, index) => (
                 <button
                   key={index}
@@ -58,17 +58,17 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
             </div>
           </div>
 
-          <div className="flex gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => onNavigate(pageNumber - 1)}
-              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
+              className="flex items-center justify-center gap-2 bg-black text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-900 transition-all border border-purple-500"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
               onClick={() => onNavigate(pageNumber + 1)}
-              className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
+              className="flex items-center justify-center gap-2 bg-purple-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-500 transition-all"
             >
               Next
               <ArrowRight className="w-5 h-5" />

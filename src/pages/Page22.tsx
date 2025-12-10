@@ -76,16 +76,16 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-6xl w-full mx-auto flex-1 flex flex-col">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
             <button
               onClick={() => onNavigate(4)}
-              className="flex items-center gap-2 px-6 py-3 bg-black border border-purple-500/50 hover:bg-purple-900/50 rounded-lg transition-all"
+              className="flex items-center gap-2 px-4 sm:px-6 py-3 bg-black border border-purple-500/50 hover:bg-purple-900/50 rounded-lg transition-all w-full md:w-auto justify-center"
             >
               <ArrowLeft className="w-5 h-5" />
               Back to Tools
             </button>
-            <h1 className="text-4xl font-black text-purple-400">{toolName}</h1>
-            <div className="w-32"></div>
+            <h1 className="text-2xl md:text-4xl font-black text-purple-400 text-center flex-1">{toolName}</h1>
+            <div className="hidden md:block md:w-32"></div>
           </div>
 
           <div className="flex-1 bg-black/30 backdrop-blur-sm border-2 border-purple-500/30 rounded-2xl p-8">
@@ -135,7 +135,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                     </div>
                   ) : (
                     <label className="cursor-pointer text-center">
-                      <div className="grid grid-cols-5 gap-4 mb-6">
+                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4 mb-6">
                         <div className="p-4 bg-purple-900/20 rounded-lg">
                           <Video className="w-8 h-8 mx-auto text-purple-400 mb-2" />
                           <p className="text-xs text-white/70">Video</p>
@@ -197,7 +197,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-semibold mb-2">Style</label>
                         <select className="w-full bg-black/50 border border-purple-500/50 rounded-lg p-3 text-white focus:outline-none focus:border-purple-400">

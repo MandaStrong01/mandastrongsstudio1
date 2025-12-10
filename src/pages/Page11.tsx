@@ -327,10 +327,10 @@ export default function Page11({ onNavigate }: PageProps) {
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-full w-full mx-auto flex-1 flex flex-col">
-          <h1 className="text-3xl font-black text-purple-400 mb-4 text-center">Editor Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-purple-400 mb-4 text-center">Editor Dashboard</h1>
 
-          <div className="grid grid-cols-12 gap-4 flex-1">
-            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+            <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
               <h2 className="text-xl font-bold text-purple-400 mb-4">MEDIA BOX</h2>
 
               <div className="mb-4">
@@ -369,7 +369,7 @@ export default function Page11({ onNavigate }: PageProps) {
                 </p>
               </div>
 
-              <div className="space-y-2 overflow-y-auto max-h-[70vh]">
+              <div className="space-y-2 overflow-y-auto max-h-[40vh] lg:max-h-[70vh]">
                 {loading ? (
                   <div className="text-center py-8">
                     <div className="animate-spin w-8 h-8 border-4 border-white border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -419,7 +419,7 @@ export default function Page11({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4 flex flex-col">
+            <div className="lg:col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4 flex flex-col">
               <h2 className="text-xl font-bold mb-4 text-purple-400">VIEWER</h2>
               <div className="flex-1 flex flex-col">
                 <div className="aspect-video bg-black rounded-lg border border-purple-500/30 mb-4 flex items-center justify-center overflow-hidden">
@@ -500,7 +500,7 @@ export default function Page11({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
+            <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
               <h2 className="text-xl font-bold mb-4 text-purple-400">CONTROLS</h2>
               <div className="space-y-6">
                 <div>
@@ -581,10 +581,10 @@ export default function Page11({ onNavigate }: PageProps) {
             </div>
           </div>
 
-          <div className="flex gap-4 justify-center mt-6">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
             <button
               onClick={() => onNavigate(10)}
-              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
+              className="flex items-center justify-center gap-2 bg-black text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-900 transition-all border border-purple-500"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
@@ -592,7 +592,7 @@ export default function Page11({ onNavigate }: PageProps) {
             <button
               onClick={handleGenerate}
               disabled={generating || !selectedAsset}
-              className="flex items-center gap-2 bg-green-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-green-500 transition-all disabled:bg-green-800 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-2 bg-green-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-green-500 transition-all disabled:bg-green-800 disabled:cursor-not-allowed"
             >
               {generating ? (
                 <>
@@ -608,7 +608,7 @@ export default function Page11({ onNavigate }: PageProps) {
             </button>
             <button
               onClick={() => onNavigate(12)}
-              className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
+              className="flex items-center justify-center gap-2 bg-purple-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-500 transition-all"
             >
               Next
               <ArrowRight className="w-5 h-5" />

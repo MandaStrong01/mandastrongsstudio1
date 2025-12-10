@@ -98,7 +98,7 @@ export default function Page10({ onNavigate }: PageProps) {
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="max-w-6xl w-full">
-          <h1 className="text-4xl font-black text-purple-400 mb-6 text-center">DOXY THE SCHOOL BULLY</h1>
+          <h1 className="text-2xl md:text-4xl font-black text-purple-400 mb-6 text-center">DOXY THE SCHOOL BULLY</h1>
 
           <div className="mb-6 text-center">
             <button
@@ -186,17 +186,17 @@ export default function Page10({ onNavigate }: PageProps) {
             )}
           </div>
 
-          <div className="flex gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => onNavigate(9)}
-              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
+              className="flex items-center justify-center gap-2 bg-black text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-900 transition-all border border-purple-500"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
               onClick={() => onNavigate(11)}
-              className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
+              className="flex items-center justify-center gap-2 bg-purple-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-500 transition-all"
             >
               Next
               <ArrowRight className="w-5 h-5" />

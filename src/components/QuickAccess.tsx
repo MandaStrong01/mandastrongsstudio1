@@ -21,10 +21,10 @@ export default function QuickAccess({ onNavigate }: QuickAccessProps) {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 bg-purple-600 hover:bg-purple-500 text-white p-4 rounded-full shadow-2xl transition-all hover:scale-110"
+        className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 bg-purple-600 hover:bg-purple-500 text-white p-3 sm:p-4 rounded-full shadow-2xl transition-all hover:scale-110"
         aria-label="Quick Access Menu"
       >
-        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        {isOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
       </button>
 
       {isOpen && (
@@ -33,8 +33,8 @@ export default function QuickAccess({ onNavigate }: QuickAccessProps) {
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="fixed bottom-24 right-6 z-50 bg-black/90 backdrop-blur-xl rounded-2xl border border-purple-500/50 shadow-2xl p-4 min-w-[250px]">
-            <h3 className="text-white font-bold text-lg mb-3 px-2">Quick Access</h3>
+          <div className="fixed bottom-16 sm:bottom-24 right-4 sm:right-6 z-50 bg-black/90 backdrop-blur-xl rounded-2xl border border-purple-500/50 shadow-2xl p-3 sm:p-4 min-w-[200px] sm:min-w-[250px] max-w-[calc(100vw-2rem)]">
+            <h3 className="text-white font-bold text-base sm:text-lg mb-2 sm:mb-3 px-2">Quick Access</h3>
             <div className="space-y-2">
               {quickLinks.map((link) => (
                 <button
