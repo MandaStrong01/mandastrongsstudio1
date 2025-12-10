@@ -37,6 +37,7 @@ export async function uploadFile(file: File, userId: string): Promise<UploadResu
       .upload(fileName, file, {
         cacheControl: '3600',
         upsert: false,
+        contentType: file.type,
       });
 
     if (uploadError) {
