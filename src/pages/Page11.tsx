@@ -336,52 +336,55 @@ export default function Page11({ onNavigate }: PageProps) {
               <div className="space-y-3 mb-4">
                 <button
                   onClick={() => {
-                    setUploadSource('local');
-                    document.getElementById('media-upload')?.click();
+                    document.getElementById('files-upload')?.click();
                   }}
                   disabled={uploading}
                   className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <Upload className="w-5 h-5" />
-                    Open Files
+                    {uploading ? 'Uploading...' : 'Open Files'}
                   </div>
                 </button>
 
                 <button
                   onClick={() => {
-                    setUploadSource('photos-videos');
-                    document.getElementById('media-upload')?.click();
+                    document.getElementById('photos-upload')?.click();
                   }}
                   disabled={uploading}
                   className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <Upload className="w-5 h-5" />
-                    Open Photos/Videos
+                    {uploading ? 'Uploading...' : 'Open Photos/Videos'}
                   </div>
                 </button>
 
                 <button
-                  onClick={() => {
-                    setUploadSource('google');
-                    handleGoogleDriveUpload();
-                  }}
-                  disabled={uploading}
+                  onClick={handleGoogleDriveUpload}
+                  disabled={uploading || !googleDriveReady}
                   className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <Upload className="w-5 h-5" />
-                    Open Google Drive
+                    {uploading ? 'Uploading...' : !googleDriveReady ? 'Loading Drive...' : 'Open Google Drive'}
                   </div>
                 </button>
               </div>
 
               <input
-                id="media-upload"
+                id="files-upload"
                 type="file"
                 multiple
-                accept={uploadSource === 'photos-videos' ? 'image/*,video/*' : 'image/*,video/*,audio/*,.pdf,.doc,.docx,.txt'}
+                accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
+              <input
+                id="photos-upload"
+                type="file"
+                multiple
+                accept="image/*,video/*"
                 className="hidden"
                 onChange={handleFileUpload}
               />
