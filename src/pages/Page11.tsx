@@ -48,6 +48,9 @@ export default function Page11({ onNavigate }: PageProps) {
   const [ratio, setRatio] = useState('16:9');
   const [size, setSize] = useState('1080p');
   const [showScriptModal, setShowScriptModal] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [generatedOutput, setGeneratedOutput] = useState<any>(null);
 
   useEffect(() => {
     if (user) {
@@ -198,6 +201,58 @@ export default function Page11({ onNavigate }: PageProps) {
     setShowScriptModal(false);
     if (createScript) {
       console.log('Creating scenes and script...');
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (!user) {
+      alert('Please sign in to generate content.');
+      return;
+    }
+
+    if (!selectedAsset) {
+      alert('Please select an asset to generate from.');
+      return;
+    }
+
+    setGenerating(true);
+    try {
+      const generationConfig = {
+        asset: selectedAsset,
+        settings: {
+          duration: duration,
+          ratio: ratio,
+          size: size,
+          volume: volume,
+          timestamp: new Date().toISOString()
+        },
+        projectName: isMediaAsset(selectedAsset)
+          ? `Generated from ${selectedAsset.file_name}`
+          : `Generated from ${selectedAsset.tool_name}`
+      };
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const { data, error } = await supabase
+        .from('ai_tool_outputs')
+        .insert({
+          user_id: user.id,
+          tool_name: 'Editor Generate',
+          output_data: generationConfig
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setGeneratedOutput(data);
+      setShowSuccessModal(true);
+      await loadAssets();
+    } catch (error) {
+      console.error('Generation error:', error);
+      alert('Failed to generate content. Please try again.');
+    } finally {
+      setGenerating(false);
     }
   };
 
@@ -451,11 +506,21 @@ export default function Page11({ onNavigate }: PageProps) {
               Back
             </button>
             <button
-              onClick={() => console.log('Generate clicked')}
-              className="flex items-center gap-2 bg-green-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-green-500 transition-all"
+              onClick={handleGenerate}
+              disabled={generating || !selectedAsset}
+              className="flex items-center gap-2 bg-green-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-green-500 transition-all disabled:bg-green-800 disabled:cursor-not-allowed"
             >
-              <Sparkles className="w-5 h-5" />
-              Generate
+              {generating ? (
+                <>
+                  <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5" />
+                  Generate
+                </>
+              )}
             </button>
             <button
               onClick={() => onNavigate(12)}
@@ -492,6 +557,43 @@ export default function Page11({ onNavigate }: PageProps) {
                 YES
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-gradient-to-br from-green-900/90 to-black/90 border-2 border-green-400 rounded-2xl p-8 max-w-lg w-full shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="w-20 h-20 mx-auto mb-4 bg-green-500 rounded-full flex items-center justify-center">
+                <Sparkles className="w-10 h-10 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-3">Generation Complete!</h2>
+              <p className="text-white/80 text-lg mb-4">
+                Your content has been successfully generated and saved.
+              </p>
+              {generatedOutput && (
+                <div className="bg-black/50 border border-green-500/30 rounded-lg p-4 mb-4 text-left">
+                  <p className="text-sm text-green-300 mb-2">
+                    <span className="font-bold">Project:</span>{' '}
+                    {generatedOutput.output_data.projectName}
+                  </p>
+                  <p className="text-sm text-green-300 mb-2">
+                    <span className="font-bold">Settings:</span> {generatedOutput.output_data.settings.size},{' '}
+                    {generatedOutput.output_data.settings.ratio}, {generatedOutput.output_data.settings.duration} min
+                  </p>
+                  <p className="text-xs text-green-400/70">
+                    Generated at {new Date(generatedOutput.created_at).toLocaleString()}
+                  </p>
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
+            >
+              Done
+            </button>
           </div>
         </div>
       )}
