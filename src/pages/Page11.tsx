@@ -267,7 +267,7 @@ export default function Page11({ onNavigate }: PageProps) {
         const fileName = asset.file_url.split('/').pop();
         if (fileName) {
           await supabase.storage
-            .from('user-assets')
+            .from('media-assets')
             .remove([`${user?.id}/${fileName}`]);
         }
       } else {
