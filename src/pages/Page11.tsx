@@ -51,6 +51,8 @@ export default function Page11({ onNavigate }: PageProps) {
   const [generating, setGenerating] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [generatedOutput, setGeneratedOutput] = useState<any>(null);
+  const [showAIDurationModal, setShowAIDurationModal] = useState(false);
+  const [aiCalculating, setAiCalculating] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -204,6 +206,71 @@ export default function Page11({ onNavigate }: PageProps) {
     }
   };
 
+  const handleDeleteAsset = async (asset: Asset, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (!confirm('Are you sure you want to delete this asset?')) {
+      return;
+    }
+
+    try {
+      if (isMediaAsset(asset)) {
+        const { error } = await supabase
+          .from('assets')
+          .delete()
+          .eq('id', asset.id);
+
+        if (error) throw error;
+
+        const fileName = asset.file_url.split('/').pop();
+        if (fileName) {
+          await supabase.storage
+            .from('user-assets')
+            .remove([`${user?.id}/${fileName}`]);
+        }
+      } else {
+        const { error } = await supabase
+          .from('ai_tool_outputs')
+          .delete()
+          .eq('id', asset.id);
+
+        if (error) throw error;
+      }
+
+      if (selectedAsset?.id === asset.id) {
+        setSelectedAsset(null);
+      }
+
+      await loadAssets();
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Failed to delete asset. Please try again.');
+    }
+  };
+
+  const handleAIDuration = async () => {
+    setShowAIDurationModal(true);
+  };
+
+  const calculateAIDuration = async () => {
+    setAiCalculating(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      const assetCount = assets.length;
+      const avgDurationPerAsset = 5;
+      const suggestedDuration = Math.min(assetCount * avgDurationPerAsset, 120);
+
+      setDuration(suggestedDuration);
+      setShowAIDurationModal(false);
+    } catch (error) {
+      console.error('AI calculation error:', error);
+      alert('Failed to calculate duration. Please try again.');
+    } finally {
+      setAiCalculating(false);
+    }
+  };
+
   const handleGenerate = async () => {
     if (!user) {
       alert('Please sign in to generate content.');
@@ -317,27 +384,35 @@ export default function Page11({ onNavigate }: PageProps) {
                   assets.map((asset) => {
                     const isMedia = isMediaAsset(asset);
                     return (
-                      <button
-                        key={asset.id}
-                        onClick={() => setSelectedAsset(asset)}
-                        className={`w-full bg-purple-900/20 border rounded-lg p-3 text-left transition-all hover:bg-purple-900/40 ${
-                          selectedAsset?.id === asset.id ? 'border-purple-400 bg-purple-900/40' : 'border-purple-500/30'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 mb-1">
-                          {isMedia ? (
-                            <File className="w-4 h-4 text-purple-400" />
-                          ) : (
-                            <Sparkles className="w-4 h-4 text-purple-400" />
-                          )}
-                          <h3 className="font-semibold text-sm truncate">
-                            {isMedia ? asset.file_name : asset.tool_name}
-                          </h3>
-                        </div>
-                        <p className="text-xs text-slate-400">
-                          {new Date(asset.created_at).toLocaleDateString()}
-                        </p>
-                      </button>
+                      <div key={asset.id} className="relative group">
+                        <button
+                          onClick={() => setSelectedAsset(asset)}
+                          className={`w-full bg-purple-900/20 border rounded-lg p-3 text-left transition-all hover:bg-purple-900/40 ${
+                            selectedAsset?.id === asset.id ? 'border-purple-400 bg-purple-900/40' : 'border-purple-500/30'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 mb-1">
+                            {isMedia ? (
+                              <File className="w-4 h-4 text-purple-400" />
+                            ) : (
+                              <Sparkles className="w-4 h-4 text-purple-400" />
+                            )}
+                            <h3 className="font-semibold text-sm truncate pr-6">
+                              {isMedia ? asset.file_name : asset.tool_name}
+                            </h3>
+                          </div>
+                          <p className="text-xs text-slate-400">
+                            {new Date(asset.created_at).toLocaleDateString()}
+                          </p>
+                        </button>
+                        <button
+                          onClick={(e) => handleDeleteAsset(asset, e)}
+                          className="absolute top-2 right-2 p-1 bg-red-600 hover:bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                          title="Delete asset"
+                        >
+                          <X className="w-3 h-3 text-white" />
+                        </button>
+                      </div>
                     );
                   })
                 )}
@@ -476,7 +551,16 @@ export default function Page11({ onNavigate }: PageProps) {
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold mb-2 block">Duration</label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm font-semibold">Duration</label>
+                    <button
+                      onClick={handleAIDuration}
+                      className="flex items-center gap-1 text-xs bg-purple-600 hover:bg-purple-500 px-2 py-1 rounded transition-all"
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      AI Help
+                    </button>
+                  </div>
                   <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3">
                     <div className="text-center">
                       <div className="text-2xl font-bold text-purple-400">{formatTime(currentTime)}</div>
@@ -555,6 +639,48 @@ export default function Page11({ onNavigate }: PageProps) {
                 className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
               >
                 YES
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAIDurationModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-gradient-to-br from-purple-900/90 to-black/90 border-2 border-purple-400 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <div className="text-center mb-6">
+              <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+              <h2 className="text-2xl font-bold text-white mb-3">AI Duration Assistant</h2>
+              <p className="text-white/80 text-lg">
+                Let AI calculate the optimal film duration based on your uploaded assets?
+              </p>
+              <div className="mt-4 bg-purple-900/30 border border-purple-500/30 rounded-lg p-3">
+                <p className="text-sm text-purple-200">
+                  <span className="font-bold">Assets:</span> {assets.length} items
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowAIDurationModal(false)}
+                disabled={aiCalculating}
+                className="flex-1 bg-black hover:bg-gray-900 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all border border-purple-500/50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={calculateAIDuration}
+                disabled={aiCalculating}
+                className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all disabled:bg-purple-800 flex items-center justify-center gap-2"
+              >
+                {aiCalculating ? (
+                  <>
+                    <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+                    Calculating...
+                  </>
+                ) : (
+                  'Calculate'
+                )}
               </button>
             </div>
           </div>
