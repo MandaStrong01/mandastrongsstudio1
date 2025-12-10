@@ -63,12 +63,29 @@ VITE_GOOGLE_API_KEY=your-actual-api-key
 ## Step 6: Test the Integration
 
 1. Start your development server
-2. Navigate to Page 11 (Editor Dashboard)
-3. In the "Upload Source" dropdown, select "Google Drive"
-4. Click "Connect Google Drive"
-5. You'll be prompted to sign in with Google and authorize the app
-6. Select files from your Google Drive
-7. Files will be downloaded and uploaded to your Supabase storage
+2. Sign in to the MandaStrong app with one of your team emails
+3. Navigate to Page 11 (Editor Dashboard)
+4. In the "Upload Source" dropdown, select "Google Drive"
+5. Click "Connect Google Drive"
+6. You'll be prompted to sign in with YOUR Google account and authorize the app
+7. Select files from your Google Drive
+8. Files will be downloaded and uploaded to your Supabase storage
+
+## Multi-User Team Setup
+
+If you have multiple team members (like mandastrong1, mandastrongfilmstudios, woolleya129@gmail.com):
+
+**Each person must:**
+1. Sign in to the MandaStrong app with their team email
+2. Then separately connect their own Google account
+3. Grant Google permissions for their own Google Drive/Photos
+
+**Important:**
+- Each team member connects their OWN Google account
+- Google permissions are personal - you see your own Google files
+- Files imported from Google are then shared with the team
+- Everyone needs to go through the Google authorization process separately
+- The Google OAuth consent screen must include all team members as test users (if in testing mode)
 
 ## Troubleshooting
 
