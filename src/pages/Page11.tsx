@@ -333,27 +333,50 @@ export default function Page11({ onNavigate }: PageProps) {
             <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
               <h2 className="text-xl font-bold text-purple-400 mb-4">MEDIA BOX</h2>
 
-              <div className="mb-4">
-                <label className="block text-sm font-semibold mb-2 text-purple-300">Upload Source</label>
-                <select
-                  value={uploadSource}
-                  onChange={(e) => setUploadSource(e.target.value as 'local' | 'photos-videos' | 'google')}
-                  className="w-full bg-black/50 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-400"
+              <div className="space-y-3 mb-4">
+                <button
+                  onClick={() => {
+                    setUploadSource('local');
+                    document.getElementById('media-upload')?.click();
+                  }}
+                  disabled={uploading}
+                  className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
                 >
-                  <option value="local">Upload Files</option>
-                  <option value="photos-videos">Upload Photos/Videos</option>
-                  <option value="google">Upload Google Drive</option>
-                </select>
+                  <div className="flex items-center justify-center gap-2">
+                    <Upload className="w-5 h-5" />
+                    Open Files
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setUploadSource('photos-videos');
+                    document.getElementById('media-upload')?.click();
+                  }}
+                  disabled={uploading}
+                  className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <Upload className="w-5 h-5" />
+                    Open Photos/Videos
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setUploadSource('google');
+                    handleGoogleDriveUpload();
+                  }}
+                  disabled={uploading}
+                  className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <Upload className="w-5 h-5" />
+                    Open Google Drive
+                  </div>
+                </button>
               </div>
 
-              <button
-                onClick={handleUploadClick}
-                disabled={uploading}
-                className="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed px-3 py-2 rounded-lg transition-all text-sm font-semibold mb-4"
-              >
-                <Upload className="w-4 h-4" />
-                {uploading ? 'Uploading...' : uploadSource === 'google' ? 'Connect Google Drive' : uploadSource === 'photos-videos' ? 'Upload Photos/Videos' : 'Upload Files'}
-              </button>
               <input
                 id="media-upload"
                 type="file"
