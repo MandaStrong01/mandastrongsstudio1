@@ -164,6 +164,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                         className="hidden"
                         onChange={handleFileSelect}
                         multiple
+                        accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
                       />
                     </label>
                   )}
