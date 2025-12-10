@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, X, Upload } from 'lucide-react';
+import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, X, Upload, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile, getAssets } from '../lib/storage';
@@ -403,7 +403,11 @@ export default function Page11({ onNavigate }: PageProps) {
                   className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <Upload className="w-5 h-5" />
+                    {uploading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Upload className="w-5 h-5" />
+                    )}
                     {uploading ? 'Uploading...' : 'Open Files'}
                   </div>
                 </button>
@@ -416,7 +420,11 @@ export default function Page11({ onNavigate }: PageProps) {
                   className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <Upload className="w-5 h-5" />
+                    {uploading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Upload className="w-5 h-5" />
+                    )}
                     {uploading ? 'Uploading...' : 'Open Photos/Videos'}
                   </div>
                 </button>
@@ -427,7 +435,11 @@ export default function Page11({ onNavigate }: PageProps) {
                   className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <Upload className="w-5 h-5" />
+                    {uploading || !googleDriveReady ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Upload className="w-5 h-5" />
+                    )}
                     {uploading ? 'Uploading...' : !googleDriveReady ? 'Loading Drive...' : 'Open Google Drive'}
                   </div>
                 </button>
