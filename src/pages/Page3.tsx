@@ -6,6 +6,12 @@ interface PageProps {
   onNavigate: (page: number) => void;
 }
 
+const STRIPE_LINKS = {
+  basic: import.meta.env.VITE_STRIPE_BASIC_LINK || '',
+  pro: import.meta.env.VITE_STRIPE_PRO_LINK || '',
+  studio: import.meta.env.VITE_STRIPE_STUDIO_LINK || '',
+};
+
 export default function Page3({ onNavigate }: PageProps) {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -24,8 +30,9 @@ export default function Page3({ onNavigate }: PageProps) {
     try {
       await signIn(loginEmail, loginPassword);
       onNavigate(4);
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -45,15 +52,18 @@ export default function Page3({ onNavigate }: PageProps) {
     try {
       await signUp(registerEmail, registerPassword);
       onNavigate(4);
-    } catch (err: any) {
-      setError(err.message || 'Registration failed');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Registration failed';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   const openStripeLink = (url: string) => {
-    window.open(url, '_blank');
+    if (url) {
+      window.open(url, '_blank');
+    }
   };
 
   return (
@@ -149,7 +159,7 @@ export default function Page3({ onNavigate }: PageProps) {
 
         <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
           <button
-            onClick={() => openStripeLink('https://buy.stripe.com/fZubJ35BE3B53oH00')}
+            onClick={() => openStripeLink(STRIPE_LINKS.basic)}
             className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-purple-900/30"
           >
             <div className="text-center">
@@ -161,7 +171,7 @@ export default function Page3({ onNavigate }: PageProps) {
           </button>
 
           <button
-            onClick={() => openStripeLink('https://buy.stripe.com/14A00l8NQ0oT01')}
+            onClick={() => openStripeLink(STRIPE_LINKS.pro)}
             className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-purple-900/30"
           >
             <div className="text-center">
@@ -173,7 +183,7 @@ export default function Page3({ onNavigate }: PageProps) {
           </button>
 
           <button
-            onClick={() => openStripeLink('https://buy.stripe.com/4gM5kFaVY02')}
+            onClick={() => openStripeLink(STRIPE_LINKS.studio)}
             className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-purple-900/30"
           >
             <div className="text-center">

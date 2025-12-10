@@ -6,6 +6,13 @@ interface PageProps {
   onNavigate: (page: number) => void;
 }
 
+const EXTERNAL_URLS = {
+  guide: import.meta.env.VITE_ETSY_GUIDE_URL || 'https://mandastrong.etsy.com/guide',
+  store: import.meta.env.VITE_ETSY_STORE_URL || 'https://mandastrong.etsy.com',
+};
+
+const VIDEO_PATH = import.meta.env.VITE_OUTRO_VIDEO_PATH || '/static/video/thatsallfolks.mp4';
+
 export default function Page21({ onNavigate }: PageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
@@ -20,7 +27,7 @@ export default function Page21({ onNavigate }: PageProps) {
                 playsInline
                 className="w-full h-full object-cover"
               >
-                <source src="/static/video/thatsallfolks.mp4" type="video/mp4" />
+                <source src={VIDEO_PATH} type="video/mp4" />
               </video>
             </div>
 
@@ -39,7 +46,7 @@ export default function Page21({ onNavigate }: PageProps) {
             </div>
 
             <button
-              onClick={() => window.open('https://mandastrong.etsy.com/guide', '_blank')}
+              onClick={() => window.open(EXTERNAL_URLS.guide, '_blank')}
               className="w-full max-w-2xl mx-auto mb-6 bg-black/50 hover:bg-purple-900/40 rounded-xl p-6 border border-purple-500/30 transition-all cursor-pointer group"
             >
               <div className="flex items-center justify-center gap-3 mb-3">
@@ -59,12 +66,12 @@ export default function Page21({ onNavigate }: PageProps) {
               <p className="text-white/80 leading-relaxed">
                 Learn more about our mission and find exclusive creative tools at{' '}
                 <a
-                  href="https://MandaStrong.Etsy.com"
+                  href={EXTERNAL_URLS.store}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-purple-300 hover:text-purple-200 underline font-semibold transition-colors"
                 >
-                  MandaStrong.Etsy.com
+                  {EXTERNAL_URLS.store}
                 </a>
               </p>
             </div>

@@ -6,31 +6,10 @@ import { uploadFile, getAssets } from '../lib/storage';
 import { initializeGoogleDrive, openGooglePicker, downloadGoogleDriveFile } from '../lib/googleDrive';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
+import { Asset, isMediaAsset } from '../types/ai-tools';
 
 interface PageProps {
   onNavigate: (page: number) => void;
-}
-
-interface AIAsset {
-  id: string;
-  tool_name: string;
-  output_data: any;
-  created_at: string;
-}
-
-interface MediaAsset {
-  id: string;
-  file_name: string;
-  file_type: string;
-  file_url: string;
-  asset_type: string;
-  created_at: string;
-}
-
-type Asset = AIAsset | MediaAsset;
-
-function isMediaAsset(asset: Asset): asset is MediaAsset {
-  return 'file_name' in asset;
 }
 
 export default function Page11({ onNavigate }: PageProps) {
@@ -329,10 +308,10 @@ export default function Page11({ onNavigate }: PageProps) {
       const generationConfig = {
         asset: selectedAsset,
         settings: {
-          duration: duration,
-          ratio: ratio,
-          size: size,
-          volume: volume,
+          duration,
+          ratio,
+          size,
+          volume,
           timestamp: new Date().toISOString()
         },
         projectName: isMediaAsset(selectedAsset)

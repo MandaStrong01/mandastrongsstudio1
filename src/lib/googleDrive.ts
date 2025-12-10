@@ -9,7 +9,6 @@ let gisInited = false;
 
 export async function initializeGoogleDrive(): Promise<boolean> {
   if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'your-google-client-id.apps.googleusercontent.com') {
-    console.error('Google Client ID not configured');
     return false;
   }
 

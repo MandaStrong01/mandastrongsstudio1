@@ -117,6 +117,15 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
     });
   };
 
+  const isValidUrl = (urlString: string): boolean => {
+    try {
+      new URL(urlString);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const handleUrlImport = async () => {
     if (!user) {
       alert('Please sign in to upload files');
@@ -128,10 +137,36 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
       return;
     }
 
+    if (!isValidUrl(importUrl)) {
+      alert('Please enter a valid URL (e.g., https://example.com/image.jpg)');
+      return;
+    }
+
     setUploading(true);
     try {
-      const response = await fetch(importUrl);
-      if (!response.ok) throw new Error('Failed to fetch file');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+      const response = await fetch(importUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (response.status === 404) {
+        alert('File not found (404). Please check the URL and try again.');
+        setUploading(false);
+        return;
+      }
+
+      if (response.status === 403) {
+        alert('Access denied (403). The file may not be publicly accessible or CORS restrictions apply.');
+        setUploading(false);
+        return;
+      }
+
+      if (!response.ok) {
+        alert(`Server error (${response.status}). Please try again later.`);
+        setUploading(false);
+        return;
+      }
 
       const blob = await response.blob();
       const urlObj = new URL(importUrl);
@@ -145,11 +180,17 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
         setImportUrl('');
         setShowUrlImport(false);
       } else {
-        alert('Failed to upload file');
+        alert('Failed to upload file. Please try again.');
       }
     } catch (error) {
-      console.error('URL import error:', error);
-      alert('Failed to import file from URL. Make sure the URL is publicly accessible.');
+      if (error instanceof TypeError) {
+        alert('Network error or CORS issue. Make sure the URL is publicly accessible and allows cross-origin requests.');
+      } else if ((error as Error).name === 'AbortError') {
+        alert('Request timed out. The file may be too large or the server is not responding.');
+      } else {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        alert(`Failed to import file: ${errorMessage}`);
+      }
     } finally {
       setUploading(false);
     }
