@@ -1,6 +1,3 @@
-import { useState } from 'react';
-import { LogIn, UserPlus } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
 
 interface PageProps {
@@ -8,51 +5,6 @@ interface PageProps {
 }
 
 export default function Page3({ onNavigate }: PageProps) {
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [registerEmail, setRegisterEmail] = useState('');
-  const [registerPassword, setRegisterPassword] = useState('');
-  const [selectedPlan, setSelectedPlan] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      await signIn(loginEmail, loginPassword);
-      onNavigate(4);
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    if (!selectedPlan) {
-      setError('Please select a plan to continue');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      await signUp(registerEmail, registerPassword);
-      onNavigate(4);
-    } catch (err: any) {
-      setError(err.message || 'Registration failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const openStripeLink = (url: string) => {
     window.open(url, '_blank');
   };
@@ -61,98 +13,6 @@ export default function Page3({ onNavigate }: PageProps) {
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-6xl flex flex-col">
-        <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-4xl mx-auto items-start">
-          <div className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl p-8 rounded-3xl border-2 border-purple-500/60 shadow-2xl shadow-purple-900/50">
-            <div className="flex items-center gap-2 mb-6 justify-center">
-              <LogIn className="w-6 h-6" />
-              <h2 className="text-2xl font-bold">LOGIN</h2>
-            </div>
-
-            <form onSubmit={handleLogin} className="space-y-4">
-              <input
-                type="email"
-                placeholder="Email"
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-lg bg-black border border-purple-500/50 text-white placeholder-white/60 focus:outline-none focus:border-purple-400"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-lg bg-black border border-purple-500/50 text-white placeholder-white/60 focus:outline-none focus:border-purple-400"
-              />
-              {error && (
-                <div className="text-white text-sm bg-purple-600/30 px-4 py-2 rounded-lg border border-purple-500">
-                  {error}
-                </div>
-              )}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg hover:bg-purple-500 transition-all disabled:opacity-50"
-              >
-                {loading ? 'Please wait...' : 'LOGIN'}
-              </button>
-            </form>
-          </div>
-
-          <div className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl p-8 rounded-3xl border-2 border-purple-500/60 shadow-2xl shadow-purple-900/50">
-            <div className="flex items-center gap-2 mb-6 justify-center">
-              <UserPlus className="w-6 h-6" />
-              <h2 className="text-2xl font-bold">REGISTER</h2>
-            </div>
-
-            <form onSubmit={handleRegister} className="space-y-4">
-              <input
-                type="email"
-                placeholder="Email"
-                value={registerEmail}
-                onChange={(e) => setRegisterEmail(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-lg bg-black border border-purple-500/50 text-white placeholder-white/60 focus:outline-none focus:border-purple-400"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={registerPassword}
-                onChange={(e) => setRegisterPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-lg bg-black border border-purple-500/50 text-white placeholder-white/60 focus:outline-none focus:border-purple-400"
-              />
-              <div>
-                <label className="block text-sm font-bold mb-2 text-white/80">Select Plan *</label>
-                <select
-                  value={selectedPlan}
-                  onChange={(e) => setSelectedPlan(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 rounded-lg bg-black border border-purple-500/50 text-white focus:outline-none focus:border-purple-400"
-                >
-                  <option value="">Choose a plan...</option>
-                  <option value="basic">BASIC - $10/month (30 min films)</option>
-                  <option value="pro">PRO - $20/month (1 hour films)</option>
-                  <option value="studio">STUDIO - $30/month (2.5 hour films)</option>
-                </select>
-              </div>
-              {error && (
-                <div className="text-white text-sm bg-purple-600/30 px-4 py-2 rounded-lg border border-purple-500">
-                  {error}
-                </div>
-              )}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg hover:bg-purple-500 transition-all disabled:opacity-50"
-              >
-                {loading ? 'Please wait...' : 'REGISTER'}
-              </button>
-            </form>
-          </div>
-        </div>
-
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-center mb-6 text-purple-400">SUBSCRIPTION PLANS</h2>
           <p className="text-center text-white/70 mb-8">Choose the plan that fits your creative vision</p>
