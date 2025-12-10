@@ -1,7 +1,8 @@
-import { ArrowLeft, Upload, Sparkles, File, Image, Video, Music, FileText, Check } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowLeft, Upload, Sparkles, File, Image, Video, Music, FileText, Check, Cloud } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile } from '../lib/storage';
+import { initializeGoogleDrive, openGooglePicker, downloadGoogleDriveFile } from '../lib/googleDrive';
 import Footer from '../components/Footer';
 
 interface Page22Props {
@@ -15,6 +16,13 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const [googleDriveReady, setGoogleDriveReady] = useState(false);
+
+  useEffect(() => {
+    initializeGoogleDrive().then(ready => {
+      setGoogleDriveReady(ready);
+    });
+  }, []);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -72,6 +80,41 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
     }
   };
 
+  const handleGooglePhotos = () => {
+    if (!user) {
+      alert('Please sign in to upload files');
+      return;
+    }
+
+    openGooglePicker(async (selectedFiles) => {
+      setUploading(true);
+      try {
+        const uploadPromises = selectedFiles.map(async (file) => {
+          const blob = await downloadGoogleDriveFile(file.id, file.name, file.mimeType);
+          const fileObj = new File([blob], file.name, { type: file.mimeType });
+          return uploadFile(fileObj, user.id);
+        });
+
+        const results = await Promise.all(uploadPromises);
+        const successfulFiles = results
+          .filter(r => r.success)
+          .map((_, i) => selectedFiles[i].name);
+
+        setUploadedFiles(prev => [...prev, ...successfulFiles]);
+
+        const failedCount = results.filter(r => !r.success).length;
+        if (failedCount > 0) {
+          alert(`${successfulFiles.length} of ${selectedFiles.length} files uploaded successfully`);
+        }
+      } catch (error) {
+        console.error('Upload error:', error);
+        alert('Failed to upload files from Google Photos');
+      } finally {
+        setUploading(false);
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
@@ -91,10 +134,21 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
           <div className="flex-1 bg-black/30 backdrop-blur-sm border-2 border-purple-500/30 rounded-2xl p-8">
             {mode === 'upload' ? (
               <div className="h-full flex flex-col">
-                <div className="text-center mb-8">
+                <div className="text-center mb-6">
                   <Upload className="w-16 h-16 mx-auto mb-4 text-purple-400" />
                   <h2 className="text-3xl font-bold mb-2">Upload Your Asset</h2>
                   <p className="text-white/70">Drag and drop your file here or click to browse</p>
+                </div>
+
+                <div className="flex justify-center mb-6">
+                  <button
+                    onClick={handleGooglePhotos}
+                    disabled={!googleDriveReady || uploading}
+                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg font-semibold transition-all"
+                  >
+                    <Cloud className="w-5 h-5" />
+                    Import from Google Photos
+                  </button>
                 </div>
 
                 <div

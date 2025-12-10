@@ -1,6 +1,6 @@
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
-const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
+const SCOPES = 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/photoslibrary.readonly';
 
 let tokenClient: any;
 let accessToken: string | null = null;
@@ -65,6 +65,9 @@ export function openGooglePicker(callback: (files: any[]) => void) {
 }
 
 function createPicker(callback: (files: any[]) => void) {
+  const photosView = new google.picker.DocsView(google.picker.ViewId.PHOTOS)
+    .setIncludeFolders(true);
+
   const imagesView = new google.picker.DocsView(google.picker.ViewId.DOCS_IMAGES_AND_VIDEOS)
     .setIncludeFolders(true)
     .setSelectFolderEnabled(false);
@@ -78,6 +81,7 @@ function createPicker(callback: (files: any[]) => void) {
     .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
     .setAppId(GOOGLE_CLIENT_ID)
     .setOAuthToken(accessToken!)
+    .addView(photosView)
     .addView(imagesView)
     .addView(docsView)
     .setDeveloperKey(GOOGLE_API_KEY)
