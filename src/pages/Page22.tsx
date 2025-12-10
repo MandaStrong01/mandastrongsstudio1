@@ -1,4 +1,4 @@
-import { ArrowLeft, Upload, Sparkles, File, Image, Video, Music, FileText, Check, Cloud } from 'lucide-react';
+import { ArrowLeft, Upload, Sparkles, File, Image, Video, Music, FileText, Check, Cloud, Link } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile } from '../lib/storage';
@@ -17,6 +17,8 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
   const [uploading, setUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const [googleDriveReady, setGoogleDriveReady] = useState(false);
+  const [showUrlImport, setShowUrlImport] = useState(false);
+  const [importUrl, setImportUrl] = useState('');
 
   useEffect(() => {
     initializeGoogleDrive().then(ready => {
@@ -115,6 +117,44 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
     });
   };
 
+  const handleUrlImport = async () => {
+    if (!user) {
+      alert('Please sign in to upload files');
+      return;
+    }
+
+    if (!importUrl.trim()) {
+      alert('Please enter a valid URL');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const response = await fetch(importUrl);
+      if (!response.ok) throw new Error('Failed to fetch file');
+
+      const blob = await response.blob();
+      const urlObj = new URL(importUrl);
+      const filename = urlObj.pathname.split('/').pop() || 'imported-file';
+      const fileObj = new File([blob], filename, { type: blob.type });
+
+      const result = await uploadFile(fileObj, user.id);
+
+      if (result.success) {
+        setUploadedFiles(prev => [...prev, filename]);
+        setImportUrl('');
+        setShowUrlImport(false);
+      } else {
+        alert('Failed to upload file');
+      }
+    } catch (error) {
+      console.error('URL import error:', error);
+      alert('Failed to import file from URL. Make sure the URL is publicly accessible.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
@@ -140,15 +180,71 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                   <p className="text-white/70">Drag and drop your file here or click to browse</p>
                 </div>
 
-                <div className="flex justify-center mb-6">
-                  <button
-                    onClick={handleGooglePhotos}
-                    disabled={!googleDriveReady || uploading}
-                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg font-semibold transition-all"
-                  >
-                    <Cloud className="w-5 h-5" />
-                    Import from Google Photos
-                  </button>
+                <div className="mb-6">
+                  <p className="text-center text-sm text-white/60 mb-3">Import from cloud storage:</p>
+                  <div className="flex flex-wrap justify-center gap-3">
+                    <button
+                      onClick={handleGooglePhotos}
+                      disabled={!googleDriveReady || uploading}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg font-semibold transition-all text-sm"
+                    >
+                      <Cloud className="w-4 h-4" />
+                      Google Photos
+                    </button>
+                    <button
+                      onClick={handleGooglePhotos}
+                      disabled={!googleDriveReady || uploading}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg font-semibold transition-all text-sm"
+                    >
+                      <Cloud className="w-4 h-4" />
+                      Google Drive
+                    </button>
+                    <button
+                      onClick={() => setShowUrlImport(!showUrlImport)}
+                      disabled={uploading}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg font-semibold transition-all text-sm"
+                    >
+                      <Link className="w-4 h-4" />
+                      Import from URL
+                    </button>
+                  </div>
+
+                  {showUrlImport && (
+                    <div className="mt-4 p-4 bg-black/30 border border-orange-500/30 rounded-lg">
+                      <input
+                        type="url"
+                        value={importUrl}
+                        onChange={(e) => setImportUrl(e.target.value)}
+                        placeholder="https://example.com/image.jpg"
+                        className="w-full bg-black/50 border border-orange-500/50 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:border-orange-400 mb-3"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleUrlImport();
+                          }
+                        }}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleUrlImport}
+                          disabled={uploading || !importUrl.trim()}
+                          className="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-500 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg font-semibold transition-all text-sm"
+                        >
+                          Import
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowUrlImport(false);
+                            setImportUrl('');
+                          }}
+                          className="px-4 py-2 bg-black/50 border border-white/20 hover:bg-white/10 rounded-lg font-semibold transition-all text-sm"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="text-center text-xs text-white/50 mt-2">Or use the upload area below for local files</p>
                 </div>
 
                 <div
