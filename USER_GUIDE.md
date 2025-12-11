@@ -34,7 +34,7 @@ Your journey begins with our welcome pages where you'll learn about MandaStrong 
   - Selecting your subscription plan (Basic, Pro, or Studio)
   - Click "REGISTER" to complete setup
 
-**Important:** After registration, you'll have immediate access to all 720+ AI tools and features based on your chosen plan.
+**Important:** After registration, you'll have immediate access to all 600 AI tools and features based on your chosen plan.
 
 ---
 
@@ -47,7 +47,7 @@ Your journey begins with our welcome pages where you'll learn about MandaStrong 
 
 ### Page Overview
 - **Pages 1-3:** Welcome, Introduction, Login/Register
-- **Pages 4-9:** AI Tool Board (720+ creative tools)
+- **Pages 4-9:** AI Tool Board (600 AI-powered creative tools)
 - **Page 10:** "Doxy The School Bully" - Upload your existing movie files
 - **Page 11:** Editor Dashboard with Media Box
 - **Pages 12-16:** Professional editing tools with timeline
@@ -61,9 +61,9 @@ Your journey begins with our welcome pages where you'll learn about MandaStrong 
 
 ## AI Tool Board
 
-### Pages 4-9: 720+ Creative Tools
+### Pages 4-9: 600 AI-Powered Creative Tools
 
-Our AI Tool Board features over 720 specialized tools across six pages, each prefixed with "AI" for easy identification.
+Our AI Tool Board features 600 specialized AI tools across six pages, organized into 11 powerful sections designed to handle everything a human can't easily do.
 
 #### How to Use AI Tools
 
@@ -74,17 +74,39 @@ Our AI Tool Board features over 720 specialized tools across six pages, each pre
    - **Upload:** Import existing files to enhance with AI
    - **Create:** Generate new content from scratch using AI
 
-#### Tool Categories Include:
-- Image generation and enhancement
-- Video editing and effects
-- Audio processing and music creation
-- Script writing and story development
-- Voice synthesis and dubbing
-- Special effects and transitions
-- Color grading and correction
-- And much more!
+#### Tool Categories by Page:
 
-**Pro Tip:** Tools are organized across pages 4-9, so explore all pages to discover the full range of creative possibilities.
+**PAGE 4 (Tools 1-100):**
+- Story & Script Writing (AI-generated plots, characters, dialogue)
+- Character Creation (faces, emotions, movements, voices)
+- Photo & Image Generation (upscaling, restoration, effects)
+
+**PAGE 5 (Tools 101-200):**
+- Photo Effects & Filters (LUTs, weather, lighting simulation)
+- Video Generation (text-to-video, scene creation, camera movements)
+- Animation & Motion (character animation, lip-sync, physics)
+
+**PAGE 6 (Tools 201-300):**
+- Advanced Animation (rigging, particles, physics simulation)
+- Sound & Music (AI voices, music generation, audio effects)
+- Audio Production (mixing, spatial audio, cleanup tools)
+
+**PAGE 7 (Tools 301-400):**
+- Video Editing (timeline tools, transitions, effects)
+- Cinematic Effects (color grading, film looks, transitions)
+- AI VFX (explosions, fire, magic effects, weather)
+
+**PAGE 8 (Tools 401-500):**
+- Special Effects (creature FX, transformations, destruction)
+- File Management (uploads, converters, organizers)
+- Export & Delivery (all formats, social media optimization)
+
+**PAGE 9 (Tools 501-600):**
+- Bonus Tools (AI help desk, troubleshooting, optimizers)
+- Advanced Features (continuity checking, auto-fix tools)
+- Production Tools (planners, analyzers, final polish)
+
+**Important:** All 600 tools use AI to handle tasks that would be impossible or extremely difficult for humans to do manually - from generating realistic characters to creating complex VFX sequences.
 
 ---
 
@@ -193,23 +215,23 @@ Before finalizing your film, preview it in full-screen mode to ensure everything
 #### BASIC Plan - $10/month
 - **Film Length:** Up to 30 minutes
 - **Best For:** Short films, music videos, quick projects
-- **Access:** All 720+ AI tools
+- **Access:** All 600 AI tools
 - **Features:** Full editing suite, unlimited uploads
 
 #### PRO Plan - $20/month
 - **Film Length:** Up to 1 hour
 - **Best For:** Standard documentaries, corporate videos
-- **Access:** All 720+ AI tools
+- **Access:** All 600 AI tools
 - **Features:** Full editing suite, unlimited uploads, priority support
 
 #### STUDIO Plan - $30/month
 - **Film Length:** Up to 2.5 hours
 - **Best For:** Feature-length films, complete cinematic experiences
-- **Access:** All 720+ AI tools
+- **Access:** All 600 AI tools
 - **Features:** Full editing suite, unlimited uploads, priority support, advanced export options
 
 **All plans include:**
-- Access to 720+ AI creative tools
+- Access to 600 AI creative tools
 - Unlimited cloud storage for your projects
 - Regular updates and new features
 - Cancel anytime with 30-day refund policy
