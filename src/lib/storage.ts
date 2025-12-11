@@ -43,7 +43,7 @@ export async function getUserTeam(userId: string): Promise<string | null> {
 async function uploadWithRetry(
   fileName: string,
   file: File,
-  maxRetries: number = 3
+  maxRetries: number = 2
 ): Promise<{ data: any; error: any }> {
   let lastError;
 
@@ -62,15 +62,8 @@ async function uploadWithRetry(
       }
 
       lastError = result.error;
-
-      if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-      }
     } catch (err) {
       lastError = err;
-      if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-      }
     }
   }
 
@@ -80,34 +73,33 @@ async function uploadWithRetry(
 export async function uploadFile(
   file: File,
   userId: string,
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
+  skipCompression: boolean = false
 ): Promise<UploadResult> {
   try {
-    if (onProgress) onProgress(5);
+    if (onProgress) onProgress(10);
 
-    const [optimizedFile, teamId] = await Promise.all([
-      optimizeFile(file),
-      getUserTeam(userId)
-    ]);
+    const teamId = await getUserTeam(userId);
+    const processedFile = skipCompression ? file : await optimizeFile(file);
 
-    if (onProgress) onProgress(35);
+    if (onProgress) onProgress(20);
 
     const timestamp = Date.now();
     const fileName = `${userId}/${timestamp}_${file.name}`;
 
     const { data: uploadData, error: uploadError } = await uploadWithRetry(
       fileName,
-      optimizedFile,
-      3
+      processedFile,
+      2
     );
 
-    if (onProgress) onProgress(75);
+    if (onProgress) onProgress(70);
 
     if (uploadError) {
       console.error('Storage upload error:', {
         message: uploadError.message,
         fileName: file.name,
-        fileSize: optimizedFile.size,
+        fileSize: processedFile.size,
         fileType: file.type,
         error: uploadError
       });
@@ -139,7 +131,7 @@ export async function uploadFile(
         file_name: file.name,
         file_type: file.type,
         file_url: publicUrl,
-        file_size: optimizedFile.size,
+        file_size: processedFile.size,
         asset_type: assetType,
         title: file.name,
       })

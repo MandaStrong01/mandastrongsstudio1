@@ -84,8 +84,6 @@ export default function BatchUpload() {
           )
         );
 
-        await new Promise(resolve => setTimeout(resolve, 100));
-
         try {
           const { data, error } = await supabase
             .from('ai_tool_results')
