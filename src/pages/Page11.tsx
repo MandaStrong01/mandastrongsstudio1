@@ -45,6 +45,7 @@ export default function Page11({ onNavigate }: PageProps) {
   const [renderStatus, setRenderStatus] = useState('');
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [showMyMovies, setShowMyMovies] = useState(false);
+  const [moviePrompt, setMoviePrompt] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -461,8 +462,8 @@ export default function Page11({ onNavigate }: PageProps) {
       return;
     }
 
-    if (!selectedAsset) {
-      alert('Please select at least one asset from the Media Box to generate your movie.');
+    if (!moviePrompt || moviePrompt.trim().length < 10) {
+      alert('Please write detailed instructions for your movie! Tell us what you want to create (at least 10 characters).');
       return;
     }
 
@@ -473,15 +474,10 @@ export default function Page11({ onNavigate }: PageProps) {
 
     setGenerating(true);
     setRenderProgress(0);
-    setRenderStatus('Preparing to generate your movie...');
+    setRenderStatus('AI is reading your instructions...');
 
     try {
       const mediaAssets = assets.filter(a => isMediaAsset(a));
-
-      if (mediaAssets.length === 0) {
-        alert('Please upload at least one video, image, or audio file to generate a movie.');
-        return;
-      }
 
       const assetIds = mediaAssets.map(a => a.id);
       const scenes = generateScenes(duration);
@@ -490,16 +486,16 @@ export default function Page11({ onNavigate }: PageProps) {
         .from('render_jobs')
         .insert({
           user_id: user.id,
-          title: `Movie - ${formatTime(duration)} - ${new Date().toLocaleDateString()}`,
-          description: `Generated from ${mediaAssets.length} uploaded assets`,
+          title: moviePrompt.substring(0, 100),
+          description: moviePrompt,
           target_duration: duration,
           aspect_ratio: ratio,
           resolution: size,
           scene_count: scenes.length,
           scene_breakdown: scenes,
           asset_ids: assetIds,
-          primary_asset_id: selectedAsset.id,
-          video_settings: { ratio, size },
+          primary_asset_id: mediaAssets.length > 0 ? mediaAssets[0].id : null,
+          video_settings: { ratio, size, prompt: moviePrompt },
           audio_settings: { volume },
           status: 'pending'
         })
@@ -522,7 +518,17 @@ export default function Page11({ onNavigate }: PageProps) {
             'Authorization': `Bearer ${supabaseAnonKey}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ jobId: renderJob.id })
+          body: JSON.stringify({
+            jobId: renderJob.id,
+            prompt: moviePrompt,
+            duration: duration,
+            assets: mediaAssets.map(a => ({
+              id: a.id,
+              url: a.file_url,
+              type: a.asset_type,
+              name: a.file_name
+            }))
+          })
         }
       );
 
@@ -959,6 +965,23 @@ export default function Page11({ onNavigate }: PageProps) {
             <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
               <h2 className="text-xl font-bold mb-4 text-purple-400">CONTROLS</h2>
               <div className="space-y-6">
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-semibold mb-2">
+                    <Sparkles className="w-4 h-4 text-purple-400" />
+                    Movie Instructions (Tell AI what to create)
+                  </label>
+                  <textarea
+                    value={moviePrompt}
+                    onChange={(e) => setMoviePrompt(e.target.value)}
+                    placeholder="Example: Create an epic 120-minute action movie with robots fighting aliens. Include explosions, dramatic music, and heroic moments."
+                    className="w-full px-3 py-3 bg-black border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-400 resize-none"
+                    rows={4}
+                  />
+                  <p className="text-xs text-slate-400 mt-1">
+                    Be specific! The more details you give, the better your movie will be.
+                  </p>
+                </div>
+
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
                     <Volume2 className="w-4 h-4 text-purple-400" />

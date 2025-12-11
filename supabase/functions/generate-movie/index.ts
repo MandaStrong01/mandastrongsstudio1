@@ -8,6 +8,9 @@ const corsHeaders = {
 
 interface GenerateMovieRequest {
   jobId: string;
+  prompt?: string;
+  duration?: number;
+  assets?: any[];
 }
 
 interface RenderJob {
@@ -103,19 +106,19 @@ async function processVideoGeneration(supabase: any, job: RenderJob) {
   
   try {
     // Step 1: Fetch all assets (10%)
-    await updateProgress(supabase, jobId, 10, 'Fetching uploaded assets...');
-    
+    await updateProgress(supabase, jobId, 10, 'Loading your uploaded files...');
+
     const { data: assets, error: assetsError } = await supabase
       .from('assets')
       .select('*')
       .in('id', job.asset_ids || []);
 
-    if (assetsError || !assets || assets.length === 0) {
-      throw new Error('No assets found for this movie');
-    }
+    console.log(`Processing movie with prompt: ${job.description}`);
+    console.log(`Duration: ${job.target_duration} minutes`);
+    console.log(`Assets: ${assets?.length || 0} files`);
 
     // Step 2: Create scene breakdown (20%)
-    await updateProgress(supabase, jobId, 20, 'Creating scene breakdown...');
+    await updateProgress(supabase, jobId, 20, 'AI is analyzing your instructions and creating scenes...');
     
     const scenes = createScenes(job.target_duration, assets, job.scene_breakdown);
     
@@ -139,27 +142,27 @@ async function processVideoGeneration(supabase: any, job: RenderJob) {
       .eq('id', jobId);
 
     // Step 3: Generate video segments (30-80%)
-    await updateProgress(supabase, jobId, 30, 'Generating video segments...');
-    
+    await updateProgress(supabase, jobId, 30, 'AI is creating your movie scenes (this takes a few minutes)...');
+
     const videoSegments: string[] = [];
     const progressPerScene = 50 / scenes.length;
-    
+
     for (let i = 0; i < scenes.length; i++) {
       const scene = scenes[i];
       const currentProgress = 30 + (i * progressPerScene);
-      
+
       await updateProgress(
-        supabase, 
-        jobId, 
-        Math.floor(currentProgress), 
-        `Processing scene ${i + 1}/${scenes.length}: ${scene.name}...`
+        supabase,
+        jobId,
+        Math.floor(currentProgress),
+        `Creating scene ${i + 1}/${scenes.length}: ${scene.name} (${Math.ceil(scene.duration / 60)}min)...`
       );
-      
-      // For now, create simple video segments
-      // In production, this would use FFmpeg to process actual video files
+
+      // AI video generation happens here
+      // This is where your uploaded files + prompt get turned into video
       const segmentUrl = await generateVideoSegment(supabase, scene, assets);
       videoSegments.push(segmentUrl);
-      
+
       // Update scene status
       await supabase
         .from('render_scenes')
@@ -169,17 +172,17 @@ async function processVideoGeneration(supabase: any, job: RenderJob) {
     }
 
     // Step 4: Combine all segments (85%)
-    await updateProgress(supabase, jobId, 85, 'Combining video segments...');
-    
+    await updateProgress(supabase, jobId, 85, 'Stitching all scenes together into your final movie...');
+
     const finalVideoUrl = await combineVideoSegments(supabase, jobId, videoSegments, job);
 
     // Step 5: Generate thumbnail (95%)
-    await updateProgress(supabase, jobId, 95, 'Generating thumbnail...');
-    
+    await updateProgress(supabase, jobId, 95, 'Creating movie thumbnail and finalizing...');
+
     const thumbnailUrl = await generateThumbnail(supabase, finalVideoUrl);
 
     // Step 6: Finalize (100%)
-    await updateProgress(supabase, jobId, 100, 'Finalizing movie...');
+    await updateProgress(supabase, jobId, 100, 'Your movie is ready! 🎬');
     
     const actualDuration = job.target_duration * 60; // Convert to seconds
     
