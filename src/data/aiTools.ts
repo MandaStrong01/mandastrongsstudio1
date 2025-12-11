@@ -1,91 +1,91 @@
 export const aiToolsPage4 = [
-  "ChatGPT", "Claude AI", "GPT-4", "GPT-4 Turbo", "Gemini Pro", "Llama 3", "Mistral AI", "Perplexity AI",
-  "Midjourney", "DALL-E 3", "Stable Diffusion", "Adobe Firefly", "Leonardo AI", "Ideogram", "Playground AI", "DreamStudio",
-  "RunwayML Gen-3", "Pika Labs", "Sora", "Kaiber AI", "Genmo", "Luma Dream Machine", "HeyGen", "D-ID",
-  "ElevenLabs", "Murf AI", "Play.ht", "Resemble AI", "Descript Overdub", "WellSaid Labs", "Speechify", "LOVO AI",
-  "Synthesia", "Colossyan", "Hour One", "Movio", "Rephrase.ai", "Elai.io", "InVideo AI", "Pictory",
-  "Opus Clip", "Descript", "CapCut", "Runway Magic Tools", "Topaz Video AI", "Magnific AI", "Gigapixel AI", "Remini",
-  "Remove.bg", "Unscreen", "Cleanup.pictures", "PhotoRoom", "Clipping Magic", "Slazzer", "Erase.bg", "BackgroundCut",
-  "Whisper AI", "Otter.ai", "Rev AI", "Trint", "Sonix", "Happy Scribe", "AssemblyAI", "Fireflies.ai",
-  "Jasper AI", "Copy.ai", "Writesonic", "Rytr", "Sudowrite", "NovelAI", "Shortly AI", "Wordtune",
-  "Grammarly", "QuillBot", "ProWritingAid", "Hemingway Editor", "LanguageTool", "Sapling", "Writer", "Wordvice AI",
-  "Canva AI", "Adobe Express", "Tome", "Beautiful.ai", "Gamma App", "Designs.ai", "Uizard", "Galileo AI",
-  "GitHub Copilot", "Cursor AI", "Tabnine", "Codeium", "Amazon CodeWhisperer", "Replit Ghostwriter", "Sourcegraph Cody", "Pieces for Developers"
+  "NeuralScript Pro", "StoryForge AI", "PlotWeaver Max", "CharacterMind Studio", "DialogueCraft Elite", "SceneFlow AI", "ActBuilder Pro", "BeatMapper AI",
+  "ScreenFormat Pro", "ArcWeaver Studio", "CharacterPath AI", "ConflictGen Pro", "ThemeForge AI", "SubplotMatrix", "PaceAnalyzer Pro", "StoryBoard Vision",
+  "ShotList Creator", "SceneBreaker Pro", "LocationScout AI", "CastingMind Pro", "ActorProfile AI", "ChemistryMatch Studio", "AuditionGen Pro", "RoleAnalyzer AI",
+  "BudgetCalc Pro", "ScheduleMind AI", "CallSheetGen Studio", "LocationFlow Pro", "PropManager AI", "CostumeForge Studio", "MakeupDesign Pro", "HairStyle AI",
+  "SetDesign Vision", "ProductionMind Pro", "ArtDirector AI", "PaletteGen Studio", "MoodBoard Creator", "ReferenceFind Pro", "VisualStyle AI", "PeriodCheck Studio",
+  "VoiceCraft Neural", "VoiceGen Pro", "NarratorMind AI", "CharacterVoice Studio", "AccentForge Pro", "VoiceClone Neural", "VoiceAge Shifter", "VoiceGender Pro",
+  "VoiceStudio Elite", "DialogueReplace AI", "ADR Generator Pro", "VoiceAct Neural", "EmotionalVoice AI", "ToneControl Studio", "SpeechPattern Pro", "VoiceHarmony AI",
+  "VideoForge Neural", "SceneGen Pro", "BRollMaker AI", "FootageFinder Studio", "VideoSynth Pro", "MotionGen AI", "SceneAnimate Pro", "VideoCompose Studio",
+  "ImageForge Neural", "ConceptArt Pro", "StoryFrame AI", "SceneReference Studio", "CharacterForge Pro", "EnvironmentGen AI", "PropDesign Studio", "TextureForge Pro",
+  "BackgroundErase Pro", "GreenScreen Neural", "SubjectIsolate AI", "AlphaMatte Studio", "EdgeRefine Pro", "HairDetail AI", "SpillSuppress Studio", "BackgroundGen Pro",
+  "UpscaleMax Neural", "4K Enhance Pro", "8K Upscaler AI", "ResolutionBoost Studio", "DetailEnhance Pro", "TextureSharp AI", "NoiseReduce Studio", "ClarityBoost Pro",
+  "FaceSwap Neural", "DeepFake Studio Pro", "FaceReplace AI", "DeAge Neural Pro", "FaceEnhance Studio", "ExpressionTransfer AI", "FaceAnimate Pro", "DigitalDouble Studio"
 ];
 
 export const aiToolsPage5 = [
-  "Lalal.ai", "Spleeter", "Stem Splitter", "RipX", "AudioShake", "Moises.ai", "SongDonkey", "Vocal Remover Pro",
-  "Krisp", "Cleanvoice", "Auphonic", "Adobe Podcast AI", "Audo Studio", "Noise Destroyer", "Accusonus ERA", "Izotope RX",
-  "Soundraw", "AIVA", "Amper Music", "Boomy", "Loudly", "Beatoven.ai", "Mubert", "MuseNet",
-  "Splash Pro", "Ecrett Music", "Soundful", "Harmony AI", "Amadeus Code", "Jukebox AI", "MusicLM", "MusicGen",
-  "VEED.io", "Kapwing", "Clipchamp", "FlexClip", "Animoto", "Lumen5", "Wave.video", "Fliki",
-  "Steve.ai", "Elai", "Raw Shorts", "Renderforest", "Biteable", "Animaker", "Powtoon", "Vyond",
-  "DeepL", "Google Translate", "Rask AI", "Papercup", "Dubverse", "Deepdub", "Checksub", "Camb AI",
-  "SubtitleBee", "AutoSub", "SubMagic", "Kapwing Subtitles", "Rev", "3Play Media", "Zubtitle", "MixCaptions",
-  "ControlNet", "ComfyUI", "Automatic1111", "InvokeAI", "Fooocus", "Easy Diffusion", "Diffusion Bee", "Draw Things",
-  "Artbreeder", "NightCafe", "Craiyon", "BlueWillow", "Starry AI", "Dream by WOMBO", "Deep Dream Generator", "ArtBot",
-  "Photoshop Generative Fill", "Lightroom AI", "Luminar Neo", "Skylum", "Perfectly Clear", "Topaz Photo AI", "DxO PhotoLab", "ON1 Photo RAW",
-  "Lensa AI", "FaceApp", "Remini", "Fotor", "BeautyPlus", "AirBrush", "Facetune", "PicsArt AI"
+  "SoundDesign Neural", "AudioLayer Pro", "DialogueClean AI", "NoiseReduce Studio", "RoomTone Analyzer", "ADR Script Pro", "LipSync Neural", "VoiceReplace Studio",
+  "FoleySound AI", "FootstepGen Pro", "MovementSound Studio", "FabricRustle AI", "DoorSound Pro", "ImpactSound Neural", "TextureSound Studio", "EnvironSound AI",
+  "AmbientSound Pro", "RoomAcoustics AI", "ReverbCalc Studio", "EchoDesign Pro", "SpatialAudio Neural", "SurroundPlace AI", "AtmosLayer Studio", "BinauralAudio Pro",
+  "MusicCompose Neural", "ThemeGen AI", "MotifCreator Pro", "LeitmotifDesign Studio", "UnderscoreBuild AI", "EmotionalScore Pro", "TempoCalc Studio", "KeySignature AI",
+  "Orchestration Neural", "InstrumentSelect Pro", "SectionBalance AI", "DynamicRange Studio", "MusicalTransition Pro", "CrescendoBuild AI", "BridgeCompose Studio", "OutroCreate Pro",
+  "SoundEffect Neural", "ImpactSelect AI", "WhooshGen Pro", "TransitionSound Studio", "AmbienceLoop AI", "NatureSound Pro", "UrbanSound Studio", "VehicleSound AI",
+  "WeaponSound Neural", "ExplosionBuild Pro", "FireSound AI", "WaterEffect Studio", "WeatherSound Pro", "WindDesign Neural", "RainSound Studio", "ThunderCreate AI",
+  "VoicePerformance Neural", "AccentDesign Pro", "PitchShift AI", "FormantChange Studio", "BreathControl Pro", "VocalTexture AI", "AgeEffect Studio", "GenderTransform Neural",
+  "DialogueEdit Pro", "LineTiming AI", "PauseLength Studio", "OverlapDetect Pro", "BreathRemove Neural", "ClickEliminate AI", "PopFilter Studio", "DeEsser Pro",
+  "AudioMix Neural", "LevelBalance AI", "EQ Optimizer Studio", "CompressionDesign Pro", "LimitingControl AI", "NoiseGate Studio", "Expander Pro", "SidechainRoute Neural",
+  "Mastering Neural Pro", "FinalMix AI", "LoudnessNormal Studio", "DynamicControl Pro", "StereoWidth AI", "PhaseCorrelation Studio", "FrequencyAnalyze Pro", "SpectrumBalance Neural",
+  "SubtitleGen Neural", "CaptionTime AI", "SubFormat Studio", "TranslationHelp Pro", "LocalizationMind AI", "FontStyleSelect Studio", "CaptionPosition Pro", "ReadSpeed Neural"
 ];
 
 export const aiToolsPage6 = [
-  "DaVinci Resolve AI", "Adobe Premiere Pro AI", "Final Cut Pro AI", "Avid Media Composer", "Vegas Pro AI", "Filmora AI", "HitFilm Pro", "Lightworks",
-  "Reface", "Deepfakes Web", "DeepFaceLab", "Faceswap", "Zao", "Reflect AI", "Swapface", "FacePlay",
-  "Neural.love", "Waifu2x", "AI Image Enlarger", "Deep Image", "ImgUpscaler", "VanceAI", "Let's Enhance", "BigJPG",
-  "Runway Inpainting", "ClipDrop", "Lama Cleaner", "Magic Eraser", "Object Remover", "TouchRetouch", "Snapseed", "VSCO",
-  "Palette.fm", "Colorize.cc", "MyHeritage", "DeOldify", "Hotpot AI", "ImageColorizer", "Colorcinch", "Phot.AI",
-  "Looka", "Brandmark", "Namelix", "LogoAI", "Tailor Brands", "Designs.ai Logo", "Brandcrowd", "Hatchful",
-  "Notion AI", "ChatPDF", "Claude for Docs", "PDF.ai", "Humata AI", "Sharly AI", "AskYourPDF", "DocuChat",
-  "Sembly AI", "tldv", "Fathom", "Circleback", "Granola", "Supernormal", "Tactiq", "MeetGeek",
-  "Decktopus", "Slides AI", "SlidesGPT", "Plus AI", "Presentations.AI", "Pitch", "Slidebean", "Visme AI",
-  "Figma AI", "Framer AI", "Webflow AI", "Dora AI", "10Web", "Wix ADI", "Bookmark AIDA", "Zyro AI",
-  "Simplified", "Predis.ai", "Creatify", "Hootsuite AI", "Buffer AI", "Ocoya", "Taplio", "Lately AI",
-  "Vista Social", "FeedHive", "Publer", "Sked Social", "SocialBee", "MeetEdgar", "CoSchedule", "Sprout Social AI"
+  "VideoEdit Neural", "Timeline Pro AI", "TrackManager Studio", "ClipSort Pro", "BinCreator AI", "ProjectOrganize Studio", "AssetManager Pro", "VersionControl Neural",
+  "RoughCut AI", "SceneSelector Pro", "TakeChooser Studio", "PerformanceFinder AI", "ContinuityCheck Pro", "PaceAnalyze Studio", "SceneLength Neural", "ActBreak AI",
+  "FineCut Neural Pro", "FrameTrim AI", "PrecisionCutter Studio", "MicroTiming Pro", "BeatMatch Neural", "RhythmAnalyze AI", "TempoKeep Studio", "FlowOptimize Pro",
+  "MontageBuilder AI", "QuickCut Neural", "MatchCut Finder Studio", "CrossCut Pro", "ParallelAction AI", "JumpCut Detector Studio", "SmashCut Pro", "InvisibleCut Neural",
+  "TransitionDesign AI", "CutPlacer Pro", "FadeDesign Studio", "DissolveCreate Neural", "WipeGen AI", "SlideTransition Pro", "PushEffect Studio", "ZoomTransition Neural",
+  "ColorGrade Pro", "PrimaryCorrect AI", "SecondaryIsolate Studio", "SkinTone Neural", "WhiteBalance Pro", "ExposureFix AI", "ContrastEnhance Studio", "SaturationControl Pro",
+  "LUT Designer Neural", "LookCreator AI", "FilmEmulation Pro", "CinemaMatch Studio", "VintageLook Neural", "ModernGrade AI", "CinematicColor Pro", "MoodColor Studio",
+  "ColorWheels Neural", "LiftAdjust AI", "GammaControl Pro", "GainOptimize Studio", "OffsetCorrect Neural", "ShadowDetail AI", "MidtoneBalance Pro", "HighlightProtect Studio",
+  "CurvesEditor Neural", "LumaCurve AI", "RGBCurve Pro", "ChannelMixer Studio", "HuevsHue Neural", "HuevsSat AI", "SatvsSat Pro", "LumavsSat Studio",
+  "HSL Qualifier Neural", "ColorRange AI", "ChromaKey Pro", "GreenScreen Studio", "BlueScreen Neural", "SpillSuppress AI", "EdgeFeather Pro", "ColorSpill Studio",
+  "PowerWindow Neural", "MaskDesigner AI", "GradientMaker Pro", "VignetteGen Studio", "SpotlightEffect Neural", "ShapeMask AI", "BezierCurve Pro", "TrackingWindow Studio",
+  "MotionTrack Neural", "PointTracker AI", "PlanarTrack Pro", "3DCameraTrack Studio", "ObjectTracker Neural", "FaceTracker AI", "Stabilization Pro", "MatchMove Studio"
 ];
 
 export const aiToolsPage7 = [
-  "Blender AI", "Spline AI", "Luma AI Genie", "CSM.ai", "Kaedim", "3DFY", "Masterpiece Studio", "Ponzu",
-  "PromptBase", "PromptHero", "Lexica", "Civitai", "PromptPerfect", "AIPRM", "Snack Prompt", "FlowGPT",
-  "Zapier AI", "Make (Integromat)", "n8n", "Pipedream", "Bardeen AI", "Axiom.ai", "Browserbear", "Axiom",
-  "Browse AI", "Diffbot", "Apify", "Scrapy Cloud", "Octoparse", "ParseHub", "Import.io", "Mozenda",
-  "Levity AI", "Nanonets", "Rossum", "Mindee", "Docsumo", "Hyperscience", "Eigen Technologies", "WorkFusion",
-  "Tidio", "Intercom AI", "Drift", "ManyChat", "MobileMonkey", "Chatfuel", "Landbot", "Botsify",
-  "Ada", "LivePerson", "Yellow.ai", "Kore.ai", "Rasa", "Botpress", "DialogFlow", "Amazon Lex",
-  "Synthesia Avatar", "Heygen Custom", "Colossyan Studio", "Hour One Create", "Elai Advanced", "D-ID Studio", "Movio Pro", "BHuman",
-  "Pictory Story", "Lumen5 Pro", "InVideo Studio", "Fliki Advanced", "Steve AI Pro", "Raw Shorts Plus", "Elai Custom", "Synthesys",
-  "Eleven Labs Voice", "Murf Studio", "Play.ht Advanced", "WellSaid Pro", "Resemble Custom", "Speechify Studio", "LOVO Pro", "Respeecher",
-  "Opus Pro", "Munch", "Vizard", "Klap", "Repurpose.io", "Choppity", "Powder", "QuickVid",
-  "Wisecut", "AutoPod", "FireCut", "JumpCut", "Gling", "Kamua", "Malloy", "EditAir"
+  "VFX Plate Neural", "CleanPlate AI", "WireRemoval Pro", "RigRemover Studio", "MarkerErase Neural", "BlemishFix AI", "DustBuster Pro", "FrameClean Studio",
+  "Compositing Neural", "AlphaChannel AI", "MatteGenerator Pro", "Rotoscoping Studio", "MaskAnimator Neural", "EdgeRefiner AI", "HairDetail Pro", "MotionBlur Studio",
+  "VisualEffects Neural", "ParticleSystem AI", "SmokeGen Pro", "FireCreator Studio", "WaterSimulate Neural", "ExplosionBuild AI", "MagicEffect Pro", "EnergyBeam Studio",
+  "3DElement Neural", "CGI Placement AI", "DepthMapper Pro", "PerspectiveMatch Studio", "LightingIntegrate Neural", "ShadowGen AI", "ReflectionCreate Pro", "EnvironmentMap Studio",
+  "TextAnimate Neural", "LowerThird AI", "TitleCard Pro", "CreditRoll Studio", "TypographyAnimate Neural", "KineticText AI", "TextTracking Pro", "3DText Studio",
+  "LogoAnimate Neural", "BrandIdentity AI", "WatermarkManager Pro", "BugPosition Studio", "GraphicOverlay Neural", "InfoBox AI", "CalloutMaker Pro", "Annotation Studio",
+  "SplitScreen Neural", "MultiView AI", "PictureInPicture Pro", "FrameDivider Studio", "QuadSplit Neural", "ComparisonView AI", "BeforeAfter Pro", "DualTimeline Studio",
+  "SpeedRamp Neural", "SlowMotion AI", "FastForward Pro", "TimeRemap Studio", "FrameBlend Neural", "OpticalFlow AI", "SpeedCurve Pro", "VelocityMap Studio",
+  "FreezeFrame Neural", "StillFrame AI", "PauseEffect Pro", "TimeStop Studio", "MomentCapture Neural", "FrameExtend AI", "CloningTool Pro", "StillExtract Studio",
+  "ReverseMotion Neural", "BackwardPlay AI", "RewindEffect Pro", "ReverseSpeed Studio", "MirrorTimeline Neural", "BackwardsAudio AI", "ReverseSync Pro", "Palindrome Studio",
+  "KenBurns Neural", "PanZoom AI", "StillAnimate Pro", "PhotoMotion Studio", "ZoomSpeed Neural", "PanPath AI", "EaseCurve Pro", "MotionSmooth Studio",
+  "Stabilizer Neural", "ShakeRemover AI", "WarpStabilize Pro", "CameraShake Studio", "SmoothCam Neural", "RollingShutter AI", "JelloRemove Pro", "HorizonLevel Studio"
 ];
 
 export const aiToolsPage8 = [
-  "TubeBuddy", "VidIQ", "Tuberanker", "Morningfame", "Social Blade", "Hootsuite YouTube", "Sprout Social", "Agorapulse",
-  "ThumbnailAI", "Pikzels", "Designrr", "Canva Thumbnails", "Snappa", "Crello", "VistaCreate", "Bannerbear",
-  "Brandwatch", "Mention", "Awario", "Brand24", "Talkwalker", "Meltwater", "Sprinklr", "Synthesio",
-  "Surfer SEO", "Clearscope", "MarketMuse", "Frase", "NeuronWriter", "Content Harmony", "Page Optimizer Pro", "Pop",
-  "SurferSEO", "SEMrush AI", "Ahrefs AI", "Moz AI", "Screaming Frog", "DeepCrawl", "Oncrawl", "Botify",
-  "HubSpot AI", "Salesforce Einstein", "Drift AI", "Conversica", "Exceed.ai", "6sense", "Demandbase", "Terminus",
-  "Persado", "Phrasee", "Copy.ai Ads", "Anyword", "AdCreative.ai", "Pencil", "Pattern89", "Celtra",
-  "Albert AI", "Adext", "Acquisio", "Kenshoo", "Marin Software", "QuanticMind", "Skai", "Smartly.io",
-  "Optimizely", "VWO", "AB Tasty", "Unbounce", "Instapage", "Landingi", "Leadpages", "GetResponse",
-  "Mailchimp AI", "ActiveCampaign AI", "Klaviyo", "Omnisend", "Sendinblue", "ConvertKit", "MailerLite", "Campaign Monitor",
-  "Persado Email", "Phrasee Email", "Seventh Sense", "Boomtrain", "Movable Ink", "Liveclicker", "Zembula", "Iterable",
-  "Crystal Knows", "Lavender", "Regie.ai", "Exceed.ai Sales", "People.ai", "Gong", "Chorus.ai", "Clari"
+  "LensCorrect Neural", "DistortionFix AI", "BarrelRemove Pro", "PincushionCorrect Studio", "ChromaticFix Neural", "VignetteRemove AI", "LensFlare Pro", "OpticsCompensate Studio",
+  "FilmGrain Neural", "TextureOverlay AI", "NoiseAdder Pro", "GritCreator Studio", "AnalogLook Neural", "FilmDamage AI", "ScratchGen Pro", "DustDirt Studio",
+  "BlurEffect Neural", "GaussianBlur AI", "MotionBlur Pro", "DirectionalBlur Studio", "RadialBlur Neural", "ZoomBlur AI", "TiltShift Pro", "DepthField Studio",
+  "SharpenTool Neural", "DetailEnhance AI", "EdgeSharpener Pro", "UnsharpMask Studio", "SmartSharpen Neural", "ClarityBoost AI", "MicroContrast Pro", "TextureEmphasize Studio",
+  "GlowEffect Neural", "SoftGlow AI", "BloomEffect Pro", "LightLeak Studio", "LensFlare Neural", "SunFlare AI", "AnamorphicFlare Pro", "StarFilter Studio",
+  "DistortionEffect Neural", "GlitchGen AI", "DigitalDistortion Pro", "VHS Effect Studio", "CRT Monitor Neural", "ScanLine AI", "PixelSorter Pro", "DataMosh Studio",
+  "FilmFormat Neural", "AspectRatio AI", "16mm Film Pro", "35mm Emulator Studio", "Super8 Gen Neural", "IMAX Format AI", "AnamorphicDesqueeze Pro", "ScopeFormat Studio",
+  "VintageCamera Neural", "OldFilm AI", "RetroVideo Pro", "80s VHS Studio", "90s Camcorder Neural", "70s FilmGrain AI", "60s Cinema Pro", "Hollywood Classic Studio",
+  "ModernDigital Neural", "4K Enhancement AI", "8K Upscaler Pro", "HDR ToneMap Studio", "WideColor Neural", "Rec2020 Convert AI", "DCIP3 Mapper Pro", "DolbyVision Studio",
+  "AudioVisual Neural", "WaveformGen AI", "SpectrumAnalyzer Pro", "MusicReaction Studio", "BeatDetector Neural", "FrequencyBar AI", "AudioParticle Pro", "SoundReactive Studio",
+  "MultiCam Neural", "AngleSelector AI", "CoverageAssemble Pro", "AngleCut Studio", "SimultaneousTime Neural", "SyncPoint AI", "AudioSync Pro", "TimecodeAlign Studio",
+  "Documentary Neural", "InterviewFrame AI", "BRoll Organizer Pro", "ArchiveFootage Studio", "TalkingHead Neural", "ContextInsert AI", "Reenactment Pro", "TimelineGraphics Studio"
 ];
 
 export const aiToolsPage9 = [
-  "Shopify Magic", "WooCommerce AI", "BigCommerce AI", "Magento AI", "Commerce.ai", "Salesforce Commerce", "Adobe Commerce", "SAP Commerce",
-  "Algolia AI", "Coveo", "Constructor", "Klevu", "Bloomreach", "SearchSpring", "Fast Simon", "Luigi's Box",
-  "Nosto", "Dynamic Yield", "Monetate", "Optimizely Commerce", "Qubit", "Barilliance", "Certona", "RichRelevance",
-  "Zendesk AI", "Freshdesk AI", "Help Scout AI", "Intercom Support", "Kustomer", "Front", "Gladly", "Ada Support",
-  "Legal Robot", "LawGeex", "Kira Systems", "eBrevia", "Luminance", "ROSS Intelligence", "Casetext CARA", "Everlaw",
-  "Grammarly Business", "ProWritingAid Teams", "Writer Enterprise", "Textio", "Acrolinx", "Wordtune Business", "LanguageTool Teams", "Atomic Reach",
-  "Receptiviti", "IBM Watson Tone", "Persado Emotion", "Empath", "Affectiva", "Realeyes", "iMotions", "Beyond Verbal",
-  "MonkeyLearn", "Lexalytics", "Aylien", "Clarabridge", "Luminoso", "Repustate", "ParallelDots", "Twinword",
-  "DataRobot", "H2O.ai", "Google AutoML", "Azure AutoML", "Amazon SageMaker", "Dataiku", "RapidMiner", "KNIME",
-  "Tableau AI", "Power BI AI", "Qlik Sense AI", "Looker", "Domo", "Sisense", "ThoughtSpot", "Yellowfin",
-  "Pecan AI", "Obviously AI", "Akkio", "MonkeyLearn", "Apteo", "MindsDB", "SuperAnnotate", "Labelbox",
-  "V7", "Dataloop", "Scale AI", "Appen", "Snorkel AI", "Aquarium", "Roboflow", "Encord"
+  "MusicVideo Neural", "BeatSync AI", "LyricTiming Pro", "PerformanceCut Studio", "MultiTake Neural", "ChorusVariation AI", "BridgeTransition Pro", "OutroFade Studio",
+  "Commercial Neural", "QuickCut AI", "ProductShot Pro", "CTA Overlay Studio", "EndCard Neural", "BumperDesign AI", "PreRoll Pro", "PostRoll Studio",
+  "SocialMedia Neural", "VerticalVideo AI", "SquareFormat Pro", "StoryTemplate Studio", "ReelEditor Neural", "TikTok Optimize AI", "Instagram Adapt Pro", "YouTube Thumbnail Studio",
+  "TrailerBuild Neural", "TeaseCut AI", "HighlightReel Pro", "SizzleReel Studio", "ComingSoon Neural", "TeaserAssemble AI", "PreviewCut Pro", "PromoVideo Studio",
+  "BehindScenes Neural", "MakingOf AI", "BRoll Selector Pro", "InterviewClip Studio", "SetFootage Neural", "BlooperReel AI", "DeletedScene Pro", "ExtendedCut Studio",
+  "MultiLanguage Neural", "DubbedAudio AI", "ForeignLanguage Pro", "InternationalCut Studio", "TerritoryVersion Neural", "CensoredVersion AI", "TV Edit Pro", "AirlineCut Studio",
+  "DirectorsCut Neural", "ExtendedEdition AI", "UnratedVersion Pro", "SpecialEdition Studio", "Remastered Neural", "EnhancedCut AI", "Redux Edition Pro", "UltimateCut Studio",
+  "ArchiveManager Neural", "BackupCreator AI", "ProjectOrganize Pro", "AssetCataloger Studio", "MetadataTag Neural", "SearchIndex AI", "VersionHistory Pro", "ChangeLog Studio",
+  "ExportManager Neural", "FormatConverter AI", "CodecSelector Pro", "BitrateOptimize Studio", "ResolutionScale Neural", "FrameRate Convert AI", "DeliveryPackage Pro", "DCP Generator Studio",
+  "QualityControl Neural", "TechnicalInspect AI", "ColorSpace Validator Pro", "AudioLevel Check Studio", "SyncDrift Neural", "DropoutFinder AI", "ArtifactIdentify Pro", "GlitchDetect Studio",
+  "BroadcastSafe Neural", "LumaLevel AI", "ChromaSafe Pro", "IllegalColor Studio", "AudioPeak Neural", "LoudnessStandard AI", "SafeTitle Pro", "SafeAction Studio",
+  "StreamOptimize Neural", "Netflix Spec AI", "Amazon Validator Pro", "HBO Standards Studio", "Disney Format Neural", "AppleTV Specs AI", "YouTube Optimize Pro", "Vimeo Standard Studio"
 ];
 
 export const getToolsForPage = (page: number): string[] => {
