@@ -29,6 +29,8 @@ export default function Page11({ onNavigate }: PageProps) {
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
   const [showMyMovies, setShowMyMovies] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+  const [moviePrompt, setMoviePrompt] = useState('');
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -115,6 +117,49 @@ export default function Page11({ onNavigate }: PageProps) {
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
     if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
     return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+  };
+
+  const handleGenerateMovie = async () => {
+    if (!moviePrompt.trim() || assets.length === 0 || !user) {
+      alert('Please add some media and enter a prompt for your movie!');
+      return;
+    }
+
+    setGenerating(true);
+    try {
+      const mediaAssets = assets.filter(a =>
+        a.file_type.startsWith('image/') ||
+        a.file_type.startsWith('video/') ||
+        a.file_type.startsWith('audio/')
+      );
+
+      if (mediaAssets.length === 0) {
+        alert('No media assets found. Please upload images, videos, or audio files.');
+        return;
+      }
+
+      const { data: project, error: projectError } = await supabase
+        .from('movie_projects')
+        .insert({
+          user_id: user.id,
+          title: moviePrompt.substring(0, 50) || 'New Movie',
+          description: moviePrompt,
+          status: 'draft'
+        })
+        .select()
+        .single();
+
+      if (projectError) throw projectError;
+
+      alert(`Movie project "${project.title}" created! Your ${mediaAssets.length} assets are ready. You can now edit and render your movie.`);
+      setMoviePrompt('');
+      setShowMyMovies(true);
+    } catch (error) {
+      console.error('Error creating movie:', error);
+      alert(`Failed to create movie: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setGenerating(false);
+    }
   };
 
   return (
@@ -325,14 +370,45 @@ export default function Page11({ onNavigate }: PageProps) {
                     </div>
                   </div>
 
-                  {/* Quick Actions */}
+                  {/* Movie Creation Prompt */}
                   <div className="bg-gradient-to-r from-blue-900/30 to-cyan-900/30 rounded-xl p-6 border border-cyan-500/30">
-                    <h3 className="text-lg font-bold text-white mb-3">Next Steps</h3>
-                    <div className="space-y-2 text-sm text-slate-300">
-                      <p>✓ Upload more assets to build your library</p>
-                      <p>✓ Use AI Tools to enhance your content</p>
-                      <p>✓ Create movies from your assets</p>
-                      <p>✓ Share with your team</p>
+                    <div className="flex items-center gap-3 mb-4">
+                      <Sparkles className="w-6 h-6 text-cyan-400" />
+                      <h3 className="text-lg font-bold text-white">Create Movie from Your Media</h3>
+                    </div>
+                    <p className="text-sm text-slate-300 mb-4">
+                      Describe your movie idea and we'll create a project using your uploaded assets.
+                    </p>
+                    <div className="space-y-3">
+                      <textarea
+                        value={moviePrompt}
+                        onChange={(e) => setMoviePrompt(e.target.value)}
+                        placeholder="Example: Create an epic montage of my best moments with dramatic music and smooth transitions..."
+                        className="w-full bg-slate-900/50 border border-slate-600 rounded-lg p-4 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 min-h-[100px] resize-y"
+                        disabled={generating}
+                      />
+                      <button
+                        onClick={handleGenerateMovie}
+                        disabled={generating || !moviePrompt.trim() || assets.length === 0}
+                        className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-all shadow-lg disabled:shadow-none flex items-center justify-center gap-2"
+                      >
+                        {generating ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Creating Project...
+                          </>
+                        ) : (
+                          <>
+                            <Film className="w-5 h-5" />
+                            Generate Movie Project
+                          </>
+                        )}
+                      </button>
+                      {assets.length === 0 && (
+                        <p className="text-xs text-yellow-400 text-center">
+                          Upload some media files first to create a movie!
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
