@@ -98,7 +98,7 @@ export default function Page11({ onNavigate }: PageProps) {
       const uploadPromises = Array.from(files).map(file =>
         uploadFile(file, user.id, (progress) => {
           setUploadProgress(prev => ({ ...prev, [file.name]: progress }));
-        })
+        }, true)
       );
       const results = await Promise.all(uploadPromises);
 
@@ -204,7 +204,7 @@ export default function Page11({ onNavigate }: PageProps) {
       const uploadPromises = Array.from(files).map(file =>
         uploadFile(file, user.id, (progress) => {
           setUploadProgress(prev => ({ ...prev, [file.name]: progress }));
-        })
+        }, true)
       );
       const results = await Promise.all(uploadPromises);
 
