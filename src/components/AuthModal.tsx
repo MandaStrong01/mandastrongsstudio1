@@ -21,12 +21,30 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin,
+          }
+        });
+        if (error) throw error;
+
+        if (data.user) {
+          await supabase.from('profiles').upsert({
+            id: data.user.id,
+            email: data.user.email,
+            plan: 'free'
+          });
+        }
+
+        alert('Account created! Signing you in...');
+
+        const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
-        if (error) throw error;
-        alert('Account created successfully!');
+        if (signInError) throw signInError;
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
