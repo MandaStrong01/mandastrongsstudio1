@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, X, Upload, Loader2, Download, Wand2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, X, Upload, Loader2, Download, Wand2, Film } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile } from '../lib/storage';
 import { initializeGoogleDrive, openGooglePicker, downloadGoogleDriveFile } from '../lib/googleDrive';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
+import MyMovies from '../components/MyMovies';
 import { Asset, isMediaAsset } from '../types/ai-tools';
 
 interface PageProps {
@@ -39,6 +40,11 @@ export default function Page11({ onNavigate }: PageProps) {
   const [enhancing, setEnhancing] = useState(false);
   const [showEnhanceModal, setShowEnhanceModal] = useState(false);
   const [enhancedAsset, setEnhancedAsset] = useState<any>(null);
+  const [renderJobId, setRenderJobId] = useState<string | null>(null);
+  const [renderProgress, setRenderProgress] = useState(0);
+  const [renderStatus, setRenderStatus] = useState('');
+  const [showProgressModal, setShowProgressModal] = useState(false);
+  const [showMyMovies, setShowMyMovies] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -466,54 +472,120 @@ export default function Page11({ onNavigate }: PageProps) {
     }
 
     setGenerating(true);
-    try {
-      const allSelectedAssets = assets.filter(a => a).map(a => ({
-        id: a.id,
-        name: isMediaAsset(a) ? a.file_name : a.tool_name,
-        type: isMediaAsset(a) ? a.asset_type : 'ai_output'
-      }));
+    setRenderProgress(0);
+    setRenderStatus('Preparing to generate your movie...');
 
+    try {
+      const mediaAssets = assets.filter(a => isMediaAsset(a));
+
+      if (mediaAssets.length === 0) {
+        alert('Please upload at least one video, image, or audio file to generate a movie.');
+        return;
+      }
+
+      const assetIds = mediaAssets.map(a => a.id);
       const scenes = generateScenes(duration);
 
-      const generationConfig = {
-        primaryAsset: selectedAsset,
-        allAssets: allSelectedAssets,
-        scenes,
-        totalScenes: scenes.length,
-        settings: {
-          duration,
-          ratio,
-          size,
-          volume,
-          timestamp: new Date().toISOString()
-        },
-        projectName: `Movie - ${formatTime(duration)} - ${new Date().toLocaleDateString()}`,
-        totalAssets: assets.length
-      };
-
-      await new Promise(resolve => setTimeout(resolve, 2500));
-
-      const { data, error } = await supabase
-        .from('ai_tool_outputs')
+      const { data: renderJob, error: jobError } = await supabase
+        .from('render_jobs')
         .insert({
           user_id: user.id,
-          tool_name: 'Movie Generator',
-          output_data: generationConfig
+          title: `Movie - ${formatTime(duration)} - ${new Date().toLocaleDateString()}`,
+          description: `Generated from ${mediaAssets.length} uploaded assets`,
+          target_duration: duration,
+          aspect_ratio: ratio,
+          resolution: size,
+          scene_count: scenes.length,
+          scene_breakdown: scenes,
+          asset_ids: assetIds,
+          primary_asset_id: selectedAsset.id,
+          video_settings: { ratio, size },
+          audio_settings: { volume },
+          status: 'pending'
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (jobError) throw jobError;
 
-      setGeneratedOutput(data);
-      setShowSuccessModal(true);
-      await loadAssets();
+      setRenderJobId(renderJob.id);
+      setShowProgressModal(true);
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      const generateResponse = await fetch(
+        `${supabaseUrl}/functions/v1/generate-movie`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabaseAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ jobId: renderJob.id })
+        }
+      );
+
+      if (!generateResponse.ok) {
+        const errorData = await generateResponse.json();
+        throw new Error(errorData.error || 'Failed to start movie generation');
+      }
+
+      pollRenderStatus(renderJob.id);
+
     } catch (error) {
       console.error('Generation error:', error);
       alert('Failed to generate movie. Please try again or contact support.');
-    } finally {
+      setShowProgressModal(false);
       setGenerating(false);
     }
+  };
+
+  const pollRenderStatus = async (jobId: string) => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const statusResponse = await fetch(
+          `${supabaseUrl}/functions/v1/check-render-status?jobId=${jobId}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${supabaseAnonKey}`,
+            }
+          }
+        );
+
+        if (!statusResponse.ok) {
+          throw new Error('Failed to check render status');
+        }
+
+        const { job } = await statusResponse.json();
+
+        setRenderProgress(job.progress || 0);
+        setRenderStatus(job.currentStep || 'Processing...');
+
+        if (job.status === 'completed') {
+          clearInterval(pollInterval);
+          setGenerating(false);
+          setShowProgressModal(false);
+          setGeneratedOutput(job);
+          setShowSuccessModal(true);
+          await loadAssets();
+        } else if (job.status === 'failed') {
+          clearInterval(pollInterval);
+          setGenerating(false);
+          setShowProgressModal(false);
+          alert(`Movie generation failed: ${job.error || 'Unknown error'}`);
+        } else if (job.status === 'cancelled') {
+          clearInterval(pollInterval);
+          setGenerating(false);
+          setShowProgressModal(false);
+        }
+      } catch (error) {
+        console.error('Error polling status:', error);
+      }
+    }, 2000);
   };
 
   const downloadMediaFile = async (asset: Asset) => {
@@ -570,7 +642,16 @@ export default function Page11({ onNavigate }: PageProps) {
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-full w-full mx-auto flex-1 flex flex-col">
-          <h1 className="text-2xl md:text-3xl font-black text-purple-400 mb-4 text-center">Editor Dashboard</h1>
+          <div className="flex items-center justify-between mb-4 max-w-4xl mx-auto w-full">
+            <h1 className="text-2xl md:text-3xl font-black text-purple-400">Editor Dashboard</h1>
+            <button
+              onClick={() => setShowMyMovies(true)}
+              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold px-4 py-2 rounded-lg transition-all shadow-lg shadow-purple-600/50"
+            >
+              <Film className="w-5 h-5" />
+              My Movies
+            </button>
+          </div>
 
           <div className="bg-gradient-to-br from-purple-900/50 to-purple-800/40 border-2 border-purple-400/70 rounded-xl p-4 mb-4 mx-auto max-w-4xl">
             <div className="flex items-start gap-3">
@@ -1185,6 +1266,40 @@ export default function Page11({ onNavigate }: PageProps) {
         </div>
       )}
 
+      {showProgressModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-gradient-to-br from-purple-900/90 to-black/90 border-2 border-purple-400 rounded-2xl p-8 max-w-lg w-full shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="w-20 h-20 mx-auto mb-4 bg-purple-500 rounded-full flex items-center justify-center">
+                <Loader2 className="w-10 h-10 text-white animate-spin" />
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-3">Generating Your Movie</h2>
+              <p className="text-white/80 text-lg mb-4">
+                Please wait while we create your {formatTime(duration)} movie...
+              </p>
+              <div className="bg-black/50 border border-purple-500/30 rounded-lg p-6 mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-purple-300 font-semibold">Progress</span>
+                  <span className="text-purple-400 font-bold text-xl">{renderProgress}%</span>
+                </div>
+                <div className="w-full bg-purple-900/50 rounded-full h-4 mb-3 overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
+                    style={{ width: `${renderProgress}%` }}
+                  />
+                </div>
+                <p className="text-sm text-purple-300/80">
+                  {renderStatus}
+                </p>
+              </div>
+              <p className="text-xs text-purple-400/70">
+                This may take several minutes depending on movie length and complexity
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
           <div className="bg-gradient-to-br from-green-900/90 to-black/90 border-2 border-green-400 rounded-2xl p-8 max-w-lg w-full shadow-2xl">
@@ -1194,29 +1309,32 @@ export default function Page11({ onNavigate }: PageProps) {
               </div>
               <h2 className="text-3xl font-bold text-white mb-3">Movie Generated Successfully!</h2>
               <p className="text-white/80 text-lg mb-4">
-                Your {formatTime(duration)} movie has been created and saved to your Media Box.
+                Your {formatTime(duration)} movie has been created!
               </p>
               {generatedOutput && (
                 <div className="bg-black/50 border border-green-500/30 rounded-lg p-4 mb-4 text-left">
                   <p className="text-sm text-green-300 mb-2">
-                    <span className="font-bold">Project:</span>{' '}
-                    {generatedOutput.output_data.projectName}
+                    <span className="font-bold">Title:</span> {generatedOutput.title}
                   </p>
                   <p className="text-sm text-green-300 mb-2">
-                    <span className="font-bold">Duration:</span> {formatTime(generatedOutput.output_data.settings.duration)}
+                    <span className="font-bold">Duration:</span> {generatedOutput.targetDuration} minutes
                   </p>
                   <p className="text-sm text-green-300 mb-2">
-                    <span className="font-bold">Settings:</span> {generatedOutput.output_data.settings.size},{' '}
-                    {generatedOutput.output_data.settings.ratio}
+                    <span className="font-bold">Resolution:</span> {generatedOutput.resolution}
                   </p>
                   <p className="text-sm text-green-300 mb-2">
-                    <span className="font-bold">Scenes:</span> {generatedOutput.output_data.totalScenes} scenes
+                    <span className="font-bold">Aspect Ratio:</span> {generatedOutput.aspectRatio}
                   </p>
                   <p className="text-sm text-green-300 mb-2">
-                    <span className="font-bold">Assets Used:</span> {generatedOutput.output_data.totalAssets}
+                    <span className="font-bold">Scenes:</span> {generatedOutput.sceneCount} scenes
                   </p>
+                  {generatedOutput.processingTime && (
+                    <p className="text-xs text-green-400/70 mt-2">
+                      Processing time: {Math.floor(generatedOutput.processingTime / 60)}m {generatedOutput.processingTime % 60}s
+                    </p>
+                  )}
                   <p className="text-xs text-green-400/70">
-                    Generated {new Date(generatedOutput.created_at).toLocaleString()}
+                    Completed {new Date(generatedOutput.completedAt).toLocaleString()}
                   </p>
                 </div>
               )}
@@ -1294,6 +1412,10 @@ export default function Page11({ onNavigate }: PageProps) {
             </button>
           </div>
         </div>
+      )}
+
+      {showMyMovies && (
+        <MyMovies onClose={() => setShowMyMovies(false)} />
       )}
 
       <QuickAccess onNavigate={onNavigate} />
