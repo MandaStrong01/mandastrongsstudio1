@@ -105,10 +105,13 @@ export default function Page11({ onNavigate }: PageProps) {
       }
 
       if (results.some(r => !r.success)) {
-        alert(`${successCount} of ${files.length} files uploaded successfully`);
+        const failedFiles = results.filter(r => !r.success);
+        const errorMessages = failedFiles.map(r => r.error).join('\n');
+        alert(`${successCount} of ${files.length} files uploaded successfully.\n\nErrors:\n${errorMessages}`);
       }
     } catch (error) {
-      alert('Failed to upload files');
+      console.error('Upload error:', error);
+      alert(`Failed to upload files: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setUploading(false);
       setUploadProgress({});
@@ -208,10 +211,13 @@ export default function Page11({ onNavigate }: PageProps) {
       }
 
       if (results.some(r => !r.success)) {
-        alert(`${successCount} of ${files.length} files uploaded successfully`);
+        const failedFiles = results.filter(r => !r.success);
+        const errorMessages = failedFiles.map(r => r.error).join('\n');
+        alert(`${successCount} of ${files.length} files uploaded successfully.\n\nErrors:\n${errorMessages}`);
       }
     } catch (error) {
-      alert('Failed to upload files');
+      console.error('Drag & drop upload error:', error);
+      alert(`Failed to upload files: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setUploading(false);
       setUploadProgress({});

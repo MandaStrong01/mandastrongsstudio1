@@ -40,6 +40,43 @@ export async function getUserTeam(userId: string): Promise<string | null> {
   return teamId;
 }
 
+async function uploadWithRetry(
+  fileName: string,
+  file: File,
+  maxRetries: number = 3
+): Promise<{ data: any; error: any }> {
+  let lastError;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await supabase.storage
+        .from('media-assets')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: file.type || 'application/octet-stream',
+        });
+
+      if (!result.error) {
+        return result;
+      }
+
+      lastError = result.error;
+
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      }
+    } catch (err) {
+      lastError = err;
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      }
+    }
+  }
+
+  return { data: null, error: lastError };
+}
+
 export async function uploadFile(
   file: File,
   userId: string,
@@ -58,18 +95,26 @@ export async function uploadFile(
     const timestamp = Date.now();
     const fileName = `${userId}/${timestamp}_${file.name}`;
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('media-assets')
-      .upload(fileName, optimizedFile, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: file.type,
-      });
+    const { data: uploadData, error: uploadError } = await uploadWithRetry(
+      fileName,
+      optimizedFile,
+      3
+    );
 
     if (onProgress) onProgress(75);
 
     if (uploadError) {
-      return { success: false, error: uploadError.message };
+      console.error('Storage upload error:', {
+        message: uploadError.message,
+        fileName: file.name,
+        fileSize: optimizedFile.size,
+        fileType: file.type,
+        error: uploadError
+      });
+      return {
+        success: false,
+        error: `Upload failed: ${uploadError.message || 'Unknown error'}`
+      };
     }
 
     const { data: { publicUrl } } = supabase.storage
