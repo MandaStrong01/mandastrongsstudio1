@@ -17,27 +17,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-
-      if (session?.user) {
-        setUser(session.user);
-        setLoading(false);
-      } else {
-        const { data, error } = await supabase.auth.signInAnonymously();
-        if (error) {
-          console.error('Anonymous sign in error:', error);
-        } else {
-          setUser(data.user);
-        }
-        setLoading(false);
-      }
+      setUser(session?.user ?? null);
+      setLoading(false);
     };
 
     initAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      (async () => {
-        setUser(session?.user ?? null);
-      })();
+      setUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
@@ -45,10 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    const { data } = await supabase.auth.signInAnonymously();
-    if (data.user) {
-      setUser(data.user);
-    }
+    setUser(null);
   };
 
   return (

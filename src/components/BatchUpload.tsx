@@ -35,8 +35,8 @@ export default function BatchUpload() {
   };
 
   const handleUploadAndProcess = async () => {
-    if (!file || !user) {
-      alert('Please select a file and sign in');
+    if (!file) {
+      alert('Please select a file');
       return;
     }
 
@@ -46,7 +46,8 @@ export default function BatchUpload() {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
+      const userId = user?.id || 'guest';
+      const filePath = `${userId}/${fileName}`;
 
       setUploadProgress(25);
 
@@ -89,7 +90,7 @@ export default function BatchUpload() {
           const { data, error } = await supabase
             .from('ai_tool_results')
             .insert({
-              user_id: user.id,
+              user_id: userId,
               tool_name: tool,
               input_file_url: publicUrl,
               input_prompt: prompt,
