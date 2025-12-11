@@ -33,6 +33,9 @@ export default function Page11({ onNavigate }: PageProps) {
   const [aiCalculating, setAiCalculating] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
+  const [sendingToMedia, setSendingToMedia] = useState(false);
+  const [showMediaModal, setShowMediaModal] = useState(false);
+  const [savedMediaAsset, setSavedMediaAsset] = useState<any>(null);
 
   useEffect(() => {
     if (user) {
@@ -304,6 +307,91 @@ export default function Page11({ onNavigate }: PageProps) {
     }
   };
 
+  const generateScenes = (totalDuration: number) => {
+    const scenes = [];
+    const sceneTypes = [
+      'Opening Scene',
+      'Character Introduction',
+      'Action Sequence',
+      'Dramatic Moment',
+      'Montage',
+      'Climax Scene',
+      'Resolution',
+      'Closing Scene'
+    ];
+
+    const numScenes = Math.min(Math.max(Math.floor(totalDuration / 10), 3), sceneTypes.length);
+    const sceneDuration = totalDuration / numScenes;
+
+    for (let i = 0; i < numScenes; i++) {
+      scenes.push({
+        id: `scene-${i + 1}`,
+        name: sceneTypes[i],
+        duration: sceneDuration,
+        startTime: i * sceneDuration,
+        endTime: (i + 1) * sceneDuration
+      });
+    }
+
+    return scenes;
+  };
+
+  const handleSendToMedia = async () => {
+    if (!user) {
+      alert('Please sign in to save to Media Box.');
+      return;
+    }
+
+    if (duration < 1 || duration > 120) {
+      alert('Please set a valid duration between 1 and 120 minutes.');
+      return;
+    }
+
+    setSendingToMedia(true);
+    try {
+      const scenes = generateScenes(duration);
+
+      const mediaConfig = {
+        duration,
+        ratio,
+        size,
+        volume,
+        scenes,
+        totalScenes: scenes.length,
+        settings: {
+          duration,
+          ratio,
+          size,
+          volume,
+          timestamp: new Date().toISOString()
+        },
+        projectName: `Enhanced Media - ${formatTime(duration)} - ${new Date().toLocaleDateString()}`,
+        type: 'enhanced_media'
+      };
+
+      const { data, error } = await supabase
+        .from('ai_tool_outputs')
+        .insert({
+          user_id: user.id,
+          tool_name: 'Enhanced Media Project',
+          output_data: mediaConfig
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setSavedMediaAsset(data);
+      setShowMediaModal(true);
+      await loadAssets();
+    } catch (error) {
+      console.error('Send to Media error:', error);
+      alert('Failed to save to Media Box. Please try again.');
+    } finally {
+      setSendingToMedia(false);
+    }
+  };
+
   const handleGenerate = async () => {
     if (!user) {
       alert('Please sign in to generate your movie.');
@@ -328,9 +416,13 @@ export default function Page11({ onNavigate }: PageProps) {
         type: isMediaAsset(a) ? a.asset_type : 'ai_output'
       }));
 
+      const scenes = generateScenes(duration);
+
       const generationConfig = {
         primaryAsset: selectedAsset,
         allAssets: allSelectedAssets,
+        scenes,
+        totalScenes: scenes.length,
         settings: {
           duration,
           ratio,
@@ -756,7 +848,7 @@ export default function Page11({ onNavigate }: PageProps) {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6 flex-wrap">
             <button
               onClick={() => onNavigate(10)}
               className="flex items-center justify-center gap-2 bg-black text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-900 transition-all border border-purple-500"
@@ -764,6 +856,32 @@ export default function Page11({ onNavigate }: PageProps) {
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
+
+            <div className="relative group">
+              <button
+                onClick={handleSendToMedia}
+                disabled={sendingToMedia || !user}
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-black px-8 sm:px-12 py-5 rounded-xl text-lg sm:text-xl hover:from-blue-500 hover:to-blue-400 transition-all disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed shadow-lg shadow-blue-600/50 border-2 border-blue-400 disabled:border-gray-500 disabled:shadow-none"
+              >
+                {sendingToMedia ? (
+                  <>
+                    <div className="animate-spin w-6 h-6 border-3 border-white border-t-transparent rounded-full"></div>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-6 h-6" />
+                    Send to Media
+                  </>
+                )}
+              </button>
+              {!user && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-black/90 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap z-10">
+                  Please sign in to save
+                </div>
+              )}
+            </div>
+
             <div className="relative group">
               <button
                 onClick={handleGenerate}
@@ -783,12 +901,12 @@ export default function Page11({ onNavigate }: PageProps) {
                 )}
               </button>
               {!user && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-black/90 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap">
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-black/90 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap z-10">
                   Please sign in to generate
                 </div>
               )}
               {user && !selectedAsset && !generating && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-black/90 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap">
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-black/90 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap z-10">
                   Select an asset to generate
                 </div>
               )}
@@ -899,6 +1017,9 @@ export default function Page11({ onNavigate }: PageProps) {
                     {generatedOutput.output_data.settings.ratio}
                   </p>
                   <p className="text-sm text-green-300 mb-2">
+                    <span className="font-bold">Scenes:</span> {generatedOutput.output_data.totalScenes} scenes
+                  </p>
+                  <p className="text-sm text-green-300 mb-2">
                     <span className="font-bold">Assets Used:</span> {generatedOutput.output_data.totalAssets}
                   </p>
                   <p className="text-xs text-green-400/70">
@@ -915,6 +1036,66 @@ export default function Page11({ onNavigate }: PageProps) {
             <button
               onClick={() => setShowSuccessModal(false)}
               className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
+            >
+              Continue Editing
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showMediaModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-gradient-to-br from-blue-900/90 to-black/90 border-2 border-blue-400 rounded-2xl p-8 max-w-lg w-full shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="w-20 h-20 mx-auto mb-4 bg-blue-500 rounded-full flex items-center justify-center animate-pulse">
+                <Upload className="w-10 h-10 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-3">Saved to Media Box!</h2>
+              <p className="text-white/80 text-lg mb-4">
+                Your {formatTime(duration)} enhanced media project with auto-generated scenes has been saved.
+              </p>
+              {savedMediaAsset && (
+                <div className="bg-black/50 border border-blue-500/30 rounded-lg p-4 mb-4 text-left">
+                  <p className="text-sm text-blue-300 mb-2">
+                    <span className="font-bold">Project:</span>{' '}
+                    {savedMediaAsset.output_data.projectName}
+                  </p>
+                  <p className="text-sm text-blue-300 mb-2">
+                    <span className="font-bold">Duration:</span> {formatTime(savedMediaAsset.output_data.duration)}
+                  </p>
+                  <p className="text-sm text-blue-300 mb-2">
+                    <span className="font-bold">Settings:</span> {savedMediaAsset.output_data.size},{' '}
+                    {savedMediaAsset.output_data.ratio}
+                  </p>
+                  <p className="text-sm text-blue-300 mb-2">
+                    <span className="font-bold">Scenes Created:</span> {savedMediaAsset.output_data.totalScenes} scenes
+                  </p>
+                  {savedMediaAsset.output_data.scenes && savedMediaAsset.output_data.scenes.length > 0 && (
+                    <div className="mt-3 p-3 bg-blue-950/40 border border-blue-500/20 rounded-lg">
+                      <p className="text-xs text-blue-200 font-bold mb-2">Scene Breakdown:</p>
+                      <div className="space-y-1 max-h-32 overflow-y-auto">
+                        {savedMediaAsset.output_data.scenes.map((scene: any, index: number) => (
+                          <p key={index} className="text-xs text-blue-300">
+                            {index + 1}. {scene.name} ({formatTime(scene.duration)})
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <p className="text-xs text-blue-400/70 mt-2">
+                    Saved {new Date(savedMediaAsset.created_at).toLocaleString()}
+                  </p>
+                </div>
+              )}
+              <div className="bg-blue-900/30 border border-blue-500/40 rounded-lg p-3 mt-4">
+                <p className="text-sm text-blue-200">
+                  Your enhanced media is now available in the Media Box. Continue editing or generate your movie!
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowMediaModal(false)}
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
             >
               Continue Editing
             </button>
