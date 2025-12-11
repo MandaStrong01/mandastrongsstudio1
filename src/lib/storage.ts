@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { optimizeFile } from './compression';
+import { optimizeFile, getCachedTeam, setCachedTeam } from './compression';
 
 export interface UploadResult {
   success: boolean;
@@ -15,6 +15,11 @@ export interface UploadProgress {
 }
 
 export async function getUserTeam(userId: string): Promise<string | null> {
+  const cached = getCachedTeam(userId);
+  if (cached !== undefined) {
+    return cached;
+  }
+
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user?.email) return null;
 
@@ -26,10 +31,13 @@ export async function getUserTeam(userId: string): Promise<string | null> {
     .maybeSingle();
 
   if (error || !data) {
+    setCachedTeam(userId, null);
     return null;
   }
 
-  return data.team_id;
+  const teamId = data.team_id;
+  setCachedTeam(userId, teamId);
+  return teamId;
 }
 
 export async function uploadFile(
@@ -38,11 +46,14 @@ export async function uploadFile(
   onProgress?: (progress: number) => void
 ): Promise<UploadResult> {
   try {
-    if (onProgress) onProgress(10);
+    if (onProgress) onProgress(5);
 
-    const optimizedFile = await optimizeFile(file);
+    const [optimizedFile, teamId] = await Promise.all([
+      optimizeFile(file),
+      getUserTeam(userId)
+    ]);
 
-    if (onProgress) onProgress(30);
+    if (onProgress) onProgress(35);
 
     const timestamp = Date.now();
     const fileName = `${userId}/${timestamp}_${file.name}`;
@@ -55,7 +66,7 @@ export async function uploadFile(
         contentType: file.type,
       });
 
-    if (onProgress) onProgress(70);
+    if (onProgress) onProgress(75);
 
     if (uploadError) {
       return { success: false, error: uploadError.message };
@@ -73,9 +84,7 @@ export async function uploadFile(
       ? 'audio'
       : 'other';
 
-    const teamId = await getUserTeam(userId);
-
-    if (onProgress) onProgress(85);
+    if (onProgress) onProgress(90);
 
     const { data: assetData, error: assetError } = await supabase
       .from('assets')

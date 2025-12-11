@@ -1,4 +1,4 @@
-export async function compressImage(file: File, maxSizeMB: number = 2): Promise<File> {
+export async function compressImage(file: File, maxSizeMB: number = 3): Promise<File> {
   if (!file.type.startsWith('image/')) {
     return file;
   }
@@ -16,7 +16,7 @@ export async function compressImage(file: File, maxSizeMB: number = 2): Promise<
         const canvas = document.createElement('canvas');
         let { width, height } = img;
 
-        const maxDimension = 1920;
+        const maxDimension = fileSizeMB > 10 ? 1280 : 1920;
         if (width > maxDimension || height > maxDimension) {
           if (width > height) {
             height = (height / width) * maxDimension;
@@ -36,8 +36,11 @@ export async function compressImage(file: File, maxSizeMB: number = 2): Promise<
           return;
         }
 
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, width, height);
 
+        const quality = fileSizeMB > 10 ? 0.7 : 0.8;
         canvas.toBlob(
           (blob) => {
             if (!blob || blob.size >= file.size) {
@@ -52,7 +55,7 @@ export async function compressImage(file: File, maxSizeMB: number = 2): Promise<
             resolve(compressedFile);
           },
           file.type,
-          0.85
+          quality
         );
       };
       img.src = e.target?.result as string;
@@ -63,7 +66,22 @@ export async function compressImage(file: File, maxSizeMB: number = 2): Promise<
 
 export async function optimizeFile(file: File): Promise<File> {
   if (file.type.startsWith('image/')) {
-    return compressImage(file, 2);
+    return compressImage(file, 3);
   }
   return file;
+}
+
+const teamCache = new Map<string, { teamId: string | null; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000;
+
+export function getCachedTeam(userId: string): string | null | undefined {
+  const cached = teamCache.get(userId);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    return cached.teamId;
+  }
+  return undefined;
+}
+
+export function setCachedTeam(userId: string, teamId: string | null): void {
+  teamCache.set(userId, { teamId, timestamp: Date.now() });
 }

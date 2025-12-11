@@ -387,23 +387,26 @@ export default function Page11({ onNavigate }: PageProps) {
               )}
 
               {uploading && Object.keys(uploadProgress).length > 0 && (
-                <div className="absolute inset-4 bg-black/90 backdrop-blur-sm rounded-2xl flex items-center justify-center z-20 p-6">
-                  <div className="w-full max-w-md">
-                    <div className="text-center mb-4">
-                      <Loader2 className="w-12 h-12 mx-auto mb-2 text-purple-400 animate-spin" />
-                      <p className="text-lg font-bold text-white">Uploading files...</p>
+                <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-purple-900/90 to-black/95 backdrop-blur-md rounded-2xl flex items-center justify-center z-20 p-8">
+                  <div className="w-full max-w-lg">
+                    <div className="text-center mb-6">
+                      <Loader2 className="w-16 h-16 mx-auto mb-3 text-purple-400 animate-spin" />
+                      <p className="text-2xl font-bold text-white mb-1">Fast Upload in Progress</p>
+                      <p className="text-sm text-purple-300">Optimizing and uploading your files</p>
                     </div>
-                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                    <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                       {Object.entries(uploadProgress).map(([fileName, progress]) => (
-                        <div key={fileName} className="bg-purple-900/20 rounded-lg p-3">
-                          <p className="text-xs text-white/90 mb-1 truncate">{fileName}</p>
-                          <div className="w-full bg-purple-900/50 rounded-full h-2">
+                        <div key={fileName} className="bg-black/40 backdrop-blur-sm border border-purple-500/30 rounded-lg p-4 shadow-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-sm text-white/95 font-medium truncate flex-1 mr-3">{fileName}</p>
+                            <p className="text-sm font-bold text-purple-400 min-w-[45px] text-right">{Math.round(progress)}%</p>
+                          </div>
+                          <div className="w-full bg-purple-950/50 rounded-full h-2.5 overflow-hidden">
                             <div
-                              className="bg-gradient-to-r from-purple-600 to-purple-400 h-2 rounded-full transition-all duration-300"
+                              className="bg-gradient-to-r from-purple-600 via-purple-500 to-purple-400 h-2.5 rounded-full transition-all duration-200 ease-out shadow-lg shadow-purple-500/50"
                               style={{ width: `${progress}%` }}
                             />
                           </div>
-                          <p className="text-xs text-purple-300 mt-1 text-right">{Math.round(progress)}%</p>
                         </div>
                       ))}
                     </div>
