@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, X, Upload, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { uploadFile, getAssets } from '../lib/storage';
+import { uploadFile } from '../lib/storage';
 import { initializeGoogleDrive, openGooglePicker, downloadGoogleDriveFile } from '../lib/googleDrive';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
@@ -17,7 +17,6 @@ export default function Page11({ onNavigate }: PageProps) {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [uploadSource, setUploadSource] = useState<'local' | 'photos-videos' | 'google'>('local');
   const [googleDriveReady, setGoogleDriveReady] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
@@ -172,14 +171,6 @@ export default function Page11({ onNavigate }: PageProps) {
     });
   };
 
-  const handleUploadClick = () => {
-    if (uploadSource === 'google') {
-      handleGoogleDriveUpload();
-    } else {
-      document.getElementById('media-upload')?.click();
-    }
-  };
-
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -238,11 +229,8 @@ export default function Page11({ onNavigate }: PageProps) {
     setShowScriptModal(true);
   };
 
-  const handleScriptResponse = (createScript: boolean) => {
+  const handleScriptResponse = () => {
     setShowScriptModal(false);
-    if (createScript) {
-      console.log('Creating scenes and script...');
-    }
   };
 
   const handleDeleteAsset = async (asset: Asset, e: React.MouseEvent) => {
