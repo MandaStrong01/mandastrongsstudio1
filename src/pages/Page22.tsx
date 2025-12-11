@@ -19,6 +19,9 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
   const [googleDriveReady, setGoogleDriveReady] = useState(false);
   const [showUrlImport, setShowUrlImport] = useState(false);
   const [importUrl, setImportUrl] = useState('');
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [promptText, setPromptText] = useState('');
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 
   useEffect(() => {
     initializeGoogleDrive().then(ready => {
@@ -54,41 +57,47 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
   };
 
   const handleFiles = async (files: File[]) => {
-    // Temporarily disabled for testing
-    // if (!user) {
-    //   alert('Please sign in to upload files');
-    //   return;
-    // }
+    if (!user) {
+      alert('Please sign in to upload files');
+      return;
+    }
 
+    setPendingFiles(files);
+    setShowPrompt(true);
+  };
+
+  const proceedWithUpload = async () => {
+    setShowPrompt(false);
     setUploading(true);
     try {
-      const uploadPromises = files.map(file => uploadFile(file, user?.id || 'test-user'));
+      const uploadPromises = pendingFiles.map(file => uploadFile(file, user!.id));
       const results = await Promise.all(uploadPromises);
 
       const successfulFiles = results
         .filter(r => r.success)
-        .map((_, i) => files[i].name);
+        .map((_, i) => pendingFiles[i].name);
 
       setUploadedFiles(prev => [...prev, ...successfulFiles]);
 
       const failedCount = results.filter(r => !r.success).length;
       if (failedCount > 0) {
-        alert(`${successfulFiles.length} of ${files.length} files uploaded successfully`);
+        alert(`${successfulFiles.length} of ${pendingFiles.length} files uploaded successfully`);
       }
     } catch (error) {
       console.error('Upload error:', error);
       alert('Failed to upload files');
     } finally {
       setUploading(false);
+      setPendingFiles([]);
+      setPromptText('');
     }
   };
 
   const handleGooglePhotos = () => {
-    // Temporarily disabled for testing
-    // if (!user) {
-    //   alert('Please sign in to upload files');
-    //   return;
-    // }
+    if (!user) {
+      alert('Please sign in to upload files');
+      return;
+    }
 
     openGooglePicker(async (selectedFiles) => {
       setUploading(true);
@@ -96,7 +105,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
         const uploadPromises = selectedFiles.map(async (file) => {
           const blob = await downloadGoogleDriveFile(file.id, file.name, file.mimeType);
           const fileObj = new File([blob], file.name, { type: file.mimeType });
-          return uploadFile(fileObj, user?.id || 'test-user');
+          return uploadFile(fileObj, user.id);
         });
 
         const results = await Promise.all(uploadPromises);
@@ -129,11 +138,10 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
   };
 
   const handleUrlImport = async () => {
-    // Temporarily disabled for testing
-    // if (!user) {
-    //   alert('Please sign in to upload files');
-    //   return;
-    // }
+    if (!user) {
+      alert('Please sign in to upload files');
+      return;
+    }
 
     if (!importUrl.trim()) {
       alert('Please enter a valid URL');
@@ -176,7 +184,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
       const filename = urlObj.pathname.split('/').pop() || 'imported-file';
       const fileObj = new File([blob], filename, { type: blob.type });
 
-      const result = await uploadFile(fileObj, user?.id || 'test-user');
+      const result = await uploadFile(fileObj, user.id);
 
       if (result.success) {
         setUploadedFiles(prev => [...prev, filename]);
@@ -433,6 +441,40 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
       </div>
 
       <Footer />
+
+      {showPrompt && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gradient-to-br from-purple-900/90 to-black/90 border-2 border-purple-500/60 rounded-2xl max-w-lg w-full p-6">
+            <h3 className="text-2xl font-bold text-purple-400 mb-4">Describe Your Upload</h3>
+            <p className="text-white/70 mb-4">Add a description or notes for these files:</p>
+            <textarea
+              value={promptText}
+              onChange={(e) => setPromptText(e.target.value)}
+              placeholder="Enter description, notes, or context for this upload..."
+              className="w-full h-32 bg-black/50 border border-purple-500/50 rounded-lg p-4 text-white placeholder-white/60 focus:outline-none focus:border-purple-400 mb-4"
+              autoFocus
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowPrompt(false);
+                  setPendingFiles([]);
+                  setPromptText('');
+                }}
+                className="flex-1 px-6 py-3 bg-black/50 border border-white/20 hover:bg-white/10 rounded-lg font-semibold transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={proceedWithUpload}
+                className="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold transition-all"
+              >
+                Upload
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
