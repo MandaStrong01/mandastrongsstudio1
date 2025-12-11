@@ -362,6 +362,18 @@ export default function Page11({ onNavigate }: PageProps) {
         <div className="max-w-full w-full mx-auto flex-1 flex flex-col">
           <h1 className="text-2xl md:text-3xl font-black text-purple-400 mb-4 text-center">Editor Dashboard</h1>
 
+          <div className="bg-gradient-to-br from-purple-900/50 to-purple-800/40 border-2 border-purple-400/70 rounded-xl p-4 mb-4 mx-auto max-w-4xl">
+            <div className="flex items-start gap-3">
+              <Sparkles className="w-6 h-6 text-purple-400 flex-shrink-0 mt-1" />
+              <div>
+                <h2 className="text-lg font-bold text-white mb-1">Set Your Movie Duration & Generate</h2>
+                <p className="text-sm text-purple-200">
+                  Choose your desired movie length (1-120 minutes), upload your assets, and click Generate to create your film. Use AI Help for automatic duration suggestions based on your content.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
             <div
               className={`relative lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border p-4 transition-all ${
@@ -693,7 +705,7 @@ export default function Page11({ onNavigate }: PageProps) {
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-semibold">Duration</label>
+                    <label className="text-sm font-semibold">Movie Duration</label>
                     <button
                       onClick={handleAIDuration}
                       className="flex items-center gap-1 text-xs bg-purple-600 hover:bg-purple-500 px-2 py-1 rounded transition-all"
@@ -702,20 +714,31 @@ export default function Page11({ onNavigate }: PageProps) {
                       AI Help
                     </button>
                   </div>
-                  <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-400">{formatTime(currentTime)}</div>
-                      <div className="text-xs text-slate-400 mt-1">/ {formatTime(duration)}</div>
+                  <div className="bg-gradient-to-br from-purple-900/40 to-purple-800/30 border-2 border-purple-400/60 rounded-lg p-4">
+                    <div className="text-center mb-3">
+                      <div className="text-3xl font-black text-purple-400 mb-1">{formatTime(duration)}</div>
+                      <div className="text-xs text-purple-300 font-semibold">Total Movie Length</div>
                     </div>
                     <input
                       type="range"
-                      min="0"
+                      min="1"
                       max="120"
                       value={duration}
                       onChange={(e) => handleDurationChange(parseInt(e.target.value))}
-                      className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer mt-3"
+                      className="w-full h-3 bg-purple-900/50 rounded-lg appearance-none cursor-pointer mb-2"
                     />
-                    <div className="text-xs text-slate-400 mt-1 text-center">Max: 120 minutes</div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <input
+                        type="number"
+                        min="1"
+                        max="120"
+                        value={duration}
+                        onChange={(e) => handleDurationChange(parseInt(e.target.value) || 1)}
+                        className="flex-1 px-3 py-2 bg-black border border-purple-500/50 rounded-lg text-white text-center font-bold focus:outline-none focus:border-purple-400"
+                      />
+                      <span className="text-sm text-purple-300 font-semibold">minutes</span>
+                    </div>
+                    <div className="text-xs text-purple-300/70 text-center">Range: 1 - 120 minutes</div>
                   </div>
                 </div>
               </div>
@@ -733,17 +756,17 @@ export default function Page11({ onNavigate }: PageProps) {
             <button
               onClick={handleGenerate}
               disabled={generating || !selectedAsset}
-              className="flex items-center justify-center gap-2 bg-green-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-green-500 transition-all disabled:bg-green-800 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white font-black px-8 sm:px-12 py-5 rounded-xl text-lg sm:text-xl hover:from-green-500 hover:to-green-400 transition-all disabled:from-green-800 disabled:to-green-700 disabled:cursor-not-allowed shadow-lg shadow-green-600/50 border-2 border-green-400"
             >
               {generating ? (
                 <>
-                  <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
-                  Generating...
+                  <div className="animate-spin w-6 h-6 border-3 border-white border-t-transparent rounded-full"></div>
+                  Generating Movie...
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-5 h-5" />
-                  Generate
+                  <Sparkles className="w-6 h-6" />
+                  Generate {formatTime(duration)} Movie
                 </>
               )}
             </button>
