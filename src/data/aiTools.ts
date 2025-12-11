@@ -1,91 +1,91 @@
 export const aiToolsPage4 = [
-  "NeuralScript Pro", "StoryForge AI", "PlotWeaver Max", "CharacterMind Studio", "DialogueCraft Elite", "SceneFlow AI", "ActBuilder Pro", "BeatMapper AI",
-  "ScreenFormat Pro", "ArcWeaver Studio", "CharacterPath AI", "ConflictGen Pro", "ThemeForge AI", "SubplotMatrix", "PaceAnalyzer Pro", "StoryBoard Vision",
-  "ShotList Creator", "SceneBreaker Pro", "LocationScout AI", "CastingMind Pro", "ActorProfile AI", "ChemistryMatch Studio", "AuditionGen Pro", "RoleAnalyzer AI",
-  "BudgetCalc Pro", "ScheduleMind AI", "CallSheetGen Studio", "LocationFlow Pro", "PropManager AI", "CostumeForge Studio", "MakeupDesign Pro", "HairStyle AI",
-  "SetDesign Vision", "ProductionMind Pro", "ArtDirector AI", "PaletteGen Studio", "MoodBoard Creator", "ReferenceFind Pro", "VisualStyle AI", "PeriodCheck Studio",
-  "VoiceCraft Neural", "VoiceGen Pro", "NarratorMind AI", "CharacterVoice Studio", "AccentForge Pro", "VoiceClone Neural", "VoiceAge Shifter", "VoiceGender Pro",
-  "VoiceStudio Elite", "DialogueReplace AI", "ADR Generator Pro", "VoiceAct Neural", "EmotionalVoice AI", "ToneControl Studio", "SpeechPattern Pro", "VoiceHarmony AI",
-  "VideoForge Neural", "SceneGen Pro", "BRollMaker AI", "FootageFinder Studio", "VideoSynth Pro", "MotionGen AI", "SceneAnimate Pro", "VideoCompose Studio",
-  "ImageForge Neural", "ConceptArt Pro", "StoryFrame AI", "SceneReference Studio", "CharacterForge Pro", "EnvironmentGen AI", "PropDesign Studio", "TextureForge Pro",
-  "BackgroundErase Pro", "GreenScreen Neural", "SubjectIsolate AI", "AlphaMatte Studio", "EdgeRefine Pro", "HairDetail AI", "SpillSuppress Studio", "BackgroundGen Pro",
-  "UpscaleMax Neural", "4K Enhance Pro", "8K Upscaler AI", "ResolutionBoost Studio", "DetailEnhance Pro", "TextureSharp AI", "NoiseReduce Studio", "ClarityBoost Pro",
-  "FaceSwap Neural", "DeepFake Studio Pro", "FaceReplace AI", "DeAge Neural Pro", "FaceEnhance Studio", "ExpressionTransfer AI", "FaceAnimate Pro", "DigitalDouble Studio"
+  "Script Writer", "Story Developer", "Plot Builder", "Character Creator", "Dialogue Writer", "Scene Planner", "Act Structure", "Beat Sheet",
+  "Screenplay Format", "Story Arc Design", "Character Journey", "Conflict Builder", "Theme Developer", "Subplot Manager", "Pacing Tool", "Storyboard Artist",
+  "Shot List Maker", "Scene Breakdown", "Location Scout", "Casting Director", "Actor Profiles", "Chemistry Test", "Audition Scheduler", "Role Matcher",
+  "Budget Calculator", "Production Schedule", "Call Sheet Maker", "Location Manager", "Props Tracker", "Costume Designer", "Makeup Planner", "Hair Designer",
+  "Set Designer", "Production Designer", "Art Director", "Color Palette", "Mood Board", "Reference Library", "Visual Style Guide", "Period Research",
+  "Concept Art Generator", "Environment Design", "Prop Designer", "Texture Creator", "Character Design", "Storyframe Visualizer", "Previs Builder", "Animatics Creator",
+  "Camera Planner", "Lens Selector", "Lighting Designer", "Grip Planner", "Dolly Path", "Crane Designer", "Steadicam Map", "Drone Flight Plan",
+  "Rehearsal Schedule", "Blocking Tool", "Movement Designer", "Stage Direction", "Actor Notes", "Performance Log", "Take Tracker", "Continuity Manager",
+  "Insurance Calculator", "Risk Assessor", "Safety Planner", "Weather Tracker", "Permit Manager", "Union Rules", "Legal Clearance", "Rights Manager",
+  "Crew Scheduler", "Department Manager", "Team Organizer", "Contact List", "Equipment Rental", "Vehicle Coordinator", "Catering Planner", "Accommodation Finder",
+  "Script Breakdown", "Day Out of Days", "One-Liner", "Cross Plot", "Strip Board", "Shooting Schedule", "Production Board", "Scene Order Optimizer",
+  "VFX Supervisor Plan", "CGI Planner", "Green Screen Setup", "Motion Capture Plan", "Digital Double Prep", "Reference Shoot Plan", "Plate Photography", "HDRI Capture Plan"
 ];
 
 export const aiToolsPage5 = [
-  "SoundDesign Neural", "AudioLayer Pro", "DialogueClean AI", "NoiseReduce Studio", "RoomTone Analyzer", "ADR Script Pro", "LipSync Neural", "VoiceReplace Studio",
-  "FoleySound AI", "FootstepGen Pro", "MovementSound Studio", "FabricRustle AI", "DoorSound Pro", "ImpactSound Neural", "TextureSound Studio", "EnvironSound AI",
-  "AmbientSound Pro", "RoomAcoustics AI", "ReverbCalc Studio", "EchoDesign Pro", "SpatialAudio Neural", "SurroundPlace AI", "AtmosLayer Studio", "BinauralAudio Pro",
-  "MusicCompose Neural", "ThemeGen AI", "MotifCreator Pro", "LeitmotifDesign Studio", "UnderscoreBuild AI", "EmotionalScore Pro", "TempoCalc Studio", "KeySignature AI",
-  "Orchestration Neural", "InstrumentSelect Pro", "SectionBalance AI", "DynamicRange Studio", "MusicalTransition Pro", "CrescendoBuild AI", "BridgeCompose Studio", "OutroCreate Pro",
-  "SoundEffect Neural", "ImpactSelect AI", "WhooshGen Pro", "TransitionSound Studio", "AmbienceLoop AI", "NatureSound Pro", "UrbanSound Studio", "VehicleSound AI",
-  "WeaponSound Neural", "ExplosionBuild Pro", "FireSound AI", "WaterEffect Studio", "WeatherSound Pro", "WindDesign Neural", "RainSound Studio", "ThunderCreate AI",
-  "VoicePerformance Neural", "AccentDesign Pro", "PitchShift AI", "FormantChange Studio", "BreathControl Pro", "VocalTexture AI", "AgeEffect Studio", "GenderTransform Neural",
-  "DialogueEdit Pro", "LineTiming AI", "PauseLength Studio", "OverlapDetect Pro", "BreathRemove Neural", "ClickEliminate AI", "PopFilter Studio", "DeEsser Pro",
-  "AudioMix Neural", "LevelBalance AI", "EQ Optimizer Studio", "CompressionDesign Pro", "LimitingControl AI", "NoiseGate Studio", "Expander Pro", "SidechainRoute Neural",
-  "Mastering Neural Pro", "FinalMix AI", "LoudnessNormal Studio", "DynamicControl Pro", "StereoWidth AI", "PhaseCorrelation Studio", "FrequencyAnalyze Pro", "SpectrumBalance Neural",
-  "SubtitleGen Neural", "CaptionTime AI", "SubFormat Studio", "TranslationHelp Pro", "LocalizationMind AI", "FontStyleSelect Studio", "CaptionPosition Pro", "ReadSpeed Neural"
+  "Camera Setup", "Lens Choice", "Focus Puller", "Zoom Controller", "Iris Control", "Shutter Speed", "Frame Rate", "ISO Manager",
+  "White Balance", "Color Temperature", "Exposure Tool", "Histogram Monitor", "Zebra Display", "False Color", "Waveform Monitor", "Vectorscope",
+  "Lighting Setup", "Key Light", "Fill Light", "Back Light", "Practical Lights", "LED Controller", "HMI Manager", "Tungsten Setup",
+  "Light Meter", "Spot Meter", "Incident Reading", "Reflected Reading", "Color Meter", "Lux Calculator", "Foot Candle", "Contrast Ratio",
+  "Sound Recording", "Boom Mic Setup", "Lav Placement", "Wireless Sync", "Audio Levels", "Peak Limiter", "HPF Filter", "Phase Check",
+  "Room Tone Capture", "Ambient Recording", "Wild Sound", "Sound Report", "Slate Sync", "Timecode Generator", "Jam Sync", "Multi-Track Recorder",
+  "Video Village", "Monitor Calibration", "Client Monitor", "Focus Monitor", "Director Screen", "DIT Station", "On-Set Color", "LUT Application",
+  "Slate Manager", "Take Logger", "Circle Takes", "Scene Number", "Shot Number", "Camera Roll", "Sound Roll", "Timecode Slate",
+  "Script Supervisor", "Continuity Photos", "Line Notes", "Coverage Tracker", "Screen Direction", "Eye Line Match", "Props Continuity", "Wardrobe Continuity",
+  "Dailies Creator", "Proxy Generator", "File Transfer", "Backup System", "Card Offload", "File Verification", "Checksum Validator", "Archive Manager",
+  "Playback System", "Video Playback", "Instant Replay", "Client Review", "Director Playback", "On-Set Editing", "Quick Assembly", "Rough Preview",
+  "Drone Controller", "Flight Path", "Gimbal Control", "Remote Head", "Motion Control", "Slider Programming", "Turntable Controller", "Camera Robot"
 ];
 
 export const aiToolsPage6 = [
-  "VideoEdit Neural", "Timeline Pro AI", "TrackManager Studio", "ClipSort Pro", "BinCreator AI", "ProjectOrganize Studio", "AssetManager Pro", "VersionControl Neural",
-  "RoughCut AI", "SceneSelector Pro", "TakeChooser Studio", "PerformanceFinder AI", "ContinuityCheck Pro", "PaceAnalyze Studio", "SceneLength Neural", "ActBreak AI",
-  "FineCut Neural Pro", "FrameTrim AI", "PrecisionCutter Studio", "MicroTiming Pro", "BeatMatch Neural", "RhythmAnalyze AI", "TempoKeep Studio", "FlowOptimize Pro",
-  "MontageBuilder AI", "QuickCut Neural", "MatchCut Finder Studio", "CrossCut Pro", "ParallelAction AI", "JumpCut Detector Studio", "SmashCut Pro", "InvisibleCut Neural",
-  "TransitionDesign AI", "CutPlacer Pro", "FadeDesign Studio", "DissolveCreate Neural", "WipeGen AI", "SlideTransition Pro", "PushEffect Studio", "ZoomTransition Neural",
-  "ColorGrade Pro", "PrimaryCorrect AI", "SecondaryIsolate Studio", "SkinTone Neural", "WhiteBalance Pro", "ExposureFix AI", "ContrastEnhance Studio", "SaturationControl Pro",
-  "LUT Designer Neural", "LookCreator AI", "FilmEmulation Pro", "CinemaMatch Studio", "VintageLook Neural", "ModernGrade AI", "CinematicColor Pro", "MoodColor Studio",
-  "ColorWheels Neural", "LiftAdjust AI", "GammaControl Pro", "GainOptimize Studio", "OffsetCorrect Neural", "ShadowDetail AI", "MidtoneBalance Pro", "HighlightProtect Studio",
-  "CurvesEditor Neural", "LumaCurve AI", "RGBCurve Pro", "ChannelMixer Studio", "HuevsHue Neural", "HuevsSat AI", "SatvsSat Pro", "LumavsSat Studio",
-  "HSL Qualifier Neural", "ColorRange AI", "ChromaKey Pro", "GreenScreen Studio", "BlueScreen Neural", "SpillSuppress AI", "EdgeFeather Pro", "ColorSpill Studio",
-  "PowerWindow Neural", "MaskDesigner AI", "GradientMaker Pro", "VignetteGen Studio", "SpotlightEffect Neural", "ShapeMask AI", "BezierCurve Pro", "TrackingWindow Studio",
-  "MotionTrack Neural", "PointTracker AI", "PlanarTrack Pro", "3DCameraTrack Studio", "ObjectTracker Neural", "FaceTracker AI", "Stabilization Pro", "MatchMove Studio"
+  "Media Import", "File Organizer", "Bin Manager", "Clip Naming", "Keyword Tagging", "Rating System", "Favorite Selector", "Reject Filter",
+  "Sync Tool", "Audio Sync", "Multi-Cam Sync", "Timecode Match", "Clip Aligner", "Angle Sync", "Slate Detector", "Waveform Sync",
+  "Assembly Edit", "String Out", "Selects Reel", "First Assembly", "Scene Builder", "Sequence Maker", "Act Assembly", "Full Assembly",
+  "Rough Cut", "Scene Selector", "Take Picker", "Performance Finder", "Pacing Check", "Scene Timer", "Act Break Marker", "Story Flow",
+  "Fine Cut", "Frame Trim", "Precision Edit", "Micro Timing", "Beat Matcher", "Rhythm Analyzer", "Tempo Keeper", "Flow Optimizer",
+  "Transition Tool", "Cut Placer", "Dissolve Maker", "Fade Creator", "Wipe Generator", "Slide Effect", "Push Effect", "Zoom Transition",
+  "Match Cut Finder", "Visual Match", "Action Match", "Audio Match", "Graphic Match", "Cut on Motion", "Cut on Look", "Invisible Cut",
+  "Montage Builder", "Quick Cut Tool", "Cross Cut", "Parallel Action", "Jump Cut Tool", "Smash Cut", "L Cut", "J Cut",
+  "Split Screen", "Multi View", "Picture in Picture", "Frame Divider", "Quad Split", "Comparison View", "Before After", "Dual Timeline",
+  "Speed Tool", "Slow Motion", "Fast Forward", "Time Remap", "Speed Ramp", "Frame Blend", "Optical Flow", "Velocity Curve",
+  "Freeze Frame", "Still Frame", "Hold Frame", "Time Stop", "Moment Capture", "Frame Extension", "Clone Tool", "Still Extract",
+  "Reverse Motion", "Backward Play", "Rewind Effect", "Mirror Timeline", "Palindrome Edit", "Bounce Effect", "Boomerang", "Loop Creator"
 ];
 
 export const aiToolsPage7 = [
-  "VFX Plate Neural", "CleanPlate AI", "WireRemoval Pro", "RigRemover Studio", "MarkerErase Neural", "BlemishFix AI", "DustBuster Pro", "FrameClean Studio",
-  "Compositing Neural", "AlphaChannel AI", "MatteGenerator Pro", "Rotoscoping Studio", "MaskAnimator Neural", "EdgeRefiner AI", "HairDetail Pro", "MotionBlur Studio",
-  "VisualEffects Neural", "ParticleSystem AI", "SmokeGen Pro", "FireCreator Studio", "WaterSimulate Neural", "ExplosionBuild AI", "MagicEffect Pro", "EnergyBeam Studio",
-  "3DElement Neural", "CGI Placement AI", "DepthMapper Pro", "PerspectiveMatch Studio", "LightingIntegrate Neural", "ShadowGen AI", "ReflectionCreate Pro", "EnvironmentMap Studio",
-  "TextAnimate Neural", "LowerThird AI", "TitleCard Pro", "CreditRoll Studio", "TypographyAnimate Neural", "KineticText AI", "TextTracking Pro", "3DText Studio",
-  "LogoAnimate Neural", "BrandIdentity AI", "WatermarkManager Pro", "BugPosition Studio", "GraphicOverlay Neural", "InfoBox AI", "CalloutMaker Pro", "Annotation Studio",
-  "SplitScreen Neural", "MultiView AI", "PictureInPicture Pro", "FrameDivider Studio", "QuadSplit Neural", "ComparisonView AI", "BeforeAfter Pro", "DualTimeline Studio",
-  "SpeedRamp Neural", "SlowMotion AI", "FastForward Pro", "TimeRemap Studio", "FrameBlend Neural", "OpticalFlow AI", "SpeedCurve Pro", "VelocityMap Studio",
-  "FreezeFrame Neural", "StillFrame AI", "PauseEffect Pro", "TimeStop Studio", "MomentCapture Neural", "FrameExtend AI", "CloningTool Pro", "StillExtract Studio",
-  "ReverseMotion Neural", "BackwardPlay AI", "RewindEffect Pro", "ReverseSpeed Studio", "MirrorTimeline Neural", "BackwardsAudio AI", "ReverseSync Pro", "Palindrome Studio",
-  "KenBurns Neural", "PanZoom AI", "StillAnimate Pro", "PhotoMotion Studio", "ZoomSpeed Neural", "PanPath AI", "EaseCurve Pro", "MotionSmooth Studio",
-  "Stabilizer Neural", "ShakeRemover AI", "WarpStabilize Pro", "CameraShake Studio", "SmoothCam Neural", "RollingShutter AI", "JelloRemove Pro", "HorizonLevel Studio"
+  "Color Correction", "Primary Grade", "White Balance Fix", "Exposure Adjust", "Contrast Control", "Saturation Tool", "Brightness", "Black Level",
+  "Color Wheels", "Lift Control", "Gamma Adjust", "Gain Control", "Offset Tool", "Shadow Detail", "Midtone Balance", "Highlight Recovery",
+  "Curves Editor", "Luma Curve", "RGB Curves", "Channel Mixer", "Hue vs Hue", "Hue vs Sat", "Sat vs Sat", "Luma vs Sat",
+  "Color Grading", "Creative Look", "Film Emulation", "Cinema Look", "Vintage Style", "Modern Grade", "Cinematic Color", "Mood Creator",
+  "LUT Designer", "LUT Loader", "LUT Browser", "Color Space", "Color Transform", "Log to Rec709", "HDR Tone Map", "Wide Color",
+  "Qualifier Tool", "HSL Selector", "Color Range", "Luma Key", "RGB Selector", "Chroma Key", "Skin Tone Isolator", "Secondary Grade",
+  "Power Windows", "Mask Designer", "Gradient Mask", "Vignette Tool", "Spotlight Effect", "Shape Mask", "Bezier Curves", "Feather Control",
+  "Tracking Tool", "Motion Tracker", "Point Tracker", "Planar Tracker", "Face Tracker", "Object Tracker", "Stabilization", "Match Move",
+  "Shot Matching", "Scene Balance", "Shot Matcher", "Color Continuity", "Exposure Match", "Look Consistency", "Reference Frame", "Color Harmony",
+  "Scopes Display", "Waveform", "Vectorscope", "Histogram", "Parade RGB", "CIE Chart", "False Color", "Heatmap",
+  "Node System", "Serial Nodes", "Parallel Nodes", "Layer Mixer", "Outside Node", "Node Tree", "Node Groups", "Shared Nodes",
+  "Versions Manager", "Grade Versions", "Look Library", "Still Store", "Gallery Browser", "Timeline Grades", "Remote Grading", "Collaboration Tool"
 ];
 
 export const aiToolsPage8 = [
-  "LensCorrect Neural", "DistortionFix AI", "BarrelRemove Pro", "PincushionCorrect Studio", "ChromaticFix Neural", "VignetteRemove AI", "LensFlare Pro", "OpticsCompensate Studio",
-  "FilmGrain Neural", "TextureOverlay AI", "NoiseAdder Pro", "GritCreator Studio", "AnalogLook Neural", "FilmDamage AI", "ScratchGen Pro", "DustDirt Studio",
-  "BlurEffect Neural", "GaussianBlur AI", "MotionBlur Pro", "DirectionalBlur Studio", "RadialBlur Neural", "ZoomBlur AI", "TiltShift Pro", "DepthField Studio",
-  "SharpenTool Neural", "DetailEnhance AI", "EdgeSharpener Pro", "UnsharpMask Studio", "SmartSharpen Neural", "ClarityBoost AI", "MicroContrast Pro", "TextureEmphasize Studio",
-  "GlowEffect Neural", "SoftGlow AI", "BloomEffect Pro", "LightLeak Studio", "LensFlare Neural", "SunFlare AI", "AnamorphicFlare Pro", "StarFilter Studio",
-  "DistortionEffect Neural", "GlitchGen AI", "DigitalDistortion Pro", "VHS Effect Studio", "CRT Monitor Neural", "ScanLine AI", "PixelSorter Pro", "DataMosh Studio",
-  "FilmFormat Neural", "AspectRatio AI", "16mm Film Pro", "35mm Emulator Studio", "Super8 Gen Neural", "IMAX Format AI", "AnamorphicDesqueeze Pro", "ScopeFormat Studio",
-  "VintageCamera Neural", "OldFilm AI", "RetroVideo Pro", "80s VHS Studio", "90s Camcorder Neural", "70s FilmGrain AI", "60s Cinema Pro", "Hollywood Classic Studio",
-  "ModernDigital Neural", "4K Enhancement AI", "8K Upscaler Pro", "HDR ToneMap Studio", "WideColor Neural", "Rec2020 Convert AI", "DCIP3 Mapper Pro", "DolbyVision Studio",
-  "AudioVisual Neural", "WaveformGen AI", "SpectrumAnalyzer Pro", "MusicReaction Studio", "BeatDetector Neural", "FrequencyBar AI", "AudioParticle Pro", "SoundReactive Studio",
-  "MultiCam Neural", "AngleSelector AI", "CoverageAssemble Pro", "AngleCut Studio", "SimultaneousTime Neural", "SyncPoint AI", "AudioSync Pro", "TimecodeAlign Studio",
-  "Documentary Neural", "InterviewFrame AI", "BRoll Organizer Pro", "ArchiveFootage Studio", "TalkingHead Neural", "ContextInsert AI", "Reenactment Pro", "TimelineGraphics Studio"
+  "VFX Cleanup", "Wire Removal", "Rig Removal", "Marker Erase", "Blemish Fix", "Dust Buster", "Scratch Removal", "Object Removal",
+  "Green Screen", "Chroma Key", "Blue Screen", "Spill Suppression", "Edge Feather", "Color Spill Fix", "Screen Correction", "Despill",
+  "Rotoscoping", "Mask Animator", "Alpha Matte", "Edge Refine", "Hair Detail", "Motion Blur", "Roto Brush", "Smart Mask",
+  "Compositing", "Layer Blend", "Alpha Channel", "Matte Generator", "Depth Composite", "3D Composite", "Multi-Pass Comp", "Deep Composite",
+  "Particle System", "Smoke Generator", "Fire Creator", "Water Simulation", "Explosion Builder", "Magic Effects", "Energy Beam", "Spark Generator",
+  "3D Integration", "CGI Placement", "Depth Mapper", "Perspective Match", "Lighting Integrate", "Shadow Generator", "Reflection Creator", "Environment Map",
+  "Motion Graphics", "Text Animator", "Lower Third", "Title Card", "Credit Roll", "Typography", "Kinetic Text", "Text Tracking",
+  "Logo Animation", "Brand Elements", "Watermark", "Bug Position", "Graphic Overlay", "Info Box", "Callout", "Annotation",
+  "Shape Animation", "Vector Graphics", "Icon Animator", "Path Animation", "Trim Paths", "Shape Morph", "Geometric Design", "Pattern Maker",
+  "Lens Effects", "Lens Flare", "Sun Flare", "Anamorphic Flare", "Star Filter", "Light Leak", "Bloom Effect", "Soft Glow",
+  "Stabilization", "Warp Stabilizer", "Smooth Camera", "Rolling Shutter Fix", "Jello Removal", "Horizon Level", "Deshake", "Lock Shot",
+  "Image Enhancement", "Upscale 4K", "Upscale 8K", "Detail Enhance", "Sharpen Tool", "Noise Reduction", "Grain Management", "Clarity Boost"
 ];
 
 export const aiToolsPage9 = [
-  "MusicVideo Neural", "BeatSync AI", "LyricTiming Pro", "PerformanceCut Studio", "MultiTake Neural", "ChorusVariation AI", "BridgeTransition Pro", "OutroFade Studio",
-  "Commercial Neural", "QuickCut AI", "ProductShot Pro", "CTA Overlay Studio", "EndCard Neural", "BumperDesign AI", "PreRoll Pro", "PostRoll Studio",
-  "SocialMedia Neural", "VerticalVideo AI", "SquareFormat Pro", "StoryTemplate Studio", "ReelEditor Neural", "TikTok Optimize AI", "Instagram Adapt Pro", "YouTube Thumbnail Studio",
-  "TrailerBuild Neural", "TeaseCut AI", "HighlightReel Pro", "SizzleReel Studio", "ComingSoon Neural", "TeaserAssemble AI", "PreviewCut Pro", "PromoVideo Studio",
-  "BehindScenes Neural", "MakingOf AI", "BRoll Selector Pro", "InterviewClip Studio", "SetFootage Neural", "BlooperReel AI", "DeletedScene Pro", "ExtendedCut Studio",
-  "MultiLanguage Neural", "DubbedAudio AI", "ForeignLanguage Pro", "InternationalCut Studio", "TerritoryVersion Neural", "CensoredVersion AI", "TV Edit Pro", "AirlineCut Studio",
-  "DirectorsCut Neural", "ExtendedEdition AI", "UnratedVersion Pro", "SpecialEdition Studio", "Remastered Neural", "EnhancedCut AI", "Redux Edition Pro", "UltimateCut Studio",
-  "ArchiveManager Neural", "BackupCreator AI", "ProjectOrganize Pro", "AssetCataloger Studio", "MetadataTag Neural", "SearchIndex AI", "VersionHistory Pro", "ChangeLog Studio",
-  "ExportManager Neural", "FormatConverter AI", "CodecSelector Pro", "BitrateOptimize Studio", "ResolutionScale Neural", "FrameRate Convert AI", "DeliveryPackage Pro", "DCP Generator Studio",
-  "QualityControl Neural", "TechnicalInspect AI", "ColorSpace Validator Pro", "AudioLevel Check Studio", "SyncDrift Neural", "DropoutFinder AI", "ArtifactIdentify Pro", "GlitchDetect Studio",
-  "BroadcastSafe Neural", "LumaLevel AI", "ChromaSafe Pro", "IllegalColor Studio", "AudioPeak Neural", "LoudnessStandard AI", "SafeTitle Pro", "SafeAction Studio",
-  "StreamOptimize Neural", "Netflix Spec AI", "Amazon Validator Pro", "HBO Standards Studio", "Disney Format Neural", "AppleTV Specs AI", "YouTube Optimize Pro", "Vimeo Standard Studio"
+  "Dialogue Edit", "Clip Cleaner", "Noise Reducer", "De-Hummer", "De-Clicker", "De-Esser", "Breath Remover", "Pop Filter",
+  "ADR Manager", "Line Replacement", "Lip Sync", "Voice Match", "Performance Blend", "Room Match", "ADR Recorder", "Script Tool",
+  "Foley Artist", "Footstep Creator", "Movement Sound", "Fabric Rustle", "Door Sounds", "Impact Creator", "Texture Sound", "Prop Sounds",
+  "Sound Design", "Sound Effects", "Whoosh Maker", "Transition Sound", "Ambience Loop", "Nature Sounds", "Urban Sound", "Vehicle Sound",
+  "Music Composer", "Theme Creator", "Score Builder", "Motif Maker", "Underscore", "Emotional Score", "Tempo Tool", "Key Signature",
+  "Music Editor", "Beat Sync", "Music Cut", "Song Edit", "Hit Point", "Track Layering", "Stems Editor", "Music Mixer",
+  "Sound Mixer", "Level Balance", "EQ Tool", "Compression", "Limiting", "Gate", "Expander", "Dynamics",
+  "Spatial Audio", "Surround Panner", "5.1 Mixer", "7.1 Mixer", "Atmos Panner", "Binaural Tool", "3D Audio", "Object Panner",
+  "Reverb Designer", "Room Acoustics", "Echo Creator", "Delay Tool", "Space Designer", "Convolution", "Plate Reverb", "Hall Reverb",
+  "Final Mix", "Stem Mix", "Print Master", "Submix", "Bus Manager", "Send Effects", "Master Chain", "Mix Bus",
+  "Audio Mastering", "Loudness Normal", "Dynamic Control", "Stereo Width", "Phase Check", "Frequency Balance", "Master EQ", "Master Limiter",
+  "Deliverables", "Mix Stems", "M&E Mix", "Music & Effects", "Dialogue Stem", "SFX Stem", "Music Stem", "Textless Mix"
 ];
 
 export const getToolsForPage = (page: number): string[] => {
