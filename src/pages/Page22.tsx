@@ -1,4 +1,4 @@
-import { ArrowLeft, Upload, Sparkles, File, Image, Video, Music, FileText, Check, Cloud, Link } from 'lucide-react';
+import { ArrowLeft, Upload, Sparkles, File, Image, Video, Music, FileText, Check, Cloud, Link, Plus, FolderOpen } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile } from '../lib/storage';
@@ -22,6 +22,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
   const [showPrompt, setShowPrompt] = useState(false);
   const [promptText, setPromptText] = useState('');
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [showCreateDropdown, setShowCreateDropdown] = useState(false);
 
   useEffect(() => {
     initializeGoogleDrive().then(ready => {
@@ -387,49 +388,106 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                 <div className="text-center mb-8">
                   <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
                   <h2 className="text-3xl font-bold mb-2">Create with AI</h2>
-                  <p className="text-white/70">Generate a new asset using AI</p>
+                  <p className="text-white/70">Add files to generate with AI</p>
                 </div>
 
-                <div className="flex-1 bg-purple-900/10 border border-purple-500/30 rounded-xl p-8">
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-semibold mb-2">Asset Description</label>
-                      <textarea
-                        placeholder="Describe what you want to create..."
-                        className="w-full h-32 bg-black/50 border border-purple-500/50 rounded-lg p-4 text-white placeholder-white/60 focus:outline-none focus:border-purple-400"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-semibold mb-2">Style</label>
-                        <select className="w-full bg-black/50 border border-purple-500/50 rounded-lg p-3 text-white focus:outline-none focus:border-purple-400">
-                          <option>Cinematic</option>
-                          <option>Realistic</option>
-                          <option>Artistic</option>
-                          <option>Abstract</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold mb-2">Quality</label>
-                        <select className="w-full bg-black/50 border border-purple-500/50 rounded-lg p-3 text-white focus:outline-none focus:border-purple-400">
-                          <option>Standard</option>
-                          <option>High</option>
-                          <option>Ultra</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <button className="w-full py-4 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 rounded-lg font-bold text-lg transition-all">
-                      Generate Asset
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowCreateDropdown(!showCreateDropdown)}
+                      className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 flex items-center justify-center transition-all shadow-xl shadow-purple-500/50 hover:scale-110"
+                    >
+                      <Plus className="w-16 h-16 text-white" />
                     </button>
+
+                    {showCreateDropdown && (
+                      <div className="absolute top-full mt-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-purple-900/95 to-black/95 border-2 border-purple-500/60 rounded-xl p-4 min-w-[250px] shadow-2xl z-10">
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => {
+                              document.getElementById('create-file-input-photos')?.click();
+                              setShowCreateDropdown(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 bg-purple-900/40 hover:bg-purple-900/60 border border-purple-500/30 hover:border-purple-400 rounded-lg transition-all text-left"
+                          >
+                            <Video className="w-5 h-5 text-purple-400" />
+                            <span className="text-white font-semibold">Photos/Videos</span>
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              document.getElementById('create-file-input-files')?.click();
+                              setShowCreateDropdown(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 bg-purple-900/40 hover:bg-purple-900/60 border border-purple-500/30 hover:border-purple-400 rounded-lg transition-all text-left"
+                          >
+                            <FolderOpen className="w-5 h-5 text-purple-400" />
+                            <span className="text-white font-semibold">Files</span>
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              handleGooglePhotos();
+                              setShowCreateDropdown(false);
+                            }}
+                            disabled={!googleDriveReady || uploading}
+                            className="w-full flex items-center gap-3 px-4 py-3 bg-purple-900/40 hover:bg-purple-900/60 border border-purple-500/30 hover:border-purple-400 disabled:bg-gray-800 disabled:border-gray-600 disabled:cursor-not-allowed rounded-lg transition-all text-left"
+                          >
+                            <Cloud className="w-5 h-5 text-purple-400" />
+                            <span className="text-white font-semibold">Google Drive</span>
+                          </button>
+
+                          <button
+                            disabled
+                            className="w-full flex items-center gap-3 px-4 py-3 bg-gray-800/40 border border-gray-600/30 cursor-not-allowed rounded-lg text-left opacity-50"
+                          >
+                            <Cloud className="w-5 h-5 text-gray-400" />
+                            <span className="text-white/60 font-semibold">One Drive</span>
+                            <span className="ml-auto text-xs text-white/40">(Coming Soon)</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    <input
+                      id="create-file-input-photos"
+                      type="file"
+                      className="hidden"
+                      onChange={handleFileSelect}
+                      multiple
+                      accept="image/*,video/*"
+                    />
+
+                    <input
+                      id="create-file-input-files"
+                      type="file"
+                      className="hidden"
+                      onChange={handleFileSelect}
+                      multiple
+                      accept="*"
+                    />
                   </div>
                 </div>
+
+                {uploadedFiles.length > 0 && (
+                  <div className="mt-6 bg-black/30 border border-purple-500/30 rounded-xl p-4">
+                    <p className="text-white/90 font-semibold mb-2">{uploadedFiles.length} file(s) added:</p>
+                    <div className="max-h-32 overflow-y-auto space-y-1">
+                      {uploadedFiles.map((filename, i) => (
+                        <div key={i} className="flex items-center gap-2 text-sm text-white/70">
+                          <Check className="w-4 h-4 text-green-400" />
+                          {filename}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="mt-6 flex gap-4 justify-end">
                   <button
                     onClick={() => onNavigate(11)}
-                    className="px-8 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold transition-all"
+                    disabled={uploadedFiles.length === 0}
+                    className="px-8 py-3 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed rounded-lg font-semibold transition-all"
                   >
                     Save to Media Box
                   </button>
