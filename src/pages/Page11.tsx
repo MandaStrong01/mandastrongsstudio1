@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, X, Upload, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, X, Upload, Loader2, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile } from '../lib/storage';
@@ -459,6 +459,41 @@ export default function Page11({ onNavigate }: PageProps) {
     }
   };
 
+  const handleExportWork = () => {
+    const scenes = generateScenes(duration);
+
+    const exportData = {
+      exportedAt: new Date().toISOString(),
+      projectName: `Backup - ${formatTime(duration)} - ${new Date().toLocaleString()}`,
+      settings: {
+        duration,
+        ratio,
+        size,
+        volume,
+      },
+      selectedAsset,
+      allAssets: assets.map(a => ({
+        id: a.id,
+        name: isMediaAsset(a) ? a.file_name : a.tool_name,
+        type: isMediaAsset(a) ? a.asset_type : 'ai_output',
+        created_at: a.created_at
+      })),
+      scenes,
+      totalScenes: scenes.length,
+      totalAssets: assets.length
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `MandaStrong-Backup-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
@@ -855,6 +890,14 @@ export default function Page11({ onNavigate }: PageProps) {
             >
               <ArrowLeft className="w-5 h-5" />
               Back
+            </button>
+
+            <button
+              onClick={handleExportWork}
+              className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-black px-8 sm:px-12 py-5 rounded-xl text-lg sm:text-xl hover:from-orange-500 hover:to-orange-400 transition-all shadow-lg shadow-orange-600/50 border-2 border-orange-400"
+            >
+              <Download className="w-6 h-6" />
+              EXPORT BACKUP
             </button>
 
             <div className="relative group">
