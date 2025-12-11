@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import Footer from '../components/Footer';
+import AuthModal from '../components/AuthModal';
+import { useAuth } from '../contexts/AuthContext';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -11,6 +14,9 @@ const STRIPE_LINKS = {
 };
 
 export default function Page3({ onNavigate }: PageProps) {
+  const [showAuthModal, setShowAuthModal] = useState(true);
+  const { user } = useAuth();
+
   const openStripeLink = (url: string) => {
     if (url) {
       const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
@@ -24,12 +30,25 @@ export default function Page3({ onNavigate }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
+      {showAuthModal && (
+        <AuthModal
+          onClose={() => {
+            setShowAuthModal(false);
+            onNavigate(1);
+          }}
+          onSuccess={() => setShowAuthModal(false)}
+        />
+      )}
+
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-6xl flex flex-col">
 
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-center mb-6 text-purple-400">SUBSCRIPTION PLANS</h2>
-          <p className="text-center text-white/70 mb-8">Choose the plan that fits your creative vision</p>
+          <h2 className="text-3xl font-bold text-center mb-6 text-purple-400">
+            {user ? 'SUBSCRIPTION PLANS' : 'SIGN IN TO CONTINUE'}
+          </h2>
+          {user && <p className="text-center text-white/70 mb-8">Choose the plan that fits your creative vision</p>}
+          {!user && <p className="text-center text-white/70 mb-8">Please sign in or create an account to access subscription plans</p>}
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
