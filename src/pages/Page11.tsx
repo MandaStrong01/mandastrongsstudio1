@@ -1,16 +1,23 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, File, Sparkles, Volume2, Maximize, Play, Pause, X, Upload, Loader2, Download, Wand2, Film } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Film, Upload, Loader2, Sparkles, Users, Heart, Palette, Code } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile } from '../lib/storage';
-import { initializeGoogleDrive, openGooglePicker, downloadGoogleDriveFile } from '../lib/googleDrive';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
 import MyMovies from '../components/MyMovies';
-import { Asset, isMediaAsset } from '../types/ai-tools';
 
 interface PageProps {
   onNavigate: (page: number) => void;
+}
+
+interface Asset {
+  id: string;
+  file_name: string;
+  file_url: string;
+  file_type: string;
+  asset_type?: string;
+  created_at: string;
 }
 
 export default function Page11({ onNavigate }: PageProps) {
@@ -18,34 +25,10 @@ export default function Page11({ onNavigate }: PageProps) {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [googleDriveReady, setGoogleDriveReady] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(120);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(100);
-  const [ratio, setRatio] = useState('16:9');
-  const [size, setSize] = useState('1080p');
-  const [showScriptModal, setShowScriptModal] = useState(false);
-  const [generating, setGenerating] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [generatedOutput, setGeneratedOutput] = useState<any>(null);
-  const [showAIDurationModal, setShowAIDurationModal] = useState(false);
-  const [aiCalculating, setAiCalculating] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
-  const [sendingToMedia, setSendingToMedia] = useState(false);
-  const [showMediaModal, setShowMediaModal] = useState(false);
-  const [savedMediaAsset, setSavedMediaAsset] = useState<any>(null);
-  const [enhancing, setEnhancing] = useState(false);
-  const [showEnhanceModal, setShowEnhanceModal] = useState(false);
-  const [enhancedAsset, setEnhancedAsset] = useState<any>(null);
-  const [renderJobId, setRenderJobId] = useState<string | null>(null);
-  const [renderProgress, setRenderProgress] = useState(0);
-  const [renderStatus, setRenderStatus] = useState('');
-  const [showProgressModal, setShowProgressModal] = useState(false);
   const [showMyMovies, setShowMyMovies] = useState(false);
-  const [moviePrompt, setMoviePrompt] = useState('');
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -53,42 +36,22 @@ export default function Page11({ onNavigate }: PageProps) {
     }
   }, [user]);
 
-  useEffect(() => {
-    initializeGoogleDrive().then((ready) => {
-      setGoogleDriveReady(ready);
-    }).catch(() => {
-      setGoogleDriveReady(false);
-    });
-  }, []);
-
   const loadAssets = async () => {
     if (!user) return;
 
     setLoading(true);
     try {
-      const [aiAssetsResult, mediaAssetsResult] = await Promise.all([
-        supabase
-          .from('ai_tool_outputs')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('assets')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-      ]);
+      const { data, error } = await supabase
+        .from('assets')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
-      const aiAssets = aiAssetsResult.data || [];
-      const mediaAssets = mediaAssetsResult.data || [];
+      if (error) throw error;
 
-      const allAssets = [...mediaAssets, ...aiAssets].sort((a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-
-      setAssets(allAssets);
-      if (allAssets.length > 0) {
-        setSelectedAsset(allAssets[0]);
+      setAssets(data || []);
+      if (data && data.length > 0 && !selectedAsset) {
+        setSelectedAsset(data[0]);
       }
     } catch (error) {
       console.error('Error loading assets:', error);
@@ -97,9 +60,8 @@ export default function Page11({ onNavigate }: PageProps) {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || !user) return;
+  const handleFileUpload = async (files: FileList | null) => {
+    if (!files || !user || files.length === 0) return;
 
     setUploading(true);
     setUploadProgress({});
@@ -108,11 +70,12 @@ export default function Page11({ onNavigate }: PageProps) {
       const uploadPromises = Array.from(files).map(file =>
         uploadFile(file, user.id, (progress) => {
           setUploadProgress(prev => ({ ...prev, [file.name]: progress }));
-        }, true)
+        }, false)
       );
-      const results = await Promise.all(uploadPromises);
 
+      const results = await Promise.all(uploadPromises);
       const successCount = results.filter(r => r.success).length;
+
       if (successCount > 0) {
         await loadAssets();
       }
@@ -120,1329 +83,282 @@ export default function Page11({ onNavigate }: PageProps) {
       if (results.some(r => !r.success)) {
         const failedFiles = results.filter(r => !r.success);
         const errorMessages = failedFiles.map(r => r.error).join('\n');
-        alert(`${successCount} of ${files.length} files uploaded successfully.\n\nErrors:\n${errorMessages}`);
+        alert(`${successCount} of ${files.length} files uploaded.\n\nErrors:\n${errorMessages}`);
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert(`Failed to upload files: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setUploading(false);
       setUploadProgress({});
-      e.target.value = '';
     }
   };
 
-  const handleGoogleDriveUpload = async () => {
-    if (!googleDriveReady) {
-      alert('Google Drive is loading. Please wait a moment and try again.');
-      return;
-    }
-
-    if (!user) {
-      alert('Please sign in to upload files.');
-      return;
-    }
-
-    openGooglePicker(async (files) => {
-      setUploading(true);
-      setUploadProgress({});
-
-      try {
-        let successCount = 0;
-        let failCount = 0;
-
-        for (const file of files) {
-          try {
-            const blob = await downloadGoogleDriveFile(file.id, file.name, file.mimeType);
-            const newFile = new File([blob], file.name, { type: file.mimeType });
-            const result = await uploadFile(newFile, user.id, (progress) => {
-              setUploadProgress(prev => ({ ...prev, [file.name]: progress }));
-            });
-
-            if (result.success) {
-              successCount++;
-            } else {
-              failCount++;
-            }
-          } catch (error) {
-            console.error('Error uploading file:', file.name, error);
-            failCount++;
-          }
-        }
-
-        if (successCount > 0) {
-          await loadAssets();
-        }
-
-        if (failCount > 0) {
-          alert(`Uploaded ${successCount} of ${files.length} files successfully`);
-        }
-      } catch (error) {
-        console.error('Google Drive upload error:', error);
-        alert('Failed to upload files from Google Drive');
-      } finally {
-        setUploading(false);
-        setUploadProgress({});
-      }
-    });
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    handleFileUpload(e.dataTransfer.files);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     setIsDragging(true);
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     setIsDragging(false);
   };
 
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-
-    const files = e.dataTransfer.files;
-    if (!files || files.length === 0 || !user) return;
-
-    setUploading(true);
-    setUploadProgress({});
-
-    try {
-      const uploadPromises = Array.from(files).map(file =>
-        uploadFile(file, user.id, (progress) => {
-          setUploadProgress(prev => ({ ...prev, [file.name]: progress }));
-        }, true)
-      );
-      const results = await Promise.all(uploadPromises);
-
-      const successCount = results.filter(r => r.success).length;
-      if (successCount > 0) {
-        await loadAssets();
-      }
-
-      if (results.some(r => !r.success)) {
-        const failedFiles = results.filter(r => !r.success);
-        const errorMessages = failedFiles.map(r => r.error).join('\n');
-        alert(`${successCount} of ${files.length} files uploaded successfully.\n\nErrors:\n${errorMessages}`);
-      }
-    } catch (error) {
-      console.error('Drag & drop upload error:', error);
-      alert(`Failed to upload files: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setUploading(false);
-      setUploadProgress({});
-    }
-  };
-
-  const formatTime = (minutes: number) => {
-    const mins = Math.floor(minutes);
-    const secs = Math.floor((minutes - mins) * 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const handleDurationChange = (newDuration: number) => {
-    setDuration(newDuration);
-    setShowScriptModal(true);
-  };
-
-  const handleScriptResponse = () => {
-    setShowScriptModal(false);
-  };
-
-  const handleDeleteAsset = async (asset: Asset, e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    if (!confirm('Are you sure you want to delete this asset?')) {
-      return;
-    }
-
-    try {
-      if (isMediaAsset(asset)) {
-        const { error } = await supabase
-          .from('assets')
-          .delete()
-          .eq('id', asset.id);
-
-        if (error) throw error;
-
-        const fileName = asset.file_url.split('/').pop();
-        if (fileName) {
-          await supabase.storage
-            .from('media-assets')
-            .remove([`${user?.id}/${fileName}`]);
-        }
-      } else {
-        const { error } = await supabase
-          .from('ai_tool_outputs')
-          .delete()
-          .eq('id', asset.id);
-
-        if (error) throw error;
-      }
-
-      if (selectedAsset?.id === asset.id) {
-        setSelectedAsset(null);
-      }
-
-      await loadAssets();
-    } catch (error) {
-      console.error('Delete error:', error);
-      alert('Failed to delete asset. Please try again.');
-    }
-  };
-
-  const handleAIDuration = async () => {
-    setShowAIDurationModal(true);
-  };
-
-  const calculateAIDuration = async () => {
-    setAiCalculating(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const assetCount = assets.length;
-      const avgDurationPerAsset = 5;
-      const suggestedDuration = Math.min(assetCount * avgDurationPerAsset, 120);
-
-      setDuration(suggestedDuration);
-      setShowAIDurationModal(false);
-    } catch (error) {
-      console.error('AI calculation error:', error);
-      alert('Failed to calculate duration. Please try again.');
-    } finally {
-      setAiCalculating(false);
-    }
-  };
-
-  const handleAIEnhance = async () => {
-    if (!selectedAsset || !user) {
-      alert('Please select an asset to enhance.');
-      return;
-    }
-
-    if (!isMediaAsset(selectedAsset)) {
-      alert('AI Enhancement is only available for media files (images, videos, audio).');
-      return;
-    }
-
-    setEnhancing(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      const enhancements = [];
-
-      if (selectedAsset.asset_type === 'image') {
-        enhancements.push('Upscaled to 4K', 'Enhanced colors', 'Reduced noise', 'Sharpened details');
-      } else if (selectedAsset.asset_type === 'video') {
-        enhancements.push('Upscaled to 4K', 'Frame interpolation', 'Stabilization', 'Color grading');
-      } else if (selectedAsset.asset_type === 'audio') {
-        enhancements.push('Noise reduction', 'Voice clarity', 'Audio normalization', 'Reverb removal');
-      }
-
-      const { data, error } = await supabase
-        .from('ai_tool_outputs')
-        .insert({
-          user_id: user.id,
-          tool_name: 'AI Enhance',
-          input_file_url: selectedAsset.file_url,
-          output_data: {
-            original: selectedAsset.file_name,
-            enhancements: enhancements,
-            quality: 'Enhanced',
-            timestamp: new Date().toISOString()
-          }
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setEnhancedAsset(data);
-      setShowEnhanceModal(true);
-      await loadAssets();
-    } catch (error) {
-      console.error('Enhancement error:', error);
-      alert('Failed to enhance asset. Please try again.');
-    } finally {
-      setEnhancing(false);
-    }
-  };
-
-  const generateScenes = (totalDuration: number) => {
-    const scenes = [];
-    const sceneTypes = [
-      'Opening Scene',
-      'Character Introduction',
-      'Action Sequence',
-      'Dramatic Moment',
-      'Montage',
-      'Climax Scene',
-      'Resolution',
-      'Closing Scene'
-    ];
-
-    const numScenes = Math.min(Math.max(Math.floor(totalDuration / 10), 3), sceneTypes.length);
-    const sceneDuration = totalDuration / numScenes;
-
-    for (let i = 0; i < numScenes; i++) {
-      scenes.push({
-        id: `scene-${i + 1}`,
-        name: sceneTypes[i],
-        duration: sceneDuration,
-        startTime: i * sceneDuration,
-        endTime: (i + 1) * sceneDuration
-      });
-    }
-
-    return scenes;
-  };
-
-  const handleSendToMedia = async () => {
-    if (!user) {
-      alert('Please sign in to save to Media Box.');
-      return;
-    }
-
-    if (duration < 1 || duration > 120) {
-      alert('Please set a valid duration between 1 and 120 minutes.');
-      return;
-    }
-
-    setSendingToMedia(true);
-    try {
-      const scenes = generateScenes(duration);
-
-      const mediaConfig = {
-        duration,
-        ratio,
-        size,
-        volume,
-        scenes,
-        totalScenes: scenes.length,
-        settings: {
-          duration,
-          ratio,
-          size,
-          volume,
-          timestamp: new Date().toISOString()
-        },
-        projectName: `Enhanced Media - ${formatTime(duration)} - ${new Date().toLocaleDateString()}`,
-        type: 'enhanced_media'
-      };
-
-      const { data, error } = await supabase
-        .from('ai_tool_outputs')
-        .insert({
-          user_id: user.id,
-          tool_name: 'Enhanced Media Project',
-          output_data: mediaConfig
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setSavedMediaAsset(data);
-      setShowMediaModal(true);
-      await loadAssets();
-    } catch (error) {
-      console.error('Send to Media error:', error);
-      alert('Failed to save to Media Box. Please try again.');
-    } finally {
-      setSendingToMedia(false);
-    }
-  };
-
-  const handleGenerate = async () => {
-    if (!user) {
-      alert('Please sign in to generate your movie.');
-      return;
-    }
-
-    if (!moviePrompt || moviePrompt.trim().length < 10) {
-      alert('Please write detailed instructions for your movie! Tell us what you want to create (at least 10 characters).');
-      return;
-    }
-
-    if (duration < 1 || duration > 120) {
-      alert('Please set a valid duration between 1 and 120 minutes.');
-      return;
-    }
-
-    setGenerating(true);
-    setRenderProgress(0);
-    setRenderStatus('AI is reading your instructions...');
-
-    try {
-      const mediaAssets = assets.filter(a => isMediaAsset(a));
-
-      const assetIds = mediaAssets.map(a => a.id);
-      const scenes = generateScenes(duration);
-
-      const { data: renderJob, error: jobError } = await supabase
-        .from('render_jobs')
-        .insert({
-          user_id: user.id,
-          title: moviePrompt.substring(0, 100),
-          description: moviePrompt,
-          target_duration: duration,
-          aspect_ratio: ratio,
-          resolution: size,
-          scene_count: scenes.length,
-          scene_breakdown: scenes,
-          asset_ids: assetIds,
-          primary_asset_id: mediaAssets.length > 0 ? mediaAssets[0].id : null,
-          video_settings: { ratio, size, prompt: moviePrompt },
-          audio_settings: { volume },
-          status: 'pending'
-        })
-        .select()
-        .single();
-
-      if (jobError) throw jobError;
-
-      setRenderJobId(renderJob.id);
-      setShowProgressModal(true);
-
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-      const generateResponse = await fetch(
-        `${supabaseUrl}/functions/v1/generate-movie`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${supabaseAnonKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            jobId: renderJob.id,
-            prompt: moviePrompt,
-            duration: duration,
-            assets: mediaAssets.map(a => ({
-              id: a.id,
-              url: a.file_url,
-              type: a.asset_type,
-              name: a.file_name
-            }))
-          })
-        }
-      );
-
-      if (!generateResponse.ok) {
-        const errorData = await generateResponse.json();
-        throw new Error(errorData.error || 'Failed to start movie generation');
-      }
-
-      pollRenderStatus(renderJob.id);
-
-    } catch (error) {
-      console.error('Generation error:', error);
-      alert('Failed to generate movie. Please try again or contact support.');
-      setShowProgressModal(false);
-      setGenerating(false);
-    }
-  };
-
-  const pollRenderStatus = async (jobId: string) => {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-    const pollInterval = setInterval(async () => {
-      try {
-        const statusResponse = await fetch(
-          `${supabaseUrl}/functions/v1/check-render-status?jobId=${jobId}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${supabaseAnonKey}`,
-            }
-          }
-        );
-
-        if (!statusResponse.ok) {
-          throw new Error('Failed to check render status');
-        }
-
-        const { job } = await statusResponse.json();
-
-        setRenderProgress(job.progress || 0);
-        setRenderStatus(job.currentStep || 'Processing...');
-
-        if (job.status === 'completed') {
-          clearInterval(pollInterval);
-          setGenerating(false);
-          setShowProgressModal(false);
-          setGeneratedOutput(job);
-          setShowSuccessModal(true);
-          await loadAssets();
-        } else if (job.status === 'failed') {
-          clearInterval(pollInterval);
-          setGenerating(false);
-          setShowProgressModal(false);
-          alert(`Movie generation failed: ${job.error || 'Unknown error'}`);
-        } else if (job.status === 'cancelled') {
-          clearInterval(pollInterval);
-          setGenerating(false);
-          setShowProgressModal(false);
-        }
-      } catch (error) {
-        console.error('Error polling status:', error);
-      }
-    }, 2000);
-  };
-
-  const downloadMediaFile = async (asset: Asset) => {
-    if (!isMediaAsset(asset)) return;
-
-    try {
-      const response = await fetch(asset.file_url);
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = asset.file_name;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Download error:', error);
-      alert(`Failed to download ${asset.file_name}`);
-    }
-  };
-
-  const handleExportAllMedia = async () => {
-    const mediaAssets = assets.filter(a => isMediaAsset(a));
-
-    if (mediaAssets.length === 0) {
-      alert('No media files to download. Upload some videos, images, or audio first.');
-      return;
-    }
-
-    if (!confirm(`Download ${mediaAssets.length} media files? They will download one by one.`)) {
-      return;
-    }
-
-    setUploading(true);
-    let successCount = 0;
-    let failCount = 0;
-
-    for (const asset of mediaAssets) {
-      try {
-        await downloadMediaFile(asset);
-        successCount++;
-        await new Promise(resolve => setTimeout(resolve, 500));
-      } catch (error) {
-        failCount++;
-      }
-    }
-
-    setUploading(false);
-    alert(`Downloaded ${successCount} of ${mediaAssets.length} files successfully!`);
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+    if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
-      <div className="flex-1 flex flex-col px-4 py-6">
-        <div className="max-w-full w-full mx-auto flex-1 flex flex-col">
-          <div className="flex items-center justify-between mb-4 max-w-4xl mx-auto w-full">
-            <h1 className="text-2xl md:text-3xl font-black text-purple-400">Editor Dashboard</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col">
+      <div className="flex-1 flex flex-col px-4 py-8">
+        <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-4xl font-black bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent mb-2">
+                Creative Studio
+              </h1>
+              <p className="text-slate-400 text-sm">Where humanity meets creativity</p>
+            </div>
             <button
               onClick={() => setShowMyMovies(true)}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold px-4 py-2 rounded-lg transition-all shadow-lg shadow-purple-600/50"
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-blue-500/50 transform hover:scale-105"
             >
               <Film className="w-5 h-5" />
-              My Movies
+              My Projects
             </button>
           </div>
 
-          <div className="bg-gradient-to-br from-purple-900/50 to-purple-800/40 border-2 border-purple-400/70 rounded-xl p-4 mb-4 mx-auto max-w-4xl">
-            <div className="flex items-start gap-3">
-              <Sparkles className="w-6 h-6 text-purple-400 flex-shrink-0 mt-1" />
-              <div>
-                <h2 className="text-lg font-bold text-white mb-1">Set Your Movie Duration & Generate</h2>
-                <p className="text-sm text-purple-200">
-                  Choose your desired movie length (1-120 minutes), upload your assets, and click Generate to create your film. Use AI Help for automatic duration suggestions based on your content.
+          {/* Mission Statement */}
+          <div className="bg-gradient-to-r from-blue-900/30 via-cyan-900/30 to-teal-900/30 border border-cyan-500/30 rounded-2xl p-6 mb-8 backdrop-blur-sm">
+            <div className="flex items-start gap-4">
+              <div className="flex gap-3">
+                <Heart className="w-6 h-6 text-red-400" />
+                <Palette className="w-6 h-6 text-cyan-400" />
+                <Users className="w-6 h-6 text-blue-400" />
+                <Code className="w-6 h-6 text-teal-400" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-white mb-2">Empowering Human Creativity</h2>
+                <p className="text-slate-300 leading-relaxed">
+                  A platform built for artists, creators, and developers. Upload your media, organize your assets,
+                  and bring your creative vision to life. Supporting files up to <span className="font-bold text-cyan-400">50GB</span> -
+                  because great ideas need no limits.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
+            {/* Upload Area */}
             <div
-              className={`relative lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border p-4 transition-all ${
+              className={`relative bg-slate-800/50 backdrop-blur-sm rounded-2xl border-2 p-6 transition-all ${
                 isDragging
-                  ? 'border-purple-400 border-4 bg-purple-900/40'
-                  : 'border-purple-500/30'
+                  ? 'border-cyan-400 border-dashed bg-cyan-900/20 scale-[1.02]'
+                  : 'border-slate-700'
               }`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
-              <div className="mb-4">
-                <h2 className="text-xl font-bold text-purple-400 mb-2">MEDIA BOX</h2>
-                <div className="bg-purple-900/30 border border-purple-400/40 rounded-lg p-3 mb-2">
-                  <p className="text-sm text-purple-200 font-semibold mb-1">Select Asset / Drag & Drop</p>
-                  <p className="text-xs text-white/80 leading-relaxed">
-                    Click any asset below to preview it, or drag files directly into this box to upload.
-                  </p>
-                </div>
-                <div className="bg-gradient-to-r from-purple-900/40 to-purple-800/40 border border-purple-300/50 rounded-lg p-3">
-                  <p className="text-sm text-purple-100 font-bold text-center animate-pulse">
-                    Have I Missed A Thing?
-                  </p>
-                  <p className="text-xs text-white/70 text-center mt-1">
-                    Double-check you've added all your needed assets before moving to the next step!
-                  </p>
-                </div>
-              </div>
+              <h2 className="text-2xl font-bold text-cyan-400 mb-4">Media Library</h2>
 
-              {isDragging && (
-                <div className="absolute inset-4 bg-purple-900/60 backdrop-blur-sm border-4 border-dashed border-purple-400 rounded-2xl flex items-center justify-center z-10 pointer-events-none">
-                  <div className="text-center">
-                    <Upload className="w-16 h-16 mx-auto mb-3 text-purple-400 animate-bounce" />
-                    <p className="text-xl font-bold text-purple-400">Drop files here</p>
-                    <p className="text-sm text-purple-300 mt-2">Images auto-compress for faster uploads</p>
-                  </div>
-                </div>
-              )}
-
-              {uploading && (
-                <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-purple-900/90 to-black/95 backdrop-blur-md rounded-2xl flex items-center justify-center z-20 p-8">
-                  <div className="w-full max-w-lg">
-                    <div className="text-center mb-6">
-                      <Loader2 className="w-16 h-16 mx-auto mb-3 text-purple-400 animate-spin" />
-                      <p className="text-2xl font-bold text-white mb-1">Fast Upload in Progress</p>
-                      <p className="text-sm text-purple-300">Optimizing and uploading your files</p>
-                    </div>
-                    {Object.keys(uploadProgress).length > 0 ? (
-                      <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
-                        {Object.entries(uploadProgress).map(([fileName, progress]) => (
-                          <div key={fileName} className="bg-black/40 backdrop-blur-sm border border-purple-500/30 rounded-lg p-4 shadow-lg">
-                            <div className="flex items-center justify-between mb-2">
-                              <p className="text-sm text-white/95 font-medium truncate flex-1 mr-3">{fileName}</p>
-                              <p className="text-sm font-bold text-purple-400 min-w-[45px] text-right">{Math.round(progress)}%</p>
-                            </div>
-                            <div className="w-full bg-purple-950/50 rounded-full h-2.5 overflow-hidden">
-                              <div
-                                className="bg-gradient-to-r from-purple-600 via-purple-500 to-purple-400 h-2.5 rounded-full transition-all duration-200 ease-out shadow-lg shadow-purple-500/50"
-                                style={{ width: `${progress}%` }}
-                              />
-                            </div>
-                          </div>
-                        ))}
+              {/* Upload Section */}
+              <div className="mb-6">
+                <label className="block">
+                  <div className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
+                    isDragging
+                      ? 'border-cyan-400 bg-cyan-900/20'
+                      : 'border-slate-600 hover:border-cyan-500 hover:bg-slate-700/50'
+                  }`}>
+                    {uploading ? (
+                      <div>
+                        <Loader2 className="w-12 h-12 mx-auto mb-3 text-cyan-400 animate-spin" />
+                        <p className="text-lg font-bold text-white mb-1">Uploading...</p>
+                        <p className="text-sm text-slate-400">Processing your files</p>
                       </div>
                     ) : (
-                      <div className="text-center">
-                        <p className="text-purple-300 animate-pulse">Preparing files...</p>
+                      <div>
+                        <Upload className="w-12 h-12 mx-auto mb-3 text-cyan-400" />
+                        <p className="text-lg font-bold text-white mb-1">Upload Media</p>
+                        <p className="text-sm text-slate-400 mb-3">Drag & drop or click to browse</p>
+                        <p className="text-xs text-slate-500">Supports all media types • Max 50GB per file</p>
                       </div>
                     )}
                   </div>
-                </div>
-              )}
+                  <input
+                    type="file"
+                    multiple
+                    accept="*/*"
+                    onChange={(e) => handleFileUpload(e.target.files)}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                </label>
 
-              <div className="space-y-3 mb-4">
-                <button
-                  onClick={() => {
-                    document.getElementById('files-upload')?.click();
-                  }}
-                  disabled={uploading}
-                  className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    {uploading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Upload className="w-5 h-5" />
-                    )}
-                    {uploading ? 'Uploading...' : 'Open Files'}
+                {/* Upload Progress */}
+                {Object.keys(uploadProgress).length > 0 && (
+                  <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
+                    {Object.entries(uploadProgress).map(([fileName, progress]) => (
+                      <div key={fileName} className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs text-slate-300 truncate flex-1 mr-2">{fileName}</p>
+                          <p className="text-xs font-bold text-cyan-400">{Math.round(progress)}%</p>
+                        </div>
+                        <div className="w-full bg-slate-700 rounded-full h-1.5">
+                          <div
+                            className="bg-gradient-to-r from-cyan-600 to-blue-600 h-1.5 rounded-full transition-all"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </button>
-
-                <button
-                  onClick={() => {
-                    document.getElementById('photos-upload')?.click();
-                  }}
-                  disabled={uploading}
-                  className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    {uploading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Upload className="w-5 h-5" />
-                    )}
-                    {uploading ? 'Uploading...' : 'Open Photos/Videos'}
-                  </div>
-                </button>
-
-                <button
-                  onClick={handleGoogleDriveUpload}
-                  disabled={uploading || !googleDriveReady}
-                  className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    {uploading || !googleDriveReady ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Upload className="w-5 h-5" />
-                    )}
-                    {uploading ? 'Uploading...' : !googleDriveReady ? 'Loading Drive...' : 'Open Google Drive'}
-                  </div>
-                </button>
+                )}
               </div>
 
-              <input
-                id="files-upload"
-                type="file"
-                multiple
-                accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
-                className="hidden"
-                onChange={handleFileUpload}
-              />
-              <input
-                id="photos-upload"
-                type="file"
-                multiple
-                accept="image/*,video/*"
-                className="hidden"
-                onChange={handleFileUpload}
-              />
-
-              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 mb-4">
-                <p className="text-xs text-purple-200 leading-relaxed">
-                  <span className="font-semibold block mb-1">Permissions Needed:</span>
-                  Upload images, videos, and audio files from your device or connect your Google Drive to access your cloud files directly.
-                </p>
-              </div>
-
-              <div className="space-y-2 overflow-y-auto max-h-[40vh] lg:max-h-[70vh]">
+              {/* Assets List */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-bold text-slate-400 mb-3">Your Assets ({assets.length})</h3>
                 {loading ? (
                   <div className="text-center py-8">
-                    <div className="animate-spin w-8 h-8 border-4 border-white border-t-transparent rounded-full mx-auto mb-2"></div>
-                    <p className="text-sm text-slate-400">Loading...</p>
+                    <Loader2 className="w-8 h-8 mx-auto text-cyan-400 animate-spin" />
                   </div>
                 ) : assets.length === 0 ? (
                   <div className="text-center py-8">
-                    <File className="w-12 h-12 mx-auto mb-2 text-slate-600" />
-                    <p className="text-sm text-slate-400">No assets yet</p>
+                    <Sparkles className="w-12 h-12 mx-auto mb-3 text-slate-600" />
+                    <p className="text-sm text-slate-500">No assets yet. Upload your first file!</p>
                   </div>
                 ) : (
-                  assets.map((asset) => {
-                    const isMedia = isMediaAsset(asset);
-                    return (
-                      <div key={asset.id} className="relative group">
-                        <button
-                          onClick={() => setSelectedAsset(asset)}
-                          className={`w-full bg-purple-900/20 border rounded-lg p-3 text-left transition-all hover:bg-purple-900/40 ${
-                            selectedAsset?.id === asset.id ? 'border-purple-400 bg-purple-900/40' : 'border-purple-500/30'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 mb-1">
-                            {isMedia ? (
-                              <File className="w-4 h-4 text-purple-400" />
-                            ) : (
-                              <Sparkles className="w-4 h-4 text-purple-400" />
-                            )}
-                            <h3 className="font-semibold text-sm truncate pr-12">
-                              {isMedia ? asset.file_name : asset.tool_name}
-                            </h3>
-                          </div>
-                          <p className="text-xs text-slate-400">
-                            {new Date(asset.created_at).toLocaleDateString()}
-                          </p>
-                        </button>
-                        {isMedia && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              downloadMediaFile(asset);
-                            }}
-                            className="absolute top-2 right-8 p-1 bg-orange-600 hover:bg-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-all"
-                            title="Download file"
-                          >
-                            <Download className="w-3 h-3 text-white" />
-                          </button>
-                        )}
-                        <button
-                          onClick={(e) => handleDeleteAsset(asset, e)}
-                          className="absolute top-2 right-2 p-1 bg-red-600 hover:bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all"
-                          title="Delete asset"
-                        >
-                          <X className="w-3 h-3 text-white" />
-                        </button>
-                      </div>
-                    );
-                  })
+                  <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
+                    {assets.map((asset) => (
+                      <button
+                        key={asset.id}
+                        onClick={() => setSelectedAsset(asset)}
+                        className={`w-full text-left p-3 rounded-lg transition-all ${
+                          selectedAsset?.id === asset.id
+                            ? 'bg-cyan-600/20 border-2 border-cyan-500'
+                            : 'bg-slate-900/30 border border-slate-700 hover:bg-slate-700/50'
+                        }`}
+                      >
+                        <p className="text-sm font-medium text-white truncate mb-1">{asset.file_name}</p>
+                        <div className="flex items-center gap-2 text-xs text-slate-400">
+                          <span className="px-2 py-0.5 bg-slate-700 rounded">
+                            {asset.asset_type || asset.file_type.split('/')[0]}
+                          </span>
+                          <span>{new Date(asset.created_at).toLocaleDateString()}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
 
-            <div className="lg:col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4 flex flex-col">
-              <h2 className="text-xl font-bold mb-4 text-purple-400">VIEWER</h2>
-              <div className="flex-1 flex flex-col">
-                <div className="aspect-video bg-black rounded-lg border border-purple-500/30 mb-4 flex items-center justify-center overflow-hidden">
-                  {selectedAsset ? (
-                    isMediaAsset(selectedAsset) ? (
-                      selectedAsset.asset_type === 'image' ? (
-                        <img
-                          src={selectedAsset.file_url}
-                          alt={selectedAsset.file_name}
-                          className="max-w-full max-h-full object-contain"
-                        />
-                      ) : selectedAsset.asset_type === 'video' ? (
-                        <video
-                          src={selectedAsset.file_url}
-                          controls
-                          className="max-w-full max-h-full"
-                        />
-                      ) : selectedAsset.asset_type === 'audio' ? (
-                        <div className="text-center p-8">
-                          <Volume2 className="w-16 h-16 mx-auto mb-4 text-purple-400" />
-                          <h3 className="text-lg font-bold mb-4">{selectedAsset.file_name}</h3>
-                          <audio src={selectedAsset.file_url} controls className="w-full" />
-                        </div>
-                      ) : (
-                        <div className="text-center p-8">
-                          <File className="w-16 h-16 mx-auto mb-4 text-purple-400" />
-                          <h3 className="text-lg font-bold mb-2">{selectedAsset.file_name}</h3>
-                          <p className="text-sm text-slate-400">{selectedAsset.file_type}</p>
-                        </div>
-                      )
-                    ) : (
-                      <div className="text-center p-8">
-                        <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
-                        <h3 className="text-lg font-bold mb-2">{selectedAsset.tool_name}</h3>
-                        <pre className="text-sm text-slate-300 font-sans max-h-48 overflow-y-auto text-left">
-                          {JSON.stringify(selectedAsset.output_data, null, 2)}
-                        </pre>
-                      </div>
-                    )
-                  ) : (
-                    <div className="text-center">
-                      <File className="w-16 h-16 mx-auto mb-4 text-slate-600" />
-                      <p className="text-slate-400">Select an asset to preview</p>
-                    </div>
-                  )}
-                </div>
+            {/* Preview Area */}
+            <div className="lg:col-span-2 bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700 p-6">
+              <h2 className="text-2xl font-bold text-cyan-400 mb-4">Preview</h2>
 
-                <div className="space-y-2">
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={() => setIsPlaying(!isPlaying)}
-                      className="p-2 bg-purple-600 hover:bg-purple-500 rounded-lg transition-all"
-                    >
-                      {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                    </button>
-                    <span className="text-sm text-slate-400">{formatTime(currentTime)}</span>
-                  </div>
-
-                  <div className="relative">
-                    <input
-                      type="range"
-                      min="0"
-                      max={duration}
-                      step="0.1"
-                      value={currentTime}
-                      onChange={(e) => setCurrentTime(parseFloat(e.target.value))}
-                      className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
-                      style={{
-                        background: `linear-gradient(to right, #9333ea ${(currentTime / duration) * 100}%, rgba(147, 51, 234, 0.2) ${(currentTime / duration) * 100}%)`
-                      }}
-                    />
-                    <div className="flex justify-between text-xs text-slate-500 mt-1">
-                      <span>0:00</span>
-                      <span>120:00</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
-              <h2 className="text-xl font-bold mb-4 text-purple-400">CONTROLS</h2>
-              <div className="space-y-6">
-                <div>
-                  <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Sparkles className="w-4 h-4 text-purple-400" />
-                    Movie Instructions (Tell AI what to create)
-                  </label>
-                  <textarea
-                    value={moviePrompt}
-                    onChange={(e) => setMoviePrompt(e.target.value)}
-                    placeholder="Example: Create an epic 120-minute action movie with robots fighting aliens. Include explosions, dramatic music, and heroic moments."
-                    className="w-full px-3 py-3 bg-black border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-400 resize-none"
-                    rows={4}
-                  />
-                  <p className="text-xs text-slate-400 mt-1">
-                    Be specific! The more details you give, the better your movie will be.
-                  </p>
-                </div>
-
-                <div>
-                  <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Volume2 className="w-4 h-4 text-purple-400" />
-                    Volume
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={volume}
-                    onChange={(e) => setVolume(parseInt(e.target.value))}
-                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="text-right text-xs text-slate-400 mt-1">{volume}%</div>
-                </div>
-
-                <div>
-                  <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Maximize className="w-4 h-4 text-purple-400" />
-                    Ratio
-                  </label>
-                  <select
-                    value={ratio}
-                    onChange={(e) => setRatio(e.target.value)}
-                    className="w-full px-3 py-2 bg-black border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-400"
-                  >
-                    <option value="16:9">16:9</option>
-                    <option value="4:3">4:3</option>
-                    <option value="21:9">21:9</option>
-                    <option value="1:1">1:1</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-semibold mb-2 block">Size</label>
-                  <select
-                    value={size}
-                    onChange={(e) => setSize(e.target.value)}
-                    className="w-full px-3 py-2 bg-black border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-400"
-                  >
-                    <option value="720p">720p</option>
-                    <option value="1080p">1080p</option>
-                    <option value="1440p">1440p</option>
-                    <option value="4K">4K</option>
-                  </select>
-                </div>
-
-                <div>
-                  <button
-                    onClick={handleAIEnhance}
-                    disabled={!selectedAsset || !isMediaAsset(selectedAsset) || enhancing}
-                    className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold px-6 py-4 rounded-xl transition-all shadow-lg shadow-cyan-600/50 border-2 border-cyan-400 disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-                  >
-                    {enhancing ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        ENHANCING...
-                      </>
-                    ) : (
-                      <>
-                        <Wand2 className="w-5 h-5" />
-                        AI ENHANCE
-                      </>
-                    )}
-                  </button>
-                  <p className="text-xs text-center text-slate-400 mt-2">
-                    One-click quality enhancement
-                  </p>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-semibold">Movie Duration</label>
-                    <button
-                      onClick={handleAIDuration}
-                      className="flex items-center gap-1 text-xs bg-purple-600 hover:bg-purple-500 px-2 py-1 rounded transition-all"
-                    >
-                      <Sparkles className="w-3 h-3" />
-                      AI Help
-                    </button>
-                  </div>
-                  <div className="bg-gradient-to-br from-purple-900/40 to-purple-800/30 border-2 border-purple-400/60 rounded-lg p-4">
-                    <div className="text-center mb-3">
-                      <div className="text-3xl font-black text-purple-400 mb-1">{formatTime(duration)}</div>
-                      <div className="text-xs text-purple-300 font-semibold">Total Movie Length</div>
-                    </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="120"
-                      value={duration}
-                      onChange={(e) => handleDurationChange(parseInt(e.target.value))}
-                      className="w-full h-3 bg-purple-900/50 rounded-lg appearance-none cursor-pointer mb-2"
-                    />
-                    <div className="flex items-center gap-2 mb-2">
-                      <input
-                        type="number"
-                        min="1"
-                        max="120"
-                        value={duration}
-                        onChange={(e) => handleDurationChange(parseInt(e.target.value) || 1)}
-                        className="flex-1 px-3 py-2 bg-black border border-purple-500/50 rounded-lg text-white text-center font-bold focus:outline-none focus:border-purple-400"
+              {selectedAsset ? (
+                <div className="space-y-4">
+                  <div className="aspect-video bg-black rounded-xl overflow-hidden border border-slate-700">
+                    {selectedAsset.file_type.startsWith('image/') ? (
+                      <img
+                        src={selectedAsset.file_url}
+                        alt={selectedAsset.file_name}
+                        className="w-full h-full object-contain"
                       />
-                      <span className="text-sm text-purple-300 font-semibold">minutes</span>
+                    ) : selectedAsset.file_type.startsWith('video/') ? (
+                      <video
+                        src={selectedAsset.file_url}
+                        controls
+                        className="w-full h-full"
+                      />
+                    ) : selectedAsset.file_type.startsWith('audio/') ? (
+                      <div className="w-full h-full flex items-center justify-center p-8">
+                        <audio src={selectedAsset.file_url} controls className="w-full" />
+                      </div>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div className="text-center">
+                          <Film className="w-16 h-16 mx-auto mb-4 text-slate-600" />
+                          <p className="text-slate-400">Preview not available</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Asset Details */}
+                  <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700">
+                    <h3 className="text-lg font-bold text-white mb-3">{selectedAsset.file_name}</h3>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-slate-500 mb-1">Type</p>
+                        <p className="text-white font-medium">{selectedAsset.file_type}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500 mb-1">Uploaded</p>
+                        <p className="text-white font-medium">
+                          {new Date(selectedAsset.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-xs text-purple-300/70 text-center">Range: 1 - 120 minutes</div>
+                    <div className="mt-3">
+                      <a
+                        href={selectedAsset.file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium px-4 py-2 rounded-lg transition-all"
+                      >
+                        <Film className="w-4 h-4" />
+                        Open in New Tab
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="bg-gradient-to-r from-blue-900/30 to-cyan-900/30 rounded-xl p-6 border border-cyan-500/30">
+                    <h3 className="text-lg font-bold text-white mb-3">Next Steps</h3>
+                    <div className="space-y-2 text-sm text-slate-300">
+                      <p>✓ Upload more assets to build your library</p>
+                      <p>✓ Use AI Tools to enhance your content</p>
+                      <p>✓ Create movies from your assets</p>
+                      <p>✓ Share with your team</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6 flex-wrap">
-            <button
-              onClick={() => onNavigate(10)}
-              className="flex items-center justify-center gap-2 bg-black text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-900 transition-all border border-purple-500"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Back
-            </button>
-
-            <button
-              onClick={handleExportAllMedia}
-              disabled={uploading}
-              className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-black px-8 sm:px-12 py-5 rounded-xl text-lg sm:text-xl hover:from-orange-500 hover:to-orange-400 transition-all shadow-lg shadow-orange-600/50 border-2 border-orange-400 disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed"
-            >
-              {uploading ? (
-                <>
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                  Downloading...
-                </>
               ) : (
-                <>
-                  <Download className="w-6 h-6" />
-                  DOWNLOAD ALL MEDIA
-                </>
-              )}
-            </button>
-
-            <div className="relative group">
-              <button
-                onClick={handleSendToMedia}
-                disabled={sendingToMedia || !user}
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-black px-8 sm:px-12 py-5 rounded-xl text-lg sm:text-xl hover:from-blue-500 hover:to-blue-400 transition-all disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed shadow-lg shadow-blue-600/50 border-2 border-blue-400 disabled:border-gray-500 disabled:shadow-none"
-              >
-                {sendingToMedia ? (
-                  <>
-                    <div className="animate-spin w-6 h-6 border-3 border-white border-t-transparent rounded-full"></div>
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="w-6 h-6" />
-                    Send to Media
-                  </>
-                )}
-              </button>
-              {!user && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-black/90 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap z-10">
-                  Please sign in to save
+                <div className="h-full flex items-center justify-center">
+                  <div className="text-center">
+                    <Sparkles className="w-20 h-20 mx-auto mb-4 text-slate-700" />
+                    <p className="text-xl text-slate-500 mb-2">No asset selected</p>
+                    <p className="text-sm text-slate-600">Upload or select an asset to preview</p>
+                  </div>
                 </div>
               )}
             </div>
-
-            <div className="relative group">
-              <button
-                onClick={handleGenerate}
-                disabled={generating || !selectedAsset || !user}
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white font-black px-8 sm:px-12 py-5 rounded-xl text-lg sm:text-xl hover:from-green-500 hover:to-green-400 transition-all disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed shadow-lg shadow-green-600/50 border-2 border-green-400 disabled:border-gray-500 disabled:shadow-none"
-              >
-                {generating ? (
-                  <>
-                    <div className="animate-spin w-6 h-6 border-3 border-white border-t-transparent rounded-full"></div>
-                    Generating Movie...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-6 h-6" />
-                    Generate {formatTime(duration)} Movie
-                  </>
-                )}
-              </button>
-              {!user && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-black/90 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap z-10">
-                  Please sign in to generate
-                </div>
-              )}
-              {user && !selectedAsset && !generating && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-black/90 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap z-10">
-                  Select an asset to generate
-                </div>
-              )}
-            </div>
-            <button
-              onClick={() => onNavigate(12)}
-              className="flex items-center justify-center gap-2 bg-purple-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-500 transition-all"
-            >
-              Next
-              <ArrowRight className="w-5 h-5" />
-            </button>
           </div>
         </div>
       </div>
 
-      {showScriptModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-gradient-to-br from-purple-900/90 to-black/90 border-2 border-purple-400 rounded-2xl p-8 max-w-md w-full shadow-2xl">
-            <div className="text-center mb-6">
-              <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
-              <h2 className="text-2xl font-bold text-white mb-3">Create Scenes & Script?</h2>
-              <p className="text-white/80 text-lg">
-                Do You Wish App To Create Scenes And Script?
-              </p>
-            </div>
-            <div className="flex gap-4">
-              <button
-                onClick={() => handleScriptResponse(false)}
-                className="flex-1 bg-black hover:bg-gray-900 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all border border-purple-500/50"
-              >
-                NO
-              </button>
-              <button
-                onClick={() => handleScriptResponse(true)}
-                className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
-              >
-                YES
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showAIDurationModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-gradient-to-br from-purple-900/90 to-black/90 border-2 border-purple-400 rounded-2xl p-8 max-w-md w-full shadow-2xl">
-            <div className="text-center mb-6">
-              <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
-              <h2 className="text-2xl font-bold text-white mb-3">AI Duration Assistant</h2>
-              <p className="text-white/80 text-lg">
-                Let AI calculate the optimal film duration based on your uploaded assets?
-              </p>
-              <div className="mt-4 bg-purple-900/30 border border-purple-500/30 rounded-lg p-3">
-                <p className="text-sm text-purple-200">
-                  <span className="font-bold">Assets:</span> {assets.length} items
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <button
-                onClick={() => setShowAIDurationModal(false)}
-                disabled={aiCalculating}
-                className="flex-1 bg-black hover:bg-gray-900 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all border border-purple-500/50 disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={calculateAIDuration}
-                disabled={aiCalculating}
-                className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all disabled:bg-purple-800 flex items-center justify-center gap-2"
-              >
-                {aiCalculating ? (
-                  <>
-                    <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
-                    Calculating...
-                  </>
-                ) : (
-                  'Calculate'
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showEnhanceModal && enhancedAsset && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-gradient-to-br from-cyan-900/90 to-blue-900/90 border-2 border-cyan-400 rounded-2xl p-8 max-w-lg w-full shadow-2xl">
-            <div className="text-center mb-6">
-              <Wand2 className="w-16 h-16 mx-auto mb-4 text-cyan-400" />
-              <h2 className="text-2xl font-bold text-white mb-3">Enhancement Complete</h2>
-              <p className="text-white/80 text-lg mb-4">
-                Your asset has been enhanced with AI
-              </p>
-              <div className="bg-cyan-900/30 border border-cyan-500/30 rounded-lg p-4 text-left">
-                <p className="text-sm text-cyan-200 mb-3">
-                  <span className="font-bold">Enhancements Applied:</span>
-                </p>
-                <ul className="space-y-2">
-                  {enhancedAsset.output_data?.enhancements?.map((enhancement: string, index: number) => (
-                    <li key={index} className="flex items-center gap-2 text-sm text-white">
-                      <Sparkles className="w-4 h-4 text-cyan-400" />
-                      {enhancement}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowEnhanceModal(false)}
-              className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
-            >
-              Done
-            </button>
-          </div>
-        </div>
-      )}
-
-      {showProgressModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-gradient-to-br from-purple-900/90 to-black/90 border-2 border-purple-400 rounded-2xl p-8 max-w-lg w-full shadow-2xl">
-            <div className="text-center mb-6">
-              <div className="w-20 h-20 mx-auto mb-4 bg-purple-500 rounded-full flex items-center justify-center">
-                <Loader2 className="w-10 h-10 text-white animate-spin" />
-              </div>
-              <h2 className="text-3xl font-bold text-white mb-3">Generating Your Movie</h2>
-              <p className="text-white/80 text-lg mb-4">
-                Please wait while we create your {formatTime(duration)} movie...
-              </p>
-              <div className="bg-black/50 border border-purple-500/30 rounded-lg p-6 mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-purple-300 font-semibold">Progress</span>
-                  <span className="text-purple-400 font-bold text-xl">{renderProgress}%</span>
-                </div>
-                <div className="w-full bg-purple-900/50 rounded-full h-4 mb-3 overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
-                    style={{ width: `${renderProgress}%` }}
-                  />
-                </div>
-                <p className="text-sm text-purple-300/80">
-                  {renderStatus}
-                </p>
-              </div>
-              <p className="text-xs text-purple-400/70">
-                This may take several minutes depending on movie length and complexity
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showSuccessModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-gradient-to-br from-green-900/90 to-black/90 border-2 border-green-400 rounded-2xl p-8 max-w-lg w-full shadow-2xl">
-            <div className="text-center mb-6">
-              <div className="w-20 h-20 mx-auto mb-4 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
-                <Sparkles className="w-10 h-10 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-white mb-3">Movie Generated Successfully!</h2>
-              <p className="text-white/80 text-lg mb-4">
-                Your {formatTime(duration)} movie has been created!
-              </p>
-              {generatedOutput && (
-                <div className="bg-black/50 border border-green-500/30 rounded-lg p-4 mb-4 text-left">
-                  <p className="text-sm text-green-300 mb-2">
-                    <span className="font-bold">Title:</span> {generatedOutput.title}
-                  </p>
-                  <p className="text-sm text-green-300 mb-2">
-                    <span className="font-bold">Duration:</span> {generatedOutput.targetDuration} minutes
-                  </p>
-                  <p className="text-sm text-green-300 mb-2">
-                    <span className="font-bold">Resolution:</span> {generatedOutput.resolution}
-                  </p>
-                  <p className="text-sm text-green-300 mb-2">
-                    <span className="font-bold">Aspect Ratio:</span> {generatedOutput.aspectRatio}
-                  </p>
-                  <p className="text-sm text-green-300 mb-2">
-                    <span className="font-bold">Scenes:</span> {generatedOutput.sceneCount} scenes
-                  </p>
-                  {generatedOutput.processingTime && (
-                    <p className="text-xs text-green-400/70 mt-2">
-                      Processing time: {Math.floor(generatedOutput.processingTime / 60)}m {generatedOutput.processingTime % 60}s
-                    </p>
-                  )}
-                  <p className="text-xs text-green-400/70">
-                    Completed {new Date(generatedOutput.completedAt).toLocaleString()}
-                  </p>
-                </div>
-              )}
-              <div className="bg-green-900/30 border border-green-500/40 rounded-lg p-3 mt-4">
-                <p className="text-sm text-green-200">
-                  You can now generate another movie or proceed to the next step.
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowSuccessModal(false)}
-              className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
-            >
-              Continue Editing
-            </button>
-          </div>
-        </div>
-      )}
-
-      {showMediaModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-gradient-to-br from-blue-900/90 to-black/90 border-2 border-blue-400 rounded-2xl p-8 max-w-lg w-full shadow-2xl">
-            <div className="text-center mb-6">
-              <div className="w-20 h-20 mx-auto mb-4 bg-blue-500 rounded-full flex items-center justify-center animate-pulse">
-                <Upload className="w-10 h-10 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-white mb-3">Saved to Media Box!</h2>
-              <p className="text-white/80 text-lg mb-4">
-                Your {formatTime(duration)} enhanced media project with auto-generated scenes has been saved.
-              </p>
-              {savedMediaAsset && (
-                <div className="bg-black/50 border border-blue-500/30 rounded-lg p-4 mb-4 text-left">
-                  <p className="text-sm text-blue-300 mb-2">
-                    <span className="font-bold">Project:</span>{' '}
-                    {savedMediaAsset.output_data.projectName}
-                  </p>
-                  <p className="text-sm text-blue-300 mb-2">
-                    <span className="font-bold">Duration:</span> {formatTime(savedMediaAsset.output_data.duration)}
-                  </p>
-                  <p className="text-sm text-blue-300 mb-2">
-                    <span className="font-bold">Settings:</span> {savedMediaAsset.output_data.size},{' '}
-                    {savedMediaAsset.output_data.ratio}
-                  </p>
-                  <p className="text-sm text-blue-300 mb-2">
-                    <span className="font-bold">Scenes Created:</span> {savedMediaAsset.output_data.totalScenes} scenes
-                  </p>
-                  {savedMediaAsset.output_data.scenes && savedMediaAsset.output_data.scenes.length > 0 && (
-                    <div className="mt-3 p-3 bg-blue-950/40 border border-blue-500/20 rounded-lg">
-                      <p className="text-xs text-blue-200 font-bold mb-2">Scene Breakdown:</p>
-                      <div className="space-y-1 max-h-32 overflow-y-auto">
-                        {savedMediaAsset.output_data.scenes.map((scene: any, index: number) => (
-                          <p key={index} className="text-xs text-blue-300">
-                            {index + 1}. {scene.name} ({formatTime(scene.duration)})
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  <p className="text-xs text-blue-400/70 mt-2">
-                    Saved {new Date(savedMediaAsset.created_at).toLocaleString()}
-                  </p>
-                </div>
-              )}
-              <div className="bg-blue-900/30 border border-blue-500/40 rounded-lg p-3 mt-4">
-                <p className="text-sm text-blue-200">
-                  Your enhanced media is now available in the Media Box. Continue editing or generate your movie!
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowMediaModal(false)}
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
-            >
-              Continue Editing
-            </button>
-          </div>
-        </div>
-      )}
+      <QuickAccess onNavigate={onNavigate} />
+      <Footer onNavigate={onNavigate} />
 
       {showMyMovies && (
-        <MyMovies onClose={() => setShowMyMovies(false)} />
+        <MyMovies
+          onClose={() => setShowMyMovies(false)}
+          onNavigate={onNavigate}
+        />
       )}
-
-      <QuickAccess onNavigate={onNavigate} />
-      <Footer />
     </div>
   );
 }
