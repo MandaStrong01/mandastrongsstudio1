@@ -54,14 +54,15 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
   };
 
   const handleFiles = async (files: File[]) => {
-    if (!user) {
-      alert('Please sign in to upload files');
-      return;
-    }
+    // Temporarily disabled for testing
+    // if (!user) {
+    //   alert('Please sign in to upload files');
+    //   return;
+    // }
 
     setUploading(true);
     try {
-      const uploadPromises = files.map(file => uploadFile(file, user.id));
+      const uploadPromises = files.map(file => uploadFile(file, user?.id || 'test-user'));
       const results = await Promise.all(uploadPromises);
 
       const successfulFiles = results
@@ -83,10 +84,11 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
   };
 
   const handleGooglePhotos = () => {
-    if (!user) {
-      alert('Please sign in to upload files');
-      return;
-    }
+    // Temporarily disabled for testing
+    // if (!user) {
+    //   alert('Please sign in to upload files');
+    //   return;
+    // }
 
     openGooglePicker(async (selectedFiles) => {
       setUploading(true);
@@ -94,7 +96,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
         const uploadPromises = selectedFiles.map(async (file) => {
           const blob = await downloadGoogleDriveFile(file.id, file.name, file.mimeType);
           const fileObj = new File([blob], file.name, { type: file.mimeType });
-          return uploadFile(fileObj, user.id);
+          return uploadFile(fileObj, user?.id || 'test-user');
         });
 
         const results = await Promise.all(uploadPromises);
@@ -127,10 +129,11 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
   };
 
   const handleUrlImport = async () => {
-    if (!user) {
-      alert('Please sign in to upload files');
-      return;
-    }
+    // Temporarily disabled for testing
+    // if (!user) {
+    //   alert('Please sign in to upload files');
+    //   return;
+    // }
 
     if (!importUrl.trim()) {
       alert('Please enter a valid URL');
@@ -173,7 +176,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
       const filename = urlObj.pathname.split('/').pop() || 'imported-file';
       const fileObj = new File([blob], filename, { type: blob.type });
 
-      const result = await uploadFile(fileObj, user.id);
+      const result = await uploadFile(fileObj, user?.id || 'test-user');
 
       if (result.success) {
         setUploadedFiles(prev => [...prev, filename]);
