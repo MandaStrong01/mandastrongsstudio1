@@ -24,23 +24,25 @@ import Page21 from './pages/Page21';
 import Page22 from './pages/Page22';
 
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(4);
   const [assetPageData, setAssetPageData] = useState<{ toolName: string; mode: 'upload' | 'create' } | null>(null);
   const { user, loading } = useAuth();
 
   useEffect(() => {
-    if (currentPage >= 4 && !user) {
-      setCurrentPage(3);
-    }
+    // Temporarily disabled for testing
+    // if (currentPage >= 4 && !user) {
+    //   setCurrentPage(3);
+    // }
   }, [currentPage, user]);
 
   const navigate = (page: number) => {
-    if (page >= 4 && !user) {
-      setCurrentPage(3);
-    } else {
+    // Temporarily disabled for testing
+    // if (page >= 4 && !user) {
+    //   setCurrentPage(3);
+    // } else {
       setAssetPageData(null);
       setCurrentPage(page);
-    }
+    // }
   };
 
   const openAssetPage = (toolName: string, mode: 'upload' | 'create') => {
