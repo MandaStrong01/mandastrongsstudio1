@@ -459,39 +459,54 @@ export default function Page11({ onNavigate }: PageProps) {
     }
   };
 
-  const handleExportWork = () => {
-    const scenes = generateScenes(duration);
+  const downloadMediaFile = async (asset: Asset) => {
+    if (!isMediaAsset(asset)) return;
 
-    const exportData = {
-      exportedAt: new Date().toISOString(),
-      projectName: `Backup - ${formatTime(duration)} - ${new Date().toLocaleString()}`,
-      settings: {
-        duration,
-        ratio,
-        size,
-        volume,
-      },
-      selectedAsset,
-      allAssets: assets.map(a => ({
-        id: a.id,
-        name: isMediaAsset(a) ? a.file_name : a.tool_name,
-        type: isMediaAsset(a) ? a.asset_type : 'ai_output',
-        created_at: a.created_at
-      })),
-      scenes,
-      totalScenes: scenes.length,
-      totalAssets: assets.length
-    };
+    try {
+      const response = await fetch(asset.file_url);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = asset.file_name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download error:', error);
+      alert(`Failed to download ${asset.file_name}`);
+    }
+  };
 
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `MandaStrong-Backup-${Date.now()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleExportAllMedia = async () => {
+    const mediaAssets = assets.filter(a => isMediaAsset(a));
+
+    if (mediaAssets.length === 0) {
+      alert('No media files to download. Upload some videos, images, or audio first.');
+      return;
+    }
+
+    if (!confirm(`Download ${mediaAssets.length} media files? They will download one by one.`)) {
+      return;
+    }
+
+    setUploading(true);
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const asset of mediaAssets) {
+      try {
+        await downloadMediaFile(asset);
+        successCount++;
+        await new Promise(resolve => setTimeout(resolve, 500));
+      } catch (error) {
+        failCount++;
+      }
+    }
+
+    setUploading(false);
+    alert(`Downloaded ${successCount} of ${mediaAssets.length} files successfully!`);
   };
 
   return (
@@ -688,7 +703,7 @@ export default function Page11({ onNavigate }: PageProps) {
                             ) : (
                               <Sparkles className="w-4 h-4 text-purple-400" />
                             )}
-                            <h3 className="font-semibold text-sm truncate pr-6">
+                            <h3 className="font-semibold text-sm truncate pr-12">
                               {isMedia ? asset.file_name : asset.tool_name}
                             </h3>
                           </div>
@@ -696,6 +711,18 @@ export default function Page11({ onNavigate }: PageProps) {
                             {new Date(asset.created_at).toLocaleDateString()}
                           </p>
                         </button>
+                        {isMedia && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              downloadMediaFile(asset);
+                            }}
+                            className="absolute top-2 right-8 p-1 bg-orange-600 hover:bg-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                            title="Download file"
+                          >
+                            <Download className="w-3 h-3 text-white" />
+                          </button>
+                        )}
                         <button
                           onClick={(e) => handleDeleteAsset(asset, e)}
                           className="absolute top-2 right-2 p-1 bg-red-600 hover:bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all"
@@ -893,11 +920,21 @@ export default function Page11({ onNavigate }: PageProps) {
             </button>
 
             <button
-              onClick={handleExportWork}
-              className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-black px-8 sm:px-12 py-5 rounded-xl text-lg sm:text-xl hover:from-orange-500 hover:to-orange-400 transition-all shadow-lg shadow-orange-600/50 border-2 border-orange-400"
+              onClick={handleExportAllMedia}
+              disabled={uploading}
+              className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-black px-8 sm:px-12 py-5 rounded-xl text-lg sm:text-xl hover:from-orange-500 hover:to-orange-400 transition-all shadow-lg shadow-orange-600/50 border-2 border-orange-400 disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed"
             >
-              <Download className="w-6 h-6" />
-              EXPORT BACKUP
+              {uploading ? (
+                <>
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  Downloading...
+                </>
+              ) : (
+                <>
+                  <Download className="w-6 h-6" />
+                  DOWNLOAD ALL MEDIA
+                </>
+              )}
             </button>
 
             <div className="relative group">
