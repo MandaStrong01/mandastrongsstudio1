@@ -22,6 +22,7 @@ import Page19 from './pages/Page19';
 import Page20 from './pages/Page20';
 import Page21 from './pages/Page21';
 import Page22 from './pages/Page22';
+import Page23 from './pages/Page23';
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState(4);
@@ -81,6 +82,7 @@ function AppContent() {
     <Page20 key={20} onNavigate={navigate} />,
     <Page21 key={21} onNavigate={navigate} />,
     <Page22 key={22} onNavigate={navigate} toolName={assetPageData?.toolName} mode={assetPageData?.mode} />,
+    <Page23 key={23} onNavigate={navigate} />,
   ];
 
   return <>{pages[currentPage - 1]}</>;
