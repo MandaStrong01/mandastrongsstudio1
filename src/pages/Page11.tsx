@@ -306,19 +306,31 @@ export default function Page11({ onNavigate }: PageProps) {
 
   const handleGenerate = async () => {
     if (!user) {
-      alert('Please sign in to generate content.');
+      alert('Please sign in to generate your movie.');
       return;
     }
 
     if (!selectedAsset) {
-      alert('Please select an asset to generate from.');
+      alert('Please select at least one asset from the Media Box to generate your movie.');
+      return;
+    }
+
+    if (duration < 1 || duration > 120) {
+      alert('Please set a valid duration between 1 and 120 minutes.');
       return;
     }
 
     setGenerating(true);
     try {
+      const allSelectedAssets = assets.filter(a => a).map(a => ({
+        id: a.id,
+        name: isMediaAsset(a) ? a.file_name : a.tool_name,
+        type: isMediaAsset(a) ? a.asset_type : 'ai_output'
+      }));
+
       const generationConfig = {
-        asset: selectedAsset,
+        primaryAsset: selectedAsset,
+        allAssets: allSelectedAssets,
         settings: {
           duration,
           ratio,
@@ -326,18 +338,17 @@ export default function Page11({ onNavigate }: PageProps) {
           volume,
           timestamp: new Date().toISOString()
         },
-        projectName: isMediaAsset(selectedAsset)
-          ? `Generated from ${selectedAsset.file_name}`
-          : `Generated from ${selectedAsset.tool_name}`
+        projectName: `Movie - ${formatTime(duration)} - ${new Date().toLocaleDateString()}`,
+        totalAssets: assets.length
       };
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 2500));
 
       const { data, error } = await supabase
         .from('ai_tool_outputs')
         .insert({
           user_id: user.id,
-          tool_name: 'Editor Generate',
+          tool_name: 'Movie Generator',
           output_data: generationConfig
         })
         .select()
@@ -350,7 +361,7 @@ export default function Page11({ onNavigate }: PageProps) {
       await loadAssets();
     } catch (error) {
       console.error('Generation error:', error);
-      alert('Failed to generate content. Please try again.');
+      alert('Failed to generate movie. Please try again or contact support.');
     } finally {
       setGenerating(false);
     }
@@ -753,23 +764,35 @@ export default function Page11({ onNavigate }: PageProps) {
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
-            <button
-              onClick={handleGenerate}
-              disabled={generating || !selectedAsset}
-              className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white font-black px-8 sm:px-12 py-5 rounded-xl text-lg sm:text-xl hover:from-green-500 hover:to-green-400 transition-all disabled:from-green-800 disabled:to-green-700 disabled:cursor-not-allowed shadow-lg shadow-green-600/50 border-2 border-green-400"
-            >
-              {generating ? (
-                <>
-                  <div className="animate-spin w-6 h-6 border-3 border-white border-t-transparent rounded-full"></div>
-                  Generating Movie...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-6 h-6" />
-                  Generate {formatTime(duration)} Movie
-                </>
+            <div className="relative group">
+              <button
+                onClick={handleGenerate}
+                disabled={generating || !selectedAsset || !user}
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white font-black px-8 sm:px-12 py-5 rounded-xl text-lg sm:text-xl hover:from-green-500 hover:to-green-400 transition-all disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed shadow-lg shadow-green-600/50 border-2 border-green-400 disabled:border-gray-500 disabled:shadow-none"
+              >
+                {generating ? (
+                  <>
+                    <div className="animate-spin w-6 h-6 border-3 border-white border-t-transparent rounded-full"></div>
+                    Generating Movie...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-6 h-6" />
+                    Generate {formatTime(duration)} Movie
+                  </>
+                )}
+              </button>
+              {!user && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-black/90 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap">
+                  Please sign in to generate
+                </div>
               )}
-            </button>
+              {user && !selectedAsset && !generating && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-black/90 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap">
+                  Select an asset to generate
+                </div>
+              )}
+            </div>
             <button
               onClick={() => onNavigate(12)}
               className="flex items-center justify-center gap-2 bg-purple-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-500 transition-all"
@@ -855,12 +878,12 @@ export default function Page11({ onNavigate }: PageProps) {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
           <div className="bg-gradient-to-br from-green-900/90 to-black/90 border-2 border-green-400 rounded-2xl p-8 max-w-lg w-full shadow-2xl">
             <div className="text-center mb-6">
-              <div className="w-20 h-20 mx-auto mb-4 bg-green-500 rounded-full flex items-center justify-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
                 <Sparkles className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-white mb-3">Generation Complete!</h2>
+              <h2 className="text-3xl font-bold text-white mb-3">Movie Generated Successfully!</h2>
               <p className="text-white/80 text-lg mb-4">
-                Your content has been successfully generated and saved.
+                Your {formatTime(duration)} movie has been created and saved to your Media Box.
               </p>
               {generatedOutput && (
                 <div className="bg-black/50 border border-green-500/30 rounded-lg p-4 mb-4 text-left">
@@ -869,20 +892,31 @@ export default function Page11({ onNavigate }: PageProps) {
                     {generatedOutput.output_data.projectName}
                   </p>
                   <p className="text-sm text-green-300 mb-2">
+                    <span className="font-bold">Duration:</span> {formatTime(generatedOutput.output_data.settings.duration)}
+                  </p>
+                  <p className="text-sm text-green-300 mb-2">
                     <span className="font-bold">Settings:</span> {generatedOutput.output_data.settings.size},{' '}
-                    {generatedOutput.output_data.settings.ratio}, {generatedOutput.output_data.settings.duration} min
+                    {generatedOutput.output_data.settings.ratio}
+                  </p>
+                  <p className="text-sm text-green-300 mb-2">
+                    <span className="font-bold">Assets Used:</span> {generatedOutput.output_data.totalAssets}
                   </p>
                   <p className="text-xs text-green-400/70">
-                    Generated at {new Date(generatedOutput.created_at).toLocaleString()}
+                    Generated {new Date(generatedOutput.created_at).toLocaleString()}
                   </p>
                 </div>
               )}
+              <div className="bg-green-900/30 border border-green-500/40 rounded-lg p-3 mt-4">
+                <p className="text-sm text-green-200">
+                  You can now generate another movie or proceed to the next step.
+                </p>
+              </div>
             </div>
             <button
               onClick={() => setShowSuccessModal(false)}
               className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
             >
-              Done
+              Continue Editing
             </button>
           </div>
         </div>
