@@ -130,6 +130,8 @@ export default function Page11({ onNavigate }: PageProps) {
 
     openGooglePicker(async (files) => {
       setUploading(true);
+      setUploadProgress({});
+
       try {
         let successCount = 0;
         let failCount = 0;
@@ -138,7 +140,9 @@ export default function Page11({ onNavigate }: PageProps) {
           try {
             const blob = await downloadGoogleDriveFile(file.id, file.name, file.mimeType);
             const newFile = new File([blob], file.name, { type: file.mimeType });
-            const result = await uploadFile(newFile, user.id);
+            const result = await uploadFile(newFile, user.id, (progress) => {
+              setUploadProgress(prev => ({ ...prev, [file.name]: progress }));
+            });
 
             if (result.success) {
               successCount++;
@@ -163,6 +167,7 @@ export default function Page11({ onNavigate }: PageProps) {
         alert('Failed to upload files from Google Drive');
       } finally {
         setUploading(false);
+        setUploadProgress({});
       }
     });
   };
@@ -386,7 +391,7 @@ export default function Page11({ onNavigate }: PageProps) {
                 </div>
               )}
 
-              {uploading && Object.keys(uploadProgress).length > 0 && (
+              {uploading && (
                 <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-purple-900/90 to-black/95 backdrop-blur-md rounded-2xl flex items-center justify-center z-20 p-8">
                   <div className="w-full max-w-lg">
                     <div className="text-center mb-6">
@@ -394,22 +399,28 @@ export default function Page11({ onNavigate }: PageProps) {
                       <p className="text-2xl font-bold text-white mb-1">Fast Upload in Progress</p>
                       <p className="text-sm text-purple-300">Optimizing and uploading your files</p>
                     </div>
-                    <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
-                      {Object.entries(uploadProgress).map(([fileName, progress]) => (
-                        <div key={fileName} className="bg-black/40 backdrop-blur-sm border border-purple-500/30 rounded-lg p-4 shadow-lg">
-                          <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm text-white/95 font-medium truncate flex-1 mr-3">{fileName}</p>
-                            <p className="text-sm font-bold text-purple-400 min-w-[45px] text-right">{Math.round(progress)}%</p>
+                    {Object.keys(uploadProgress).length > 0 ? (
+                      <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                        {Object.entries(uploadProgress).map(([fileName, progress]) => (
+                          <div key={fileName} className="bg-black/40 backdrop-blur-sm border border-purple-500/30 rounded-lg p-4 shadow-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <p className="text-sm text-white/95 font-medium truncate flex-1 mr-3">{fileName}</p>
+                              <p className="text-sm font-bold text-purple-400 min-w-[45px] text-right">{Math.round(progress)}%</p>
+                            </div>
+                            <div className="w-full bg-purple-950/50 rounded-full h-2.5 overflow-hidden">
+                              <div
+                                className="bg-gradient-to-r from-purple-600 via-purple-500 to-purple-400 h-2.5 rounded-full transition-all duration-200 ease-out shadow-lg shadow-purple-500/50"
+                                style={{ width: `${progress}%` }}
+                              />
+                            </div>
                           </div>
-                          <div className="w-full bg-purple-950/50 rounded-full h-2.5 overflow-hidden">
-                            <div
-                              className="bg-gradient-to-r from-purple-600 via-purple-500 to-purple-400 h-2.5 rounded-full transition-all duration-200 ease-out shadow-lg shadow-purple-500/50"
-                              style={{ width: `${progress}%` }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <p className="text-purple-300 animate-pulse">Preparing files...</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
