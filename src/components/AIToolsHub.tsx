@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, ArrowRight, Sparkles, Search, Zap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, Search } from 'lucide-react';
 import AIToolModal from './AIToolModal';
 import Footer from './Footer';
 import QuickAccess from './QuickAccess';
@@ -65,13 +65,6 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
             >
               <ArrowLeft className="w-5 h-5" />
               Back
-            </button>
-            <button
-              onClick={() => onNavigate(23)}
-              className="flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:from-cyan-600 hover:to-blue-700 transition-all shadow-lg shadow-cyan-500/50"
-            >
-              <Zap className="w-5 h-5" />
-              Batch Process All
             </button>
             <button
               onClick={() => onNavigate(pageNumber + 1)}
