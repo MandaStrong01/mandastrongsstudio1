@@ -367,7 +367,23 @@ export default function Page11({ onNavigate }: PageProps) {
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
-              <h2 className="text-xl font-bold text-purple-400 mb-4">MEDIA BOX</h2>
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-purple-400 mb-2">MEDIA BOX</h2>
+                <div className="bg-purple-900/30 border border-purple-400/40 rounded-lg p-3 mb-2">
+                  <p className="text-sm text-purple-200 font-semibold mb-1">Select Asset / Drag & Drop</p>
+                  <p className="text-xs text-white/80 leading-relaxed">
+                    Click any asset below to preview it, or drag files directly into this box to upload.
+                  </p>
+                </div>
+                <div className="bg-gradient-to-r from-purple-900/40 to-purple-800/40 border border-purple-300/50 rounded-lg p-3">
+                  <p className="text-sm text-purple-100 font-bold text-center animate-pulse">
+                    Have I Missed A Thing?
+                  </p>
+                  <p className="text-xs text-white/70 text-center mt-1">
+                    Double-check you've added all your needed assets before moving to the next step!
+                  </p>
+                </div>
+              </div>
 
               {isDragging && (
                 <div className="absolute inset-4 bg-purple-900/60 backdrop-blur-sm border-4 border-dashed border-purple-400 rounded-2xl flex items-center justify-center z-10 pointer-events-none">

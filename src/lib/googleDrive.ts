@@ -18,10 +18,19 @@ export async function initializeGoogleDrive(): Promise<boolean> {
     script1.async = true;
     script1.defer = true;
     script1.onload = () => {
-      gapi.load('picker', () => {
-        pickerInited = true;
-        if (gisInited) resolve(true);
-      });
+      try {
+        gapi.load('picker', () => {
+          pickerInited = true;
+          if (gisInited) resolve(true);
+        });
+      } catch (error) {
+        console.error('Google Picker initialization failed:', error);
+        resolve(false);
+      }
+    };
+    script1.onerror = () => {
+      console.error('Failed to load Google API script');
+      resolve(false);
     };
     document.head.appendChild(script1);
 
@@ -30,13 +39,22 @@ export async function initializeGoogleDrive(): Promise<boolean> {
     script2.async = true;
     script2.defer = true;
     script2.onload = () => {
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: GOOGLE_CLIENT_ID,
-        scope: SCOPES,
-        callback: '',
-      });
-      gisInited = true;
-      if (pickerInited) resolve(true);
+      try {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: SCOPES,
+          callback: '',
+        });
+        gisInited = true;
+        if (pickerInited) resolve(true);
+      } catch (error) {
+        console.error('Google Identity Services initialization failed:', error);
+        resolve(false);
+      }
+    };
+    script2.onerror = () => {
+      console.error('Failed to load Google Identity Services script');
+      resolve(false);
     };
     document.head.appendChild(script2);
   });
@@ -44,22 +62,29 @@ export async function initializeGoogleDrive(): Promise<boolean> {
 
 export function openGooglePicker(callback: (files: any[]) => void) {
   if (!pickerInited || !gisInited) {
-    alert('Google Drive is still loading. Please try again in a moment.');
+    alert('Google Drive is not available. Please use the regular upload feature.');
     return;
   }
 
-  tokenClient.callback = async (response: any) => {
-    if (response.error !== undefined) {
-      throw response;
-    }
-    accessToken = response.access_token;
-    createPicker(callback);
-  };
+  try {
+    tokenClient.callback = async (response: any) => {
+      if (response.error !== undefined) {
+        console.error('Google auth error:', response.error);
+        alert('Failed to authenticate with Google Drive. Please try again.');
+        return;
+      }
+      accessToken = response.access_token;
+      createPicker(callback);
+    };
 
-  if (accessToken === null) {
-    tokenClient.requestAccessToken({ prompt: 'consent' });
-  } else {
-    tokenClient.requestAccessToken({ prompt: '' });
+    if (accessToken === null) {
+      tokenClient.requestAccessToken({ prompt: 'consent' });
+    } else {
+      tokenClient.requestAccessToken({ prompt: '' });
+    }
+  } catch (error) {
+    console.error('Error opening Google Picker:', error);
+    alert('Failed to open Google Drive. Please use the regular upload feature.');
   }
 }
 

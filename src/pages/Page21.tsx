@@ -7,8 +7,8 @@ interface PageProps {
 }
 
 const EXTERNAL_URLS = {
-  guide: import.meta.env.VITE_ETSY_GUIDE_URL || 'https://mandastrong.etsy.com/guide',
-  store: import.meta.env.VITE_ETSY_STORE_URL || 'https://mandastrong.etsy.com',
+  guide: '/guide.html',
+  store: import.meta.env.VITE_ETSY_STORE_URL || 'https://MandaStrong1.Etsy.com',
 };
 
 const VIDEO_PATH = import.meta.env.VITE_OUTRO_VIDEO_PATH || '/static/video/thatsallfolks.mp4';
@@ -36,12 +36,22 @@ export default function Page21({ onNavigate }: PageProps) {
             </h1>
 
             <div className="max-w-4xl mx-auto mb-8 text-center bg-gradient-to-br from-purple-900/40 to-black/40 rounded-2xl p-12 border-2 border-purple-400/50 shadow-2xl">
-              <p className="text-2xl text-white font-semibold mb-6 leading-relaxed">
-                Thank you for exploring MandaStrong Studio!
+              <h2 className="text-3xl text-purple-300 font-bold mb-6">A Special Thank You</h2>
+              <p className="text-xl text-white font-semibold mb-6 leading-relaxed">
+                To all current and future creators, dreamers, and storytellers...
               </p>
-              <p className="text-xl text-white/90 leading-relaxed">
-                This platform was created to empower storytellers like you to bring your visions to life.
-                Every film you create, every story you tell, makes a difference in the world.
+              <p className="text-lg text-white/90 leading-relaxed mb-4">
+                Your creativity and passion inspire positive change in the world. Through your films and stories,
+                you have the power to educate, inspire, and bring awareness to critical issues like bullying prevention,
+                social skills development, and humanity's collective growth.
+              </p>
+              <p className="text-lg text-white/90 leading-relaxed mb-4">
+                Every piece of content you create has the potential to touch hearts, change minds, and make our world
+                a better place. Thank you for being part of this mission to combine creative expression with meaningful impact.
+              </p>
+              <p className="text-lg text-purple-300 font-semibold leading-relaxed">
+                Together, we are building a community of creators who use their talents to spread kindness,
+                understanding, and hope. Your impact matters more than you know.
               </p>
             </div>
 
@@ -56,24 +66,38 @@ export default function Page21({ onNavigate }: PageProps) {
               <p className="text-sm text-white/60">Click to access the complete guide</p>
             </button>
 
-            <div className="max-w-2xl mx-auto mb-8 bg-black/30 rounded-xl p-6 border border-purple-500/20">
-              <h3 className="text-xl font-bold text-purple-400 mb-4">About MandaStrong</h3>
-              <p className="text-white/80 leading-relaxed mb-4">
-                MandaStrong Studio is more than just a platform—it's part of a humanitarian mission to support
-                creators and communities worldwide. A portion of all proceeds goes toward charitable initiatives
-                helping those in need.
-              </p>
-              <p className="text-white/80 leading-relaxed">
-                Learn more about our mission and find exclusive creative tools at{' '}
-                <a
-                  href={EXTERNAL_URLS.store}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-purple-300 hover:text-purple-200 underline font-semibold transition-colors"
-                >
-                  {EXTERNAL_URLS.store}
-                </a>
-              </p>
+            <div className="max-w-3xl mx-auto mb-8 bg-gradient-to-br from-black/50 to-purple-900/30 rounded-2xl p-8 border-2 border-purple-500/40 shadow-xl">
+              <h3 className="text-2xl font-bold text-purple-300 mb-6 text-center">About Our Mission</h3>
+              <div className="space-y-4 text-white/90 leading-relaxed">
+                <p className="text-lg">
+                  <span className="font-bold text-purple-300">MandaStrong Studio</span> is more than a filmmaking platform.
+                  It's part of a comprehensive educational initiative designed to bring awareness and action to schools
+                  regarding bullying prevention, social skills development, and the cultivation of humanity in our communities.
+                </p>
+                <p className="text-lg">
+                  Through this corrected program, we provide educational resources and movie-based content to help schools
+                  address these critical issues. Our goal is to create safe, supportive environments where every student can thrive.
+                </p>
+                <div className="bg-purple-900/40 rounded-xl p-6 border border-purple-400/30 mt-6">
+                  <p className="text-xl font-semibold text-purple-200 mb-3 text-center">Supporting Our Heroes</p>
+                  <p className="text-lg text-center">
+                    <span className="font-bold text-white">100% of all proceeds</span> from our Etsy Store fundraiser
+                    are donated directly to <span className="font-bold text-purple-200">Veterans Mental Health Services</span>,
+                    supporting those who have sacrificed so much for our freedom.
+                  </p>
+                </div>
+                <p className="text-lg text-center mt-6">
+                  Visit our fundraiser and learn more at{' '}
+                  <a
+                    href={EXTERNAL_URLS.store}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-purple-300 hover:text-purple-200 underline font-bold transition-colors"
+                  >
+                    MandaStrong1.Etsy.com
+                  </a>
+                </p>
+              </div>
             </div>
 
             <div className="bg-black/50 rounded-2xl p-8 border border-purple-500/30 mb-6 hidden">
