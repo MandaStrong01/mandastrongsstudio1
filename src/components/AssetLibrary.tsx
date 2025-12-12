@@ -53,7 +53,7 @@ export default function AssetLibrary() {
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('manda-strong-assets')
+        .from('media-assets')
         .upload(fileName, file);
 
       if (uploadError) {
@@ -62,7 +62,7 @@ export default function AssetLibrary() {
       }
 
       const { data: urlData } = supabase.storage
-        .from('manda-strong-assets')
+        .from('media-assets')
         .getPublicUrl(fileName);
 
       const assetType = file.type.startsWith('video/')
@@ -95,7 +95,7 @@ export default function AssetLibrary() {
 
     const path = asset.url.split('/').slice(-2).join('/');
 
-    await supabase.storage.from('manda-strong-assets').remove([path]);
+    await supabase.storage.from('media-assets').remove([path]);
 
     const { error } = await supabase.from('assets').delete().eq('id', asset.id);
 
