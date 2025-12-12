@@ -31,6 +31,7 @@ export default function Page11({ onNavigate }: PageProps) {
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [moviePrompt, setMoviePrompt] = useState('');
   const [generating, setGenerating] = useState(false);
+  const [duration, setDuration] = useState(60);
 
   useEffect(() => {
     if (user) {
@@ -193,7 +194,7 @@ export default function Page11({ onNavigate }: PageProps) {
                 <Code className="w-6 h-6 text-teal-400" />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-white mb-2">Empowering Human Creativity</h2>
+                <h2 className="text-xl font-bold text-white mb-2">Enhance Human Creativity</h2>
                 <p className="text-slate-300 leading-relaxed">
                   A platform built for artists, creators, and developers. Upload your media, organize your assets,
                   and bring your creative vision to life. Supporting files up to <span className="font-bold text-cyan-400">50GB</span> -
@@ -387,6 +388,28 @@ export default function Page11({ onNavigate }: PageProps) {
                         className="w-full bg-slate-900/50 border border-slate-600 rounded-lg p-4 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 min-h-[100px] resize-y"
                         disabled={generating}
                       />
+
+                      {/* Duration Slider */}
+                      <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
+                        <div className="flex items-center justify-between mb-3">
+                          <label className="text-sm font-medium text-slate-300">Duration</label>
+                          <span className="text-lg font-bold text-cyan-400">{duration}s</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="10"
+                          max="300"
+                          step="5"
+                          value={duration}
+                          onChange={(e) => setDuration(parseInt(e.target.value))}
+                          className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-400 [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-400 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+                        />
+                        <div className="flex justify-between text-xs text-slate-500 mt-1">
+                          <span>10s</span>
+                          <span>5min</span>
+                        </div>
+                      </div>
+
                       <button
                         onClick={handleGenerateMovie}
                         disabled={generating || !moviePrompt.trim() || assets.length === 0}
@@ -404,6 +427,23 @@ export default function Page11({ onNavigate }: PageProps) {
                           </>
                         )}
                       </button>
+
+                      {/* Export and Continue Editing Buttons */}
+                      <div className="grid grid-cols-2 gap-3 pt-2">
+                        <button
+                          className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-4 rounded-lg transition-all shadow-lg hover:shadow-green-500/30 flex items-center justify-center gap-2"
+                        >
+                          <Film className="w-4 h-4" />
+                          Export
+                        </button>
+                        <button
+                          className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold py-3 px-4 rounded-lg transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2"
+                        >
+                          <Sparkles className="w-4 h-4" />
+                          Continue Editing
+                        </button>
+                      </div>
+
                       {assets.length === 0 && (
                         <p className="text-xs text-yellow-400 text-center">
                           Upload some media files first to create a movie!
