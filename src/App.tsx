@@ -1,28 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import Page1 from './pages/Page1';
-import Page2 from './pages/Page2';
-import Page3 from './pages/Page3';
-import Page4 from './pages/Page4';
-import Page5 from './pages/Page5';
-import Page6 from './pages/Page6';
-import Page7 from './pages/Page7';
-import Page8 from './pages/Page8';
-import Page9 from './pages/Page9';
-import Page10 from './pages/Page10';
-import Page11 from './pages/Page11';
-import Page12 from './pages/Page12';
-import Page13 from './pages/Page13';
-import Page14 from './pages/Page14';
-import Page15 from './pages/Page15';
-import Page16 from './pages/Page16';
-import Page17 from './pages/Page17';
-import Page18 from './pages/Page18';
-import Page19 from './pages/Page19';
-import Page20 from './pages/Page20';
-import Page21 from './pages/Page21';
-import Page22 from './pages/Page22';
-import Page23 from './pages/Page23';
+
+const Page1 = lazy(() => import('./pages/Page1'));
+const Page2 = lazy(() => import('./pages/Page2'));
+const Page3 = lazy(() => import('./pages/Page3'));
+const Page4 = lazy(() => import('./pages/Page4'));
+const Page5 = lazy(() => import('./pages/Page5'));
+const Page6 = lazy(() => import('./pages/Page6'));
+const Page7 = lazy(() => import('./pages/Page7'));
+const Page8 = lazy(() => import('./pages/Page8'));
+const Page9 = lazy(() => import('./pages/Page9'));
+const Page10 = lazy(() => import('./pages/Page10'));
+const Page11 = lazy(() => import('./pages/Page11'));
+const Page12 = lazy(() => import('./pages/Page12'));
+const Page13 = lazy(() => import('./pages/Page13'));
+const Page14 = lazy(() => import('./pages/Page14'));
+const Page15 = lazy(() => import('./pages/Page15'));
+const Page16 = lazy(() => import('./pages/Page16'));
+const Page17 = lazy(() => import('./pages/Page17'));
+const Page18 = lazy(() => import('./pages/Page18'));
+const Page19 = lazy(() => import('./pages/Page19'));
+const Page20 = lazy(() => import('./pages/Page20'));
+const Page21 = lazy(() => import('./pages/Page21'));
+const Page22 = lazy(() => import('./pages/Page22'));
+const Page23 = lazy(() => import('./pages/Page23'));
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState(4);
@@ -85,7 +86,15 @@ function AppContent() {
     <Page23 key={23} onNavigate={navigate} />,
   ];
 
-  return <>{pages[currentPage - 1]}</>;
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+        <div className="text-white text-xl font-bold">Loading...</div>
+      </div>
+    }>
+      {pages[currentPage - 1]}
+    </Suspense>
+  );
 }
 
 function App() {

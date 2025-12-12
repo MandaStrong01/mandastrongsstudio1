@@ -94,7 +94,8 @@ export async function uploadFile(
     if (onProgress) onProgress(10);
 
     const teamId = await getUserTeam(userId);
-    const processedFile = skipCompression ? file : await optimizeFile(file);
+    const isVideo = file.type.startsWith('video/');
+    const processedFile = (skipCompression || isVideo) ? file : await optimizeFile(file);
 
     if (onProgress) onProgress(20);
 

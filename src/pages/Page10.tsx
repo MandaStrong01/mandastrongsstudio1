@@ -22,6 +22,7 @@ export default function Page10({ onNavigate }: PageProps) {
   const [uploading, setUploading] = useState(false);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<Asset | null>(null);
+  const [loading, setLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -29,6 +30,12 @@ export default function Page10({ onNavigate }: PageProps) {
       loadAssets();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (selectedVideo && videoRef.current) {
+      videoRef.current.load();
+    }
+  }, [selectedVideo]);
 
   const loadAssets = async () => {
     if (!user) return;
@@ -150,6 +157,14 @@ export default function Page10({ onNavigate }: PageProps) {
                   src={selectedVideo.file_url}
                   onPlay={() => setIsPlaying(true)}
                   onPause={() => setIsPlaying(false)}
+                  onLoadStart={() => setLoading(true)}
+                  onLoadedData={() => setLoading(false)}
+                  onError={() => {
+                    setLoading(false);
+                    alert('Failed to load video');
+                  }}
+                  preload="metadata"
+                  controls
                 />
               ) : (
                 <div className="text-center p-8">
