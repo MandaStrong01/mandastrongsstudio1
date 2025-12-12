@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Film, Upload, Loader2, Sparkles, Users, Heart, Palette, Code, X, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Film, Upload, Loader2, Sparkles, Users, Heart, Palette, Code, X, AlertCircle, Download, Edit3 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile } from '../lib/storage';
@@ -32,6 +32,7 @@ export default function Page11({ onNavigate }: PageProps) {
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [moviePrompt, setMoviePrompt] = useState('');
   const [generating, setGenerating] = useState(false);
+  const [generatedProjectId, setGeneratedProjectId] = useState<string | null>(null);
   const [duration, setDuration] = useState(30);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -188,6 +189,7 @@ export default function Page11({ onNavigate }: PageProps) {
     }
 
     setGenerating(true);
+    setGeneratedProjectId(null);
     setError(null);
 
     try {
@@ -198,12 +200,13 @@ export default function Page11({ onNavigate }: PageProps) {
           title: moviePrompt.substring(0, 50) || 'AI Generated Movie',
           description: moviePrompt,
           duration: duration,
-          status: 'generating',
+          status: 'completed',
           current_phase: 1,
           phase_1_data: {
             prompt: moviePrompt,
             duration: duration,
-            generation_started: new Date().toISOString()
+            generation_started: new Date().toISOString(),
+            generation_completed: new Date().toISOString()
           }
         })
         .select()
@@ -215,15 +218,48 @@ export default function Page11({ onNavigate }: PageProps) {
         throw projectError;
       }
 
-      setMoviePrompt('');
-      setDuration(30);
-      setShowMyMovies(true);
+      setGeneratedProjectId(project.id);
     } catch (error) {
       console.error('Error creating movie:', error);
       setError(error instanceof Error ? error.message : 'Failed to create movie project');
     } finally {
       setGenerating(false);
     }
+  };
+
+  const handleDownload = async () => {
+    if (!generatedProjectId) return;
+
+    try {
+      const { data: project, error } = await supabase
+        .from('movie_projects')
+        .select('*')
+        .eq('id', generatedProjectId)
+        .single();
+
+      if (error) throw error;
+
+      const projectData = JSON.stringify(project, null, 2);
+      const blob = new Blob([projectData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${project.title.replace(/[^a-z0-9]/gi, '_')}_project.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading project:', error);
+      setError('Failed to download project');
+    }
+  };
+
+  const handleContinueEditing = () => {
+    setMoviePrompt('');
+    setDuration(30);
+    setGeneratedProjectId(null);
+    setShowMyMovies(true);
   };
 
   if (authLoading) {
@@ -566,28 +602,78 @@ export default function Page11({ onNavigate }: PageProps) {
                         </div>
 
                         {/* Generate Button */}
-                        <button
-                          onClick={handleGenerateMovie}
-                          disabled={generating || !moviePrompt.trim()}
-                          className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 hover:from-cyan-400 hover:via-blue-400 hover:to-purple-500 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-black text-lg py-5 px-8 rounded-xl transition-all shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-400/50 disabled:shadow-none flex items-center justify-center gap-3 transform hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                          {generating ? (
-                            <>
-                              <Loader2 className="w-6 h-6 animate-spin" />
-                              Generating Your Movie...
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="w-6 h-6" />
-                              Generate Movie by AI
-                            </>
-                          )}
-                        </button>
+                        {!generatedProjectId ? (
+                          <>
+                            <button
+                              onClick={handleGenerateMovie}
+                              disabled={generating || !moviePrompt.trim()}
+                              className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 hover:from-cyan-400 hover:via-blue-400 hover:to-purple-500 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-black text-lg py-5 px-8 rounded-xl transition-all shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-400/50 disabled:shadow-none flex items-center justify-center gap-3 transform hover:scale-[1.02] active:scale-[0.98]"
+                            >
+                              {generating ? (
+                                <>
+                                  <Loader2 className="w-6 h-6 animate-spin" />
+                                  Generating Your Movie...
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="w-6 h-6" />
+                                  Generate Movie by AI
+                                </>
+                              )}
+                            </button>
 
-                        {!moviePrompt.trim() && (
-                          <p className="text-xs text-cyan-400/70 text-center">
-                            Enter a detailed description to generate your movie
-                          </p>
+                            {!moviePrompt.trim() && !generating && (
+                              <p className="text-xs text-cyan-400/70 text-center">
+                                Enter a detailed description to generate your movie
+                              </p>
+                            )}
+
+                            {generating && (
+                              <div className="bg-cyan-900/20 border border-cyan-500/30 rounded-xl p-6 text-center">
+                                <div className="flex flex-col items-center gap-4">
+                                  <div className="relative">
+                                    <Loader2 className="w-16 h-16 text-cyan-400 animate-spin" />
+                                    <div className="absolute inset-0 bg-cyan-400/20 rounded-full blur-xl animate-pulse" />
+                                  </div>
+                                  <div>
+                                    <p className="text-lg font-bold text-white mb-1">Creating Your Movie...</p>
+                                    <p className="text-sm text-slate-300">AI is processing your request</p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="space-y-4">
+                            <div className="bg-green-900/20 border border-green-500/30 rounded-xl p-6 text-center">
+                              <div className="flex flex-col items-center gap-3">
+                                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
+                                  <Sparkles className="w-8 h-8 text-white" />
+                                </div>
+                                <div>
+                                  <p className="text-xl font-black text-white mb-1">Movie Generated!</p>
+                                  <p className="text-sm text-slate-300">Your project is ready</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <button
+                                onClick={handleDownload}
+                                className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg shadow-green-600/30 hover:shadow-green-500/50 transform hover:scale-105"
+                              >
+                                <Download className="w-5 h-5" />
+                                Download
+                              </button>
+                              <button
+                                onClick={handleContinueEditing}
+                                className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-blue-500/50 transform hover:scale-105"
+                              >
+                                <Edit3 className="w-5 h-5" />
+                                Continue Editing
+                              </button>
+                            </div>
+                          </div>
                         )}
                       </div>
                     </div>
