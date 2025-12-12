@@ -1,4 +1,4 @@
-import { Home, ArrowLeft, BookOpen } from 'lucide-react';
+import { Home, ArrowLeft, BookOpen, Play } from 'lucide-react';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
 
@@ -16,6 +16,9 @@ const VIDEO_PATH = import.meta.env.VITE_OUTRO_VIDEO_PATH || '/static/video/thats
 export default function Page21({ onNavigate }: PageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
+      <button className="fixed top-6 right-6 z-50 w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 hover:from-purple-400 hover:to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/50 transition-all hover:scale-110">
+        <Play className="w-6 h-6 text-white" />
+      </button>
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="max-w-6xl w-full text-center">
           <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-8 mb-8">
