@@ -31,7 +31,7 @@ export default function Page11({ onNavigate }: PageProps) {
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [moviePrompt, setMoviePrompt] = useState('');
   const [generating, setGenerating] = useState(false);
-  const [duration, setDuration] = useState(60);
+  const [duration, setDuration] = useState(90);
 
   useEffect(() => {
     if (user) {
@@ -393,20 +393,20 @@ export default function Page11({ onNavigate }: PageProps) {
                       <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
                         <div className="flex items-center justify-between mb-3">
                           <label className="text-sm font-medium text-slate-300">Duration</label>
-                          <span className="text-lg font-bold text-cyan-400">{duration}s</span>
+                          <span className="text-lg font-bold text-cyan-400">{duration} min</span>
                         </div>
                         <input
                           type="range"
-                          min="10"
-                          max="300"
-                          step="5"
+                          min="0"
+                          max="180"
+                          step="1"
                           value={duration}
                           onChange={(e) => setDuration(parseInt(e.target.value))}
                           className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-400 [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-400 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
                         />
                         <div className="flex justify-between text-xs text-slate-500 mt-1">
-                          <span>10s</span>
-                          <span>5min</span>
+                          <span>0 min</span>
+                          <span>180 min</span>
                         </div>
                       </div>
 
