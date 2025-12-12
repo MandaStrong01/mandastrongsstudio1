@@ -45,7 +45,7 @@ export default function Page11({ onNavigate }: PageProps) {
           title: moviePrompt.substring(0, 50) || 'AI Generated Movie',
           description: moviePrompt,
           duration: duration,
-          status: 'completed',
+          completed: true,
           current_phase: 1,
           phase_1_data: {
             prompt: moviePrompt,
