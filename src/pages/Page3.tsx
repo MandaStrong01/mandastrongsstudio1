@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import Footer from '../components/Footer';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -13,6 +15,39 @@ const STRIPE_LINKS = {
 
 export default function Page3({ onNavigate }: PageProps) {
   const { user } = useAuth();
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
+    try {
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        setMessage('Login successful!');
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) throw error;
+        setMessage('Registration successful!');
+      }
+    } catch (error: any) {
+      setMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const openStripeLink = (url: string) => {
     if (url) {
@@ -36,8 +71,71 @@ export default function Page3({ onNavigate }: PageProps) {
             {user ? 'SUBSCRIPTION PLANS' : 'SIGN IN TO CONTINUE'}
           </h2>
           {user && <p className="text-center text-white/70 mb-8">Choose the plan that fits your creative vision</p>}
-          {!user && <p className="text-center text-white/70 mb-8">Please sign in or create an account to access subscription plans</p>}
         </div>
+
+        {!user && (
+          <div className="max-w-md mx-auto mb-12 w-full">
+            <div className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 rounded-3xl p-8">
+              <div className="flex gap-2 mb-6">
+                <button
+                  onClick={() => setIsLogin(true)}
+                  className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-all ${
+                    isLogin
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-transparent text-white/60 hover:text-white'
+                  }`}
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => setIsLogin(false)}
+                  className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-all ${
+                    !isLogin
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-transparent text-white/60 hover:text-white'
+                  }`}
+                >
+                  Register
+                </button>
+              </div>
+
+              <form onSubmit={handleAuth} className="space-y-4">
+                <div>
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-black/50 border border-purple-500/30 text-white placeholder-white/50 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-black/50 border border-purple-500/30 text-white placeholder-white/50 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+                {message && (
+                  <p className={`text-sm ${message.includes('successful') ? 'text-green-400' : 'text-red-400'}`}>
+                    {message}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg hover:bg-purple-500 transition-all disabled:opacity-50"
+                >
+                  {loading ? 'Processing...' : isLogin ? 'Login' : 'Register'}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
 
         <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
           <button
