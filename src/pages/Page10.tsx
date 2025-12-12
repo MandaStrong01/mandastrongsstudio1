@@ -1,9 +1,35 @@
-import { ArrowLeft, ArrowRight, Play, Pause, SkipBack, SkipForward, Upload } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Play, Pause, Upload, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile, getAssets } from '../lib/storage';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
+import AdvancedTimeline from '../components/AdvancedTimeline';
+import VideoFilters from '../components/VideoFilters';
+import VideoEffects from '../components/VideoEffects';
+import AudioManager from '../components/AudioManager';
+import TextOverlayEditor from '../components/TextOverlayEditor';
+import StickerPanel from '../components/StickerPanel';
+import ExportPanel, { ExportFormat, ExportQuality } from '../components/ExportPanel';
+import {
+  VideoProject,
+  createVideoProject,
+  addVideoClip,
+  addAudioClip,
+  addTextOverlay,
+  addSticker,
+  applyFilterToClip,
+  applyEffectToClip,
+  splitClip,
+  removeClip,
+  removeTextOverlay,
+  removeSticker,
+  Filter,
+  Effect,
+  TextOverlay,
+  Sticker,
+} from '../lib/videoEngine';
+import { createRenderEngine, RenderProgress } from '../lib/renderEngine';
 
 interface PageProps {
   onNavigate: (page: number) => void;

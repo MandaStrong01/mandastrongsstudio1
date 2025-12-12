@@ -23,6 +23,7 @@ const Page19 = lazy(() => import('./pages/Page19'));
 const Page20 = lazy(() => import('./pages/Page20'));
 const Page21 = lazy(() => import('./pages/Page21'));
 const Page22 = lazy(() => import('./pages/Page22'));
+const Page23 = lazy(() => import('./pages/Page23'));
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -80,6 +81,7 @@ function AppContent() {
     <Page20 key={19} onNavigate={navigate} />,
     <Page21 key={20} onNavigate={navigate} />,
     <Page22 key={21} onNavigate={navigate} toolName={assetPageData?.toolName} mode={assetPageData?.mode} />,
+    <Page23 key={22} onNavigate={navigate} />,
   ];
 
   return (
