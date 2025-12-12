@@ -187,35 +187,24 @@ export default function Page11({ onNavigate }: PageProps) {
       return;
     }
 
-    if (assets.length === 0) {
-      setError('Please upload some media files first');
-      return;
-    }
-
     setGenerating(true);
     setError(null);
 
     try {
-      const mediaAssets = assets.filter(a =>
-        a.file_type.startsWith('image/') ||
-        a.file_type.startsWith('video/') ||
-        a.file_type.startsWith('audio/')
-      );
-
-      if (mediaAssets.length === 0) {
-        setError('No media assets found. Please upload images, videos, or audio files.');
-        setGenerating(false);
-        return;
-      }
-
       const { data: project, error: projectError } = await supabase
         .from('movie_projects')
         .insert({
           user_id: user.id,
-          title: moviePrompt.substring(0, 50) || 'New Movie',
+          title: moviePrompt.substring(0, 50) || 'AI Generated Movie',
           description: moviePrompt,
           duration: duration,
-          status: 'draft'
+          status: 'generating',
+          current_phase: 1,
+          phase_1_data: {
+            prompt: moviePrompt,
+            duration: duration,
+            generation_started: new Date().toISOString()
+          }
         })
         .select()
         .single();
@@ -227,6 +216,7 @@ export default function Page11({ onNavigate }: PageProps) {
       }
 
       setMoviePrompt('');
+      setDuration(90);
       setShowMyMovies(true);
     } catch (error) {
       console.error('Error creating movie:', error);
@@ -478,7 +468,7 @@ export default function Page11({ onNavigate }: PageProps) {
                     </div>
                   </div>
 
-                  {/* Movie Creation Prompt */}
+                  {/* Movie Creation from Assets */}
                   <div className="bg-gradient-to-r from-blue-900/30 to-cyan-900/30 rounded-xl p-6 border border-cyan-500/30">
                     <div className="flex items-center gap-3 mb-4">
                       <Sparkles className="w-6 h-6 text-cyan-400" />
@@ -488,38 +478,9 @@ export default function Page11({ onNavigate }: PageProps) {
                       Describe your movie idea and we'll create a project using your uploaded assets.
                     </p>
                     <div className="space-y-3">
-                      <textarea
-                        value={moviePrompt}
-                        onChange={(e) => setMoviePrompt(e.target.value)}
-                        placeholder="Example: Create an epic montage of my best moments with dramatic music and smooth transitions..."
-                        className="w-full bg-slate-900/50 border border-slate-600 rounded-lg p-4 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 min-h-[100px] resize-y"
-                        disabled={generating}
-                      />
-
-                      {/* Duration Slider */}
-                      <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
-                        <div className="flex items-center justify-between mb-3">
-                          <label className="text-sm font-medium text-slate-300">Duration</label>
-                          <span className="text-lg font-bold text-cyan-400">{duration} min</span>
-                        </div>
-                        <input
-                          type="range"
-                          min="0"
-                          max="180"
-                          step="1"
-                          value={duration}
-                          onChange={(e) => setDuration(parseInt(e.target.value))}
-                          className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-400 [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-400 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
-                        />
-                        <div className="flex justify-between text-xs text-slate-500 mt-1">
-                          <span>0 min</span>
-                          <span>180 min</span>
-                        </div>
-                      </div>
-
                       <button
                         onClick={handleGenerateMovie}
-                        disabled={generating || !moviePrompt.trim() || assets.length === 0}
+                        disabled={generating || assets.length === 0}
                         className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-all shadow-lg disabled:shadow-none flex items-center justify-center gap-2"
                       >
                         {generating ? (
@@ -530,26 +491,10 @@ export default function Page11({ onNavigate }: PageProps) {
                         ) : (
                           <>
                             <Film className="w-5 h-5" />
-                            Generate Movie Project
+                            Create Project from Assets
                           </>
                         )}
                       </button>
-
-                      {/* Export and Continue Editing Buttons */}
-                      <div className="grid grid-cols-2 gap-3 pt-2">
-                        <button
-                          className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-4 rounded-lg transition-all shadow-lg hover:shadow-green-500/30 flex items-center justify-center gap-2"
-                        >
-                          <Film className="w-4 h-4" />
-                          Export
-                        </button>
-                        <button
-                          className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold py-3 px-4 rounded-lg transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2"
-                        >
-                          <Sparkles className="w-4 h-4" />
-                          Continue Editing
-                        </button>
-                      </div>
 
                       {assets.length === 0 && (
                         <p className="text-xs text-yellow-400 text-center">
@@ -560,11 +505,92 @@ export default function Page11({ onNavigate }: PageProps) {
                   </div>
                 </div>
               ) : (
-                <div className="h-full flex items-center justify-center">
-                  <div className="text-center">
-                    <Sparkles className="w-20 h-20 mx-auto mb-4 text-slate-700" />
-                    <p className="text-xl text-slate-500 mb-2">No asset selected</p>
-                    <p className="text-sm text-slate-600">Upload or select an asset to preview</p>
+                <div className="h-full flex flex-col">
+                  {/* AI Generation Interface */}
+                  <div className="flex-1 flex flex-col justify-center">
+                    <div className="bg-gradient-to-br from-purple-900/30 via-blue-900/30 to-cyan-900/30 rounded-2xl p-8 border-2 border-cyan-500/30">
+                      <div className="text-center mb-6">
+                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 mb-4">
+                          <Sparkles className="w-10 h-10 text-white" />
+                        </div>
+                        <h3 className="text-3xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
+                          Generate Movie by AI
+                        </h3>
+                        <p className="text-slate-300 text-sm">
+                          Describe your vision and let AI create your movie instantly
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        {/* Prompt Box */}
+                        <div className="relative">
+                          <textarea
+                            value={moviePrompt}
+                            onChange={(e) => setMoviePrompt(e.target.value)}
+                            placeholder="Example: A cinematic video of a sunrise over mountains with dramatic orchestral music, smooth camera movements, and golden hour lighting..."
+                            className="w-full bg-slate-900/70 border-2 border-cyan-500/30 rounded-xl p-5 text-white placeholder-slate-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 min-h-[160px] resize-y text-base"
+                            disabled={generating}
+                          />
+                          <div className="absolute bottom-3 right-3 text-xs text-slate-500">
+                            {moviePrompt.length} characters
+                          </div>
+                        </div>
+
+                        {/* Duration Slider */}
+                        <div className="bg-slate-900/70 rounded-xl p-5 border border-slate-700">
+                          <div className="flex items-center justify-between mb-4">
+                            <label className="text-base font-bold text-white">Duration</label>
+                            <div className="flex items-center gap-2">
+                              <span className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                                {duration}
+                              </span>
+                              <span className="text-sm text-slate-400">seconds</span>
+                            </div>
+                          </div>
+                          <input
+                            type="range"
+                            min="5"
+                            max="180"
+                            step="5"
+                            value={duration}
+                            onChange={(e) => setDuration(parseInt(e.target.value))}
+                            className="w-full h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-r [&::-webkit-slider-thumb]:from-cyan-400 [&::-webkit-slider-thumb]:to-blue-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-cyan-500/50 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gradient-to-r [&::-moz-range-thumb]:from-cyan-400 [&::-moz-range-thumb]:to-blue-500 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+                          />
+                          <div className="flex justify-between text-xs text-slate-500 mt-2">
+                            <span>5s</span>
+                            <span>Quick</span>
+                            <span>Standard</span>
+                            <span>Long</span>
+                            <span>180s</span>
+                          </div>
+                        </div>
+
+                        {/* Generate Button */}
+                        <button
+                          onClick={handleGenerateMovie}
+                          disabled={generating || !moviePrompt.trim()}
+                          className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 hover:from-cyan-400 hover:via-blue-400 hover:to-purple-500 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-black text-lg py-5 px-8 rounded-xl transition-all shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-400/50 disabled:shadow-none flex items-center justify-center gap-3 transform hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          {generating ? (
+                            <>
+                              <Loader2 className="w-6 h-6 animate-spin" />
+                              Generating Your Movie...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-6 h-6" />
+                              Generate Movie by AI
+                            </>
+                          )}
+                        </button>
+
+                        {!moviePrompt.trim() && (
+                          <p className="text-xs text-cyan-400/70 text-center">
+                            Enter a detailed description to generate your movie
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
