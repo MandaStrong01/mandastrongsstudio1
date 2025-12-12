@@ -123,11 +123,6 @@ export default function Page11({ onNavigate }: PageProps) {
       return;
     }
 
-    if (selectedAssets.length === 0) {
-      setError('Please select or upload at least one media file');
-      return;
-    }
-
     setGenerating(true);
     setGeneratedProjectId(null);
     setRenderJob(null);
@@ -294,7 +289,7 @@ export default function Page11({ onNavigate }: PageProps) {
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-bold text-slate-300 mb-3">
-                    SELECT MEDIA FILES
+                    SELECT MEDIA FILES <span className="text-slate-500 text-xs font-normal">(Optional)</span>
                   </label>
                   <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700 mb-4">
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4">
@@ -395,7 +390,7 @@ export default function Page11({ onNavigate }: PageProps) {
                   <>
                     <button
                       onClick={handleGenerateMovie}
-                      disabled={generating || !moviePrompt.trim() || selectedAssets.length === 0}
+                      disabled={generating || !moviePrompt.trim()}
                       className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 hover:from-cyan-400 hover:via-blue-400 hover:to-purple-500 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-black text-xl py-6 px-8 rounded-xl transition-all shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-400/50 disabled:shadow-none flex items-center justify-center gap-3 transform hover:scale-[1.02] active:scale-[0.98]"
                     >
                       {generating ? (
