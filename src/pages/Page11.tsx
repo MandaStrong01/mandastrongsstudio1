@@ -544,12 +544,12 @@ export default function Page11({ onNavigate }: PageProps) {
                               <span className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
                                 {duration}
                               </span>
-                              <span className="text-sm text-slate-400">seconds</span>
+                              <span className="text-sm text-slate-400">minutes</span>
                             </div>
                           </div>
                           <input
                             type="range"
-                            min="5"
+                            min="0"
                             max="180"
                             step="5"
                             value={duration}
@@ -557,11 +557,11 @@ export default function Page11({ onNavigate }: PageProps) {
                             className="w-full h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-r [&::-webkit-slider-thumb]:from-cyan-400 [&::-webkit-slider-thumb]:to-blue-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-cyan-500/50 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gradient-to-r [&::-moz-range-thumb]:from-cyan-400 [&::-moz-range-thumb]:to-blue-500 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
                           />
                           <div className="flex justify-between text-xs text-slate-500 mt-2">
-                            <span>5s</span>
+                            <span>0m</span>
                             <span>Quick</span>
                             <span>Standard</span>
                             <span>Long</span>
-                            <span>180s</span>
+                            <span>180m</span>
                           </div>
                         </div>
 

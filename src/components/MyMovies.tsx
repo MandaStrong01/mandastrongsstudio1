@@ -90,10 +90,10 @@ export default function MyMovies({ onClose }: MyMoviesProps) {
     }
   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return mins > 0 ? `${mins}:${secs.toString().padStart(2, '0')}` : `${secs}s`;
+  const formatTime = (minutes: number) => {
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return hrs > 0 ? `${hrs}:${mins.toString().padStart(2, '0')}:00` : `${mins}:00`;
   };
 
   const downloadMovie = async (job: RenderJob) => {
