@@ -23,33 +23,30 @@ const Page19 = lazy(() => import('./pages/Page19'));
 const Page20 = lazy(() => import('./pages/Page20'));
 const Page21 = lazy(() => import('./pages/Page21'));
 const Page22 = lazy(() => import('./pages/Page22'));
-const Page23 = lazy(() => import('./pages/Page23'));
 
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState(4);
+  const [currentPage, setCurrentPage] = useState(0);
   const [assetPageData, setAssetPageData] = useState<{ toolName: string; mode: 'upload' | 'create' } | null>(null);
   const { user, loading } = useAuth();
 
   useEffect(() => {
-    // Temporarily disabled for testing
-    // if (currentPage >= 4 && !user) {
-    //   setCurrentPage(3);
-    // }
+    if (currentPage >= 3 && !user) {
+      setCurrentPage(2);
+    }
   }, [currentPage, user]);
 
   const navigate = (page: number) => {
-    // Temporarily disabled for testing
-    // if (page >= 4 && !user) {
-    //   setCurrentPage(3);
-    // } else {
+    if (page >= 3 && !user) {
+      setCurrentPage(2);
+    } else {
       setAssetPageData(null);
       setCurrentPage(page);
-    // }
+    }
   };
 
   const openAssetPage = (toolName: string, mode: 'upload' | 'create') => {
     setAssetPageData({ toolName, mode });
-    setCurrentPage(22);
+    setCurrentPage(21);
   };
 
   if (loading) {
@@ -61,29 +58,28 @@ function AppContent() {
   }
 
   const pages = [
-    <Page1 key={1} onNavigate={navigate} />,
-    <Page2 key={2} onNavigate={navigate} />,
-    <Page3 key={3} onNavigate={navigate} />,
-    <Page4 key={4} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
-    <Page5 key={5} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
-    <Page6 key={6} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
-    <Page7 key={7} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
-    <Page8 key={8} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
-    <Page9 key={9} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
-    <Page10 key={10} onNavigate={navigate} />,
-    <Page11 key={11} onNavigate={navigate} />,
-    <Page12 key={12} onNavigate={navigate} />,
-    <Page13 key={13} onNavigate={navigate} />,
-    <Page14 key={14} onNavigate={navigate} />,
-    <Page15 key={15} onNavigate={navigate} />,
-    <Page16 key={16} onNavigate={navigate} />,
-    <Page17 key={17} onNavigate={navigate} />,
-    <Page18 key={18} onNavigate={navigate} />,
-    <Page19 key={19} onNavigate={navigate} />,
-    <Page20 key={20} onNavigate={navigate} />,
-    <Page21 key={21} onNavigate={navigate} />,
-    <Page22 key={22} onNavigate={navigate} toolName={assetPageData?.toolName} mode={assetPageData?.mode} />,
-    <Page23 key={23} onNavigate={navigate} />,
+    <Page1 key={0} onNavigate={navigate} />,
+    <Page2 key={1} onNavigate={navigate} />,
+    <Page3 key={2} onNavigate={navigate} />,
+    <Page4 key={3} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
+    <Page5 key={4} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
+    <Page6 key={5} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
+    <Page7 key={6} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
+    <Page8 key={7} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
+    <Page9 key={8} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
+    <Page10 key={9} onNavigate={navigate} />,
+    <Page11 key={10} onNavigate={navigate} />,
+    <Page12 key={11} onNavigate={navigate} />,
+    <Page13 key={12} onNavigate={navigate} />,
+    <Page14 key={13} onNavigate={navigate} />,
+    <Page15 key={14} onNavigate={navigate} />,
+    <Page16 key={15} onNavigate={navigate} />,
+    <Page17 key={16} onNavigate={navigate} />,
+    <Page18 key={17} onNavigate={navigate} />,
+    <Page19 key={18} onNavigate={navigate} />,
+    <Page20 key={19} onNavigate={navigate} />,
+    <Page21 key={20} onNavigate={navigate} />,
+    <Page22 key={21} onNavigate={navigate} toolName={assetPageData?.toolName} mode={assetPageData?.mode} />,
   ];
 
   return (
@@ -92,7 +88,7 @@ function AppContent() {
         <div className="text-white text-xl font-bold">Loading...</div>
       </div>
     }>
-      {pages[currentPage - 1]}
+      {pages[currentPage]}
     </Suspense>
   );
 }

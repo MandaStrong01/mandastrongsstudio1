@@ -332,14 +332,14 @@ export default function Page13({ onNavigate }: PageProps) {
 
           <div className="flex gap-4 justify-center mt-6">
             <button
-              onClick={() => onNavigate(12)}
+              onClick={() => onNavigate(11)}
               className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
-              onClick={() => onNavigate(14)}
+              onClick={() => onNavigate(13)}
               className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
             >
               Next

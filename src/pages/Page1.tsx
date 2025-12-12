@@ -41,13 +41,13 @@ export default function Page1({ onNavigate }: PageProps) {
 
         <div className="flex flex-wrap gap-4 justify-center">
           <button
-            onClick={() => onNavigate(4)}
+            onClick={() => onNavigate(3)}
             className="bg-purple-600 text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all transform hover:scale-105 shadow-xl"
           >
             START (Guest Mode)
           </button>
           <button
-            onClick={() => onNavigate(3)}
+            onClick={() => onNavigate(2)}
             className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500 shadow-xl"
           >
             Login/Register

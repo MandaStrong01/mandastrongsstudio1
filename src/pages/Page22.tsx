@@ -214,7 +214,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
         <div className="max-w-6xl w-full mx-auto flex-1 flex flex-col">
           <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
             <button
-              onClick={() => onNavigate(4)}
+              onClick={() => onNavigate(3)}
               className="flex items-center gap-2 px-4 sm:px-6 py-3 bg-black border border-purple-500/50 hover:bg-purple-900/50 rounded-lg transition-all w-full md:w-auto justify-center"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -375,7 +375,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
 
                 <div className="mt-6 flex gap-4 justify-end">
                   <button
-                    onClick={() => onNavigate(11)}
+                    onClick={() => onNavigate(10)}
                     disabled={uploadedFiles.length === 0 && !uploading}
                     className="px-8 py-3 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed rounded-lg font-semibold transition-all"
                   >
@@ -494,7 +494,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
 
                 <div className="mt-6 flex gap-4 justify-end">
                   <button
-                    onClick={() => onNavigate(11)}
+                    onClick={() => onNavigate(10)}
                     className="px-8 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold transition-all"
                   >
                     Save to Media Box
