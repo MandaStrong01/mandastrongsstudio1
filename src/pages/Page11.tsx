@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Film, Loader2, Sparkles, Download, Edit3, X, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -6,9 +6,28 @@ import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
 import MyMovies from '../components/MyMovies';
 import AuthModal from '../components/AuthModal';
+import { uploadFile, getAssets } from '../lib/storage';
 
 interface PageProps {
   onNavigate: (page: number) => void;
+}
+
+interface Asset {
+  id: string;
+  file_name: string;
+  file_url: string;
+  file_type: string;
+  asset_type: string;
+}
+
+interface RenderJob {
+  id: string;
+  title: string;
+  status: string;
+  progress_percent: number;
+  current_step: string;
+  output_video_url: string;
+  error_message: string;
 }
 
 export default function Page11({ onNavigate }: PageProps) {
@@ -20,10 +39,81 @@ export default function Page11({ onNavigate }: PageProps) {
   const [showMyMovies, setShowMyMovies] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
+  const [renderJob, setRenderJob] = useState<RenderJob | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      loadAssets();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (renderJob && renderJob.status === 'processing') {
+      interval = setInterval(checkRenderStatus, 3000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [renderJob]);
+
+  const loadAssets = async () => {
+    if (!user) return;
+    const userAssets = await getAssets(user.id);
+    setAssets(userAssets);
+  };
+
+  const checkRenderStatus = async () => {
+    if (!renderJob) return;
+
+    const { data, error } = await supabase
+      .from('render_jobs')
+      .select('*')
+      .eq('id', renderJob.id)
+      .single();
+
+    if (!error && data) {
+      setRenderJob(data);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user || !e.target.files || e.target.files.length === 0) return;
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      const file = e.target.files[0];
+      const result = await uploadFile(file, user.id);
+
+      if (result.success && result.assetId) {
+        await loadAssets();
+        setSelectedAssets(prev => [...prev, result.assetId!]);
+      } else {
+        setError(result.error || 'Upload failed');
+      }
+    } catch (err) {
+      setError('Failed to upload file');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const toggleAssetSelection = (assetId: string) => {
+    setSelectedAssets(prev =>
+      prev.includes(assetId)
+        ? prev.filter(id => id !== assetId)
+        : [...prev, assetId]
+    );
+  };
 
   const handleGenerateMovie = async () => {
     if (!user) {
-      setError('Please sign in to create a movie project');
+      setError('Please sign in to create a movie');
       setShowAuthModal(true);
       return;
     }
@@ -33,70 +123,78 @@ export default function Page11({ onNavigate }: PageProps) {
       return;
     }
 
+    if (selectedAssets.length === 0) {
+      setError('Please select or upload at least one media file');
+      return;
+    }
+
     setGenerating(true);
     setGeneratedProjectId(null);
+    setRenderJob(null);
     setError(null);
 
     try {
-      const { data: project, error: projectError } = await supabase
-        .from('movie_projects')
+      const { data: job, error: jobError } = await supabase
+        .from('render_jobs')
         .insert({
           user_id: user.id,
-          title: moviePrompt.substring(0, 50) || 'AI Generated Movie',
+          title: moviePrompt.substring(0, 100) || 'AI Generated Movie',
           description: moviePrompt,
-          duration: duration,
-          completed: true,
-          current_phase: 1,
-          phase_1_data: {
-            prompt: moviePrompt,
-            duration: duration,
-            generation_started: new Date().toISOString(),
-            generation_completed: new Date().toISOString()
-          }
+          target_duration: duration,
+          aspect_ratio: '16:9',
+          resolution: '1920x1080',
+          asset_ids: selectedAssets,
+          status: 'queued',
+          progress_percent: 0
         })
         .select()
         .single();
 
-      if (projectError) {
-        console.error('Project creation error:', projectError);
-        setError(`Failed to create project: ${projectError.message}`);
-        throw projectError;
+      if (jobError) throw jobError;
+
+      const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-movie`;
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ jobId: job.id })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to start video generation');
       }
 
-      setGeneratedProjectId(project.id);
+      setRenderJob(job);
+      setGeneratedProjectId(job.id);
     } catch (error) {
       console.error('Error creating movie:', error);
-      setError(error instanceof Error ? error.message : 'Failed to create movie project');
+      setError(error instanceof Error ? error.message : 'Failed to create movie');
     } finally {
       setGenerating(false);
     }
   };
 
   const handleDownload = async () => {
-    if (!generatedProjectId) return;
+    if (!renderJob?.output_video_url) {
+      setError('Video not ready for download yet');
+      return;
+    }
 
     try {
-      const { data: project, error } = await supabase
-        .from('movie_projects')
-        .select('*')
-        .eq('id', generatedProjectId)
-        .single();
+      const videoUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/media-assets/${renderJob.output_video_url}`;
 
-      if (error) throw error;
-
-      const projectData = JSON.stringify(project, null, 2);
-      const blob = new Blob([projectData], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `${project.title.replace(/[^a-z0-9]/gi, '_')}_project.json`;
+      a.href = videoUrl;
+      a.download = `${renderJob.title.replace(/[^a-z0-9]/gi, '_')}.mp4`;
+      a.target = '_blank';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error downloading project:', error);
-      setError('Failed to download project');
+      console.error('Error downloading video:', error);
+      setError('Failed to download video');
     }
   };
 
@@ -104,6 +202,8 @@ export default function Page11({ onNavigate }: PageProps) {
     setMoviePrompt('');
     setDuration(30);
     setGeneratedProjectId(null);
+    setRenderJob(null);
+    setSelectedAssets([]);
   };
 
   if (authLoading) {
@@ -133,7 +233,7 @@ export default function Page11({ onNavigate }: PageProps) {
           </div>
         </div>
         <QuickAccess onNavigate={onNavigate} />
-        <Footer onNavigate={onNavigate} />
+        <Footer />
         {showAuthModal && (
           <AuthModal
             onClose={() => setShowAuthModal(false)}
@@ -194,13 +294,65 @@ export default function Page11({ onNavigate }: PageProps) {
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-bold text-slate-300 mb-3">
+                    SELECT MEDIA FILES
+                  </label>
+                  <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700 mb-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4">
+                      {assets.map(asset => (
+                        <div
+                          key={asset.id}
+                          onClick={() => !generating && !generatedProjectId && toggleAssetSelection(asset.id)}
+                          className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                            selectedAssets.includes(asset.id)
+                              ? 'border-cyan-400 shadow-lg shadow-cyan-500/50'
+                              : 'border-slate-600 hover:border-slate-500'
+                          } ${generating || generatedProjectId ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <div className="aspect-video bg-slate-800 flex items-center justify-center">
+                            {asset.asset_type === 'video' ? (
+                              <Film className="w-8 h-8 text-slate-500" />
+                            ) : asset.asset_type === 'image' ? (
+                              <img src={asset.file_url} alt={asset.file_name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="text-slate-500 text-xs text-center px-2">{asset.file_name}</div>
+                            )}
+                          </div>
+                          {selectedAssets.includes(asset.id) && (
+                            <div className="absolute top-1 right-1 w-6 h-6 bg-cyan-400 rounded-full flex items-center justify-center">
+                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <label className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border-2 border-dashed border-slate-600 hover:border-slate-500 rounded-lg p-4 cursor-pointer transition-all">
+                      <input
+                        type="file"
+                        accept="video/*,image/*,audio/*"
+                        onChange={handleFileUpload}
+                        disabled={uploading || generating || generatedProjectId !== null}
+                        className="hidden"
+                      />
+                      {uploading ? (
+                        <><Loader2 className="w-5 h-5 animate-spin text-cyan-400" /> Uploading...</>
+                      ) : (
+                        <><span className="text-slate-400">+ Upload Media</span></>
+                      )}
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-slate-300 mb-3">
                     PASTE YOUR PROMPT
                   </label>
                   <textarea
                     value={moviePrompt}
                     onChange={(e) => setMoviePrompt(e.target.value)}
                     placeholder="A cinematic video of a sunrise over mountains with dramatic orchestral music, smooth camera movements, and golden hour lighting..."
-                    className="w-full bg-slate-900/70 border-2 border-cyan-500/30 rounded-xl p-5 text-white placeholder-slate-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 min-h-[180px] resize-y text-base"
+                    className="w-full bg-slate-900/70 border-2 border-cyan-500/30 rounded-xl p-5 text-white placeholder-slate-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 min-h-[120px] resize-y text-base"
                     disabled={generating || generatedProjectId !== null}
                   />
                 </div>
@@ -239,17 +391,17 @@ export default function Page11({ onNavigate }: PageProps) {
                   </div>
                 </div>
 
-                {!generatedProjectId ? (
+{!generatedProjectId ? (
                   <>
                     <button
                       onClick={handleGenerateMovie}
-                      disabled={generating || !moviePrompt.trim()}
+                      disabled={generating || !moviePrompt.trim() || selectedAssets.length === 0}
                       className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 hover:from-cyan-400 hover:via-blue-400 hover:to-purple-500 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-black text-xl py-6 px-8 rounded-xl transition-all shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-400/50 disabled:shadow-none flex items-center justify-center gap-3 transform hover:scale-[1.02] active:scale-[0.98]"
                     >
                       {generating ? (
                         <>
                           <Loader2 className="w-6 h-6 animate-spin" />
-                          GENERATING...
+                          STARTING...
                         </>
                       ) : (
                         <>
@@ -258,34 +410,60 @@ export default function Page11({ onNavigate }: PageProps) {
                         </>
                       )}
                     </button>
-
-                    {generating && (
-                      <div className="bg-cyan-900/20 border border-cyan-500/30 rounded-xl p-8 text-center">
-                        <div className="flex flex-col items-center gap-4">
-                          <div className="relative">
-                            <Loader2 className="w-20 h-20 text-cyan-400 animate-spin" />
-                            <div className="absolute inset-0 bg-cyan-400/20 rounded-full blur-2xl animate-pulse" />
+                  </>
+                ) : renderJob?.status === 'processing' || renderJob?.status === 'queued' ? (
+                  <div className="bg-cyan-900/20 border border-cyan-500/30 rounded-xl p-8">
+                    <div className="flex flex-col items-center gap-4 mb-6">
+                      <div className="relative">
+                        <Loader2 className="w-16 h-16 text-cyan-400 animate-spin" />
+                        <div className="absolute inset-0 bg-cyan-400/20 rounded-full blur-2xl animate-pulse" />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-black text-white mb-2">Creating Your Movie...</p>
+                        <p className="text-slate-300 mb-4">{renderJob.current_step || 'Processing...'}</p>
+                        <div className="w-full max-w-md">
+                          <div className="flex justify-between text-sm text-slate-400 mb-2">
+                            <span>Progress</span>
+                            <span>{renderJob.progress_percent}%</span>
                           </div>
-                          <div>
-                            <p className="text-2xl font-black text-white mb-2">Creating Your Movie...</p>
-                            <p className="text-slate-300">AI is processing your request</p>
+                          <div className="w-full bg-slate-700 rounded-full h-3">
+                            <div
+                              className="bg-gradient-to-r from-cyan-400 to-blue-500 h-3 rounded-full transition-all duration-500"
+                              style={{ width: `${renderJob.progress_percent}%` }}
+                            />
                           </div>
                         </div>
                       </div>
-                    )}
-                  </>
-                ) : (
+                    </div>
+                  </div>
+                ) : renderJob?.status === 'completed' ? (
                   <div className="space-y-6">
-                    <div className="bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-2 border-green-500/50 rounded-xl p-8 text-center">
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/50">
-                          <Sparkles className="w-10 h-10 text-white" />
+                    <div className="bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-2 border-green-500/50 rounded-xl p-6">
+                      <div className="flex items-center justify-center gap-3 mb-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
+                          <Sparkles className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                          <p className="text-3xl font-black text-white mb-2">DONE!</p>
-                          <p className="text-lg text-slate-300">Your movie project is ready</p>
+                          <p className="text-2xl font-black text-white">DONE!</p>
+                          <p className="text-slate-300">Your movie is ready</p>
                         </div>
                       </div>
+
+                      {renderJob.output_video_url && (
+                        <div className="bg-black rounded-lg overflow-hidden mb-4">
+                          <video
+                            controls
+                            className="w-full"
+                            poster={renderJob.output_video_url ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/media-assets/${renderJob.output_video_url}-thumbnail.jpg` : undefined}
+                          >
+                            <source
+                              src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/media-assets/${renderJob.output_video_url}`}
+                              type="video/mp4"
+                            />
+                            Your browser does not support video playback.
+                          </video>
+                        </div>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -294,18 +472,30 @@ export default function Page11({ onNavigate }: PageProps) {
                         className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold text-lg py-5 px-6 rounded-xl transition-all shadow-lg shadow-green-600/30 hover:shadow-green-500/50 transform hover:scale-105"
                       >
                         <Download className="w-6 h-6" />
-                        DOWNLOAD
+                        DOWNLOAD MP4
                       </button>
                       <button
                         onClick={handleContinueEditing}
                         className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-lg py-5 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-blue-500/50 transform hover:scale-105"
                       >
                         <Edit3 className="w-6 h-6" />
-                        CONTINUE EDITING
+                        CREATE ANOTHER
                       </button>
                     </div>
                   </div>
-                )}
+                ) : renderJob?.status === 'failed' ? (
+                  <div className="bg-red-900/30 border-2 border-red-500/50 rounded-xl p-6 text-center">
+                    <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
+                    <p className="text-xl font-bold text-white mb-2">Generation Failed</p>
+                    <p className="text-red-200 mb-4">{renderJob.error_message || 'An error occurred'}</p>
+                    <button
+                      onClick={handleContinueEditing}
+                      className="bg-red-600 hover:bg-red-500 text-white font-bold px-6 py-3 rounded-xl transition-all"
+                    >
+                      Try Again
+                    </button>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
@@ -313,12 +503,11 @@ export default function Page11({ onNavigate }: PageProps) {
       </div>
 
       <QuickAccess onNavigate={onNavigate} />
-      <Footer onNavigate={onNavigate} />
+      <Footer />
 
       {showMyMovies && (
         <MyMovies
           onClose={() => setShowMyMovies(false)}
-          onNavigate={onNavigate}
         />
       )}
 
