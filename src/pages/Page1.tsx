@@ -1,22 +1,10 @@
-import { Film, Play } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { Film } from 'lucide-react';
 
 interface PageProps {
   onNavigate: (page: number) => void;
 }
 
 export default function Page1({ onNavigate }: PageProps) {
-  const [demoPlaying, setDemoPlaying] = useState(true);
-  const demoRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDemoPlaying(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4 relative overflow-hidden">
       <div className="absolute inset-0">
@@ -29,23 +17,6 @@ export default function Page1({ onNavigate }: PageProps) {
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-800/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
       </div>
-
-      {demoPlaying && (
-        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
-          <div ref={demoRef} className="text-center space-y-8 animate-fade-in">
-            <div className="relative">
-              <div className="absolute inset-0 bg-purple-600/30 rounded-full blur-3xl animate-pulse"></div>
-              <Play className="w-32 h-32 text-purple-400 relative z-10 animate-bounce" />
-            </div>
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-purple-300 to-purple-400 bg-clip-text text-transparent">
-              Welcome to MANDASTRONG'S STUDIO
-            </h2>
-            <p className="text-xl text-purple-300 animate-pulse">
-              Loading your movie-making experience...
-            </p>
-          </div>
-        </div>
-      )}
 
       <div className="relative z-10 text-center max-w-5xl">
         <div className="flex justify-center mb-8">
@@ -73,7 +44,7 @@ export default function Page1({ onNavigate }: PageProps) {
             onClick={() => onNavigate(1)}
             className="bg-purple-600 text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all transform hover:scale-105 shadow-xl"
           >
-            Next
+            Demo
           </button>
           <button
             onClick={() => onNavigate(2)}
