@@ -62,20 +62,18 @@ export default function Page3({ onNavigate }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
-
       <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-6xl flex flex-col">
+        <div className="w-full max-w-6xl">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-center mb-6 text-purple-400">
+              {user ? 'SUBSCRIPTION PLANS' : 'SIGN IN TO CONTINUE'}
+            </h2>
+            {user && <p className="text-center text-white/70 mb-8">Choose the plan that fits your creative vision</p>}
+          </div>
 
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-center mb-6 text-purple-400">
-            {user ? 'SUBSCRIPTION PLANS' : 'SIGN IN TO CONTINUE'}
-          </h2>
-          {user && <p className="text-center text-white/70 mb-8">Choose the plan that fits your creative vision</p>}
-        </div>
-
-        {!user && (
-          <div className="max-w-md mx-auto mb-12 w-full">
-            <div className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 rounded-3xl p-8">
+          {!user && (
+            <div className="max-w-md mx-auto mb-12 w-full">
+              <div className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 rounded-3xl p-8">
               <div className="flex gap-2 mb-6">
                 <button
                   onClick={() => setIsLogin(true)}
@@ -133,11 +131,11 @@ export default function Page3({ onNavigate }: PageProps) {
                   {loading ? 'Processing...' : isLogin ? 'Login' : 'Register'}
                 </button>
               </form>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
           <button
             onClick={() => openStripeLink(STRIPE_LINKS.basic)}
             className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 hover:scale-105 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-purple-900/30 cursor-pointer"
@@ -176,22 +174,22 @@ export default function Page3({ onNavigate }: PageProps) {
               <p className="text-xs text-purple-300 font-semibold">Click to Subscribe via Stripe</p>
             </div>
           </button>
-        </div>
+          </div>
 
-        <div className="flex justify-center gap-4">
-          <button
-            onClick={() => onNavigate(1)}
-            className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
-          >
-            Back
-          </button>
-          <button
-            onClick={() => onNavigate(3)}
-            className="bg-purple-600 text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all border border-purple-500"
-          >
-            Next
-          </button>
-        </div>
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => onNavigate(1)}
+              className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
+            >
+              Back
+            </button>
+            <button
+              onClick={() => onNavigate(3)}
+              className="bg-purple-600 text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all border border-purple-500"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
       <Footer />

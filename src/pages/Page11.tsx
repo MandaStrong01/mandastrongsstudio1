@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Film, Loader2, Sparkles, Download, Edit3, X, AlertCircle } from 'lucide-react';
+import { Film, Loader2, Sparkles, Download, Edit3, X, AlertCircle, ArrowLeft, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
@@ -494,6 +494,23 @@ export default function Page11({ onNavigate }: PageProps) {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="flex gap-4 justify-center mt-8">
+          <button
+            onClick={() => onNavigate(9)}
+            className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back
+          </button>
+          <button
+            onClick={() => onNavigate(11)}
+            className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
+          >
+            Next
+            <ArrowRight className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
