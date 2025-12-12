@@ -77,6 +77,20 @@ export async function uploadFile(
   skipCompression: boolean = false
 ): Promise<UploadResult> {
   try {
+    if (!file) {
+      return {
+        success: false,
+        error: 'No file provided'
+      };
+    }
+
+    if (!userId) {
+      return {
+        success: false,
+        error: 'User ID is required'
+      };
+    }
+
     if (onProgress) onProgress(10);
 
     const teamId = await getUserTeam(userId);
@@ -85,7 +99,15 @@ export async function uploadFile(
     if (onProgress) onProgress(20);
 
     const timestamp = Date.now();
-    const fileName = `${userId}/${timestamp}_${file.name}`;
+    const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const fileName = `${userId}/${timestamp}_${sanitizedFileName}`;
+
+    if (!fileName || fileName.trim() === '') {
+      return {
+        success: false,
+        error: 'Invalid file path'
+      };
+    }
 
     const { data: uploadData, error: uploadError } = await uploadWithRetry(
       fileName,
@@ -106,6 +128,13 @@ export async function uploadFile(
       return {
         success: false,
         error: `Upload failed: ${uploadError.message || 'Unknown error'}`
+      };
+    }
+
+    if (!uploadData?.path) {
+      return {
+        success: false,
+        error: 'Upload succeeded but path is missing'
       };
     }
 

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Film, Upload, Loader2, Sparkles, Users, Heart, Palette, Code, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Film, Upload, Loader2, Sparkles, Users, Heart, Palette, Code, X, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile } from '../lib/storage';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
 import MyMovies from '../components/MyMovies';
+import AuthModal from '../components/AuthModal';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -21,7 +22,7 @@ interface Asset {
 }
 
 export default function Page11({ onNavigate }: PageProps) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -32,17 +33,28 @@ export default function Page11({ onNavigate }: PageProps) {
   const [moviePrompt, setMoviePrompt] = useState('');
   const [generating, setGenerating] = useState(false);
   const [duration, setDuration] = useState(90);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user) {
+    if (!authLoading && !user) {
+      setShowAuthModal(true);
+      setLoading(false);
+    } else if (user) {
+      setShowAuthModal(false);
       loadAssets();
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   const loadAssets = async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
+    setError(null);
+
     try {
       const { data, error } = await supabase
         .from('assets')
@@ -50,7 +62,11 @@ export default function Page11({ onNavigate }: PageProps) {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading assets:', error);
+        setError('Failed to load your assets. Please refresh the page.');
+        throw error;
+      }
 
       setAssets(data || []);
       if (data && data.length > 0 && !selectedAsset) {
@@ -58,6 +74,7 @@ export default function Page11({ onNavigate }: PageProps) {
       }
     } catch (error) {
       console.error('Error loading assets:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load assets');
     } finally {
       setLoading(false);
     }
@@ -90,10 +107,20 @@ export default function Page11({ onNavigate }: PageProps) {
   };
 
   const handleFileUpload = async (files: FileList | null) => {
-    if (!files || !user || files.length === 0) return;
+    if (!files || files.length === 0) {
+      console.warn('No files provided for upload');
+      return;
+    }
+
+    if (!user) {
+      setError('Please sign in to upload files');
+      setShowAuthModal(true);
+      return;
+    }
 
     setUploading(true);
     setUploadProgress({});
+    setError(null);
 
     try {
       const uploadPromises = Array.from(files).map(file =>
@@ -111,12 +138,14 @@ export default function Page11({ onNavigate }: PageProps) {
 
       if (results.some(r => !r.success)) {
         const failedFiles = results.filter(r => !r.success);
-        const errorMessages = failedFiles.map(r => r.error).join('\n');
-        alert(`${successCount} of ${files.length} files uploaded.\n\nErrors:\n${errorMessages}`);
+        const errorMessages = failedFiles.map(r => r.error).join(', ');
+        setError(`${successCount} of ${files.length} files uploaded successfully. Errors: ${errorMessages}`);
+      } else if (successCount > 0) {
+        setError(null);
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setError(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
     } finally {
       setUploading(false);
       setUploadProgress({});
@@ -147,12 +176,25 @@ export default function Page11({ onNavigate }: PageProps) {
   };
 
   const handleGenerateMovie = async () => {
-    if (!moviePrompt.trim() || assets.length === 0 || !user) {
-      alert('Please add some media and enter a prompt for your movie!');
+    if (!user) {
+      setError('Please sign in to create a movie project');
+      setShowAuthModal(true);
+      return;
+    }
+
+    if (!moviePrompt.trim()) {
+      setError('Please enter a description for your movie');
+      return;
+    }
+
+    if (assets.length === 0) {
+      setError('Please upload some media files first');
       return;
     }
 
     setGenerating(true);
+    setError(null);
+
     try {
       const mediaAssets = assets.filter(a =>
         a.file_type.startsWith('image/') ||
@@ -161,7 +203,8 @@ export default function Page11({ onNavigate }: PageProps) {
       );
 
       if (mediaAssets.length === 0) {
-        alert('No media assets found. Please upload images, videos, or audio files.');
+        setError('No media assets found. Please upload images, videos, or audio files.');
+        setGenerating(false);
         return;
       }
 
@@ -171,28 +214,59 @@ export default function Page11({ onNavigate }: PageProps) {
           user_id: user.id,
           title: moviePrompt.substring(0, 50) || 'New Movie',
           description: moviePrompt,
+          duration: duration,
           status: 'draft'
         })
         .select()
         .single();
 
-      if (projectError) throw projectError;
+      if (projectError) {
+        console.error('Project creation error:', projectError);
+        setError(`Failed to create project: ${projectError.message}`);
+        throw projectError;
+      }
 
-      alert(`Movie project "${project.title}" created! Your ${mediaAssets.length} assets are ready. You can now edit and render your movie.`);
       setMoviePrompt('');
       setShowMyMovies(true);
     } catch (error) {
       console.error('Error creating movie:', error);
-      alert(`Failed to create movie: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setError(error instanceof Error ? error.message : 'Failed to create movie project');
     } finally {
       setGenerating(false);
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 mx-auto mb-4 text-cyan-400 animate-spin" />
+          <p className="text-lg text-slate-400">Loading your workspace...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-8">
         <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col">
+          {/* Error Banner */}
+          {error && (
+            <div className="mb-6 bg-red-900/30 border border-red-500/50 rounded-xl p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-red-200 text-sm">{error}</p>
+              </div>
+              <button
+                onClick={() => setError(null)}
+                className="text-red-400 hover:text-red-300 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          )}
+
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -506,6 +580,16 @@ export default function Page11({ onNavigate }: PageProps) {
         <MyMovies
           onClose={() => setShowMyMovies(false)}
           onNavigate={onNavigate}
+        />
+      )}
+
+      {showAuthModal && (
+        <AuthModal
+          onClose={() => setShowAuthModal(false)}
+          onSuccess={() => {
+            setShowAuthModal(false);
+            setError(null);
+          }}
         />
       )}
     </div>
