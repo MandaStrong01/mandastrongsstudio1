@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Film, Upload, Loader2, Sparkles, Users, Heart, Palette, Code } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Film, Upload, Loader2, Sparkles, Users, Heart, Palette, Code, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile } from '../lib/storage';
@@ -60,6 +60,32 @@ export default function Page11({ onNavigate }: PageProps) {
       console.error('Error loading assets:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteAsset = async (assetId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (!confirm('Delete this asset? This cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('assets')
+        .delete()
+        .eq('id', assetId);
+
+      if (error) throw error;
+
+      if (selectedAsset?.id === assetId) {
+        setSelectedAsset(null);
+      }
+
+      await loadAssets();
+    } catch (error) {
+      console.error('Error deleting asset:', error);
+      alert('Failed to delete asset');
     }
   };
 
@@ -171,9 +197,9 @@ export default function Page11({ onNavigate }: PageProps) {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-4xl font-black bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent mb-2">
-                Creative Studio
+                Creating Movie with AI
               </h1>
-              <p className="text-slate-400 text-sm">Where humanity meets creativity</p>
+              <p className="text-slate-400 text-sm">Your Assets</p>
             </div>
             <button
               onClick={() => setShowMyMovies(true)}
@@ -287,23 +313,30 @@ export default function Page11({ onNavigate }: PageProps) {
                 ) : (
                   <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
                     {assets.map((asset) => (
-                      <button
+                      <div
                         key={asset.id}
-                        onClick={() => setSelectedAsset(asset)}
-                        className={`w-full text-left p-3 rounded-lg transition-all ${
+                        className={`relative group w-full text-left p-3 rounded-lg transition-all cursor-pointer ${
                           selectedAsset?.id === asset.id
                             ? 'bg-cyan-600/20 border-2 border-cyan-500'
                             : 'bg-slate-900/30 border border-slate-700 hover:bg-slate-700/50'
                         }`}
+                        onClick={() => setSelectedAsset(asset)}
                       >
-                        <p className="text-sm font-medium text-white truncate mb-1">{asset.file_name}</p>
+                        <button
+                          onClick={(e) => handleDeleteAsset(asset.id, e)}
+                          className="absolute top-2 right-2 bg-red-600 hover:bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                          title="Delete asset"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                        <p className="text-sm font-medium text-white truncate mb-1 pr-8">{asset.file_name}</p>
                         <div className="flex items-center gap-2 text-xs text-slate-400">
                           <span className="px-2 py-0.5 bg-slate-700 rounded">
                             {asset.asset_type || asset.file_type.split('/')[0]}
                           </span>
                           <span>{new Date(asset.created_at).toLocaleDateString()}</span>
                         </div>
-                      </button>
+                      </div>
                     ))}
                   </div>
                 )}

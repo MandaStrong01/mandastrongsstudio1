@@ -42,7 +42,7 @@ export default function AIToolModal({ toolName, onClose, onOpenAssetPage }: AITo
               className="bg-gradient-to-br from-purple-900/40 to-black/60 border-2 border-purple-500/50 hover:border-purple-400 active:border-purple-300 rounded-xl p-6 sm:p-8 transition-all group touch-manipulation"
             >
               <Sparkles className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 text-purple-400 group-hover:scale-110 transition-transform" />
-              <h4 className="text-xl sm:text-2xl font-bold text-white">Create</h4>
+              <h4 className="text-xl sm:text-2xl font-bold text-white">Generate</h4>
             </button>
           </div>
         </div>
