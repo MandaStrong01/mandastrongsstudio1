@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Film, Upload, Loader2, Sparkles, Users, Heart, Palette, Code, X, AlertCircle, Download, Edit3 } from 'lucide-react';
+import { useState } from 'react';
+import { Film, Loader2, Sparkles, Download, Edit3, X, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { uploadFile } from '../lib/storage';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
 import MyMovies from '../components/MyMovies';
@@ -12,169 +11,15 @@ interface PageProps {
   onNavigate: (page: number) => void;
 }
 
-interface Asset {
-  id: string;
-  file_name: string;
-  file_url: string;
-  file_type: string;
-  asset_type?: string;
-  created_at: string;
-}
-
 export default function Page11({ onNavigate }: PageProps) {
   const { user, loading: authLoading } = useAuth();
-  const [assets, setAssets] = useState<Asset[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
-  const [showMyMovies, setShowMyMovies] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [moviePrompt, setMoviePrompt] = useState('');
   const [generating, setGenerating] = useState(false);
   const [generatedProjectId, setGeneratedProjectId] = useState<string | null>(null);
   const [duration, setDuration] = useState(30);
+  const [showMyMovies, setShowMyMovies] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!authLoading && !user) {
-      setShowAuthModal(true);
-      setLoading(false);
-    } else if (user) {
-      setShowAuthModal(false);
-      loadAssets();
-    }
-  }, [user, authLoading]);
-
-  const loadAssets = async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const { data, error } = await supabase
-        .from('assets')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error loading assets:', error);
-        setError('Failed to load your assets. Please refresh the page.');
-        throw error;
-      }
-
-      setAssets(data || []);
-      if (data && data.length > 0 && !selectedAsset) {
-        setSelectedAsset(data[0]);
-      }
-    } catch (error) {
-      console.error('Error loading assets:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load assets');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteAsset = async (assetId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    if (!confirm('Delete this asset? This cannot be undone.')) {
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('assets')
-        .delete()
-        .eq('id', assetId);
-
-      if (error) throw error;
-
-      if (selectedAsset?.id === assetId) {
-        setSelectedAsset(null);
-      }
-
-      await loadAssets();
-    } catch (error) {
-      console.error('Error deleting asset:', error);
-      alert('Failed to delete asset');
-    }
-  };
-
-  const handleFileUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0) {
-      console.warn('No files provided for upload');
-      return;
-    }
-
-    if (!user) {
-      setError('Please sign in to upload files');
-      setShowAuthModal(true);
-      return;
-    }
-
-    setUploading(true);
-    setUploadProgress({});
-    setError(null);
-
-    try {
-      const uploadPromises = Array.from(files).map(file =>
-        uploadFile(file, user.id, (progress) => {
-          setUploadProgress(prev => ({ ...prev, [file.name]: progress }));
-        }, false)
-      );
-
-      const results = await Promise.all(uploadPromises);
-      const successCount = results.filter(r => r.success).length;
-
-      if (successCount > 0) {
-        await loadAssets();
-      }
-
-      if (results.some(r => !r.success)) {
-        const failedFiles = results.filter(r => !r.success);
-        const errorMessages = failedFiles.map(r => r.error).join(', ');
-        setError(`${successCount} of ${files.length} files uploaded successfully. Errors: ${errorMessages}`);
-      } else if (successCount > 0) {
-        setError(null);
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      setError(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
-    } finally {
-      setUploading(false);
-      setUploadProgress({});
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    handleFileUpload(e.dataTransfer.files);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
-    if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-    return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
-  };
 
   const handleGenerateMovie = async () => {
     if (!user) {
@@ -259,7 +104,6 @@ export default function Page11({ onNavigate }: PageProps) {
     setMoviePrompt('');
     setDuration(30);
     setGeneratedProjectId(null);
-    setShowMyMovies(true);
   };
 
   if (authLoading) {
@@ -267,8 +111,35 @@ export default function Page11({ onNavigate }: PageProps) {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 mx-auto mb-4 text-cyan-400 animate-spin" />
-          <p className="text-lg text-slate-400">Loading your workspace...</p>
+          <p className="text-lg text-slate-400">Loading...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col">
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="text-center">
+            <Sparkles className="w-16 h-16 mx-auto mb-4 text-cyan-400" />
+            <h2 className="text-2xl font-bold text-white mb-4">Sign in to Create Movies</h2>
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold px-8 py-3 rounded-xl transition-all shadow-lg"
+            >
+              Sign In
+            </button>
+          </div>
+        </div>
+        <QuickAccess onNavigate={onNavigate} />
+        <Footer onNavigate={onNavigate} />
+        {showAuthModal && (
+          <AuthModal
+            onClose={() => setShowAuthModal(false)}
+            onSuccess={() => setShowAuthModal(false)}
+          />
+        )}
       </div>
     );
   }
@@ -276,8 +147,7 @@ export default function Page11({ onNavigate }: PageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-8">
-        <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col">
-          {/* Error Banner */}
+        <div className="max-w-4xl w-full mx-auto flex-1 flex flex-col">
           {error && (
             <div className="mb-6 bg-red-900/30 border border-red-500/50 rounded-xl p-4 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
@@ -293,13 +163,12 @@ export default function Page11({ onNavigate }: PageProps) {
             </div>
           )}
 
-          {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-4xl font-black bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent mb-2">
-                Creating Movie with AI
+              <h1 className="text-4xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent mb-2">
+                Create Movie with AI
               </h1>
-              <p className="text-slate-400 text-sm">Your Assets</p>
+              <p className="text-slate-400">Simple. Fast. Powerful.</p>
             </div>
             <button
               onClick={() => setShowMyMovies(true)}
@@ -310,376 +179,134 @@ export default function Page11({ onNavigate }: PageProps) {
             </button>
           </div>
 
-          {/* Mission Statement */}
-          <div className="bg-gradient-to-r from-blue-900/30 via-cyan-900/30 to-teal-900/30 border border-cyan-500/30 rounded-2xl p-6 mb-8 backdrop-blur-sm">
-            <div className="flex items-start gap-4">
-              <div className="flex gap-3">
-                <Heart className="w-6 h-6 text-red-400" />
-                <Palette className="w-6 h-6 text-cyan-400" />
-                <Users className="w-6 h-6 text-blue-400" />
-                <Code className="w-6 h-6 text-teal-400" />
+          <div className="flex-1 flex flex-col justify-center">
+            <div className="bg-gradient-to-br from-slate-800/80 via-slate-800/50 to-slate-800/80 backdrop-blur-sm rounded-3xl p-8 border border-cyan-500/30 shadow-2xl shadow-cyan-500/10">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 mb-4 shadow-lg shadow-cyan-500/50">
+                  <Sparkles className="w-10 h-10 text-white" />
+                </div>
+                <h2 className="text-3xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
+                  Generate Movie by AI
+                </h2>
+                <p className="text-slate-300">Describe your vision and let AI create your movie</p>
               </div>
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-white mb-2">Enhance Human Creativity</h2>
-                <p className="text-slate-300 leading-relaxed">
-                  A platform built for artists, creators, and developers. Upload your media, organize your assets,
-                  and bring your creative vision to life. Supporting files up to <span className="font-bold text-cyan-400">50GB</span> -
-                  because great ideas need no limits.
-                </p>
-              </div>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
-            {/* Upload Area */}
-            <div
-              className={`relative bg-slate-800/50 backdrop-blur-sm rounded-2xl border-2 p-6 transition-all ${
-                isDragging
-                  ? 'border-cyan-400 border-dashed bg-cyan-900/20 scale-[1.02]'
-                  : 'border-slate-700'
-              }`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-            >
-              <h2 className="text-2xl font-bold text-cyan-400 mb-4">Media Library</h2>
-
-              {/* Upload Section */}
-              <div className="mb-6">
-                <label className="block">
-                  <div className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
-                    isDragging
-                      ? 'border-cyan-400 bg-cyan-900/20'
-                      : 'border-slate-600 hover:border-cyan-500 hover:bg-slate-700/50'
-                  }`}>
-                    {uploading ? (
-                      <div>
-                        <Loader2 className="w-12 h-12 mx-auto mb-3 text-cyan-400 animate-spin" />
-                        <p className="text-lg font-bold text-white mb-1">Uploading...</p>
-                        <p className="text-sm text-slate-400">Processing your files</p>
-                      </div>
-                    ) : (
-                      <div>
-                        <Upload className="w-12 h-12 mx-auto mb-3 text-cyan-400" />
-                        <p className="text-lg font-bold text-white mb-1">Upload Media</p>
-                        <p className="text-sm text-slate-400 mb-3">Drag & drop or click to browse</p>
-                        <p className="text-xs text-slate-500">Supports all media types • Max 50GB per file</p>
-                      </div>
-                    )}
-                  </div>
-                  <input
-                    type="file"
-                    multiple
-                    accept="*/*"
-                    onChange={(e) => handleFileUpload(e.target.files)}
-                    className="hidden"
-                    disabled={uploading}
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-bold text-slate-300 mb-3">
+                    PASTE YOUR PROMPT
+                  </label>
+                  <textarea
+                    value={moviePrompt}
+                    onChange={(e) => setMoviePrompt(e.target.value)}
+                    placeholder="A cinematic video of a sunrise over mountains with dramatic orchestral music, smooth camera movements, and golden hour lighting..."
+                    className="w-full bg-slate-900/70 border-2 border-cyan-500/30 rounded-xl p-5 text-white placeholder-slate-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 min-h-[180px] resize-y text-base"
+                    disabled={generating || generatedProjectId !== null}
                   />
-                </label>
+                </div>
 
-                {/* Upload Progress */}
-                {Object.keys(uploadProgress).length > 0 && (
-                  <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
-                    {Object.entries(uploadProgress).map(([fileName, progress]) => (
-                      <div key={fileName} className="bg-slate-900/50 rounded-lg p-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-xs text-slate-300 truncate flex-1 mr-2">{fileName}</p>
-                          <p className="text-xs font-bold text-cyan-400">{Math.round(progress)}%</p>
-                        </div>
-                        <div className="w-full bg-slate-700 rounded-full h-1.5">
-                          <div
-                            className="bg-gradient-to-r from-cyan-600 to-blue-600 h-1.5 rounded-full transition-all"
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Assets List */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-bold text-slate-400 mb-3">Your Assets ({assets.length})</h3>
-                {loading ? (
-                  <div className="text-center py-8">
-                    <Loader2 className="w-8 h-8 mx-auto text-cyan-400 animate-spin" />
-                  </div>
-                ) : assets.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Sparkles className="w-12 h-12 mx-auto mb-3 text-slate-600" />
-                    <p className="text-sm text-slate-500">No assets yet. Upload your first file!</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
-                    {assets.map((asset) => (
-                      <div
-                        key={asset.id}
-                        className={`relative group w-full text-left p-3 rounded-lg transition-all cursor-pointer ${
-                          selectedAsset?.id === asset.id
-                            ? 'bg-cyan-600/20 border-2 border-cyan-500'
-                            : 'bg-slate-900/30 border border-slate-700 hover:bg-slate-700/50'
-                        }`}
-                        onClick={() => setSelectedAsset(asset)}
-                      >
-                        <button
-                          onClick={(e) => handleDeleteAsset(asset.id, e)}
-                          className="absolute top-2 right-2 bg-red-600 hover:bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                          title="Delete asset"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                        <p className="text-sm font-medium text-white truncate mb-1 pr-8">{asset.file_name}</p>
-                        <div className="flex items-center gap-2 text-xs text-slate-400">
-                          <span className="px-2 py-0.5 bg-slate-700 rounded">
-                            {asset.asset_type || asset.file_type.split('/')[0]}
-                          </span>
-                          <span>{new Date(asset.created_at).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Preview Area */}
-            <div className="lg:col-span-2 bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700 p-6">
-              <h2 className="text-2xl font-bold text-cyan-400 mb-4">Preview</h2>
-
-              {selectedAsset ? (
-                <div className="space-y-4">
-                  <div className="aspect-video bg-black rounded-xl overflow-hidden border border-slate-700">
-                    {selectedAsset.file_type.startsWith('image/') ? (
-                      <img
-                        src={selectedAsset.file_url}
-                        alt={selectedAsset.file_name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : selectedAsset.file_type.startsWith('video/') ? (
-                      <video
-                        src={selectedAsset.file_url}
-                        controls
-                        className="w-full h-full"
-                      />
-                    ) : selectedAsset.file_type.startsWith('audio/') ? (
-                      <div className="w-full h-full flex items-center justify-center p-8">
-                        <audio src={selectedAsset.file_url} controls className="w-full" />
-                      </div>
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <div className="text-center">
-                          <Film className="w-16 h-16 mx-auto mb-4 text-slate-600" />
-                          <p className="text-slate-400">Preview not available</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Asset Details */}
-                  <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700">
-                    <h3 className="text-lg font-bold text-white mb-3">{selectedAsset.file_name}</h3>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <p className="text-slate-500 mb-1">Type</p>
-                        <p className="text-white font-medium">{selectedAsset.file_type}</p>
-                      </div>
-                      <div>
-                        <p className="text-slate-500 mb-1">Uploaded</p>
-                        <p className="text-white font-medium">
-                          {new Date(selectedAsset.created_at).toLocaleDateString()}
-                        </p>
+                <div>
+                  <label className="block text-sm font-bold text-slate-300 mb-3">
+                    USE SLIDER FOR DURATION OF MOVIE
+                  </label>
+                  <div className="bg-slate-900/50 rounded-xl p-6 border border-slate-700">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-slate-400">Duration</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                          {duration}
+                        </span>
+                        <span className="text-slate-400">minutes</span>
                       </div>
                     </div>
-                    <div className="mt-3">
-                      <a
-                        href={selectedAsset.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium px-4 py-2 rounded-lg transition-all"
-                      >
-                        <Film className="w-4 h-4" />
-                        Open in New Tab
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Movie Creation from Assets */}
-                  <div className="bg-gradient-to-r from-blue-900/30 to-cyan-900/30 rounded-xl p-6 border border-cyan-500/30">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Sparkles className="w-6 h-6 text-cyan-400" />
-                      <h3 className="text-lg font-bold text-white">Create Movie from Your Media</h3>
-                    </div>
-                    <p className="text-sm text-slate-300 mb-4">
-                      Describe your movie idea and we'll create a project using your uploaded assets.
-                    </p>
-                    <div className="space-y-3">
-                      <button
-                        onClick={handleGenerateMovie}
-                        disabled={generating || assets.length === 0}
-                        className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-all shadow-lg disabled:shadow-none flex items-center justify-center gap-2"
-                      >
-                        {generating ? (
-                          <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Creating Project...
-                          </>
-                        ) : (
-                          <>
-                            <Film className="w-5 h-5" />
-                            Create Project from Assets
-                          </>
-                        )}
-                      </button>
-
-                      {assets.length === 0 && (
-                        <p className="text-xs text-yellow-400 text-center">
-                          Upload some media files first to create a movie!
-                        </p>
-                      )}
+                    <input
+                      type="range"
+                      min="5"
+                      max="180"
+                      step="5"
+                      value={duration}
+                      onChange={(e) => setDuration(parseInt(e.target.value))}
+                      disabled={generating || generatedProjectId !== null}
+                      className="w-full h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-r [&::-webkit-slider-thumb]:from-cyan-400 [&::-webkit-slider-thumb]:to-blue-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-cyan-500/50 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gradient-to-r [&::-moz-range-thumb]:from-cyan-400 [&::-moz-range-thumb]:to-blue-500 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+                    />
+                    <div className="flex justify-between text-xs text-slate-500 mt-3">
+                      <span>5m</span>
+                      <span>Quick</span>
+                      <span>Standard</span>
+                      <span>Long</span>
+                      <span>180m</span>
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="h-full flex flex-col">
-                  {/* AI Generation Interface */}
-                  <div className="flex-1 flex flex-col justify-center">
-                    <div className="bg-gradient-to-br from-purple-900/30 via-blue-900/30 to-cyan-900/30 rounded-2xl p-8 border-2 border-cyan-500/30">
-                      <div className="text-center mb-6">
-                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 mb-4">
+
+                {!generatedProjectId ? (
+                  <>
+                    <button
+                      onClick={handleGenerateMovie}
+                      disabled={generating || !moviePrompt.trim()}
+                      className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 hover:from-cyan-400 hover:via-blue-400 hover:to-purple-500 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-black text-xl py-6 px-8 rounded-xl transition-all shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-400/50 disabled:shadow-none flex items-center justify-center gap-3 transform hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      {generating ? (
+                        <>
+                          <Loader2 className="w-6 h-6 animate-spin" />
+                          GENERATING...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-6 h-6" />
+                          GENERATE MOVIE BY AI
+                        </>
+                      )}
+                    </button>
+
+                    {generating && (
+                      <div className="bg-cyan-900/20 border border-cyan-500/30 rounded-xl p-8 text-center">
+                        <div className="flex flex-col items-center gap-4">
+                          <div className="relative">
+                            <Loader2 className="w-20 h-20 text-cyan-400 animate-spin" />
+                            <div className="absolute inset-0 bg-cyan-400/20 rounded-full blur-2xl animate-pulse" />
+                          </div>
+                          <div>
+                            <p className="text-2xl font-black text-white mb-2">Creating Your Movie...</p>
+                            <p className="text-slate-300">AI is processing your request</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-2 border-green-500/50 rounded-xl p-8 text-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/50">
                           <Sparkles className="w-10 h-10 text-white" />
                         </div>
-                        <h3 className="text-3xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
-                          Generate Movie by AI
-                        </h3>
-                        <p className="text-slate-300 text-sm">
-                          Describe your vision and let AI create your movie instantly
-                        </p>
-                      </div>
-
-                      <div className="space-y-4">
-                        {/* Prompt Box */}
-                        <div className="relative">
-                          <textarea
-                            value={moviePrompt}
-                            onChange={(e) => setMoviePrompt(e.target.value)}
-                            placeholder="Example: A cinematic video of a sunrise over mountains with dramatic orchestral music, smooth camera movements, and golden hour lighting..."
-                            className="w-full bg-slate-900/70 border-2 border-cyan-500/30 rounded-xl p-5 text-white placeholder-slate-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 min-h-[160px] resize-y text-base"
-                            disabled={generating}
-                          />
-                          <div className="absolute bottom-3 right-3 text-xs text-slate-500">
-                            {moviePrompt.length} characters
-                          </div>
+                        <div>
+                          <p className="text-3xl font-black text-white mb-2">DONE!</p>
+                          <p className="text-lg text-slate-300">Your movie project is ready</p>
                         </div>
-
-                        {/* Duration Slider */}
-                        <div className="bg-slate-900/70 rounded-xl p-5 border border-slate-700">
-                          <div className="flex items-center justify-between mb-4">
-                            <label className="text-base font-bold text-white">Duration</label>
-                            <div className="flex items-center gap-2">
-                              <span className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                                {duration}
-                              </span>
-                              <span className="text-sm text-slate-400">minutes</span>
-                            </div>
-                          </div>
-                          <input
-                            type="range"
-                            min="0"
-                            max="180"
-                            step="5"
-                            value={duration}
-                            onChange={(e) => setDuration(parseInt(e.target.value))}
-                            className="w-full h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-r [&::-webkit-slider-thumb]:from-cyan-400 [&::-webkit-slider-thumb]:to-blue-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-cyan-500/50 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gradient-to-r [&::-moz-range-thumb]:from-cyan-400 [&::-moz-range-thumb]:to-blue-500 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
-                          />
-                          <div className="flex justify-between text-xs text-slate-500 mt-2">
-                            <span>0m</span>
-                            <span>Quick</span>
-                            <span>Standard</span>
-                            <span>Long</span>
-                            <span>180m</span>
-                          </div>
-                        </div>
-
-                        {/* Generate Button */}
-                        {!generatedProjectId ? (
-                          <>
-                            <button
-                              onClick={handleGenerateMovie}
-                              disabled={generating || !moviePrompt.trim()}
-                              className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 hover:from-cyan-400 hover:via-blue-400 hover:to-purple-500 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-black text-lg py-5 px-8 rounded-xl transition-all shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-400/50 disabled:shadow-none flex items-center justify-center gap-3 transform hover:scale-[1.02] active:scale-[0.98]"
-                            >
-                              {generating ? (
-                                <>
-                                  <Loader2 className="w-6 h-6 animate-spin" />
-                                  Generating Your Movie...
-                                </>
-                              ) : (
-                                <>
-                                  <Sparkles className="w-6 h-6" />
-                                  Generate Movie by AI
-                                </>
-                              )}
-                            </button>
-
-                            {!moviePrompt.trim() && !generating && (
-                              <p className="text-xs text-cyan-400/70 text-center">
-                                Enter a detailed description to generate your movie
-                              </p>
-                            )}
-
-                            {generating && (
-                              <div className="bg-cyan-900/20 border border-cyan-500/30 rounded-xl p-6 text-center">
-                                <div className="flex flex-col items-center gap-4">
-                                  <div className="relative">
-                                    <Loader2 className="w-16 h-16 text-cyan-400 animate-spin" />
-                                    <div className="absolute inset-0 bg-cyan-400/20 rounded-full blur-xl animate-pulse" />
-                                  </div>
-                                  <div>
-                                    <p className="text-lg font-bold text-white mb-1">Creating Your Movie...</p>
-                                    <p className="text-sm text-slate-300">AI is processing your request</p>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <div className="space-y-4">
-                            <div className="bg-green-900/20 border border-green-500/30 rounded-xl p-6 text-center">
-                              <div className="flex flex-col items-center gap-3">
-                                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
-                                  <Sparkles className="w-8 h-8 text-white" />
-                                </div>
-                                <div>
-                                  <p className="text-xl font-black text-white mb-1">Movie Generated!</p>
-                                  <p className="text-sm text-slate-300">Your project is ready</p>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                              <button
-                                onClick={handleDownload}
-                                className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg shadow-green-600/30 hover:shadow-green-500/50 transform hover:scale-105"
-                              >
-                                <Download className="w-5 h-5" />
-                                Download
-                              </button>
-                              <button
-                                onClick={handleContinueEditing}
-                                className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-blue-500/50 transform hover:scale-105"
-                              >
-                                <Edit3 className="w-5 h-5" />
-                                Continue Editing
-                              </button>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <button
+                        onClick={handleDownload}
+                        className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold text-lg py-5 px-6 rounded-xl transition-all shadow-lg shadow-green-600/30 hover:shadow-green-500/50 transform hover:scale-105"
+                      >
+                        <Download className="w-6 h-6" />
+                        DOWNLOAD
+                      </button>
+                      <button
+                        onClick={handleContinueEditing}
+                        className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-lg py-5 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-blue-500/50 transform hover:scale-105"
+                      >
+                        <Edit3 className="w-6 h-6" />
+                        CONTINUE EDITING
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
