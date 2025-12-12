@@ -32,7 +32,7 @@ export default function Page11({ onNavigate }: PageProps) {
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [moviePrompt, setMoviePrompt] = useState('');
   const [generating, setGenerating] = useState(false);
-  const [duration, setDuration] = useState(90);
+  const [duration, setDuration] = useState(30);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -216,7 +216,7 @@ export default function Page11({ onNavigate }: PageProps) {
       }
 
       setMoviePrompt('');
-      setDuration(90);
+      setDuration(30);
       setShowMyMovies(true);
     } catch (error) {
       console.error('Error creating movie:', error);
