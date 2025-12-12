@@ -1,8 +1,51 @@
-# How To Create Your Movie - Simple Guide
+# How To Create Your Movie - Complete Guide
 
 ## Your app is now like CineCraft - but BETTER!
 
-### 3 Simple Steps:
+## Getting Started
+
+### Step 0: Sign Up & Subscribe
+
+Before you can create movies, you need an account and a subscription:
+
+1. **Visit Page 3** (Sign In / Plans page)
+2. **Create Your Account** (right box):
+   - Enter your email address
+   - Create a password (minimum 6 characters)
+   - Click "Create Account"
+   - You'll see a success message
+
+3. **Sign In** (left box):
+   - Enter your email
+   - Enter your password
+   - Click "Sign In"
+   - You'll be redirected automatically
+
+4. **Choose Your Plan** (scroll down to see 3 options):
+   - **BASIC** - $10/month - 30 minutes of movie generation
+   - **PRO** - $20/month - 1 hour of movie generation (POPULAR)
+   - **STUDIO** - $30/month - 2.5 hours of movie generation
+
+5. **Subscribe via Stripe**:
+   - Click on any plan card
+   - A new window will open to Stripe (secure payment)
+   - **IMPORTANT:** If the window doesn't open, you need to **allow pop-ups** for this site
+     - Look for a pop-up blocker icon in your browser's address bar
+     - Click it and select "Always allow pop-ups from this site"
+     - Try clicking the plan again
+   - Complete payment on Stripe's secure checkout page
+   - You'll be redirected back to the app
+
+**Stripe Payment Links:**
+- Basic: https://buy.stripe.com/fZubJ35BE3B53oHfZ0
+- Pro: https://buy.stripe.com/14A00l8NQ0oT01WcMO
+- Studio: https://buy.stripe.com/4gM5kFaVY02P5wPcMP
+
+All payments are processed securely through Stripe. Your credit card information is never stored on our servers.
+
+---
+
+### 3 Simple Steps to Create Your Movie:
 
 ## Step 1: Upload Your Files
 1. Go to **Editor Dashboard** (Page 11)
@@ -152,24 +195,54 @@ Most movie apps:
 - ❌ Use templates (not custom)
 - ❌ Don't accept text instructions
 - ❌ Don't let you use your own files
+- ❌ Expensive ($50+/month)
 
-Your app:
-- ✅ **120 MINUTES** (full feature film!)
+MandaStrong Movie Studio:
+- ✅ **150 MINUTES** (full feature film!)
 - ✅ **AI-powered** (reads your instructions)
 - ✅ **Your files** (videos, images, audio)
 - ✅ **Fully custom** (no templates)
 - ✅ **Professional** (4K, multiple ratios)
+- ✅ **Affordable** (starting at $10/month)
+- ✅ **Secure payments** (Stripe integration)
 
 ---
 
 ## Need Help?
 
+### Common Issues
+
+**Can't Sign In?**
+- Make sure you registered first (Create Account box on right)
+- Password must be at least 6 characters
+- Check for typos in your email
+- Clear your browser cache and try again
+
+**Pop-Up Blocked?**
+- Your browser is blocking the Stripe payment window
+- Look for a pop-up blocker icon in the address bar (usually has a ⓧ or 🚫 symbol)
+- Click it and select "Always allow pop-ups from this site"
+- Try clicking the subscription plan again
+
+**Stripe Link Not Working?**
+- Make sure you're clicking the plan card, not just hovering
+- Try a different browser if issues persist
+- Contact support if problems continue
+
+**Upload Issues?**
 1. Not sure what to write? Use the examples above!
 2. Getting errors? Make sure:
    - You're signed in
+   - You have an active subscription
    - You wrote at least 10 characters in instructions
-   - Duration is between 1-120 minutes
+   - Duration is between 1-120 minutes (depending on your plan)
 3. Movie not appearing? Check "My Movies" page
+
+**File Upload Problems?**
+- Maximum file size: 10GB
+- Supported formats: MP4, MOV, AVI, JPG, PNG, MP3, WAV
+- Make sure you're signed in
+- Check your internet connection
 
 ---
 
@@ -184,4 +257,32 @@ See `VIDEO_GENERATION_SYSTEM.md` for technical details.
 
 ---
 
+## Browser Settings for Pop-Ups
+
+### How to Allow Pop-Ups:
+
+**Chrome:**
+1. Click the icon in the address bar (usually on the right)
+2. Select "Always allow pop-ups and redirects from [your site]"
+3. Reload the page
+
+**Firefox:**
+1. Click the preferences icon in the address bar
+2. Uncheck "Block pop-up windows"
+3. Reload the page
+
+**Safari:**
+1. Safari → Preferences → Websites
+2. Click "Pop-up Windows"
+3. Find your site and select "Allow"
+
+**Edge:**
+1. Click the lock icon in the address bar
+2. Toggle "Pop-ups and redirects" to "Allow"
+3. Reload the page
+
+---
+
 **You're ready to create movies! 🎬**
+
+Have questions? Need support? Contact us through the app or visit our help center.
