@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import Footer from '../components/Footer';
-import AuthModal from '../components/AuthModal';
 import { useAuth } from '../contexts/AuthContext';
 
 interface PageProps {
@@ -14,7 +12,6 @@ const STRIPE_LINKS = {
 };
 
 export default function Page3({ onNavigate }: PageProps) {
-  const [showAuthModal, setShowAuthModal] = useState(true);
   const { user } = useAuth();
 
   const openStripeLink = (url: string) => {
@@ -30,15 +27,6 @@ export default function Page3({ onNavigate }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
-      {showAuthModal && (
-        <AuthModal
-          onClose={() => {
-            setShowAuthModal(false);
-            onNavigate(0);
-          }}
-          onSuccess={() => setShowAuthModal(false)}
-        />
-      )}
 
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-6xl flex flex-col">
