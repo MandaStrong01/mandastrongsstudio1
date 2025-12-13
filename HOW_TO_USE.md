@@ -283,6 +283,456 @@ See `VIDEO_GENERATION_SYSTEM.md` for technical details.
 
 ---
 
-**You're ready to create movies! 🎬**
+## Deployment & Publishing Guide
+
+### Deploy to Bolt.new (Easiest - Recommended)
+
+**Current Status:** Your app is already on Bolt.new!
+
+**To Redeploy/Update:**
+1. Make changes to your code in Bolt
+2. Bolt automatically saves and builds your app
+3. Click the **Preview** button to test changes
+4. Your app URL stays the same (permanent link)
+5. Share your Bolt URL with users
+
+**Your Bolt URL:** `https://bolt.new/~/[your-project-id]`
+
+**Advantages:**
+- Zero configuration required
+- Automatic builds on save
+- Instant preview
+- Free hosting included
+- Supabase already connected
+
+---
+
+### Deploy to Google Cloud Platform (Production)
+
+**Prerequisites:**
+- Google Cloud account (free tier available)
+- `gcloud` CLI installed
+- Project built (`npm run build`)
+
+**Step 1: Install Google Cloud CLI**
+```bash
+# macOS
+brew install google-cloud-sdk
+
+# Windows
+# Download from: https://cloud.google.com/sdk/docs/install
+
+# Linux
+curl https://sdk.cloud.google.com | bash
+```
+
+**Step 2: Initialize & Login**
+```bash
+gcloud init
+gcloud auth login
+```
+
+**Step 3: Create New Project**
+```bash
+gcloud projects create mandastrong-studio --name="MandaStrong Movie Studio"
+gcloud config set project mandastrong-studio
+```
+
+**Step 4: Enable Required APIs**
+```bash
+gcloud services enable cloudbuild.googleapis.com
+gcloud services enable run.googleapis.com
+gcloud services enable storage-api.googleapis.com
+```
+
+**Step 5: Build Your App**
+```bash
+npm run build
+```
+
+**Step 6: Deploy to Google Cloud Storage (Static Hosting)**
+```bash
+# Create a bucket
+gcloud storage buckets create gs://mandastrong-studio --location=US
+
+# Make bucket public
+gcloud storage buckets add-iam-policy-binding gs://mandastrong-studio \
+  --member=allUsers \
+  --role=roles/storage.objectViewer
+
+# Enable website configuration
+gcloud storage buckets update gs://mandastrong-studio \
+  --web-main-page-suffix=index.html \
+  --web-error-page=index.html
+
+# Upload your built files
+gcloud storage cp -r dist/* gs://mandastrong-studio
+
+# Get your public URL
+echo "Your app is live at: https://storage.googleapis.com/mandastrong-studio/index.html"
+```
+
+**Step 7: Set Up Custom Domain (Optional)**
+```bash
+# Verify domain ownership at: https://search.google.com/search-console
+# Then map domain to bucket:
+gcloud storage buckets update gs://mandastrong-studio --web-main-page-suffix=index.html
+```
+
+**Your Live URL:** `https://storage.googleapis.com/mandastrong-studio/index.html`
+
+**To Update:**
+```bash
+npm run build
+gcloud storage cp -r dist/* gs://mandastrong-studio
+```
+
+---
+
+### Deploy to Google Cloud Run (Alternative - Full Control)
+
+**For Dynamic Applications with Backend:**
+
+**Step 1: Create Dockerfile**
+Create `Dockerfile` in project root:
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+RUN npm install -g serve
+EXPOSE 8080
+CMD ["serve", "-s", "dist", "-l", "8080"]
+```
+
+**Step 2: Deploy to Cloud Run**
+```bash
+gcloud run deploy mandastrong-studio \
+  --source . \
+  --platform managed \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --port 8080
+
+# Get your URL
+gcloud run services describe mandastrong-studio --region us-central1 --format 'value(status.url)'
+```
+
+**Your Live URL:** `https://mandastrong-studio-[hash].run.app`
+
+---
+
+### Deploy to Google Play Store (Android App)
+
+**Convert Your Web App to Android App:**
+
+**Option 1: Using PWA Builder (Easiest)**
+
+1. **Make Your App a PWA** (if not already)
+   - Add `manifest.json` to `public/` folder:
+   ```json
+   {
+     "name": "MandaStrong Movie Studio",
+     "short_name": "MandaStrong",
+     "description": "AI-Powered Movie Creation Studio",
+     "start_url": "/",
+     "display": "standalone",
+     "background_color": "#0f172a",
+     "theme_color": "#3b82f6",
+     "orientation": "portrait-primary",
+     "icons": [
+       {
+         "src": "/icon-192.png",
+         "sizes": "192x192",
+         "type": "image/png"
+       },
+       {
+         "src": "/icon-512.png",
+         "sizes": "512x512",
+         "type": "image/png"
+       }
+     ]
+   }
+   ```
+
+2. **Visit PWA Builder**
+   - Go to: https://www.pwabuilder.com/
+   - Enter your deployed website URL
+   - Click "Start"
+   - Download Android package
+
+3. **Sign APK**
+   ```bash
+   # Generate keystore
+   keytool -genkey -v -keystore mandastrong.keystore \
+     -alias mandastrong -keyalg RSA -keysize 2048 -validity 10000
+
+   # Sign APK
+   jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+     -keystore mandastrong.keystore app-release-unsigned.apk mandastrong
+
+   # Align APK
+   zipalign -v 4 app-release-unsigned.apk MandaStrong.apk
+   ```
+
+4. **Upload to Google Play Console**
+   - Go to: https://play.google.com/console
+   - Create Developer Account ($25 one-time fee)
+   - Create New App
+   - Fill app details (name, description, screenshots)
+   - Upload APK to Production track
+   - Set pricing (Free or Paid)
+   - Submit for review
+
+**Option 2: Using Capacitor (More Control)**
+
+1. **Install Capacitor**
+   ```bash
+   npm install @capacitor/core @capacitor/cli @capacitor/android
+   npx cap init
+   ```
+
+2. **Configure Capacitor**
+   Update `capacitor.config.ts`:
+   ```typescript
+   import { CapacitorConfig } from '@capacitor/cli';
+
+   const config: CapacitorConfig = {
+     appId: 'com.mandastrong.studio',
+     appName: 'MandaStrong Movie Studio',
+     webDir: 'dist',
+     server: {
+       androidScheme: 'https'
+     }
+   };
+
+   export default config;
+   ```
+
+3. **Build Android App**
+   ```bash
+   npm run build
+   npx cap add android
+   npx cap sync android
+   npx cap open android
+   ```
+
+4. **Build APK in Android Studio**
+   - Build → Build Bundle(s) / APK(s) → Build APK(s)
+   - Sign APK with your keystore
+   - Upload to Google Play Console
+
+**Required Play Store Assets:**
+- App icon (512x512 PNG)
+- Feature graphic (1024x500 PNG)
+- Screenshots (at least 2, max 8)
+- Short description (80 chars)
+- Full description (4000 chars)
+- Privacy policy URL
+- Content rating questionnaire
+
+---
+
+### Deploy to Netlify (Alternative - Simple)
+
+**Quick Deployment:**
+
+1. **Install Netlify CLI**
+   ```bash
+   npm install -g netlify-cli
+   ```
+
+2. **Login & Deploy**
+   ```bash
+   netlify login
+   npm run build
+   netlify deploy --prod --dir=dist
+   ```
+
+3. **Your Live URL:** `https://[random-name].netlify.app`
+
+4. **Custom Domain** (Optional)
+   - Go to Netlify dashboard
+   - Domain settings → Add custom domain
+   - Follow DNS configuration instructions
+
+---
+
+### Deploy to Vercel (Alternative - Fastest)
+
+**One-Command Deployment:**
+
+1. **Install Vercel CLI**
+   ```bash
+   npm install -g vercel
+   ```
+
+2. **Deploy**
+   ```bash
+   vercel
+   ```
+
+3. **Production Deployment**
+   ```bash
+   vercel --prod
+   ```
+
+4. **Your Live URL:** `https://[project-name].vercel.app`
+
+---
+
+### Environment Variables for Production
+
+**Don't forget to set these in your hosting platform:**
+
+```bash
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+**For Google Cloud:**
+```bash
+gcloud run services update mandastrong-studio \
+  --update-env-vars VITE_SUPABASE_URL=your_url,VITE_SUPABASE_ANON_KEY=your_key
+```
+
+**For Netlify/Vercel:**
+- Add in dashboard under Site settings → Environment variables
+
+---
+
+### Post-Deployment Checklist
+
+After deploying, verify:
+
+✅ **Authentication Works**
+- Sign up with new account
+- Sign in successfully
+- User sessions persist
+
+✅ **File Uploads Work**
+- Upload video to Asset Library
+- File appears in Supabase Storage
+- Database record created
+
+✅ **Movie Generation Works**
+- Select uploaded assets
+- Generate movie with prompt
+- Check progress updates
+- Download completed movie
+
+✅ **Payments Work** (if using Stripe)
+- Test subscription flow
+- Verify Stripe webhook receives events
+- Check user permissions update
+
+✅ **Performance**
+- Load time under 3 seconds
+- Video playback smooth
+- No console errors
+- Mobile responsive
+
+✅ **Security**
+- HTTPS enabled
+- Supabase RLS policies active
+- API keys not exposed in client
+- CORS configured correctly
+
+---
+
+### Updating Your Deployed App
+
+**Bolt.new:**
+- Just save your changes - auto-deploys
+
+**Google Cloud Storage:**
+```bash
+npm run build
+gcloud storage cp -r dist/* gs://mandastrong-studio
+```
+
+**Google Cloud Run:**
+```bash
+gcloud run deploy mandastrong-studio --source .
+```
+
+**Netlify:**
+```bash
+npm run build
+netlify deploy --prod --dir=dist
+```
+
+**Vercel:**
+```bash
+vercel --prod
+```
+
+---
+
+### Domain & SSL Setup
+
+**Google Cloud with Custom Domain:**
+
+1. **Reserve Static IP**
+   ```bash
+   gcloud compute addresses create mandastrong-ip --global
+   ```
+
+2. **Set Up Cloud CDN**
+   ```bash
+   gcloud compute backend-buckets create mandastrong-backend \
+     --gcs-bucket-name=mandastrong-studio --enable-cdn
+   ```
+
+3. **Configure DNS**
+   - Add A record pointing to your static IP
+   - Add CNAME record for www subdomain
+
+4. **Enable SSL** (automatic with Google Cloud Load Balancer)
+
+---
+
+### Monitoring & Analytics
+
+**Set Up Google Analytics:**
+
+1. Create GA4 property at: https://analytics.google.com
+2. Add to `index.html`:
+   ```html
+   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+   <script>
+     window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());
+     gtag('config', 'G-XXXXXXXXXX');
+   </script>
+   ```
+
+**Monitor Supabase:**
+- Check Database usage in Supabase dashboard
+- Monitor Storage quotas
+- Review Edge Function logs
+
+**Google Cloud Monitoring:**
+```bash
+gcloud logging read "resource.type=cloud_run_revision" --limit 50
+```
+
+---
+
+## Support & Resources
+
+**Bolt.new Documentation:** https://bolt.new/docs
+**Google Cloud Docs:** https://cloud.google.com/docs
+**Google Play Console:** https://play.google.com/console
+**Supabase Docs:** https://supabase.com/docs
+**Netlify Docs:** https://docs.netlify.com
+**Vercel Docs:** https://vercel.com/docs
+
+---
+
+**You're ready to create AND deploy your movie studio! 🎬**
 
 Have questions? Need support? Contact us through the app or visit our help center.
