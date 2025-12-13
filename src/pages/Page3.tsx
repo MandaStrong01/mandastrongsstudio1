@@ -1,8 +1,5 @@
-import { useState } from 'react';
 import Footer from '../components/Footer';
-import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
-import { Lock, Mail, UserPlus, LogIn } from 'lucide-react';
+import { LogIn, UserPlus, CreditCard, CheckCircle } from 'lucide-react';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -15,57 +12,6 @@ const STRIPE_LINKS = {
 };
 
 export default function Page3({ onNavigate }: PageProps) {
-  const { user } = useAuth();
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [registerEmail, setRegisterEmail] = useState('');
-  const [registerPassword, setRegisterPassword] = useState('');
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [registerLoading, setRegisterLoading] = useState(false);
-  const [loginMessage, setLoginMessage] = useState('');
-  const [registerMessage, setRegisterMessage] = useState('');
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoginLoading(true);
-    setLoginMessage('');
-
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: loginEmail,
-        password: loginPassword,
-      });
-      if (error) throw error;
-      setLoginMessage('Login successful! Welcome back.');
-      setTimeout(() => onNavigate(4), 1500);
-    } catch (error: any) {
-      setLoginMessage(error.message);
-    } finally {
-      setLoginLoading(false);
-    }
-  };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setRegisterLoading(true);
-    setRegisterMessage('');
-
-    try {
-      const { error } = await supabase.auth.signUp({
-        email: registerEmail,
-        password: registerPassword,
-      });
-      if (error) throw error;
-      setRegisterMessage('Registration successful! You can now login.');
-      setRegisterEmail('');
-      setRegisterPassword('');
-    } catch (error: any) {
-      setRegisterMessage(error.message);
-    } finally {
-      setRegisterLoading(false);
-    }
-  };
-
   const openStripeLink = (url: string) => {
     if (url) {
       const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
@@ -83,148 +29,97 @@ export default function Page3({ onNavigate }: PageProps) {
         <div className="w-full max-w-7xl">
           <div className="mb-12">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              {user ? 'SUBSCRIPTION PLANS' : 'GET STARTED WITH MANDASTRONG'}
+              GET STARTED WITH MANDASTRONG
             </h2>
             <p className="text-center text-white/70 text-lg">
-              {user ? 'Choose the plan that fits your creative vision' : 'Create your account or sign in to start creating movies'}
+              Choose your path to start creating professional movies
             </p>
           </div>
 
-          {!user && (
-            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
-              <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-purple-500/40 rounded-2xl p-8 shadow-2xl hover:border-purple-400/60 transition-all">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-purple-500/20 rounded-lg">
-                    <LogIn className="w-6 h-6 text-purple-400" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white">Sign In</h3>
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
+            <button
+              onClick={() => openStripeLink(STRIPE_LINKS.pro)}
+              className="group bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-purple-500/40 rounded-2xl p-10 shadow-2xl hover:border-purple-400 hover:scale-105 transition-all text-left"
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-4 bg-purple-500/20 rounded-xl">
+                  <LogIn className="w-8 h-8 text-purple-400" />
                 </div>
-
-                <form onSubmit={handleLogin} className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-medium text-white/70 mb-2">Email Address</label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                      <input
-                        type="email"
-                        placeholder="your@email.com"
-                        value={loginEmail}
-                        onChange={(e) => setLoginEmail(e.target.value)}
-                        required
-                        className="w-full pl-11 pr-4 py-3 rounded-xl bg-black/50 border border-purple-500/30 text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-white/70 mb-2">Password</label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                      <input
-                        type="password"
-                        placeholder="Enter your password"
-                        value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
-                        required
-                        minLength={6}
-                        className="w-full pl-11 pr-4 py-3 rounded-xl bg-black/50 border border-purple-500/30 text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  {loginMessage && (
-                    <div className={`p-3 rounded-lg ${loginMessage.includes('successful') ? 'bg-green-500/20 border border-green-500/40 text-green-300' : 'bg-red-500/20 border border-red-500/40 text-red-300'}`}>
-                      <p className="text-sm font-medium">{loginMessage}</p>
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={loginLoading}
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold py-3.5 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/30"
-                  >
-                    {loginLoading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Signing In...
-                      </span>
-                    ) : (
-                      'Sign In'
-                    )}
-                  </button>
-                </form>
+                <h3 className="text-3xl font-bold text-white">Login</h3>
               </div>
 
-              <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-pink-500/40 rounded-2xl p-8 shadow-2xl hover:border-pink-400/60 transition-all">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-pink-500/20 rounded-lg">
-                    <UserPlus className="w-6 h-6 text-pink-400" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white">Create Account</h3>
+              <p className="text-white/80 mb-6 text-lg leading-relaxed">
+                Already have an account? Click here to access your subscription and continue creating movies.
+              </p>
+
+              <div className="space-y-3 mb-8">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                  <span className="text-white/70">Access your existing projects</span>
                 </div>
-
-                <form onSubmit={handleRegister} className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-medium text-white/70 mb-2">Email Address</label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                      <input
-                        type="email"
-                        placeholder="your@email.com"
-                        value={registerEmail}
-                        onChange={(e) => setRegisterEmail(e.target.value)}
-                        required
-                        className="w-full pl-11 pr-4 py-3 rounded-xl bg-black/50 border border-pink-500/30 text-white placeholder-white/40 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-white/70 mb-2">Password</label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                      <input
-                        type="password"
-                        placeholder="Minimum 6 characters"
-                        value={registerPassword}
-                        onChange={(e) => setRegisterPassword(e.target.value)}
-                        required
-                        minLength={6}
-                        className="w-full pl-11 pr-4 py-3 rounded-xl bg-black/50 border border-pink-500/30 text-white placeholder-white/40 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all"
-                      />
-                    </div>
-                    <p className="text-xs text-white/50 mt-1">Must be at least 6 characters long</p>
-                  </div>
-
-                  {registerMessage && (
-                    <div className={`p-3 rounded-lg ${registerMessage.includes('successful') ? 'bg-green-500/20 border border-green-500/40 text-green-300' : 'bg-red-500/20 border border-red-500/40 text-red-300'}`}>
-                      <p className="text-sm font-medium">{registerMessage}</p>
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={registerLoading}
-                    className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-pink-500/30"
-                  >
-                    {registerLoading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Creating Account...
-                      </span>
-                    ) : (
-                      'Create Account'
-                    )}
-                  </button>
-                </form>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                  <span className="text-white/70">Continue where you left off</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                  <span className="text-white/70">Manage your subscription</span>
+                </div>
               </div>
-            </div>
-          )}
 
-          <div className="mb-8">
-            <h3 className="text-3xl font-bold text-center mb-4 text-white">Choose Your Plan</h3>
-            <p className="text-center text-white/60 mb-2">Subscribe via Stripe for secure payment processing</p>
-            <p className="text-center text-sm text-yellow-400/80">Allow pop-ups if prompted to complete your subscription</p>
+              <div className="flex items-center gap-2 text-purple-300 font-semibold group-hover:text-purple-200 transition-colors">
+                <CreditCard className="w-5 h-5" />
+                <span>Click to Login via Stripe</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => openStripeLink(STRIPE_LINKS.pro)}
+              className="group bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-pink-500/40 rounded-2xl p-10 shadow-2xl hover:border-pink-400 hover:scale-105 transition-all text-left relative overflow-hidden"
+            >
+              <div className="absolute -top-3 -right-3">
+                <div className="px-4 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-bold rounded-full shadow-lg rotate-12">
+                  NEW USER
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-4 bg-pink-500/20 rounded-xl">
+                  <UserPlus className="w-8 h-8 text-pink-400" />
+                </div>
+                <h3 className="text-3xl font-bold text-white">Register</h3>
+              </div>
+
+              <p className="text-white/80 mb-6 text-lg leading-relaxed">
+                New to MandaStrong? Start your creative journey today with our professional movie studio.
+              </p>
+
+              <div className="space-y-3 mb-8">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-pink-400 flex-shrink-0" />
+                  <span className="text-white/70">Choose from 3 subscription tiers</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-pink-400 flex-shrink-0" />
+                  <span className="text-white/70">30 minutes to 2.5 hours of content</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-pink-400 flex-shrink-0" />
+                  <span className="text-white/70">Full access to AI tools</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-pink-300 font-semibold group-hover:text-pink-200 transition-colors">
+                <CreditCard className="w-5 h-5" />
+                <span>Click to Register via Stripe</span>
+              </div>
+            </button>
+          </div>
+
+          <div className="mb-8 text-center">
+            <h3 className="text-3xl font-bold mb-4 text-white">Choose Your Plan</h3>
+            <p className="text-white/60 mb-2">All plans include full access to MandaStrong Movie Studio</p>
+            <p className="text-sm text-yellow-400/80">Secure payment processing via Stripe • Allow pop-ups when subscribing</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-6xl mx-auto">
@@ -240,7 +135,7 @@ export default function Page3({ onNavigate }: PageProps) {
                 <div className="text-xl font-bold mb-4 text-white/90">30 Minutes</div>
                 <p className="text-sm text-white/70 leading-relaxed mb-4">Perfect for short films, music videos, and quick creative projects</p>
                 <div className="pt-4 border-t border-white/10">
-                  <p className="text-xs text-purple-300 font-semibold group-hover:text-purple-200 transition-colors">Click to Subscribe Securely</p>
+                  <p className="text-xs text-purple-300 font-semibold group-hover:text-purple-200 transition-colors">Click to Subscribe</p>
                 </div>
               </div>
             </button>
@@ -262,7 +157,7 @@ export default function Page3({ onNavigate }: PageProps) {
                 <div className="text-xl font-bold mb-4 text-white/90">1 Hour</div>
                 <p className="text-sm text-white/70 leading-relaxed mb-4">Ideal for documentaries, corporate videos, and feature-length content</p>
                 <div className="pt-4 border-t border-white/10">
-                  <p className="text-xs text-pink-300 font-semibold group-hover:text-pink-200 transition-colors">Click to Subscribe Securely</p>
+                  <p className="text-xs text-pink-300 font-semibold group-hover:text-pink-200 transition-colors">Click to Subscribe</p>
                 </div>
               </div>
             </button>
@@ -279,7 +174,7 @@ export default function Page3({ onNavigate }: PageProps) {
                 <div className="text-xl font-bold mb-4 text-white/90">2.5 Hours</div>
                 <p className="text-sm text-white/70 leading-relaxed mb-4">Complete cinematic experience with full-length film capabilities</p>
                 <div className="pt-4 border-t border-white/10">
-                  <p className="text-xs text-indigo-300 font-semibold group-hover:text-indigo-200 transition-colors">Click to Subscribe Securely</p>
+                  <p className="text-xs text-indigo-300 font-semibold group-hover:text-indigo-200 transition-colors">Click to Subscribe</p>
                 </div>
               </div>
             </button>
