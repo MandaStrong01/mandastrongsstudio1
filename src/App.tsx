@@ -1,6 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import GrokHelpDesk from './components/GrokHelpDesk';
 
 const Page1 = lazy(() => import('./pages/Page1'));
 const Page2 = lazy(() => import('./pages/Page2'));
@@ -94,7 +93,6 @@ function AppContent() {
       }>
         {pages[currentPage]}
       </Suspense>
-      <GrokHelpDesk />
     </>
   );
 }

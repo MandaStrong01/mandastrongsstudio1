@@ -1,5 +1,6 @@
 import Footer from '../components/Footer';
-import { LogIn, UserPlus, CreditCard, CheckCircle } from 'lucide-react';
+import QuickAccess from '../components/QuickAccess';
+import { LogIn, UserPlus, CreditCard, CheckCircle, Play } from 'lucide-react';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -25,6 +26,9 @@ export default function Page3({ onNavigate }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-black to-slate-900 text-white flex flex-col">
+      <button className="fixed top-6 right-6 z-50 w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 hover:from-purple-400 hover:to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/50 transition-all hover:scale-110">
+        <Play className="w-6 h-6 text-white" />
+      </button>
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-7xl">
           <div className="mb-12">
@@ -196,6 +200,7 @@ export default function Page3({ onNavigate }: PageProps) {
           </div>
         </div>
       </div>
+      <QuickAccess onNavigate={onNavigate} />
       <Footer />
     </div>
   );
