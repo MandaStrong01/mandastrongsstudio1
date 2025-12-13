@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
 import { LogIn, UserPlus, Play } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -13,6 +15,59 @@ const STRIPE_LINKS = {
 };
 
 export default function Page3({ onNavigate }: PageProps) {
+  const { signIn, signUp } = useAuth();
+
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+
+  const [loginError, setLoginError] = useState('');
+  const [registerError, setRegisterError] = useState('');
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [registerSuccess, setRegisterSuccess] = useState(false);
+
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    setLoginSuccess(false);
+    setIsLoggingIn(true);
+
+    const { error } = await signIn(loginEmail, loginPassword);
+
+    if (error) {
+      setLoginError(error.message);
+    } else {
+      setLoginSuccess(true);
+      setLoginEmail('');
+      setLoginPassword('');
+    }
+
+    setIsLoggingIn(false);
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegisterError('');
+    setRegisterSuccess(false);
+    setIsRegistering(true);
+
+    const { error } = await signUp(registerEmail, registerPassword);
+
+    if (error) {
+      setRegisterError(error.message);
+    } else {
+      setRegisterSuccess(true);
+      setRegisterEmail('');
+      setRegisterPassword('');
+    }
+
+    setIsRegistering(false);
+  };
+
   const openStripeLink = (url: string) => {
     if (url) {
       window.open(url, '_blank', 'noopener,noreferrer');
@@ -48,7 +103,19 @@ export default function Page3({ onNavigate }: PageProps) {
                 Welcome back! Sign in to access your account.
               </p>
 
-              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+              {loginError && (
+                <div className="mb-4 p-3 bg-red-500/20 border border-red-500/40 rounded-lg text-red-200 text-sm">
+                  {loginError}
+                </div>
+              )}
+
+              {loginSuccess && (
+                <div className="mb-4 p-3 bg-green-500/20 border border-green-500/40 rounded-lg text-green-200 text-sm">
+                  Successfully logged in!
+                </div>
+              )}
+
+              <form className="space-y-4" onSubmit={handleLogin}>
                 <div>
                   <label htmlFor="login-email" className="block text-sm font-medium text-white/80 mb-2">
                     Email Address
@@ -56,7 +123,11 @@ export default function Page3({ onNavigate }: PageProps) {
                   <input
                     type="email"
                     id="login-email"
-                    className="w-full px-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    required
+                    disabled={isLoggingIn}
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="your@email.com"
                   />
                 </div>
@@ -67,15 +138,20 @@ export default function Page3({ onNavigate }: PageProps) {
                   <input
                     type="password"
                     id="login-password"
-                    className="w-full px-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    required
+                    disabled={isLoggingIn}
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="••••••••"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-purple-500/30"
+                  disabled={isLoggingIn}
+                  className="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Sign In
+                  {isLoggingIn ? 'Signing In...' : 'Sign In'}
                 </button>
               </form>
             </div>
@@ -98,7 +174,19 @@ export default function Page3({ onNavigate }: PageProps) {
                 Create your account and start your creative journey today.
               </p>
 
-              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+              {registerError && (
+                <div className="mb-4 p-3 bg-red-500/20 border border-red-500/40 rounded-lg text-red-200 text-sm">
+                  {registerError}
+                </div>
+              )}
+
+              {registerSuccess && (
+                <div className="mb-4 p-3 bg-green-500/20 border border-green-500/40 rounded-lg text-green-200 text-sm">
+                  Account created successfully! You can now log in.
+                </div>
+              )}
+
+              <form className="space-y-4" onSubmit={handleRegister}>
                 <div>
                   <label htmlFor="register-email" className="block text-sm font-medium text-white/80 mb-2">
                     Email Address
@@ -106,7 +194,11 @@ export default function Page3({ onNavigate }: PageProps) {
                   <input
                     type="email"
                     id="register-email"
-                    className="w-full px-4 py-3 bg-slate-900/50 border border-pink-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all"
+                    value={registerEmail}
+                    onChange={(e) => setRegisterEmail(e.target.value)}
+                    required
+                    disabled={isRegistering}
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-pink-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="your@email.com"
                   />
                 </div>
@@ -117,15 +209,20 @@ export default function Page3({ onNavigate }: PageProps) {
                   <input
                     type="password"
                     id="register-password"
-                    className="w-full px-4 py-3 bg-slate-900/50 border border-pink-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all"
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
+                    required
+                    disabled={isRegistering}
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-pink-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="••••••••"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-pink-500/30"
+                  disabled={isRegistering}
+                  className="w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-pink-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Create Account
+                  {isRegistering ? 'Creating Account...' : 'Create Account'}
                 </button>
               </form>
             </div>

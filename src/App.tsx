@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { useAuth } from './contexts/AuthContext';
 
 const Page1 = lazy(() => import('./pages/Page1'));
 const Page2 = lazy(() => import('./pages/Page2'));
@@ -97,12 +97,6 @@ function AppContent() {
   );
 }
 
-function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
-  );
+export default function App() {
+  return <AppContent />;
 }
-
-export default App;
