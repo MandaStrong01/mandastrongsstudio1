@@ -7,7 +7,7 @@ interface AuthModalProps {
   onSuccess: () => void;
 }
 
-type PlanType = 'free' | 'basic' | 'pro' | 'studio';
+type PlanType = 'basic' | 'pro' | 'studio';
 
 export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -15,10 +15,9 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [selectedPlan, setSelectedPlan] = useState<PlanType>('free');
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('basic');
 
   const plans = {
-    free: { name: 'Free', price: '$0', url: null },
     basic: { name: 'Basic', price: '$29/mo', url: import.meta.env.VITE_STRIPE_BASIC_LINK },
     pro: { name: 'Pro', price: '$79/mo', url: import.meta.env.VITE_STRIPE_PRO_LINK },
     studio: { name: 'Studio', price: '$199/mo', url: import.meta.env.VITE_STRIPE_STUDIO_LINK },
@@ -56,8 +55,8 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
         });
         if (signInError) throw signInError;
 
-        // Redirect to Stripe if a paid plan is selected
-        if (selectedPlan !== 'free' && plans[selectedPlan].url) {
+        // Redirect to Stripe for payment
+        if (plans[selectedPlan].url) {
           window.open(plans[selectedPlan].url, '_blank');
         }
       } else {
@@ -130,7 +129,7 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Choose Your Plan
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {(Object.keys(plans) as PlanType[]).map((planKey) => (
                   <button
                     key={planKey}
@@ -142,27 +141,23 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="font-semibold text-gray-900">
-                          {plans[planKey].name}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {plans[planKey].price}
-                        </div>
+                    <div className="flex flex-col">
+                      <div className="font-semibold text-gray-900 text-sm">
+                        {plans[planKey].name}
+                      </div>
+                      <div className="text-xs text-gray-600">
+                        {plans[planKey].price}
                       </div>
                       {selectedPlan === planKey && (
-                        <Check className="w-5 h-5 text-blue-600" />
+                        <Check className="w-4 h-4 text-blue-600 mt-1" />
                       )}
                     </div>
                   </button>
                 ))}
               </div>
-              {selectedPlan !== 'free' && (
-                <p className="text-xs text-gray-600 mt-2">
-                  You'll be redirected to Stripe to complete your subscription after sign up
-                </p>
-              )}
+              <p className="text-xs text-gray-600 mt-2">
+                You'll be redirected to Stripe to complete your subscription after sign up
+              </p>
             </div>
           )}
 
