@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { X } from 'lucide-react';
+import { X, Check } from 'lucide-react';
 
 interface AuthModalProps {
   onClose: () => void;
   onSuccess: () => void;
 }
+
+type PlanType = 'free' | 'basic' | 'pro' | 'studio';
 
 export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -13,6 +15,14 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('free');
+
+  const plans = {
+    free: { name: 'Free', price: '$0', url: null },
+    basic: { name: 'Basic', price: '$29/mo', url: import.meta.env.VITE_STRIPE_BASIC_LINK },
+    pro: { name: 'Pro', price: '$79/mo', url: import.meta.env.VITE_STRIPE_PRO_LINK },
+    studio: { name: 'Studio', price: '$199/mo', url: import.meta.env.VITE_STRIPE_STUDIO_LINK },
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +44,7 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
           await supabase.from('profiles').upsert({
             id: data.user.id,
             email: data.user.email,
-            plan: 'free'
+            plan: selectedPlan
           });
         }
 
@@ -45,6 +55,11 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
           password,
         });
         if (signInError) throw signInError;
+
+        // Redirect to Stripe if a paid plan is selected
+        if (selectedPlan !== 'free' && plans[selectedPlan].url) {
+          window.open(plans[selectedPlan].url, '_blank');
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -109,6 +124,47 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
               minLength={6}
             />
           </div>
+
+          {isSignUp && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Choose Your Plan
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {(Object.keys(plans) as PlanType[]).map((planKey) => (
+                  <button
+                    key={planKey}
+                    type="button"
+                    onClick={() => setSelectedPlan(planKey)}
+                    className={`p-3 border-2 rounded-lg text-left transition-all ${
+                      selectedPlan === planKey
+                        ? 'border-blue-600 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-semibold text-gray-900">
+                          {plans[planKey].name}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {plans[planKey].price}
+                        </div>
+                      </div>
+                      {selectedPlan === planKey && (
+                        <Check className="w-5 h-5 text-blue-600" />
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+              {selectedPlan !== 'free' && (
+                <p className="text-xs text-gray-600 mt-2">
+                  You'll be redirected to Stripe to complete your subscription after sign up
+                </p>
+              )}
+            </div>
+          )}
 
           <button
             type="submit"
