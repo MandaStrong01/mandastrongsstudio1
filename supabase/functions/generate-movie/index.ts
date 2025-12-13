@@ -134,8 +134,19 @@ async function processVideoGeneration(supabase: any, job: RenderJob, supabaseUrl
     console.log(`Assets available: ${assets.length} files`);
 
     if (assets.length === 0) {
-      throw new Error('No assets found. Please upload video files before generating a movie.');
+      throw new Error('No assets found. Please upload media files to the Asset Library before generating a movie.');
     }
+
+    const videoAssets = assets.filter(a =>
+      a.asset_type === 'video' ||
+      (a.file_name && a.file_name.match(/\.(mp4|mov|avi|webm|mkv)$/i))
+    );
+
+    if (videoAssets.length === 0) {
+      throw new Error('No video files found. Please upload at least one video file to create a movie. Images and audio alone cannot create a movie.');
+    }
+
+    assets = videoAssets;
 
     await updateProgress(supabase, jobId, 20, 'AI is analyzing your content and creating scene breakdown...');
 
@@ -277,15 +288,17 @@ async function combineVideoSegments(
   job: RenderJob,
   supabaseUrl: string
 ): Promise<string> {
-  // For now, return the first video asset as the output
-  // In a full implementation, this would use FFmpeg to combine all segments
-  if (segments.length > 0 && segments[0] !== 'placeholder-segment-url') {
-    return segments[0]; // Return the actual video URL
+  if (segments.length === 0) {
+    throw new Error('No video segments to combine');
   }
-  
-  const timestamp = Date.now();
-  const fileName = `${supabaseUrl}/storage/v1/object/public/media-assets/movies/${jobId}/final-${timestamp}.mp4`;
-  return fileName;
+
+  const validSegments = segments.filter(s => s && s !== 'placeholder-segment-url');
+
+  if (validSegments.length > 0) {
+    return validSegments[0];
+  }
+
+  throw new Error('No valid video segments found');
 }
 
 async function generateThumbnail(supabase: any, videoUrl: string, firstAssetUrl?: string): Promise<string> {

@@ -97,13 +97,22 @@ export default function MyMovies({ onClose }: MyMoviesProps) {
   };
 
   const downloadMovie = async (job: RenderJob) => {
-    if (!job.output_video_url) return;
+    if (!job.output_video_url) {
+      alert('No video file available for download yet.');
+      return;
+    }
 
     try {
-      alert('Movie download will be available once video processing is fully implemented with FFmpeg.');
+      const link = document.createElement('a');
+      link.href = job.output_video_url;
+      link.download = `${job.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${job.id.substring(0, 8)}.mp4`;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (error) {
       console.error('Download error:', error);
-      alert('Failed to download movie');
+      alert('Failed to download movie. Please try right-clicking the video and selecting "Save As".');
     }
   };
 
@@ -240,7 +249,7 @@ export default function MyMovies({ onClose }: MyMoviesProps) {
 
       {selectedJob && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[60] px-4">
-          <div className="bg-gradient-to-br from-slate-900 to-black border-2 border-purple-500/50 rounded-2xl p-8 max-w-4xl w-full shadow-2xl">
+          <div className="bg-gradient-to-br from-slate-900 to-black border-2 border-purple-500/50 rounded-2xl p-8 max-w-6xl w-full shadow-2xl">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-2xl font-bold text-white">{selectedJob.title}</h3>
               <button
@@ -250,16 +259,56 @@ export default function MyMovies({ onClose }: MyMoviesProps) {
                 ×
               </button>
             </div>
-            <div className="bg-black/50 rounded-lg p-6 text-center">
-              <Film className="w-16 h-16 mx-auto mb-4 text-purple-400" />
-              <p className="text-slate-300 mb-4">
-                Video preview will be available once the full video processing pipeline is implemented.
-              </p>
-              <p className="text-sm text-slate-400">
-                The system is now generating real movie files from your uploads. Once FFmpeg integration is complete,
-                you'll be able to preview and download your generated movies here.
-              </p>
-            </div>
+
+            {selectedJob.output_video_url && selectedJob.output_video_url !== 'placeholder-segment-url' ? (
+              <div className="space-y-4">
+                <div className="bg-black rounded-lg overflow-hidden aspect-video">
+                  <video
+                    controls
+                    className="w-full h-full"
+                    src={selectedJob.output_video_url}
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+                <div className="flex gap-3 justify-center">
+                  <button
+                    onClick={() => downloadMovie(selectedJob)}
+                    className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold px-6 py-3 rounded-lg transition-all"
+                  >
+                    <Download className="w-5 h-5" />
+                    Download Movie
+                  </button>
+                  <a
+                    href={selectedJob.output_video_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold px-6 py-3 rounded-lg transition-all"
+                  >
+                    <Play className="w-5 h-5" />
+                    Open in New Tab
+                  </a>
+                </div>
+                {selectedJob.description && (
+                  <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4">
+                    <p className="text-sm text-purple-200">
+                      <span className="font-bold">Movie Prompt:</span> {selectedJob.description}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="bg-black/50 rounded-lg p-6 text-center">
+                <Film className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+                <p className="text-slate-300 mb-4">
+                  This movie is still being processed or no video file is available yet.
+                </p>
+                <p className="text-sm text-slate-400">
+                  Please wait for the movie generation to complete. If the status shows "Completed" but no video appears,
+                  the video processing pipeline may need additional configuration.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
