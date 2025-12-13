@@ -6,6 +6,8 @@ interface PageProps {
   onNavigate: (page: number) => void;
 }
 
+const VIDEO_PATH = '/static/video/thatsallfolks.mp4';
+
 export default function Page18({ onNavigate }: PageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
@@ -14,6 +16,17 @@ export default function Page18({ onNavigate }: PageProps) {
       </button>
       <div className="flex-1 flex flex-col px-4 py-12">
         <div className="max-w-4xl w-full mx-auto">
+          <div className="aspect-video bg-black rounded-lg overflow-hidden border border-purple-500/30 mb-8">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            >
+              <source src={VIDEO_PATH} type="video/mp4" />
+            </video>
+          </div>
           <h1 className="text-5xl font-black text-purple-400 mb-8 text-center">Terms of Service & Disclaimer</h1>
 
           <div className="grid gap-6 mb-8">

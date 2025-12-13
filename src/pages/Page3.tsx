@@ -15,12 +15,7 @@ const STRIPE_LINKS = {
 export default function Page3({ onNavigate }: PageProps) {
   const openStripeLink = (url: string) => {
     if (url) {
-      const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
-      if (!newWindow) {
-        alert('Pop-up blocked! Please allow pop-ups for this site to open the Stripe payment page.');
-      }
-    } else {
-      alert('Payment link not configured. Please contact support.');
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
   };
 
