@@ -131,7 +131,7 @@ export default function Page10({ onNavigate }: PageProps) {
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="max-w-6xl w-full">
-          <h1 className="text-2xl md:text-4xl font-black text-purple-400 mb-6 text-center">DOXY THE SCHOOL BULLY</h1>
+          <h1 className="text-2xl md:text-4xl font-black text-purple-400 mb-6 text-center">VIDEO STUDIO</h1>
 
           <div className="mb-6 text-center">
             <button

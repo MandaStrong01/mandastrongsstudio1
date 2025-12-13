@@ -14,7 +14,7 @@ export default function Page17({ onNavigate }: PageProps) {
       </button>
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col">
-          <h1 className="text-3xl font-black text-purple-400 mb-4 text-center">DOXY THE SCHOOL BULLY - Full Screen Preview</h1>
+          <h1 className="text-3xl font-black text-purple-400 mb-4 text-center">FULL SCREEN PREVIEW</h1>
 
           <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4 mb-4 flex-1">
             <div className="w-full h-full bg-black rounded-lg border border-purple-500/30 flex items-center justify-center">

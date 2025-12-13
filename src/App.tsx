@@ -1,5 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import GrokHelpDesk from './components/GrokHelpDesk';
 
 const Page1 = lazy(() => import('./pages/Page1'));
 const Page2 = lazy(() => import('./pages/Page2'));
@@ -85,13 +86,16 @@ function AppContent() {
   ];
 
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-        <div className="text-white text-xl font-bold">Loading...</div>
-      </div>
-    }>
-      {pages[currentPage]}
-    </Suspense>
+    <>
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+          <div className="text-white text-xl font-bold">Loading...</div>
+        </div>
+      }>
+        {pages[currentPage]}
+      </Suspense>
+      <GrokHelpDesk />
+    </>
   );
 }
 

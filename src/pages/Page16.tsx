@@ -77,7 +77,7 @@ export default function Page16({ onNavigate }: PageProps) {
       </button>
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-full w-full mx-auto flex-1 flex flex-col">
-          <h1 className="text-3xl font-black text-purple-400 mb-4 text-center">DOXY THE SCHOOL BULLY - Color Grade / Visual FX</h1>
+          <h1 className="text-3xl font-black text-purple-400 mb-4 text-center">COLOR GRADE / VISUAL FX</h1>
 
           <div className="grid grid-cols-12 gap-4 flex-1">
             <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4 overflow-y-auto">
