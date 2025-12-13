@@ -5,10 +5,10 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface Asset {
   id: string;
-  name: string;
-  type: 'video' | 'image' | 'audio' | 'text';
-  url: string;
-  size: number;
+  file_name: string;
+  asset_type: 'video' | 'image' | 'audio' | 'text';
+  file_url: string;
+  file_size: number;
   created_at: string;
   thumbnail_url?: string;
 }
@@ -75,10 +75,11 @@ export default function AssetLibrary() {
 
       const { error: dbError } = await supabase.from('assets').insert({
         user_id: user.id,
-        name: file.name,
-        type: assetType,
-        url: urlData.publicUrl,
-        size: file.size,
+        file_name: file.name,
+        file_type: file.type,
+        asset_type: assetType,
+        file_url: urlData.publicUrl,
+        file_size: file.size,
       });
 
       if (dbError) {
@@ -91,9 +92,9 @@ export default function AssetLibrary() {
   };
 
   const deleteAsset = async (asset: Asset) => {
-    if (!confirm(`Delete ${asset.name}?`)) return;
+    if (!confirm(`Delete ${asset.file_name}?`)) return;
 
-    const path = asset.url.split('/').slice(-2).join('/');
+    const path = asset.file_url.split('/').slice(-2).join('/');
 
     await supabase.storage.from('media-assets').remove([path]);
 
@@ -113,13 +114,13 @@ export default function AssetLibrary() {
   };
 
   const filteredAssets = assets.filter((asset) => {
-    const matchesSearch = asset.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = filterType === 'all' || asset.type === filterType;
+    const matchesSearch = asset.file_name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType = filterType === 'all' || asset.asset_type === filterType;
     return matchesSearch && matchesType;
   });
 
-  const getIcon = (type: string) => {
-    switch (type) {
+  const getIcon = (assetType: string) => {
+    switch (assetType) {
       case 'video':
         return Video;
       case 'image':
@@ -197,21 +198,21 @@ export default function AssetLibrary() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredAssets.map((asset) => {
-            const Icon = getIcon(asset.type);
+            const Icon = getIcon(asset.asset_type);
             return (
               <div
                 key={asset.id}
                 className="bg-slate-800/30 border border-white/10 rounded-lg overflow-hidden hover:border-blue-400/50 transition-all group"
               >
                 <div className="aspect-square bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center relative">
-                  {asset.type === 'image' ? (
-                    <img src={asset.url} alt={asset.name} className="w-full h-full object-cover" />
+                  {asset.asset_type === 'image' ? (
+                    <img src={asset.file_url} alt={asset.file_name} className="w-full h-full object-cover" />
                   ) : (
                     <Icon className="w-12 h-12 text-white/30" />
                   )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
                     <a
-                      href={asset.url}
+                      href={asset.file_url}
                       download
                       className="p-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
                     >
@@ -226,8 +227,8 @@ export default function AssetLibrary() {
                   </div>
                 </div>
                 <div className="p-3">
-                  <p className="text-white text-sm font-medium truncate mb-1">{asset.name}</p>
-                  <p className="text-white/40 text-xs">{formatFileSize(asset.size)}</p>
+                  <p className="text-white text-sm font-medium truncate mb-1">{asset.file_name}</p>
+                  <p className="text-white/40 text-xs">{formatFileSize(asset.file_size)}</p>
                 </div>
               </div>
             );
