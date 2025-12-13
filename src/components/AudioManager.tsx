@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Music, Upload, Volume2, VolumeX, X } from 'lucide-react';
+import { Music, Upload, Volume2, VolumeX, X, Trash2 } from 'lucide-react';
 import { AudioClip } from '../lib/videoEngine';
 
 interface AudioManagerProps {

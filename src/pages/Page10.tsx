@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Play, Pause, Upload, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Play, Pause, Upload, Loader2, SkipBack, SkipForward } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile, getAssets } from '../lib/storage';
