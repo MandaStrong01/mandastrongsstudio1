@@ -1,6 +1,6 @@
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
-import { LogIn, UserPlus, CreditCard, CheckCircle, Play } from 'lucide-react';
+import { LogIn, UserPlus, CheckCircle, Play } from 'lucide-react';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -36,10 +36,7 @@ export default function Page3({ onNavigate }: PageProps) {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
-            <button
-              onClick={() => openStripeLink(STRIPE_LINKS.pro)}
-              className="group bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-purple-500/40 rounded-2xl p-10 shadow-2xl hover:border-purple-400 hover:scale-105 transition-all text-left"
-            >
+            <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-purple-500/40 rounded-2xl p-10 shadow-2xl">
               <div className="flex items-center gap-4 mb-6">
                 <div className="p-4 bg-purple-500/20 rounded-xl">
                   <LogIn className="w-8 h-8 text-purple-400" />
@@ -48,10 +45,10 @@ export default function Page3({ onNavigate }: PageProps) {
               </div>
 
               <p className="text-white/80 mb-6 text-lg leading-relaxed">
-                Already have an account? Click here to access your subscription and continue creating movies.
+                Already have an account? Select your plan below to access your subscription and continue creating movies.
               </p>
 
-              <div className="space-y-3 mb-8">
+              <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
                   <span className="text-white/70">Access your existing projects</span>
@@ -65,17 +62,9 @@ export default function Page3({ onNavigate }: PageProps) {
                   <span className="text-white/70">Manage your subscription</span>
                 </div>
               </div>
+            </div>
 
-              <div className="flex items-center gap-2 text-purple-300 font-semibold group-hover:text-purple-200 transition-colors">
-                <CreditCard className="w-5 h-5" />
-                <span>Click to Login via Stripe</span>
-              </div>
-            </button>
-
-            <button
-              onClick={() => openStripeLink(STRIPE_LINKS.pro)}
-              className="group bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-pink-500/40 rounded-2xl p-10 shadow-2xl hover:border-pink-400 hover:scale-105 transition-all text-left relative overflow-hidden"
-            >
+            <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-pink-500/40 rounded-2xl p-10 shadow-2xl relative overflow-hidden">
               <div className="absolute -top-3 -right-3">
                 <div className="px-4 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-bold rounded-full shadow-lg rotate-12">
                   NEW USER
@@ -90,10 +79,10 @@ export default function Page3({ onNavigate }: PageProps) {
               </div>
 
               <p className="text-white/80 mb-6 text-lg leading-relaxed">
-                New to MandaStrong? Start your creative journey today with our professional movie studio.
+                New to MandaStrong? Select a plan below to start your creative journey with our professional movie studio.
               </p>
 
-              <div className="space-y-3 mb-8">
+              <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-5 h-5 text-pink-400 flex-shrink-0" />
                   <span className="text-white/70">Choose from 3 subscription tiers</span>
@@ -107,12 +96,7 @@ export default function Page3({ onNavigate }: PageProps) {
                   <span className="text-white/70">Full access to AI tools</span>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2 text-pink-300 font-semibold group-hover:text-pink-200 transition-colors">
-                <CreditCard className="w-5 h-5" />
-                <span>Click to Register via Stripe</span>
-              </div>
-            </button>
+            </div>
           </div>
 
           <div className="mb-8 text-center">
@@ -132,9 +116,11 @@ export default function Page3({ onNavigate }: PageProps) {
                 </div>
                 <div className="text-5xl font-black mb-3 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">$10</div>
                 <div className="text-xl font-bold mb-4 text-white/90">30 Minutes</div>
-                <p className="text-sm text-white/70 leading-relaxed mb-4">Perfect for short films, music videos, and quick creative projects</p>
+                <p className="text-sm text-white/70 leading-relaxed mb-4">
+                  Perfect for content creators, social media influencers, and small businesses. Create professional short films, music videos, promotional content, and quick creative projects with ease.
+                </p>
                 <div className="pt-4 border-t border-white/10">
-                  <p className="text-xs text-purple-300 font-semibold group-hover:text-purple-200 transition-colors">Click to Subscribe</p>
+                  <p className="text-xs text-purple-300 font-semibold group-hover:text-purple-200 transition-colors">Subscribe with Stripe</p>
                 </div>
               </div>
             </button>
@@ -154,26 +140,30 @@ export default function Page3({ onNavigate }: PageProps) {
                 </div>
                 <div className="text-5xl font-black mb-3 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">$20</div>
                 <div className="text-xl font-bold mb-4 text-white/90">1 Hour</div>
-                <p className="text-sm text-white/70 leading-relaxed mb-4">Ideal for documentaries, corporate videos, and feature-length content</p>
+                <p className="text-sm text-white/70 leading-relaxed mb-4">
+                  Ideal for professional videographers, marketing agencies, and corporate communications. Produce documentaries, training videos, webinars, and extended feature-length content with advanced editing capabilities.
+                </p>
                 <div className="pt-4 border-t border-white/10">
-                  <p className="text-xs text-pink-300 font-semibold group-hover:text-pink-200 transition-colors">Click to Subscribe</p>
+                  <p className="text-xs text-pink-300 font-semibold group-hover:text-pink-200 transition-colors">Subscribe with Stripe</p>
                 </div>
               </div>
             </button>
 
             <button
               onClick={() => openStripeLink(STRIPE_LINKS.studio)}
-              className="group bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-indigo-500/40 hover:border-indigo-400 hover:from-slate-800 hover:to-slate-900 hover:scale-105 text-white font-bold py-8 px-6 rounded-2xl transition-all shadow-xl hover:shadow-indigo-500/20 cursor-pointer"
+              className="group bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-cyan-500/40 hover:border-cyan-400 hover:from-slate-800 hover:to-slate-900 hover:scale-105 text-white font-bold py-8 px-6 rounded-2xl transition-all shadow-xl hover:shadow-cyan-500/20 cursor-pointer"
             >
               <div className="text-center">
-                <div className="inline-block px-4 py-1 bg-indigo-500/20 rounded-full mb-4">
-                  <span className="text-sm font-semibold text-indigo-300">STUDIO</span>
+                <div className="inline-block px-4 py-1 bg-cyan-500/20 rounded-full mb-4">
+                  <span className="text-sm font-semibold text-cyan-300">STUDIO</span>
                 </div>
-                <div className="text-5xl font-black mb-3 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">$30</div>
+                <div className="text-5xl font-black mb-3 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">$30</div>
                 <div className="text-xl font-bold mb-4 text-white/90">2.5 Hours</div>
-                <p className="text-sm text-white/70 leading-relaxed mb-4">Complete cinematic experience with full-length film capabilities</p>
+                <p className="text-sm text-white/70 leading-relaxed mb-4">
+                  Designed for film studios, production companies, and serious filmmakers. Create full-length feature films, complete cinematic experiences, television episodes, and premium long-form content with unlimited creative potential.
+                </p>
                 <div className="pt-4 border-t border-white/10">
-                  <p className="text-xs text-indigo-300 font-semibold group-hover:text-indigo-200 transition-colors">Click to Subscribe</p>
+                  <p className="text-xs text-cyan-300 font-semibold group-hover:text-cyan-200 transition-colors">Subscribe with Stripe</p>
                 </div>
               </div>
             </button>
