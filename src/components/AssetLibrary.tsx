@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 interface Asset {
   id: string;
   file_name: string;
-  asset_type: 'video' | 'image' | 'audio' | 'text';
+  asset_type: 'video' | 'image' | 'audio' | 'document' | 'other';
   file_url: string;
   file_size: number;
   created_at: string;
@@ -19,7 +19,7 @@ export default function AssetLibrary() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState<'all' | 'video' | 'image' | 'audio'>('all');
+  const [filterType, setFilterType] = useState<'all' | 'video' | 'image' | 'audio' | 'document' | 'other'>('all');
 
   useEffect(() => {
     loadAssets();
@@ -71,7 +71,9 @@ export default function AssetLibrary() {
         ? 'image'
         : file.type.startsWith('audio/')
         ? 'audio'
-        : 'text';
+        : file.type.includes('document') || file.type.includes('pdf') || file.type.includes('text')
+        ? 'document'
+        : 'other';
 
       const { error: dbError } = await supabase.from('assets').insert({
         user_id: user.id,
@@ -156,7 +158,7 @@ export default function AssetLibrary() {
             onChange={handleFileUpload}
             disabled={uploading}
             className="hidden"
-            accept="video/*,image/*,audio/*"
+            accept="*/*"
           />
         </label>
       </div>
@@ -172,8 +174,8 @@ export default function AssetLibrary() {
             className="w-full pl-10 pr-4 py-3 bg-black/30 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-blue-400"
           />
         </div>
-        <div className="flex gap-2">
-          {['all', 'video', 'image', 'audio'].map((type) => (
+        <div className="flex gap-2 flex-wrap">
+          {['all', 'video', 'image', 'audio', 'document', 'other'].map((type) => (
             <button
               key={type}
               onClick={() => setFilterType(type as any)}

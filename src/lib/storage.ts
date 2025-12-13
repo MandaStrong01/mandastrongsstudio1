@@ -1,6 +1,39 @@
 import { supabase } from './supabase';
 import { optimizeFile, getCachedTeam, setCachedTeam } from './compression';
 
+function getAssetType(mimeType: string, fileName: string): string {
+  if (mimeType.startsWith('video/')) return 'video';
+  if (mimeType.startsWith('image/')) return 'image';
+  if (mimeType.startsWith('audio/')) return 'audio';
+
+  if (
+    mimeType.includes('document') ||
+    mimeType.includes('pdf') ||
+    mimeType.includes('text') ||
+    mimeType.includes('msword') ||
+    mimeType.includes('wordprocessingml') ||
+    mimeType.includes('spreadsheet') ||
+    mimeType.includes('presentation')
+  ) {
+    return 'document';
+  }
+
+  const ext = fileName.split('.').pop()?.toLowerCase();
+  if (ext) {
+    const videoExts = ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv', 'wmv', 'm4v', 'mpg', 'mpeg'];
+    const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico', 'tiff'];
+    const audioExts = ['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a', 'wma', 'opus'];
+    const documentExts = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf', 'csv'];
+
+    if (videoExts.includes(ext)) return 'video';
+    if (imageExts.includes(ext)) return 'image';
+    if (audioExts.includes(ext)) return 'audio';
+    if (documentExts.includes(ext)) return 'document';
+  }
+
+  return 'other';
+}
+
 export interface UploadResult {
   success: boolean;
   fileUrl?: string;
@@ -143,13 +176,7 @@ export async function uploadFile(
       .from('media-assets')
       .getPublicUrl(fileName);
 
-    const assetType = file.type.startsWith('image/')
-      ? 'image'
-      : file.type.startsWith('video/')
-      ? 'video'
-      : file.type.startsWith('audio/')
-      ? 'audio'
-      : 'other';
+    const assetType = getAssetType(file.type, file.name);
 
     if (onProgress) onProgress(90);
 

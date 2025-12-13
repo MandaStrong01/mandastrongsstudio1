@@ -52,15 +52,19 @@ export default function BatchUpload() {
       setUploadProgress(25);
 
       const { error: uploadError } = await supabase.storage
-        .from('movie-assets')
-        .upload(filePath, file);
+        .from('media-assets')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: file.type || 'application/octet-stream',
+        });
 
       if (uploadError) throw uploadError;
 
       setUploadProgress(50);
 
       const { data: { publicUrl } } = supabase.storage
-        .from('movie-assets')
+        .from('media-assets')
         .getPublicUrl(filePath);
 
       const allTools = getAllAITools();
