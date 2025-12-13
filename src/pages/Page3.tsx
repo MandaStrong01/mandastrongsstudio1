@@ -1,6 +1,6 @@
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
-import { LogIn, UserPlus, CheckCircle, Play } from 'lucide-react';
+import { LogIn, UserPlus, Play } from 'lucide-react';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -44,24 +44,40 @@ export default function Page3({ onNavigate }: PageProps) {
                 <h3 className="text-3xl font-bold text-white">Login</h3>
               </div>
 
-              <p className="text-white/80 mb-6 text-lg leading-relaxed">
-                Already have an account? Select your plan below to access your subscription and continue creating movies.
+              <p className="text-white/70 mb-6">
+                Welcome back! Sign in to access your account.
               </p>
 
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                  <span className="text-white/70">Access your existing projects</span>
+              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                <div>
+                  <label htmlFor="login-email" className="block text-sm font-medium text-white/80 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="login-email"
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
+                    placeholder="your@email.com"
+                  />
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                  <span className="text-white/70">Continue where you left off</span>
+                <div>
+                  <label htmlFor="login-password" className="block text-sm font-medium text-white/80 mb-2">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="login-password"
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
+                    placeholder="••••••••"
+                  />
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                  <span className="text-white/70">Manage your subscription</span>
-                </div>
-              </div>
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-purple-500/30"
+                >
+                  Sign In
+                </button>
+              </form>
             </div>
 
             <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-pink-500/40 rounded-2xl p-10 shadow-2xl relative overflow-hidden">
@@ -78,24 +94,40 @@ export default function Page3({ onNavigate }: PageProps) {
                 <h3 className="text-3xl font-bold text-white">Register</h3>
               </div>
 
-              <p className="text-white/80 mb-6 text-lg leading-relaxed">
-                New to MandaStrong? Select a plan below to start your creative journey with our professional movie studio.
+              <p className="text-white/70 mb-6">
+                Create your account and start your creative journey today.
               </p>
 
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-pink-400 flex-shrink-0" />
-                  <span className="text-white/70">Choose from 3 subscription tiers</span>
+              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                <div>
+                  <label htmlFor="register-email" className="block text-sm font-medium text-white/80 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="register-email"
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-pink-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all"
+                    placeholder="your@email.com"
+                  />
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-pink-400 flex-shrink-0" />
-                  <span className="text-white/70">30 minutes to 2.5 hours of content</span>
+                <div>
+                  <label htmlFor="register-password" className="block text-sm font-medium text-white/80 mb-2">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="register-password"
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-pink-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all"
+                    placeholder="••••••••"
+                  />
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-pink-400 flex-shrink-0" />
-                  <span className="text-white/70">Full access to AI tools</span>
-                </div>
-              </div>
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-pink-500/30"
+                >
+                  Create Account
+                </button>
+              </form>
             </div>
           </div>
 
