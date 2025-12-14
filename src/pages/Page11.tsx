@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Film, Loader2, Sparkles, Download, Edit3, X, AlertCircle, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Film, Loader2, Sparkles, Download, Edit3, X, AlertCircle, ArrowLeft, ArrowRight, Upload } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
@@ -110,19 +110,32 @@ export default function Page11({ onNavigate }: PageProps) {
     setError(null);
 
     try {
-      const file = e.target.files[0];
-      const result = await uploadFile(file, user.id);
+      const files = Array.from(e.target.files);
+      const uploadedAssetIds: string[] = [];
 
-      if (result.success && result.assetId) {
+      for (const file of files) {
+        const result = await uploadFile(file, user.id);
+
+        if (result.success && result.assetId) {
+          uploadedAssetIds.push(result.assetId);
+        } else {
+          console.error('Upload failed for', file.name, result.error);
+        }
+      }
+
+      if (uploadedAssetIds.length > 0) {
         await loadAssets();
-        setSelectedAssets(prev => [...prev, result.assetId!]);
+        setSelectedAssets(prev => [...prev, ...uploadedAssetIds]);
       } else {
-        setError(result.error || 'Upload failed');
+        setError('Failed to upload files');
       }
     } catch (err) {
-      setError('Failed to upload file');
+      setError('Failed to upload files');
     } finally {
       setUploading(false);
+      if (e.target) {
+        e.target.value = '';
+      }
     }
   };
 
@@ -303,7 +316,7 @@ export default function Page11({ onNavigate }: PageProps) {
                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 mb-4 shadow-lg shadow-cyan-500/50">
                   <Sparkles className="w-10 h-10 text-white" />
                 </div>
-                <h2 className="text-3xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent mb-2">
+                <h2 className="text-3xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
                   Generate Movie by AI
                 </h2>
                 <p className="text-slate-300">Describe your vision and let AI create your movie</p>
@@ -415,7 +428,7 @@ export default function Page11({ onNavigate }: PageProps) {
                     <button
                       onClick={handleGenerateMovie}
                       disabled={generating || !moviePrompt.trim()}
-                      className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-teal-600 hover:from-cyan-400 hover:via-blue-400 hover:to-teal-500 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-black text-xl py-6 px-8 rounded-xl transition-all shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-400/50 disabled:shadow-none flex items-center justify-center gap-3 transform hover:scale-[1.02] active:scale-[0.98]"
+                      className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 hover:from-cyan-400 hover:via-blue-400 hover:to-purple-500 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-black text-xl py-6 px-8 rounded-xl transition-all shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-400/50 disabled:shadow-none flex items-center justify-center gap-3 transform hover:scale-[1.02] active:scale-[0.98]"
                     >
                       {generating ? (
                         <>
@@ -447,7 +460,7 @@ export default function Page11({ onNavigate }: PageProps) {
                           </div>
                           <div className="w-full bg-slate-800 rounded-full h-4 shadow-inner">
                             <div
-                              className="bg-gradient-to-r from-cyan-400 via-blue-500 to-teal-500 h-4 rounded-full transition-all duration-300 ease-out shadow-lg shadow-cyan-500/50 relative overflow-hidden"
+                              className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 h-4 rounded-full transition-all duration-300 ease-out shadow-lg shadow-cyan-500/50 relative overflow-hidden"
                               style={{ width: `${Math.min(renderJob.progress_percent, 100)}%` }}
                             >
                               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
