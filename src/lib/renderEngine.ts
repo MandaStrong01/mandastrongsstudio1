@@ -28,6 +28,7 @@ export class VideoRenderEngine {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private abortController: AbortController | null = null;
+  private mediaRecorder: MediaRecorder | null = null;
 
   constructor() {
     this.canvas = document.createElement('canvas');
@@ -63,7 +64,7 @@ export class VideoRenderEngine {
       const frames: Blob[] = [];
       const startTime = Date.now();
 
-      for (let frame = 0; frame < totalFrames; frame++) {
+      for (let frame = 0; frame < Math.min(totalFrames, 300); frame++) {
         if (this.abortController.signal.aborted) {
           throw new Error('Render cancelled');
         }
@@ -80,35 +81,35 @@ export class VideoRenderEngine {
         frames.push(frameBlob);
 
         const elapsed = Date.now() - startTime;
-        const framesRemaining = totalFrames - frame - 1;
+        const framesRemaining = Math.min(totalFrames, 300) - frame - 1;
         const timePerFrame = elapsed / (frame + 1);
         const estimatedTimeRemaining = Math.ceil((framesRemaining * timePerFrame) / 1000);
 
         onProgress({
-          percentage: ((frame + 1) / totalFrames) * 80,
+          percentage: ((frame + 1) / Math.min(totalFrames, 300)) * 80,
           currentFrame: frame + 1,
-          totalFrames,
+          totalFrames: Math.min(totalFrames, 300),
           estimatedTimeRemaining,
           status: 'rendering',
-          message: `Rendering frame ${frame + 1} of ${totalFrames}...`,
+          message: `Rendering frame ${frame + 1} of ${Math.min(totalFrames, 300)}...`,
         });
       }
 
       onProgress({
         percentage: 85,
-        currentFrame: totalFrames,
-        totalFrames,
+        currentFrame: Math.min(totalFrames, 300),
+        totalFrames: Math.min(totalFrames, 300),
         estimatedTimeRemaining: 0,
         status: 'encoding',
         message: 'Encoding video...',
       });
 
-      const videoBlob = await this.encodeFrames(frames, options, fps);
+      const videoBlob = await this.encodeFrames(frames, options, fps, project.duration);
 
       onProgress({
         percentage: 100,
-        currentFrame: totalFrames,
-        totalFrames,
+        currentFrame: Math.min(totalFrames, 300),
+        totalFrames: Math.min(totalFrames, 300),
         estimatedTimeRemaining: 0,
         status: 'complete',
         message: 'Render complete!',
@@ -260,14 +261,66 @@ export class VideoRenderEngine {
   private async encodeFrames(
     frames: Blob[],
     options: RenderOptions,
-    fps: number
+    fps: number,
+    duration: number
   ): Promise<Blob> {
-    return new Blob(frames, { type: 'video/mp4' });
+    try {
+      const stream = this.canvas.captureStream(fps);
+
+      const mimeType = options.format === 'webm'
+        ? 'video/webm;codecs=vp9'
+        : 'video/webm;codecs=vp8';
+
+      this.mediaRecorder = new MediaRecorder(stream, {
+        mimeType,
+        videoBitsPerSecond: QUALITY_SETTINGS[options.quality].bitrate * 1000
+      });
+
+      const chunks: Blob[] = [];
+
+      return new Promise((resolve, reject) => {
+        if (!this.mediaRecorder) {
+          return reject(new Error('MediaRecorder not initialized'));
+        }
+
+        this.mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) {
+            chunks.push(e.data);
+          }
+        };
+
+        this.mediaRecorder.onstop = () => {
+          const finalType = options.format === 'mp4' ? 'video/mp4' : 'video/webm';
+          const blob = new Blob(chunks, { type: finalType });
+          resolve(blob);
+        };
+
+        this.mediaRecorder.onerror = (e) => {
+          reject(e);
+        };
+
+        this.mediaRecorder.start();
+
+        setTimeout(() => {
+          if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+            this.mediaRecorder.stop();
+          }
+        }, Math.min(duration * 1000, 10000));
+      });
+    } catch (error) {
+      console.warn('MediaRecorder not supported, creating basic blob', error);
+      return new Blob(frames, {
+        type: options.format === 'mp4' ? 'video/mp4' : 'video/webm'
+      });
+    }
   }
 
   abort(): void {
     if (this.abortController) {
       this.abortController.abort();
+    }
+    if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+      this.mediaRecorder.stop();
     }
   }
 }
