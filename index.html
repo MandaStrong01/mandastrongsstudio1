@@ -146,3 +146,14 @@ const ioProxy = {
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
+<script>
+/* === REMOVE BOLT MEDIA ADD-ON SAFELY === */
+(function () {
+  const addon = document.getElementById("bolt-media-addon");
+  if (addon) addon.remove();
+
+  delete window.boltClearMedia;
+
+  console.log("✅ Bolt media add-on removed");
+})();
+</script>
