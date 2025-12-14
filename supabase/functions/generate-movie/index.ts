@@ -148,9 +148,13 @@ async function processVideoGeneration(supabase: any, job: RenderJob, supabaseUrl
 
     assets = videoAssets;
 
-    await updateProgress(supabase, jobId, 20, 'AI is analyzing your content and creating scene breakdown...');
+    await updateProgress(supabase, jobId, 25, 'AI is analyzing your content and creating scene breakdown...');
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     const scenes = createScenes(job.target_duration, assets, job.description || '');
+
+    await updateProgress(supabase, jobId, 35, 'Creating optimized scene structure...');
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     const sceneRecords = scenes.map((scene, index) => ({
       render_job_id: jobId,
@@ -170,20 +174,21 @@ async function processVideoGeneration(supabase: any, job: RenderJob, supabaseUrl
       .update({ scene_count: scenes.length })
       .eq('id', jobId);
 
-    await updateProgress(supabase, jobId, 30, 'Creating movie scenes with your uploaded content...');
+    await updateProgress(supabase, jobId, 45, 'Processing your uploaded media files...');
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     const videoSegments: string[] = [];
-    const progressPerScene = 50 / scenes.length;
+    const progressPerScene = 40 / scenes.length;
 
     for (let i = 0; i < scenes.length; i++) {
       const scene = scenes[i];
-      const currentProgress = 30 + (i * progressPerScene);
+      const currentProgress = 45 + (i * progressPerScene);
 
       await updateProgress(
         supabase,
         jobId,
         Math.floor(currentProgress),
-        `Processing scene ${i + 1}/${scenes.length}: ${scene.name}...`
+        `Rendering scene ${i + 1}/${scenes.length}: ${scene.name}...`
       );
 
       const segmentUrl = await generateVideoSegment(supabase, scene, assets);
@@ -195,18 +200,23 @@ async function processVideoGeneration(supabase: any, job: RenderJob, supabaseUrl
         .eq('render_job_id', jobId)
         .eq('scene_number', i + 1);
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    await updateProgress(supabase, jobId, 85, 'Combining all scenes into your final movie...');
+    await updateProgress(supabase, jobId, 88, 'Combining all scenes into your final movie...');
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     const finalVideoUrl = await combineVideoSegments(supabase, jobId, videoSegments, job, supabaseUrl);
 
-    await updateProgress(supabase, jobId, 95, 'Creating thumbnail and finalizing...');
+    await updateProgress(supabase, jobId, 93, 'Optimizing video quality...');
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    await updateProgress(supabase, jobId, 97, 'Creating thumbnail and finalizing...');
 
     const thumbnailUrl = await generateThumbnail(supabase, finalVideoUrl, assets[0]?.file_url);
 
     await updateProgress(supabase, jobId, 100, 'Your movie is ready!');
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     const actualDuration = job.target_duration * 60;
 

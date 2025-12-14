@@ -52,8 +52,8 @@ export default function Page11({ onNavigate }: PageProps) {
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (renderJob && renderJob.status === 'processing') {
-      interval = setInterval(checkRenderStatus, 3000);
+    if (renderJob && (renderJob.status === 'processing' || renderJob.status === 'queued')) {
+      interval = setInterval(checkRenderStatus, 1000);
     }
     return () => {
       if (interval) clearInterval(interval);
@@ -73,10 +73,33 @@ export default function Page11({ onNavigate }: PageProps) {
       .from('render_jobs')
       .select('*')
       .eq('id', renderJob.id)
-      .single();
+      .maybeSingle();
 
     if (!error && data) {
       setRenderJob(data);
+
+      if (data.status === 'completed' && data.output_video_url) {
+        const { data: asset } = await supabase
+          .from('assets')
+          .insert({
+            user_id: user!.id,
+            file_name: `${data.title.replace(/[^a-z0-9]/gi, '_')}.mp4`,
+            file_type: 'video/mp4',
+            asset_type: 'video',
+            file_url: data.output_video_url,
+            file_size: 0,
+            metadata: {
+              source: 'ai_generated',
+              render_job_id: data.id,
+            },
+          })
+          .select()
+          .maybeSingle();
+
+        if (asset) {
+          console.log('Generated video added to assets:', asset.id);
+        }
+      }
     }
   };
 
@@ -322,10 +345,11 @@ export default function Page11({ onNavigate }: PageProps) {
                         </div>
                       ))}
                     </div>
-                    <label className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border-2 border-dashed border-slate-600 hover:border-slate-500 rounded-lg p-4 cursor-pointer transition-all">
+                      <label className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border-2 border-dashed border-slate-600 hover:border-slate-500 rounded-lg p-4 cursor-pointer transition-all">
                       <input
                         type="file"
-                        accept="video/*,image/*,audio/*"
+                        accept="video/*,image/*,audio/*,application/*"
+                        multiple
                         onChange={handleFileUpload}
                         disabled={uploading || generating || generatedProjectId !== null}
                         className="hidden"
@@ -333,7 +357,7 @@ export default function Page11({ onNavigate }: PageProps) {
                       {uploading ? (
                         <><Loader2 className="w-5 h-5 animate-spin text-cyan-400" /> Uploading...</>
                       ) : (
-                        <><span className="text-slate-400">+ Upload Media</span></>
+                        <><Upload className="w-5 h-5 text-slate-400" /><span className="text-slate-400">Upload Any Media (Videos, MP4s, Images, Audio)</span></>
                       )}
                     </label>
                   </div>
@@ -413,19 +437,25 @@ export default function Page11({ onNavigate }: PageProps) {
                         <Loader2 className="w-16 h-16 text-cyan-400 animate-spin" />
                         <div className="absolute inset-0 bg-cyan-400/20 rounded-full blur-2xl animate-pulse" />
                       </div>
-                      <div className="text-center">
+                      <div className="text-center w-full">
                         <p className="text-2xl font-black text-white mb-2">Creating Your Movie...</p>
-                        <p className="text-slate-300 mb-4">{renderJob.current_step || 'Processing...'}</p>
-                        <div className="w-full max-w-md">
-                          <div className="flex justify-between text-sm text-slate-400 mb-2">
-                            <span>Progress</span>
-                            <span>{renderJob.progress_percent}%</span>
+                        <p className="text-slate-300 mb-6">{renderJob.current_step || 'Initializing...'}</p>
+                        <div className="w-full max-w-2xl mx-auto">
+                          <div className="flex justify-between text-sm text-slate-400 mb-3">
+                            <span className="font-semibold">Progress</span>
+                            <span className="text-2xl font-bold text-cyan-400">{renderJob.progress_percent}%</span>
                           </div>
-                          <div className="w-full bg-slate-700 rounded-full h-3">
+                          <div className="w-full bg-slate-800 rounded-full h-4 shadow-inner">
                             <div
-                              className="bg-gradient-to-r from-cyan-400 to-blue-500 h-3 rounded-full transition-all duration-500"
-                              style={{ width: `${renderJob.progress_percent}%` }}
-                            />
+                              className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 h-4 rounded-full transition-all duration-300 ease-out shadow-lg shadow-cyan-500/50 relative overflow-hidden"
+                              style={{ width: `${Math.min(renderJob.progress_percent, 100)}%` }}
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+                            </div>
+                          </div>
+                          <div className="mt-4 flex items-center justify-center gap-2 text-slate-400 text-sm">
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+                            <span>Estimated time: {Math.max(1, Math.ceil((100 - renderJob.progress_percent) / 100 * 60))} seconds</span>
                           </div>
                         </div>
                       </div>

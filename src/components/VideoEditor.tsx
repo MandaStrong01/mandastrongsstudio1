@@ -1,29 +1,37 @@
 import { useState, useEffect } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Download, Layers, Volume2, Type, Sparkles } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Download, Layers, Volume2, Type, Sparkles, Upload } from 'lucide-react';
 import Timeline from './Timeline';
 import VideoFilters from './VideoFilters';
 import VideoEffects from './VideoEffects';
 import TextOverlayEditor from './TextOverlayEditor';
 import AudioManager from './AudioManager';
 import ExportPanel from './ExportPanel';
+import UniversalMediaAcceptor from './UniversalMediaAcceptor';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 interface VideoEditorProps {
   projectId?: string;
 }
 
 export default function VideoEditor({ projectId }: VideoEditorProps) {
+  const { user } = useAuth();
   const [activePanel, setActivePanel] = useState<'timeline' | 'filters' | 'effects' | 'text' | 'audio' | 'export'>('timeline');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(60);
   const [clips, setClips] = useState<any[]>([]);
+  const [showMediaAcceptor, setShowMediaAcceptor] = useState(false);
+  const [availableAssets, setAvailableAssets] = useState<any[]>([]);
 
   useEffect(() => {
     if (projectId) {
       loadProject();
     }
-  }, [projectId]);
+    if (user) {
+      loadAvailableAssets();
+    }
+  }, [projectId, user]);
 
   const loadProject = async () => {
     if (!projectId) return;
@@ -32,11 +40,45 @@ export default function VideoEditor({ projectId }: VideoEditorProps) {
       .from('movie_projects')
       .select('*')
       .eq('id', projectId)
-      .single();
+      .maybeSingle();
 
     if (data && !error) {
       setClips(data.clips || []);
       setDuration(data.duration || 60);
+    }
+  };
+
+  const loadAvailableAssets = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('assets')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (data && !error) {
+      setAvailableAssets(data);
+    }
+  };
+
+  const handleMediaAccepted = async (mediaId: string) => {
+    await loadAvailableAssets();
+
+    if (projectId) {
+      const { data: project } = await supabase
+        .from('movie_projects')
+        .select('asset_ids')
+        .eq('id', projectId)
+        .maybeSingle();
+
+      const existingAssetIds = project?.asset_ids || [];
+      const updatedAssetIds = [...new Set([...existingAssetIds, mediaId])];
+
+      await supabase
+        .from('movie_projects')
+        .update({ asset_ids: updatedAssetIds })
+        .eq('id', projectId);
     }
   };
 
@@ -71,6 +113,17 @@ export default function VideoEditor({ projectId }: VideoEditorProps) {
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       <div className="flex-1 flex flex-col">
+        <div className="bg-black/40 border-b border-white/10 px-6 py-3 flex items-center justify-between">
+          <h2 className="text-white font-bold text-lg">Video Editor</h2>
+          <button
+            onClick={() => setShowMediaAcceptor(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all"
+          >
+            <Upload className="w-4 h-4" />
+            Add Media
+          </button>
+        </div>
+
         <div className="flex-1 bg-black/30 flex items-center justify-center border-b border-white/10">
           <div className="w-full max-w-4xl aspect-video bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg border border-white/10 flex items-center justify-center">
             <Play className="w-16 h-16 text-white/20" />
@@ -141,6 +194,15 @@ export default function VideoEditor({ projectId }: VideoEditorProps) {
           {renderPanel()}
         </div>
       </div>
+
+      {showMediaAcceptor && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <UniversalMediaAcceptor
+            onMediaAccepted={handleMediaAccepted}
+            onClose={() => setShowMediaAcceptor(false)}
+          />
+        </div>
+      )}
     </div>
   );
 }
