@@ -7,6 +7,71 @@
     <title>Manda Strong Studio Rebuild</title>
   </head>
   <body>
+    <!-- === BOLT FILE / VIDEO IO PROXY === -->
+<div id="bolt-io-proxy" style="max-width:360px;margin:20px auto;font-family:Arial,sans-serif;">
+
+  <h3>Media IO Proxy</h3>
+
+  <!-- INPUT -->
+  <input
+    type="file"
+    id="ioInput"
+    accept="image/*,video/*"
+    style="margin-bottom:10px;"
+  />
+
+  <!-- PREVIEW / PROCESSING FRAME -->
+  <div
+    id="ioFrame"
+    style="
+      width:340px;
+      height:210px;
+      border:2px dashed #aaa;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      margin-bottom:10px;
+      background:#f9f9f9;
+    "
+  >
+    <span style="color:#666;">Awaiting input…</span>
+  </div>
+
+  <!-- OUTPUT CONTROLS -->
+  <button onclick="ioProxy.process()">Process</button>
+  <button onclick="ioProxy.download()">Download</button>
+
+  <!-- STATUS -->
+  <p id="ioStatus" style="margin-top:8px;"></p>
+</div>
+
+<script>
+/* === IO PROXY CONTROLLER === */
+const ioProxy = {
+  inputFile: null,
+  outputURL: null,
+
+  process() {
+    if (!this.inputFile) {
+      this.status("⚠️ No input file selected.");
+      return;
+    }
+
+    this.status("🔄 Processing…");
+
+    // Simulated processing delay
+    setTimeout(() => {
+      this.outputURL = URL.createObjectURL(this.inputFile);
+      this.status("✅ Processing complete. Output ready.");
+      this.emit("output-ready", this.inputFile);
+    }, 700);
+  },
+
+  download() {
+    if (!this.outputURL) {
+      this.status("
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
