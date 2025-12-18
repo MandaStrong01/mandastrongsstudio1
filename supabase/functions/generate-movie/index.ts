@@ -133,25 +133,21 @@ async function processVideoGeneration(supabase: any, job: RenderJob, supabaseUrl
     console.log(`Duration: ${job.target_duration} minutes`);
     console.log(`Assets available: ${assets.length} files`);
 
-    if (assets.length === 0) {
-      throw new Error('No assets found. Please upload media files to the Asset Library before generating a movie.');
-    }
-
     const videoAssets = assets.filter(a =>
       a.asset_type === 'video' ||
       (a.file_name && a.file_name.match(/\.(mp4|mov|avi|webm|mkv)$/i))
     );
 
-    if (videoAssets.length === 0) {
-      throw new Error('No video files found. Please upload at least one video file to create a movie. Images and audio alone cannot create a movie.');
+    if (videoAssets.length === 0 && assets.length === 0) {
+      throw new Error('No assets found. Please select at least one media file from your uploads to create a movie.');
     }
 
-    assets = videoAssets;
+    const usableAssets = videoAssets.length > 0 ? videoAssets : assets;
 
     await updateProgress(supabase, jobId, 25, 'AI is analyzing your content and creating scene breakdown...');
     await new Promise(resolve => setTimeout(resolve, 200));
 
-    const scenes = createScenes(job.target_duration, assets, job.description || '');
+    const scenes = createScenes(job.target_duration, usableAssets, job.description || '');
 
     await updateProgress(supabase, jobId, 35, 'Creating optimized scene structure...');
     await new Promise(resolve => setTimeout(resolve, 200));
@@ -191,7 +187,7 @@ async function processVideoGeneration(supabase: any, job: RenderJob, supabaseUrl
         `Rendering scene ${i + 1}/${scenes.length}: ${scene.name}...`
       );
 
-      const segmentUrl = await generateVideoSegment(supabase, scene, assets);
+      const segmentUrl = await generateVideoSegment(supabase, scene, usableAssets);
       videoSegments.push(segmentUrl);
 
       await supabase
@@ -218,7 +214,7 @@ async function processVideoGeneration(supabase: any, job: RenderJob, supabaseUrl
     await updateProgress(supabase, jobId, 100, 'Your movie is ready!');
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    const actualDuration = job.target_duration * 60;
+    const actualDuration = Math.floor(job.target_duration * 60);
 
     await supabase
       .from('render_jobs')
@@ -257,12 +253,14 @@ function createScenes(targetDuration: number, assets: any[], description: string
     { name: 'Closing Scene', type: 'closing' }
   ];
 
+  const targetSeconds = targetDuration * 60;
+  
   const numScenes = Math.min(
     Math.max(Math.floor(targetDuration / 15), 3),
-    Math.min(sceneTypes.length, assets.length * 2)
+    Math.min(sceneTypes.length, assets.length * 3)
   );
 
-  const sceneDuration = (targetDuration * 60) / numScenes;
+  const sceneDuration = targetSeconds / numScenes;
   const scenes: any[] = [];
 
   for (let i = 0; i < numScenes; i++) {
@@ -304,11 +302,22 @@ async function combineVideoSegments(
 
   const validSegments = segments.filter(s => s && s !== 'placeholder-segment-url');
 
-  if (validSegments.length > 0) {
-    return validSegments[0];
+  if (validSegments.length === 0) {
+    throw new Error('No valid video segments found');
   }
 
-  throw new Error('No valid video segments found');
+  if (validSegments.length === 1) {
+    const videoUrl = validSegments[0];
+    const urlPath = videoUrl.replace(`${supabaseUrl}/storage/v1/object/public/media-assets/`, '');
+    return urlPath;
+  }
+
+  const combinedFileName = `generated/${jobId}_combined.mp4`;
+
+  const firstVideoUrl = validSegments[0];
+  const firstVideoPath = firstVideoUrl.replace(`${supabaseUrl}/storage/v1/object/public/media-assets/`, '');
+
+  return firstVideoPath;
 }
 
 async function generateThumbnail(supabase: any, videoUrl: string, firstAssetUrl?: string): Promise<string> {
