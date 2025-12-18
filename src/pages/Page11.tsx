@@ -339,25 +339,9 @@ export default function Page11({ onNavigate }: PageProps) {
                               : 'border-slate-600 hover:border-slate-500'
                           } ${generating || generatedProjectId ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
-                          <div className="aspect-video bg-slate-800 flex items-center justify-center relative overflow-hidden">
+                          <div className="aspect-video bg-slate-800 flex items-center justify-center">
                             {asset.asset_type === 'video' ? (
-                              <>
-                                <video
-                                  src={asset.file_url}
-                                  className="w-full h-full object-cover"
-                                  muted
-                                  playsInline
-                                  onMouseEnter={(e) => e.currentTarget.play()}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.pause();
-                                    e.currentTarget.currentTime = 0;
-                                  }}
-                                />
-                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-1.5 py-0.5 flex items-center gap-1">
-                                  <Film className="w-3 h-3 text-white" />
-                                  <span className="text-white text-xs">Video</span>
-                                </div>
-                              </>
+                              <Film className="w-8 h-8 text-slate-500" />
                             ) : asset.asset_type === 'image' ? (
                               <img src={asset.file_url} alt={asset.file_name} className="w-full h-full object-cover" />
                             ) : (
@@ -365,7 +349,7 @@ export default function Page11({ onNavigate }: PageProps) {
                             )}
                           </div>
                           {selectedAssets.includes(asset.id) && (
-                            <div className="absolute top-1 right-1 w-6 h-6 bg-cyan-400 rounded-full flex items-center justify-center shadow-lg">
+                            <div className="absolute top-1 right-1 w-6 h-6 bg-cyan-400 rounded-full flex items-center justify-center">
                               <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                               </svg>
