@@ -1,19 +1,15 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
-import './index.css';
-import { AuthProvider } from './contexts/AuthContext';
+import React from "react";
+import ReactDOM from "react-dom/client";
 import { HashRouter } from "react-router-dom";
+import App from "./App";
 
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <AuthProvider>
+ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+).render(
+  <React.StrictMode>
+    <HashRouter>
       <App />
-    </AuthProvider>
-  </StrictMode> 
-  <HashRouter>
-  <App />
-</HashRouter>
-
+    </HashRouter>
+  </React.StrictMode>
 );
+
