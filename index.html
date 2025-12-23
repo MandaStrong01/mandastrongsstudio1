@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manda Strong Studio Rebuild</title>
+  </head>
+<!-- === BOLT MEDIA ADD-ON (NON-INTRUSIVE) === -->
+<div
+  id="bolt-media-addon"
+  style="
+    position:relative;
+    width:340px;
+    margin:20px auto;
+    font-family:Arial,sans-serif;
+  "
+>
+  <input
+    type="file"
+    id="boltMediaInput"
+    accept="image/*,video/*"
+    style="margin-bottom:10px;"
+  />
+
+  <div
+    id="boltMediaBox"
+    style="
+      position:relative;
+      width:340px;
+      height:210px;
+      border:2px dashed #aaa;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#fafafa;
+      overflow:hidden;
+    "
+  >
+    <span id="boltPlaceholder" style="color:#666;">
+      No media uploaded
+    </span>
+
+    <!-- DELETE BUTTON -->
+    <button
+      id="boltDeleteBtn"
+      onclick="boltClearMedia()"
+      style="
+        display:none;
+        position:absolute;
+        top:6px;
+        right:6px;
+        background:#000;
+        color:#fff;
+        border:none;
+        border-radius:50%;
+        width:24px;
+        height:24px;
+        cursor:pointer;
+        font-size:14px;
+        line-height:24px;
+      "
+    >
+      ✕
+    </button>
+  </div>
+
+  <p id="boltMediaStatus" style="margin-top:8px;"></p>
+</div>
+
+<script>
+/* === ISOLATED MEDIA ADD-ON LOGIC === */
+(function () {
+  const input = document.getElementById("boltMediaInput");
+  const box = document.getElementById("boltMediaBox");
+  const status = document.getElementById("boltMediaStatus");
+  const placeholder = document.
+
+  <body>
+    <!-- === BOLT FILE / VIDEO IO PROXY === -->
+<div id="bolt-io-proxy" style="max-width:360px;margin:20px auto;font-family:Arial,sans-serif;">
+
+  <h3>Media IO Proxy</h3>
+
+  <!-- INPUT -->
+  <input
+    type="file"
+    id="ioInput"
+    accept="image/*,video/*"
+    style="margin-bottom:10px;"
+  />
+
+  <!-- PREVIEW / PROCESSING FRAME -->
+  <div
+    id="ioFrame"
+    style="
+      width:340px;
+      height:210px;
+      border:2px dashed #aaa;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      margin-bottom:10px;
+      background:#f9f9f9;
+    "
+  >
+    <span style="color:#666;">Awaiting input…</span>
+  </div>
+
+  <!-- OUTPUT CONTROLS -->
+  <button onclick="ioProxy.process()">Process</button>
+  <button onclick="ioProxy.download()">Download</button>
+
+  <!-- STATUS -->
+  <p id="ioStatus" style="margin-top:8px;"></p>
+</div>
+
+<script>
+/* === IO PROXY CONTROLLER === */
+const ioProxy = {
+  inputFile: null,
+  outputURL: null,
+
+  process() {
+    if (!this.inputFile) {
+      this.status("⚠️ No input file selected.");
+      return;
+    }
+
+    this.status("🔄 Processing…");
+
+    // Simulated processing delay
+    setTimeout(() => {
+      this.outputURL = URL.createObjectURL(this.inputFile);
+      this.status("✅ Processing complete. Output ready.");
+      this.emit("output-ready", this.inputFile);
+    }, 700);
+  },
+
+  download() {
+    if (!this.outputURL) {
+      this.status("
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+<script>
+/* === REMOVE BOLT MEDIA ADD-ON SAFELY === */
+(function () {
+  const addon = document.getElementById("bolt-media-addon");
+  if (addon) addon.remove();
+
+  delete window.boltClearMedia;
+
+  console.log("✅ Bolt media add-on removed");
+})();
+</script>
