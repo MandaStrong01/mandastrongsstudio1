@@ -592,5 +592,4 @@ export default function Page11({ onNavigate }: PageProps) {
         />
       )}
     </div>
-  );
-}
+  )
