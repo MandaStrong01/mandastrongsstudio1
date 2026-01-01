@@ -239,7 +239,10 @@ export default function AdvancedTimeline({
           step="0.01"
           value={currentTime}
           onChange={(e) => onSeek(parseFloat(e.target.value))}
-          className="flex-1 h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+          className="flex-1 h-2 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-blue-500/50 [&::-webkit-slider-thumb]:hover:bg-blue-400 [&::-webkit-slider-thumb]:transition-all [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-500 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-lg [&::-moz-range-thumb]:shadow-blue-500/50 [&::-moz-range-thumb]:hover:bg-blue-400"
+          style={{
+            background: `linear-gradient(to right, #3b82f6 ${(currentTime / project.duration) * 100}%, rgba(59, 130, 246, 0.2) ${(currentTime / project.duration) * 100}%)`
+          }}
         />
       </div>
     </div>
