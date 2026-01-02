@@ -1,79 +1,30 @@
-import { useEffect, useState } from "react";
-
-type MediaItem = {
-  name: string;
-  url: string;
-  type: "video" | "audio" | "image";
-};
+import { Link } from "react-router-dom";
 
 export default function Page11() {
-  const [media, setMedia] = useState<MediaItem[]>([]);
-
-  useEffect(() => {
-    // Load uploaded files from localStorage (simple + Bolt-safe)
-    const stored = localStorage.getItem("mandastrong_media");
-    if (stored) {
-      setMedia(JSON.parse(stored));
-    }
-  }, []);
-
   return (
-    <div style={{ padding: 30, color: "white" }}>
-      <h1 style={{ color: "#b388ff" }}>Media Library</h1>
-      <p>All created and uploaded assets appear here.</p>
+    <div className="min-h-screen bg-black text-white p-8">
+      <h1 className="text-4xl font-black mb-6 text-purple-400">
+        EDITOR SUITE
+      </h1>
 
-      {media.length === 0 && (
-        <p style={{ opacity: 0.7 }}>No media uploaded yet.</p>
-      )}
+      <p className="text-gray-300 mb-10">
+        Timeline, preview, and export will live here.
+      </p>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-          gap: 20,
-          marginTop: 20,
-        }}
-      >
-        {media.map((item, i) => (
-          <div
-            key={i}
-            style={{
-              background: "#140b2d",
-              borderRadius: 10,
-              padding: 15,
-            }}
-          >
-            <strong>{item.name}</strong>
+      <div className="flex gap-6">
+        <Link
+          to="/media"
+          className="px-6 py-3 border border-purple-600 rounded-lg"
+        >
+          Back to Media
+        </Link>
 
-            {item.type === "video" && (
-              <video
-                src={item.url}
-                controls
-                style={{ width: "100%", marginTop: 10 }}
-              />
-            )}
-
-            {item.type === "audio" && (
-              <audio
-                src={item.url}
-                controls
-                style={{ width: "100%", marginTop: 10 }}
-              />
-            )}
-
-            {item.type === "image" && (
-              <img
-                src={item.url}
-                alt={item.name}
-                style={{
-                  width: "100%",
-                  marginTop: 10,
-                  borderRadius: 6,
-                }}
-              />
-            )}
-          </div>
-        ))}
+        <Link
+          to="/"
+          className="px-6 py-3 bg-purple-700 rounded-lg font-bold"
+        >
+          Home
+        </Link>
       </div>
     </div>
   );
