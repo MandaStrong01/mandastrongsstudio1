@@ -18,6 +18,7 @@ export default function App() {
       <Routes>
         {/* ENTRY */}
         <Route path="/" element={<Page1 />} />
+        <Route path="/splash" element={<Page1 />} />
 
         {/* MEDIA LIBRARY (YOUR DESIGN) */}
         <Route path="/media" element={<MediaLibrary />} />
