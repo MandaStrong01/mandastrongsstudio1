@@ -84,7 +84,7 @@ const VideoStudio = ({ onClose, duration, setDuration, tier }: any) => {
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [page, setPage] = useState(1); // Page 1 Landing
+  const [page, setPage] = useState(1);
   const [showStudio, setShowStudio] = useState(false);
   const [showAdvancedTools, setShowAdvancedTools] = useState(false);
   const [duration, setDuration] = useState(90);
@@ -98,36 +98,37 @@ export default function App() {
     if (savedAuth === 'true') {
       setIsAuthenticated(true);
       setUserTier(savedTier || "$20 Starter");
-      setPage(11); // Skip landing if remembered
+      setPage(11);
     }
   }, []);
 
   const handleLogin = (e: any) => {
     e.preventDefault();
-    const email = loginData.email.toLowerCase();
+    // ZERO-FRICTION LOGIC: Case-insensitive and Trim spaces
+    const email = loginData.email.toLowerCase().trim();
+    const pass = loginData.pass.trim();
     let selectedTier = "";
 
-    if (email === 'manda@gmail.com' && loginData.pass === 'manda30') {
+    if (email === 'manda@gmail.com' && pass === 'manda30') {
       selectedTier = "$80 Enterprise";
-    } else if (email === 'admin@gmail.com' && loginData.pass === 'test30') {
+    } else if (email === 'admin@gmail.com' && pass === 'test30') {
       selectedTier = "$40 Professional";
-    } else if (email === 'test@gmail.com' && loginData.pass === 'test20') {
+    } else if (email === 'test@gmail.com' && pass === 'test20') {
       selectedTier = "$20 Starter";
     } else {
-      alert("Unauthorized Access. Check credentials.");
+      alert("Invalid Security Key. Please check the Release Notes for correct credentials.");
       return;
     }
 
     setUserTier(selectedTier);
     setIsAuthenticated(true);
-    setPage(11); // Move to Editor
+    setPage(11);
     if (rememberMe) {
       localStorage.setItem('manda_auth', 'true');
       localStorage.setItem('manda_tier', selectedTier);
     }
   };
 
-  // --- PAGE 1: LANDING ---
   if (page === 1) {
     return (
       <div className="h-screen bg-black flex flex-col items-center justify-center font-sans text-white p-6 relative overflow-hidden">
@@ -135,22 +136,14 @@ export default function App() {
         <div className="text-center z-10 max-w-2xl animate-in fade-in zoom-in duration-1000">
           <h1 className="text-7xl font-black uppercase italic tracking-tighter mb-4 leading-none">MandaStrong Studio</h1>
           <p className="text-zinc-500 text-xs uppercase tracking-[0.5em] mb-12 font-bold italic">Industry Leading Video Generation Engine</p>
-          
-          <button 
-            onClick={() => setPage(2)} 
-            className="bg-white text-black px-16 py-5 font-black uppercase text-sm tracking-widest hover:bg-purple-600 hover:text-white transition-all shadow-2xl rounded-full"
-          >
+          <button onClick={() => setPage(2)} className="bg-white text-black px-16 py-5 font-black uppercase text-sm tracking-widest hover:bg-purple-600 hover:text-white transition-all shadow-2xl rounded-full">
             Login / Register
           </button>
         </div>
-        <footer className="absolute bottom-10 text-[10px] text-zinc-700 font-bold uppercase tracking-widest text-center">
-           MandaStrong1 2025 ~ Author of Doxy The School Bully
-        </footer>
       </div>
     );
   }
 
-  // --- PAGE 2: LOGIN GATEWAY ---
   if (page === 2 && !isAuthenticated) {
     return (
       <div className="h-screen bg-black flex flex-col items-center justify-center font-sans text-white p-6 relative">
@@ -166,13 +159,11 @@ export default function App() {
             </div>
             <button type="submit" className="w-full bg-purple-700 py-5 font-black uppercase text-xs tracking-[0.3em] shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:bg-purple-600 transition-all rounded-xl">Enter Hub</button>
           </form>
-          <button onClick={() => setPage(1)} className="mt-6 text-[9px] uppercase font-bold text-zinc-700 hover:text-white transition-colors">← Back to Home</button>
         </div>
       </div>
     );
   }
 
-  // --- PAGE 11: EDITOR HUB ---
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500">
       {page === 11 && (
@@ -188,54 +179,36 @@ export default function App() {
               </div>
               <span className="text-purple-500 text-[9px] font-black uppercase tracking-[0.4em] italic underline decoration-purple-900/50">{userTier} Membership</span>
             </div>
-            <div className="flex gap-3">
-              <button onClick={() => setShowAdvancedTools(true)} className="w-24 h-24 border-2 border-purple-600 bg-purple-950/20 rounded-xl flex items-center justify-center text-[9px] font-black uppercase text-purple-400 hover:text-white hover:bg-purple-600 transition-all shadow-[0_0_20px_rgba(168,85,247,0.2)]">Media Library</button>
-            </div>
+            <button onClick={() => setShowAdvancedTools(true)} className="w-24 h-24 border-2 border-purple-600 bg-purple-950/20 rounded-xl flex items-center justify-center text-[9px] font-black uppercase text-purple-400 hover:text-white transition-all shadow-[0_0_20px_rgba(168,85,247,0.2)]">Media Library</button>
           </div>
-
+          
           <div className="flex-1 bg-zinc-900/10 border border-zinc-800 rounded-3xl flex items-center justify-center relative overflow-hidden group">
-            <span className="text-zinc-800 font-black text-8xl uppercase tracking-tighter opacity-10 italic font-black">Core Engine Hub</span>
+            <span className="text-zinc-800 font-black text-8xl uppercase tracking-tighter opacity-10 italic">Core Engine Hub</span>
             {showAdvancedTools && (
               <div className="absolute inset-4 bg-zinc-950/95 z-[50] p-12 animate-in slide-in-from-right duration-500 rounded-2xl border border-purple-900/40 backdrop-blur-2xl">
                 <div className="flex justify-between items-center border-b-2 border-purple-900 pb-8 mb-12">
-                  <div className="flex flex-col gap-1">
-                    <h2 className="text-5xl font-black uppercase italic tracking-tighter text-white">Advanced Viewer Suite</h2>
-                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.4em]">90M Feature Build Enabled</p>
-                  </div>
+                  <div className="flex flex-col gap-1 text-white"><h2 className="text-5xl font-black uppercase italic tracking-tighter">Advanced Viewer</h2></div>
                   <div className="flex gap-4">
-                    <button onClick={() => setShowStudio(true)} className="bg-purple-700 hover:bg-purple-600 text-white px-12 py-5 font-black uppercase text-xs border border-purple-400">Open Video Studio</button>
-                    <button onClick={() => setShowAdvancedTools(false)} className="bg-zinc-800 px-8 py-5 font-black text-xs uppercase hover:bg-white hover:text-black transition-all">Close</button>
+                    <button onClick={() => setShowStudio(true)} className="bg-purple-700 hover:bg-purple-600 text-white px-12 py-5 font-black uppercase text-xs border border-purple-400">Open Studio</button>
+                    <button onClick={() => setShowAdvancedTools(false)} className="bg-zinc-800 px-8 py-5 font-black text-xs uppercase text-white hover:bg-white hover:text-black">Close</button>
                   </div>
-                </div>
-                <div className="grid grid-cols-4 gap-8">
-                  {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="aspect-video bg-zinc-900 rounded-lg border border-zinc-800 flex items-center justify-center hover:border-purple-500 cursor-pointer text-zinc-600 italic text-[10px] font-black uppercase transition-all">Clip_Asset_0{i}.mp4</div>
-                  ))}
                 </div>
               </div>
             )}
           </div>
-
           <div className="mt-10 flex justify-between items-center pt-8 border-t border-zinc-900">
-            <button onClick={() => {localStorage.removeItem('manda_auth'); setIsAuthenticated(false); setPage(1);}} className="text-zinc-700 hover:text-white uppercase text-[10px] font-black tracking-widest italic underline decoration-zinc-900 transition-all">Logout Terminal</button>
+            <button onClick={() => {localStorage.removeItem('manda_auth'); setIsAuthenticated(false); setPage(1);}} className="text-zinc-700 hover:text-white uppercase text-[10px] font-black tracking-widest italic underline decoration-zinc-900 transition-all">Logout</button>
             <button onClick={() => setPage(21)} className="bg-white text-black px-20 py-5 font-black uppercase text-[11px] hover:bg-purple-600 hover:text-white transition-all shadow-2xl italic">Watch Movie Finale →</button>
           </div>
-
           {showStudio && <VideoStudio onClose={() => setShowStudio(false)} duration={duration} setDuration={setDuration} tier={userTier} />}
         </div>
       )}
-
       {page === 21 && (
-        <div className="h-screen bg-black flex flex-col items-center justify-center relative animate-in zoom-in duration-1000 p-12">
+        <div className="h-screen bg-black flex flex-col items-center justify-center p-12 animate-in zoom-in duration-1000">
            <div className="w-full max-w-6xl aspect-video bg-zinc-950 border-8 border-zinc-900 shadow-[0_0_150px_rgba(168,85,247,0.1)] relative rounded-xl overflow-hidden">
-             <video autoPlay controls className="w-full h-full object-cover">
-               <source src="/video/thatsallfolks.mp4" type="video/mp4" />
-             </video>
+             <video autoPlay controls className="w-full h-full object-cover"><source src="/video/thatsallfolks.mp4" type="video/mp4" /></video>
            </div>
-           <div className="mt-16 text-center">
-             <h3 className="text-purple-500 text-4xl font-black uppercase italic tracking-[0.3em] mb-4">Final Master Render</h3>
-             <button onClick={() => setPage(11)} className="text-zinc-600 hover:text-white uppercase text-[10px] font-black tracking-[0.6em] transition-all underline decoration-purple-900/50 underline-offset-8">Return to Hub</button>
-           </div>
+           <button onClick={() => setPage(11)} className="mt-16 text-zinc-600 hover:text-white uppercase text-[10px] font-black tracking-[0.6em] transition-all underline decoration-purple-900/50">Return to Hub</button>
         </div>
       )}
     </div>
