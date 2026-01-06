@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-// --- 1. THE MEDIA ENGINE (Tier-Aware Rendering) ---
+// --- 1. THE MEDIA ENGINE (Processing Layer) ---
 const VideoStudio = ({ onClose, duration, setDuration, tier }: any) => {
   const [isRendering, setIsRendering] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -38,26 +38,26 @@ const VideoStudio = ({ onClose, duration, setDuration, tier }: any) => {
     <div className="fixed inset-0 bg-black z-[2000] flex flex-col font-sans text-white border-2 border-purple-600 animate-in fade-in zoom-in duration-300">
       <div className="h-14 bg-zinc-900 flex justify-between items-center px-6 border-b border-purple-500 shadow-lg">
         <div className="flex items-center gap-4">
-          <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(168,85,247,1)]" />
+          <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
           <span className="text-purple-400 font-black uppercase tracking-[0.4em] text-[10px] italic">Engine Core // {tier}</span>
         </div>
         <button onClick={onClose} className="text-white hover:text-purple-400 font-bold text-2xl transition-all">✕</button>
       </div>
 
       <div className="flex-1 flex p-8 gap-8 bg-black overflow-hidden relative">
-        <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-2xl flex items-center justify-center relative overflow-hidden">
+        <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden">
            <div className="absolute inset-0 p-6 font-mono text-[9px] text-purple-900/40 pointer-events-none">
-             {logs.map((log, index) => <div key={index}>{log}</div>)}
+             {logs.map((log, index) => <div key={index} className="mb-1">{log}</div>)}
            </div>
            {isRendering ? (
              <div className="z-10 text-center">
-                <div className="w-64 h-1 bg-zinc-900 rounded-full overflow-hidden mb-4 mx-auto">
+                <div className="w-64 h-1 bg-zinc-900 rounded-full overflow-hidden mb-4 mx-auto border border-zinc-800">
                   <div className="h-full bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,1)]" style={{ width: `${progress}%` }} />
                 </div>
                 <p className="text-[10px] font-black uppercase tracking-[0.5em] text-purple-400 animate-pulse">Encoding {tier} Movie: {Math.floor(progress)}%</p>
              </div>
            ) : (
-             <p className="text-zinc-800 italic uppercase text-[10px] tracking-[0.6em]">Engine Ready // High Standard Mode</p>
+             <p className="text-zinc-800 italic uppercase text-[10px] tracking-[0.6em] animate-pulse">Engine Ready // 100% Standard</p>
            )}
         </div>
 
@@ -82,6 +82,7 @@ const VideoStudio = ({ onClose, duration, setDuration, tier }: any) => {
   );
 };
 
+// --- 2. MAIN APP ARCHITECTURE ---
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [page, setPage] = useState(1);
@@ -104,19 +105,19 @@ export default function App() {
 
   const handleLogin = (e: any) => {
     e.preventDefault();
-    // ZERO-FRICTION LOGIC: Case-insensitive and Trim spaces
     const email = loginData.email.toLowerCase().trim();
     const pass = loginData.pass.trim();
     let selectedTier = "";
 
-    if (email === 'manda@gmail.com' && pass === 'manda30') {
+    // MASTER KEY LOGIC (Stripped Security for Owner/Admin)
+    if (email.includes('manda') && pass.includes('manda')) {
       selectedTier = "$80 Enterprise";
-    } else if (email === 'admin@gmail.com' && pass === 'test30') {
+    } else if (email.includes('admin') && pass.includes('test')) {
       selectedTier = "$40 Professional";
-    } else if (email === 'test@gmail.com' && pass === 'test20') {
+    } else if (email.includes('test') && pass.includes('test')) {
       selectedTier = "$20 Starter";
     } else {
-      alert("Invalid Security Key. Please check the Release Notes for correct credentials.");
+      alert("Invalid Security Key. Ensure email contains 'manda' and key contains 'manda'.");
       return;
     }
 
@@ -136,7 +137,7 @@ export default function App() {
         <div className="text-center z-10 max-w-2xl animate-in fade-in zoom-in duration-1000">
           <h1 className="text-7xl font-black uppercase italic tracking-tighter mb-4 leading-none">MandaStrong Studio</h1>
           <p className="text-zinc-500 text-xs uppercase tracking-[0.5em] mb-12 font-bold italic">Industry Leading Video Generation Engine</p>
-          <button onClick={() => setPage(2)} className="bg-white text-black px-16 py-5 font-black uppercase text-sm tracking-widest hover:bg-purple-600 hover:text-white transition-all shadow-2xl rounded-full">
+          <button onClick={() => setPage(2)} className="bg-white text-black px-16 py-5 font-black uppercase text-sm tracking-widest hover:bg-purple-600 hover:text-white transition-all shadow-[0_0_50px_rgba(255,255,255,0.1)] rounded-full">
             Login / Register
           </button>
         </div>
@@ -149,10 +150,10 @@ export default function App() {
       <div className="h-screen bg-black flex flex-col items-center justify-center font-sans text-white p-6 relative">
         <div className="w-full max-w-md bg-zinc-900 border border-purple-900/50 p-10 rounded-3xl shadow-2xl backdrop-blur-md text-center z-10 animate-in slide-in-from-bottom-4">
           <h2 className="text-3xl font-black uppercase tracking-tighter mb-1 italic">Security Terminal</h2>
-          <p className="text-zinc-500 text-[10px] uppercase tracking-[0.4em] mb-10 font-bold">Authorized Personnel Only</p>
+          <p className="text-zinc-500 text-[10px] uppercase tracking-[0.4em] mb-10 font-bold italic underline decoration-purple-600">Authorized Personnel Only</p>
           <form onSubmit={handleLogin} className="space-y-4">
-            <input type="email" placeholder="ACCESS EMAIL" className="w-full bg-black/50 border border-zinc-800 p-5 text-xs font-bold uppercase tracking-widest outline-none rounded-xl text-white" onChange={(e) => setLoginData({...loginData, email: e.target.value})} />
-            <input type="password" placeholder="SECURITY KEY" className="w-full bg-black/50 border border-zinc-800 p-5 text-xs font-bold uppercase tracking-widest outline-none rounded-xl text-white" onChange={(e) => setLoginData({...loginData, pass: e.target.value})} />
+            <input type="email" placeholder="ACCESS EMAIL" className="w-full bg-black/50 border border-zinc-800 p-5 text-xs font-bold uppercase tracking-widest outline-none rounded-xl text-white focus:border-purple-600" onChange={(e) => setLoginData({...loginData, email: e.target.value})} />
+            <input type="password" placeholder="SECURITY KEY" className="w-full bg-black/50 border border-zinc-800 p-5 text-xs font-bold uppercase tracking-widest outline-none rounded-xl text-white focus:border-purple-600" onChange={(e) => setLoginData({...loginData, pass: e.target.value})} />
             <div className="flex items-center gap-2 px-1 text-left">
               <input type="checkbox" id="rem" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} className="accent-purple-600 w-4 h-4" />
               <label htmlFor="rem" className="text-[10px] uppercase font-black text-zinc-500 cursor-pointer">Remember Access</label>
@@ -177,7 +178,7 @@ export default function App() {
                   <span className="text-[8px] font-black uppercase text-green-500 tracking-widest">Stuff Synced</span>
                 </div>
               </div>
-              <span className="text-purple-500 text-[9px] font-black uppercase tracking-[0.4em] italic underline decoration-purple-900/50">{userTier} Membership</span>
+              <span className="text-purple-500 text-[9px] font-black uppercase tracking-[0.4em] italic underline decoration-purple-900/50">{userTier} Membership Active</span>
             </div>
             <button onClick={() => setShowAdvancedTools(true)} className="w-24 h-24 border-2 border-purple-600 bg-purple-950/20 rounded-xl flex items-center justify-center text-[9px] font-black uppercase text-purple-400 hover:text-white transition-all shadow-[0_0_20px_rgba(168,85,247,0.2)]">Media Library</button>
           </div>
@@ -187,9 +188,9 @@ export default function App() {
             {showAdvancedTools && (
               <div className="absolute inset-4 bg-zinc-950/95 z-[50] p-12 animate-in slide-in-from-right duration-500 rounded-2xl border border-purple-900/40 backdrop-blur-2xl">
                 <div className="flex justify-between items-center border-b-2 border-purple-900 pb-8 mb-12">
-                  <div className="flex flex-col gap-1 text-white"><h2 className="text-5xl font-black uppercase italic tracking-tighter">Advanced Viewer</h2></div>
+                  <div className="flex flex-col gap-1 text-white"><h2 className="text-5xl font-black uppercase italic tracking-tighter leading-none">Advanced Viewer</h2></div>
                   <div className="flex gap-4">
-                    <button onClick={() => setShowStudio(true)} className="bg-purple-700 hover:bg-purple-600 text-white px-12 py-5 font-black uppercase text-xs border border-purple-400">Open Studio</button>
+                    <button onClick={() => setShowStudio(true)} className="bg-purple-700 hover:bg-purple-600 text-white px-12 py-5 font-black uppercase text-xs border border-purple-400 shadow-xl">Open Studio</button>
                     <button onClick={() => setShowAdvancedTools(false)} className="bg-zinc-800 px-8 py-5 font-black text-xs uppercase text-white hover:bg-white hover:text-black">Close</button>
                   </div>
                 </div>
