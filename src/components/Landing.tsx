@@ -54,7 +54,7 @@ export default function Landing({ onGetStarted }: LandingProps) {
               onClick={onGetStarted}
               className="px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold text-lg transition-all hover:scale-105 shadow-lg shadow-blue-500/30"
             >
-              Get Started Free
+              Get Started
             </button>
             <button className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white rounded-xl font-semibold text-lg transition-all border border-white/10 flex items-center gap-2">
               <Play className="w-5 h-5" />
