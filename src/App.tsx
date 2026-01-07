@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Upload, Home, Library, Clock, Music, Settings, Wand2, Terminal,
-  Workflow, ShieldCheck, FileText, MessageSquare, Users, PlusCircle,
-  X, Cpu, Layers, Maximize, Sparkles, Box, Zap, ChevronLeft,
-  ChevronRight, Database, Download, Share2
+import { 
+  Upload, Home, Library, Clock, Music, Settings, Wand2, Terminal, 
+  Workflow, ShieldCheck, FileText, MessageSquare, Users, PlusCircle, 
+  X, Cpu, Layers, Maximize, Sparkles, Box, Zap, ChevronLeft, 
+  ChevronRight, Database, Download, Share2 
 } from 'lucide-react';
-import BrowserAlert from './components/BrowserAlert';
 
 export default function App() {
   const [page, setPage] = useState(1); // No Splash - Starts at Page 1
@@ -36,7 +35,6 @@ export default function App() {
   // --- NODES 1-2: 15s BACKGROUND PERSISTENCE ---
   if (page === 1 || page === 2) return (
     <div className="h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden border-[20px] border-zinc-900">
-      <BrowserAlert />
       <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-60">
         <source src="background.mp4" type="video/mp4" />
       </video>
