@@ -1,8 +1,10 @@
 import { Film } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
-export default function Page1() {
-  const navigate = useNavigate();
+interface PageProps {
+  onNavigate: (page: number) => void;
+}
+
+export default function Page1({ onNavigate }: PageProps) {
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4 relative overflow-hidden">
       <div className="absolute inset-0">
@@ -39,19 +41,19 @@ export default function Page1() {
 
         <div className="flex flex-wrap gap-4 justify-center">
           <button
-            onClick={() => navigate('/media')}
+            onClick={() => onNavigate(1)}
             className="bg-blue-600 text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-blue-500 transition-all transform hover:scale-105 shadow-xl"
           >
             Next
           </button>
           <button
-            onClick={() => navigate('/editor')}
+            onClick={() => onNavigate(2)}
             className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-slate-900 transition-all border border-blue-500 shadow-xl"
           >
             Login
           </button>
           <button
-            onClick={() => navigate('/editor')}
+            onClick={() => onNavigate(2)}
             className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-slate-900 transition-all border border-blue-500 shadow-xl"
           >
             Register
