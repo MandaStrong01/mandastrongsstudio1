@@ -1,5 +1,15 @@
 export function isVideoFile(file: File): boolean {
-  return file.type.startsWith('video/');
+  const videoTypes = [
+    'video/mp4',
+    'video/webm',
+    'video/ogg',
+    'video/quicktime',
+    'video/x-msvideo',
+    'video/x-matroska',
+  ];
+
+  return videoTypes.includes(file.type) ||
+         /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(file.name);
 }
 
 export async function extractVideoMetadata(file: File): Promise<any> {
@@ -8,7 +18,7 @@ export async function extractVideoMetadata(file: File): Promise<any> {
     video.preload = 'metadata';
 
     video.onloadedmetadata = () => {
-      window.URL.revokeObjectURL(video.src);
+      URL.revokeObjectURL(video.src);
       resolve({
         duration: video.duration,
         width: video.videoWidth,
@@ -18,7 +28,7 @@ export async function extractVideoMetadata(file: File): Promise<any> {
     };
 
     video.onerror = () => {
-      window.URL.revokeObjectURL(video.src);
+      URL.revokeObjectURL(video.src);
       resolve({});
     };
 
