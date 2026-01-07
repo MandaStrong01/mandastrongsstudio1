@@ -1,61 +1,239 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Play, Pause, SkipBack, SkipForward, Download, Layers, Volume2, Type, Sparkles, Upload } from 'lucide-react';
+import Timeline from './Timeline';
+import VideoFilters from './VideoFilters';
+import VideoEffects from './VideoEffects';
+import TextOverlayEditor from './TextOverlayEditor';
+import AudioManager from './AudioManager';
+import ExportPanel from './ExportPanel';
+import UniversalMediaAcceptor from './UniversalMediaAcceptor';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function VideoEditor({ onClose }: { onClose: () => void }) {
-  const [duration, setDuration] = useState(0);
+interface VideoEditorProps {
+  projectId?: string;
+}
+
+export default function VideoEditor({ projectId }: VideoEditorProps) {
+  const { user } = useAuth();
+  const [activePanel, setActivePanel] = useState<'timeline' | 'filters' | 'effects' | 'text' | 'audio' | 'export'>('timeline');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(30);
+  const [targetDuration, setTargetDuration] = useState(30);
+  const [clips, setClips] = useState<any[]>([]);
+  const [showMediaAcceptor, setShowMediaAcceptor] = useState(false);
+  const [availableAssets, setAvailableAssets] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (projectId) {
+      loadProject();
+    }
+    if (user) {
+      loadAvailableAssets();
+    }
+  }, [projectId, user]);
+
+  const loadProject = async () => {
+    if (!projectId) return;
+
+    const { data, error } = await supabase
+      .from('movie_projects')
+      .select('*')
+      .eq('id', projectId)
+      .maybeSingle();
+
+    if (data && !error) {
+      setClips(data.clips || []);
+      setTargetDuration(data.duration || 30);
+      setDuration((data.duration || 30) * 60);
+    }
+  };
+
+  const loadAvailableAssets = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('assets')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (data && !error) {
+      setAvailableAssets(data);
+    }
+  };
+
+  const handleMediaAccepted = async (mediaId: string) => {
+    await loadAvailableAssets();
+
+    if (projectId) {
+      const { data: project } = await supabase
+        .from('movie_projects')
+        .select('asset_ids')
+        .eq('id', projectId)
+        .maybeSingle();
+
+      const existingAssetIds = project?.asset_ids || [];
+      const updatedAssetIds = [...new Set([...existingAssetIds, mediaId])];
+
+      await supabase
+        .from('movie_projects')
+        .update({ asset_ids: updatedAssetIds })
+        .eq('id', projectId);
+    }
+  };
+
+  const handleDurationChange = async (newDuration: number) => {
+    setTargetDuration(newDuration);
+    setDuration(newDuration * 60);
+
+    if (projectId) {
+      await supabase
+        .from('movie_projects')
+        .update({ duration: newDuration })
+        .eq('id', projectId);
+    }
+  };
+
+  const panels = [
+    { id: 'timeline' as const, label: 'Timeline', icon: Layers },
+    { id: 'filters' as const, label: 'Filters', icon: Sparkles },
+    { id: 'effects' as const, label: 'Effects', icon: Sparkles },
+    { id: 'text' as const, label: 'Text', icon: Type },
+    { id: 'audio' as const, label: 'Audio', icon: Volume2 },
+    { id: 'export' as const, label: 'Export', icon: Download },
+  ];
+
+  const renderPanel = () => {
+    switch (activePanel) {
+      case 'timeline':
+        return <Timeline clips={clips} onClipsChange={setClips} />;
+      case 'filters':
+        return <VideoFilters />;
+      case 'effects':
+        return <VideoEffects />;
+      case 'text':
+        return <TextOverlayEditor />;
+      case 'audio':
+        return <AudioManager />;
+      case 'export':
+        return <ExportPanel projectId={projectId} />;
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="fixed inset-0 bg-black z-[999] flex flex-col font-cinematic text-white border-2 border-purple-600 animate-in fade-in">
-      {/* Cinecraft Master Header */}
-      <div className="h-12 bg-zinc-950 flex justify-between items-center px-6 border-b border-purple-500">
-        <span className="text-purple-400 font-bold uppercase tracking-widest text-xs italic">Cinecraft Master Studio</span>
-        <button onClick={onClose} className="text-white hover:text-purple-400 font-bold text-xl transition-colors">✕</button>
-      </div>
-
-      <div className="flex-1 flex p-8 gap-8 bg-black">
-        {/* Monitor View */}
-        <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded shadow-inner flex items-center justify-center relative">
-           <div className="absolute top-4 left-4 text-[10px] text-purple-500 uppercase font-bold tracking-widest bg-black/50 px-2 py-1">Monitor 01 // Master Render</div>
-           <p className="text-zinc-800 italic uppercase text-[10px] tracking-[0.2em]">Ready for Cinematic Processing</p>
-        </div>
-
-        {/* Side Controls Panel */}
-        <div className="w-80 bg-zinc-900 p-6 border border-purple-900 flex flex-col gap-6 shadow-[0_0_40px_rgba(88,28,135,0.15)]">
-          <h3 className="text-xs font-black border-b border-purple-900 pb-2 uppercase tracking-widest text-purple-400">Enhancement Suite</h3>
-          
-          <div className="flex flex-col gap-4">
-            <div className="flex justify-between items-end">
-               <label className="text-[10px] uppercase text-zinc-400 font-bold tracking-widest">Timeline Duration</label>
-               <span className="text-2xl font-black text-white">{duration}<small className="text-[10px] ml-1">M</small></span>
-            </div>
-            
-            {/* The 0-180 Slider */}
-            <input 
-              type="range" min="0" max="180" value={duration}
-              onChange={(e) => setDuration(Number(e.target.value))}
-              className="w-full h-1 bg-zinc-800 accent-purple-600 cursor-pointer appearance-none rounded-full"
-            />
-            <div className="flex justify-between text-[9px] text-zinc-600 font-bold tracking-tighter">
-              <span>0 MIN</span>
-              <span>90 MIN</span>
-              <span>180 MIN</span>
+    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <div className="flex-1 flex flex-col">
+        <div className="bg-black/40 border-b border-white/10 px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <h2 className="text-white font-bold text-lg">Video Editor</h2>
+            <div className="flex items-center gap-3">
+              <label className="text-white/60 text-sm font-medium">Target Duration:</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="range"
+                  min="5"
+                  max="180"
+                  step="5"
+                  value={targetDuration}
+                  onChange={(e) => handleDurationChange(parseInt(e.target.value))}
+                  className="w-32 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-500 [&::-moz-range-thumb]:border-0"
+                />
+                <span className="text-white font-semibold text-sm min-w-[60px]">{targetDuration} min</span>
+              </div>
             </div>
           </div>
-
-          <div className="flex flex-col gap-2 mt-4">
-            <button className="text-[9px] p-3 border border-zinc-800 hover:border-purple-500 bg-black font-bold uppercase tracking-widest transition-all hover:bg-zinc-950">✨ Cinematic Auto-Fix</button>
-            <button className="text-[9px] p-3 border border-zinc-800 hover:border-purple-500 bg-black font-bold uppercase tracking-widest transition-all hover:bg-zinc-950">🎨 Color Grade LUT</button>
-            <button className="text-[9px] p-3 border border-zinc-800 hover:border-purple-500 bg-black font-bold uppercase tracking-widest transition-all hover:bg-zinc-950">🔊 Vocal Isolation</button>
-          </div>
-
-          {/* AI Generate Action */}
-          <button 
-            className="mt-auto bg-purple-700 hover:bg-purple-600 py-4 font-black uppercase text-[11px] border border-purple-300 shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-all active:scale-95"
-            onClick={() => alert(`AI Rendering ${duration} minute cinematic asset...`)}
+          <button
+            onClick={() => setShowMediaAcceptor(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all"
           >
-            AI Generate Asset
+            <Upload className="w-4 h-4" />
+            Add Media
           </button>
         </div>
+
+        <div className="flex-1 bg-black/30 flex items-center justify-center border-b border-white/10">
+          <div className="w-full max-w-4xl aspect-video bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg border border-white/10 flex items-center justify-center">
+            <Play className="w-16 h-16 text-white/20" />
+          </div>
+        </div>
+
+        <div className="bg-black/40 border-b border-white/10 px-6 py-4">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <button className="p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
+              <SkipBack className="w-5 h-5 text-white" />
+            </button>
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="p-4 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
+            >
+              {isPlaying ? (
+                <Pause className="w-6 h-6 text-white" />
+              ) : (
+                <Play className="w-6 h-6 text-white" />
+              )}
+            </button>
+            <button className="p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
+              <SkipForward className="w-5 h-5 text-white" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <span className="text-white/60 text-sm">
+              {Math.floor(currentTime / 60)}:{(currentTime % 60).toString().padStart(2, '0')}
+            </span>
+            <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-blue-500"
+                style={{ width: `${(currentTime / duration) * 100}%` }}
+              />
+            </div>
+            <span className="text-white/60 text-sm">
+              {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')}
+            </span>
+          </div>
+        </div>
+
+        <div className="border-b border-white/10 bg-black/30">
+          <div className="flex items-center gap-2 px-6">
+            {panels.map((panel) => {
+              const Icon = panel.icon;
+              const isActive = activePanel === panel.id;
+
+              return (
+                <button
+                  key={panel.id}
+                  onClick={() => setActivePanel(panel.id)}
+                  className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-all ${
+                    isActive
+                      ? 'border-blue-400 text-blue-400 bg-blue-500/10'
+                      : 'border-transparent text-white/60 hover:text-white/90 hover:bg-white/5'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="font-medium text-sm">{panel.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-auto">
+          {renderPanel()}
+        </div>
       </div>
+
+      {showMediaAcceptor && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <UniversalMediaAcceptor
+            onMediaAccepted={handleMediaAccepted}
+            onClose={() => setShowMediaAcceptor(false)}
+          />
+        </div>
+      )}
     </div>
   );
 }
