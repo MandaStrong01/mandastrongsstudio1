@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { 
-  Upload, Home, Library, Clock, Music, Settings, Wand2, Terminal, 
-  Workflow, MessageSquare, ShieldCheck, ChevronLeft, ChevronRight, 
-  Play, Database, FileText, Users, Share2 
+  Upload, Home, Library, Clock, Music, Settings, Wand2, 
+  Terminal, Play, Database, FileText, Users, Share2 
 } from 'lucide-react';
 
 export default function App() {
   const [page, setPage] = useState(1);
-  const [showEnhancement, setShowEnhancement] = useState(false);
 
   // NAVIGATION COMPONENT
   const Navigation = () => (
@@ -17,7 +15,7 @@ export default function App() {
     </div>
   );
 
-  // --- NODE 1: BEACH SPLASH (Image 1) ---
+  // --- NODE 1: BEACH SPLASH ---
   if (page === 1) return (
     <div className="h-screen bg-cover bg-center flex flex-col items-center justify-center relative font-black italic" style={{ backgroundImage: "url('beach-image.jpg')" }}>
       <div className="relative z-10 text-center">
@@ -32,7 +30,7 @@ export default function App() {
     </div>
   );
 
-  // --- NODE 2: PURPLE LANDING (Image 2) ---
+  // --- NODE 2: PURPLE LANDING ---
   if (page === 2) return (
     <div className="h-screen bg-[#1a0b2e] flex flex-col items-center justify-center relative font-black italic p-10">
       <h1 className="text-8xl text-white uppercase tracking-tighter text-center leading-none mb-6">MANDASTRONG'S STUDIO</h1>
@@ -41,7 +39,7 @@ export default function App() {
     </div>
   );
 
-  // --- NODE 3: LOGIN / REGISTER / PLANS (Consolidated) ---
+  // --- NODE 3: LOGIN / REGISTER / PLANS ($20, $40, $80) ---
   if (page === 3) return (
     <div className="h-screen bg-black border-[20px] border-zinc-900 p-10 flex flex-col items-center italic font-black relative overflow-y-auto pb-40">
       <div className="grid grid-cols-2 gap-8 w-full max-w-6xl mb-12">
@@ -61,9 +59,9 @@ export default function App() {
       <div className="grid grid-cols-3 gap-6 w-full max-w-6xl">
         {[{t:"Basic", p:"20"}, {t:"Pro", p:"40"}, {t:"Studio", p:"80"}].map((plan, i) => (
           <div key={i} className="bg-[#0d0517] p-8 rounded-[2rem] border-2 border-purple-500/20 text-white text-center">
-            <h3 className="text-2xl mb-2">{plan.t}</h3>
-            <div className="text-5xl mb-6">${plan.p}<span className="text-lg">/mo</span></div>
-            <button className="w-full bg-purple-600 py-3 rounded-xl uppercase text-sm">Select</button>
+            <h3 className="text-2xl mb-2 uppercase">{plan.t}</h3>
+            <div className="text-5xl mb-6 font-black tracking-tighter">${plan.p}<span className="text-lg">/mo</span></div>
+            <button className="w-full bg-purple-600 py-3 rounded-xl uppercase text-sm font-black">Select {plan.t}</button>
           </div>
         ))}
       </div>
@@ -74,7 +72,6 @@ export default function App() {
   // --- NODE 11: EDITOR SUITE / MEDIA LIBRARY ---
   if (page === 11) return (
     <div className="h-screen bg-[#050505] text-white flex flex-col italic font-black">
-      {/* Top Navigation Bar */}
       <div className="bg-black p-4 flex gap-4 border-b border-zinc-800 overflow-x-auto">
         <span className="text-purple-500 mr-4 self-center uppercase">Editor Suite</span>
         <button className="bg-zinc-900 px-6 py-2 rounded-lg flex items-center gap-2 text-xs uppercase"><Home size={14}/> Editor Home</button>
@@ -91,7 +88,6 @@ export default function App() {
             <button className="bg-blue-600 px-8 py-3 rounded-xl uppercase text-xs flex items-center gap-2">
               <Play size={16}/> Open Video Studio
             </button>
-            {/* THE ATTACHMENT BUTTON */}
             <button 
               onClick={() => window.open('https://mandastrong-studio-global-enhancement.ai/engine-v2', '_blank')}
               className="bg-purple-600 px-8 py-3 rounded-xl uppercase text-xs flex items-center gap-2 shadow-xl hover:scale-105 transition-all"
@@ -103,7 +99,7 @@ export default function App() {
 
         <div className="flex-1 border-4 border-dashed border-zinc-900 rounded-[4rem] flex flex-col items-center justify-center text-center">
           <Upload size={60} className="text-zinc-800 mb-4" />
-          <p className="text-2xl uppercase">Click to upload or drag & drop</p>
+          <p className="text-2xl uppercase tracking-tighter">Click to upload or drag & drop</p>
           <p className="text-zinc-700 uppercase mt-2">No assets yet.</p>
         </div>
       </div>
@@ -111,7 +107,6 @@ export default function App() {
     </div>
   );
 
-  // Fallback for remaining nodes
   return (
     <div className="h-screen bg-black flex flex-col items-center justify-center text-white italic font-black">
       <h2 className="text-9xl opacity-10">NODE {page}</h2>
