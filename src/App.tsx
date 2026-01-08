@@ -1,103 +1,60 @@
-import React, { useState } from 'react';
-import {
-  Upload, Home, Library, Clock, Music, Settings, Wand2, Terminal,
-  Workflow, MessageSquare, ShieldCheck, ChevronLeft, ChevronRight,
-  Play, Database, FileText, Users, Share2, Sparkles, Film, Mic, Video
-} from 'lucide-react';
-import { getToolsForPage } from './data/aiTools';
+import { useState } from 'react';
+import Page1 from './pages/Page1';
+import Page2 from './pages/Page2';
+import Page3 from './pages/Page3';
+import Page4 from './pages/Page4';
+import Page5 from './pages/Page5';
+import Page6 from './pages/Page6';
+import Page7 from './pages/Page7';
+import Page8 from './pages/Page8';
+import Page9 from './pages/Page9';
+import Page10 from './pages/Page10';
+import Page11 from './pages/Page11';
+import Page12 from './pages/Page12';
+import Page13 from './pages/Page13';
+import Page14 from './pages/Page14';
+import Page15 from './pages/Page15';
+import Page16 from './pages/Page16';
+import Page17 from './pages/Page17';
+import Page18 from './pages/Page18';
+import Page19 from './pages/Page19';
+import Page20 from './pages/Page20';
+import Page21 from './pages/Page21';
+import Page22 from './pages/Page22';
+import Page23 from './pages/Page23';
 
 export default function App() {
-  const [page, setPage] = useState(1);
-  const [showEnhancement, setShowEnhancement] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
 
-  // NAVIGATION SYSTEM (Persistent across all 21 Nodes)
-  const Navigation = () => (
-    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-6 z-[100]">
-      <button onClick={() => setPage(Math.max(1, page - 1))} className="bg-black text-white px-10 py-4 rounded-full font-black uppercase text-[10px] border border-white/20 hover:bg-white hover:text-black transition-all">← BACK</button>
-      <button onClick={() => setPage(Math.min(21, page + 1))} className="bg-black text-white px-10 py-4 rounded-full font-black uppercase text-[10px] border border-white/20 hover:bg-white hover:text-black transition-all">NEXT →</button>
-    </div>
-  );
+  const handleNavigate = (pageIndex: number) => {
+    setCurrentPage(pageIndex);
+  };
 
-  // --- NODE 1: BEACH SPLASH (Image 1) ---
-  if (page === 1) return (
-    <div className="h-screen bg-cover bg-center flex flex-col items-center justify-center relative font-black italic" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80')" }}>
-      <div className="relative z-10 text-center">
-        <h1 className="text-8xl text-black uppercase tracking-tighter mb-4 leading-none">MANDASTRONG'S STUDIO</h1>
-        <p className="text-2xl text-black uppercase tracking-widest font-bold">Welcome To The All-In-One Make-A-Movie App!</p>
-      </div>
-      <div className="absolute bottom-10 flex gap-6 z-10">
-        <button onClick={() => setPage(2)} className="bg-black text-white px-12 py-4 rounded-xl uppercase font-black">Next</button>
-        <button onClick={() => setPage(3)} className="bg-black text-white px-12 py-4 rounded-xl uppercase font-black">Login</button>
-        <button onClick={() => setPage(3)} className="bg-black text-white px-12 py-4 rounded-xl uppercase font-black">Register</button>
-      </div>
-    </div>
-  );
+  const pages = [
+    <Page1 key={0} onNavigate={handleNavigate} />,
+    <Page2 key={1} onNavigate={handleNavigate} />,
+    <Page3 key={2} onNavigate={handleNavigate} />,
+    <Page4 key={3} onNavigate={handleNavigate} />,
+    <Page5 key={4} onNavigate={handleNavigate} />,
+    <Page6 key={5} onNavigate={handleNavigate} />,
+    <Page7 key={6} onNavigate={handleNavigate} />,
+    <Page8 key={7} onNavigate={handleNavigate} />,
+    <Page9 key={8} onNavigate={handleNavigate} />,
+    <Page10 key={9} onNavigate={handleNavigate} />,
+    <Page11 key={10} onNavigate={handleNavigate} />,
+    <Page12 key={11} onNavigate={handleNavigate} />,
+    <Page13 key={12} onNavigate={handleNavigate} />,
+    <Page14 key={13} onNavigate={handleNavigate} />,
+    <Page15 key={14} onNavigate={handleNavigate} />,
+    <Page16 key={15} onNavigate={handleNavigate} />,
+    <Page17 key={16} onNavigate={handleNavigate} />,
+    <Page18 key={17} onNavigate={handleNavigate} />,
+    <Page19 key={18} onNavigate={handleNavigate} />,
+    <Page20 key={19} onNavigate={handleNavigate} />,
+    <Page21 key={20} onNavigate={handleNavigate} />,
+    <Page22 key={21} onNavigate={handleNavigate} />,
+    <Page23 key={22} onNavigate={handleNavigate} />,
+  ];
 
-  // --- NODE 2: PURPLE BRANDING (Image 2) ---
-  if (page === 2) return (
-    <div className="h-screen bg-[#1a0b2e] flex flex-col items-center justify-center relative font-black italic p-10">
-      <Sparkles size={100} className="text-purple-500 mb-8 animate-pulse" />
-      <h1 className="text-8xl text-white uppercase tracking-tighter text-center leading-none mb-6">MANDASTRONG'S STUDIO</h1>
-      <p className="text-3xl text-purple-400 uppercase text-center max-w-4xl">Make Amazing Family Movies & Bring Dreams To Life!</p>
-      <Navigation />
-    </div>
-  );
-
-  // --- NODE 3: ACCESS & PLANS ($20, $40, $80) ---
-  if (page === 3) return (
-    <div className="h-screen bg-black border-[20px] border-zinc-900 p-10 flex flex-col items-center italic font-black relative overflow-y-auto pb-40">
-      <div className="grid grid-cols-2 gap-8 w-full max-w-6xl mb-12">
-        <div className="bg-[#1a0b2e] p-10 rounded-[3rem] border-2 border-purple-500/30 text-white">
-          <h2 className="text-3xl uppercase mb-8 text-center">Login</h2>
-          <input type="email" placeholder="your@email.com" className="w-full bg-black p-5 rounded-xl border border-zinc-800 mb-4 outline-none focus:border-purple-500" />
-          <input type="password" placeholder="........" className="w-full bg-black p-5 rounded-xl border border-zinc-800 mb-6 outline-none focus:border-purple-500" />
-          <button onClick={() => setPage(11)} className="w-full bg-purple-600 py-5 rounded-xl uppercase shadow-lg">Login</button>
-        </div>
-        <div className="bg-[#1a0b2e] p-10 rounded-[3rem] border-2 border-purple-500/30 text-white">
-          <h2 className="text-3xl uppercase mb-8 text-center">Register</h2>
-          <input type="text" placeholder="Full Name" className="w-full bg-black p-5 rounded-xl border border-zinc-800 mb-4 outline-none" />
-          <input type="email" placeholder="Email Address" className="w-full bg-black p-5 rounded-xl border border-zinc-800 mb-4 outline-none" />
-          <button onClick={() => setPage(11)} className="w-full bg-purple-600 py-5 rounded-xl uppercase shadow-lg">Create Account</button>
-        </div>
-      </div>
-      <div className="grid grid-cols-3 gap-6 w-full max-w-6xl">
-        {[{t:"Basic", p:"20"}, {t:"Pro", p:"40", s:true}, {t:"Studio", p:"80"}].map((plan, i) => (
-          <div key={i} className={`bg-[#0d0517] p-8 rounded-[2rem] border-2 ${plan.s ? 'border-yellow-500 scale-105' : 'border-purple-500/20'} text-white text-center`}>
-            <h3 className="text-2xl mb-2 uppercase tracking-tighter">{plan.t}</h3>
-            <div className="text-6xl mb-6 font-black tracking-tighter">${plan.p}<span className="text-xl">/mo</span></div>
-            <button className="w-full bg-purple-600 py-4 rounded-xl uppercase text-sm font-black tracking-widest">Select Plan</button>
-          </div>
-        ))}
-      </div>
-      <Navigation />
-    </div>
-  );
-
-  // --- NODES 4-9: THE AI TOOL BOARD (600 Tools Logic) ---
-  if (page >= 4 && page <= 9) {
-    const tools = getToolsForPage(page);
-    return (
-      <div className="h-screen bg-black border-[20px] border-zinc-900 flex flex-col p-10 italic font-black relative overflow-hidden">
-        <h2 className="text-6xl text-blue-500 uppercase tracking-tighter mb-8">AI TOOL BOARD — NODE {page}</h2>
-        <div className="grid grid-cols-4 gap-4 overflow-y-auto pr-4 pb-24">
-          {tools.map((tool, i) => (
-            <div key={i} className="bg-zinc-900 p-4 rounded-xl border border-zinc-800 text-white text-center hover:border-blue-500 transition-all cursor-pointer">
-              <Wand2 size={24} className="mx-auto mb-2 text-blue-500" />
-              <p className="text-xs uppercase">{tool}</p>
-            </div>
-          ))}
-        </div>
-        <Navigation />
-      </div>
-    );
-  }
-
-  // --- NODES 10-21: OTHER PAGES ---
-  return (
-    <div className="h-screen bg-black text-white flex flex-col items-center justify-center relative font-black italic p-10">
-      <h1 className="text-6xl text-blue-500 uppercase tracking-tighter mb-8">PAGE {page}</h1>
-      <p className="text-2xl text-zinc-400 uppercase mb-12">Coming Soon</p>
-      <Navigation />
-    </div>
-  );
+  return pages[currentPage];
 }
