@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { 
-  Upload, Home, Library, Clock, Music, Settings, Wand2, Terminal, 
-  Workflow, MessageSquare, ShieldCheck, ChevronLeft, ChevronRight, 
+import {
+  Upload, Home, Library, Clock, Music, Settings, Wand2, Terminal,
+  Workflow, MessageSquare, ShieldCheck, ChevronLeft, ChevronRight,
   Play, Database, FileText, Users, Share2, Sparkles, Film, Mic, Video
 } from 'lucide-react';
+import { getToolsForPage } from './data/aiTools';
 
 export default function App() {
   const [page, setPage] = useState(1);
@@ -73,8 +74,30 @@ export default function App() {
   );
 
   // --- NODES 4-9: THE AI TOOL BOARD (600 Tools Logic) ---
-  if (page >= 4 && page <= 9) return (
-    <div className="h-screen bg-black border-[20px] border-zinc-900 flex flex-col p-10 italic font-black relative overflow-hidden">
-      <h2 className="text-6xl text-purple-500 uppercase tracking-tighter mb-8">AI TOOL BOARD — NODE {page}</h2>
-      <div className="grid grid-cols-4 gap-4 overflow-y-auto pr-4 pb-24">
-        {Array.from({
+  if (page >= 4 && page <= 9) {
+    const tools = getToolsForPage(page);
+    return (
+      <div className="h-screen bg-black border-[20px] border-zinc-900 flex flex-col p-10 italic font-black relative overflow-hidden">
+        <h2 className="text-6xl text-blue-500 uppercase tracking-tighter mb-8">AI TOOL BOARD — NODE {page}</h2>
+        <div className="grid grid-cols-4 gap-4 overflow-y-auto pr-4 pb-24">
+          {tools.map((tool, i) => (
+            <div key={i} className="bg-zinc-900 p-4 rounded-xl border border-zinc-800 text-white text-center hover:border-blue-500 transition-all cursor-pointer">
+              <Wand2 size={24} className="mx-auto mb-2 text-blue-500" />
+              <p className="text-xs uppercase">{tool}</p>
+            </div>
+          ))}
+        </div>
+        <Navigation />
+      </div>
+    );
+  }
+
+  // --- NODES 10-21: OTHER PAGES ---
+  return (
+    <div className="h-screen bg-black text-white flex flex-col items-center justify-center relative font-black italic p-10">
+      <h1 className="text-6xl text-blue-500 uppercase tracking-tighter mb-8">PAGE {page}</h1>
+      <p className="text-2xl text-zinc-400 uppercase mb-12">Coming Soon</p>
+      <Navigation />
+    </div>
+  );
+}
