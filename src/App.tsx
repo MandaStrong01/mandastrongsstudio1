@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Scissors, Volume2, Clock, CheckCircle, X, Settings, Play, Wand2, FileVideo } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Scissors, CheckCircle, X, Settings, Play, Wand2 } from 'lucide-react';
 
 export default function App() {
   const [page, setPage] = useState(1);
