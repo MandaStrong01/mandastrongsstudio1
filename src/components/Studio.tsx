@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Header from './Header';
 import StudioNav from './StudioNav';
 import ProjectsDashboard from './ProjectsDashboard';
-import AIToolsView from './AIToolsView';
 import VideoEditor from './VideoEditor';
 import AssetLibrary from './AssetLibrary';
 import AuthModal from './AuthModal';
@@ -23,8 +22,6 @@ export default function Studio() {
     switch (activeView) {
       case 'projects':
         return <ProjectsDashboard onEditProject={handleEditProject} />;
-      case 'ai-tools':
-        return <AIToolsView />;
       case 'editor':
         return <VideoEditor projectId={currentProjectId} />;
       case 'assets':
@@ -49,7 +46,7 @@ export default function Studio() {
             </button>
           </div>
         </div>
-        <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
+        {showAuth && <AuthModal onClose={() => setShowAuth(false)} onSuccess={() => setShowAuth(false)} />}
       </>
     );
   }
@@ -63,7 +60,7 @@ export default function Studio() {
       <div className={activeView === 'editor' ? 'h-[calc(100vh-64px)]' : ''}>
         {renderView()}
       </div>
-      <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} onSuccess={() => setShowAuth(false)} />}
     </div>
   );
 }
