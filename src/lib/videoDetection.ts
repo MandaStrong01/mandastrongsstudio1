@@ -2,7 +2,7 @@ export function isVideoFile(file: File): boolean {
   return file.type.startsWith('video/');
 }
 
-export async function extractVideoMetadata(file: File): Promise<any> {
+export async function extractVideoMetadata(file: File): Promise<Record<string, any>> {
   return new Promise((resolve) => {
     const video = document.createElement('video');
     video.preload = 'metadata';
@@ -13,12 +13,10 @@ export async function extractVideoMetadata(file: File): Promise<any> {
         duration: video.duration,
         width: video.videoWidth,
         height: video.videoHeight,
-        aspectRatio: video.videoWidth / video.videoHeight,
       });
     };
 
     video.onerror = () => {
-      window.URL.revokeObjectURL(video.src);
       resolve({});
     };
 
