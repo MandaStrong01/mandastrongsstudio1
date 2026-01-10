@@ -1,4 +1,4 @@
-import { ArrowLeft, Upload, Sparkles, File, Image, Video, Music, FileText, Check, Cloud, Link, Plus, FolderOpen } from 'lucide-react';
+import { ArrowLeft, Upload, Sparkles, File as FileIcon, Image, Video, Music, FileText, Check, Cloud, Link, Plus, FolderOpen } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile } from '../lib/storage';
@@ -356,7 +356,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                           <p className="text-xs text-white/70">Document</p>
                         </div>
                         <div className="p-4 bg-purple-900/20 rounded-lg">
-                          <File className="w-8 h-8 mx-auto text-purple-400 mb-2" />
+                          <FileIcon className="w-8 h-8 mx-auto text-purple-400 mb-2" />
                           <p className="text-xs text-white/70">Other</p>
                         </div>
                       </div>

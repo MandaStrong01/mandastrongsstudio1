@@ -24,6 +24,9 @@ export default function VideoEditor({ projectId }: VideoEditorProps) {
   const [clips, setClips] = useState<any[]>([]);
   const [showMediaAcceptor, setShowMediaAcceptor] = useState(false);
   const [availableAssets, setAvailableAssets] = useState<any[]>([]);
+  const [filters, setFilters] = useState<any[]>([]);
+  const [textOverlays, setTextOverlays] = useState<any[]>([]);
+  const [audioClips, setAudioClips] = useState<any[]>([]);
 
   useEffect(() => {
     if (projectId) {
@@ -108,17 +111,28 @@ export default function VideoEditor({ projectId }: VideoEditorProps) {
   const renderPanel = () => {
     switch (activePanel) {
       case 'timeline':
-        return <Timeline clips={clips} onClipsChange={setClips} />;
+        return <Timeline duration={duration} currentTime={currentTime} onSeek={setCurrentTime} />;
       case 'filters':
-        return <VideoFilters />;
+        return <VideoFilters onApplyFilter={(filter) => setFilters([...filters, filter])} currentFilters={filters} />;
       case 'effects':
-        return <VideoEffects />;
+        return <VideoEffects onApplyEffect={(effect) => console.log('Effect applied:', effect)} currentTime={currentTime} />;
       case 'text':
-        return <TextOverlayEditor />;
+        return <TextOverlayEditor
+          textOverlays={textOverlays}
+          currentTime={currentTime}
+          onAddText={(text, duration) => setTextOverlays([...textOverlays, { id: Date.now().toString(), text, startTime: currentTime, endTime: currentTime + duration }])}
+          onUpdateText={(id, updates) => setTextOverlays(textOverlays.map(t => t.id === id ? { ...t, ...updates } : t))}
+          onRemoveText={(id) => setTextOverlays(textOverlays.filter(t => t.id !== id))}
+        />;
       case 'audio':
-        return <AudioManager />;
+        return <AudioManager
+          audioClips={audioClips}
+          onAddAudio={(file) => setAudioClips([...audioClips, { id: Date.now().toString(), url: URL.createObjectURL(file), volume: 1 }])}
+          onUpdateVolume={(clipId, volume) => setAudioClips(audioClips.map(c => c.id === clipId ? { ...c, volume } : c))}
+          onRemoveAudio={(clipId) => setAudioClips(audioClips.filter(c => c.id !== clipId))}
+        />;
       case 'export':
-        return <ExportPanel projectId={projectId} />;
+        return <ExportPanel project={{ clips, duration, width: 1920, height: 1080 }} onExport={(format, quality) => console.log('Export:', format, quality)} />;
       default:
         return null;
     }
