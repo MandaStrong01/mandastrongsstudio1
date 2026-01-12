@@ -1,157 +1,124 @@
-/**
- * PERMANENT PRODUCTION LOCK: MANDASTRONG'S STUDIO
- * 100% IDENTICAL TO 22-PAGE DESIGN SCREENSHOTS
- * FONT: BOLD BLACK ITALIC (900)
- * NO EXTERNAL DEPENDENCIES - GUARANTEED ZERO ERRORS
- */
-
-import React, { useState } from 'react';
-
-// Custom SVG Icons to replace lucide-react (prevents all import errors)
-const Icons = {
-  Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
-  Shield: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#8a2be2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
-  Settings: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-};
-
-const styles = {
-  container: { backgroundColor: 'black', color: 'white', minHeight: '100vh', fontFamily: 'sans-serif', fontWeight: '900' as const, fontStyle: 'italic' as const, display: 'flex', flexDirection: 'column' as const, margin: 0 },
-  header: { padding: '15px 20px', backgroundColor: '#050505', borderBottom: '1px solid #1a1a1a', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  topTabs: { display: 'flex', gap: '5px', padding: '5px 20px', backgroundColor: '#000', borderBottom: '1px solid #1a1a1a', overflowX: 'auto' as const },
-  tab: { padding: '8px 15px', borderRadius: '5px', fontSize: '0.7rem', cursor: 'pointer', border: 'none', color: '#fff', whiteSpace: 'nowrap' as const, fontWeight: 'bold' as const },
-  purpleBtn: { backgroundColor: '#8a2be2', color: 'white', padding: '10px 25px', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' as const, textTransform: 'uppercase' as const },
-  toolGrid: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', padding: '20px', overflowY: 'auto' as const, maxHeight: '70vh' },
-  toolItem: { backgroundColor: '#0d0d0d', border: '1px solid #1a1a1a', padding: '15px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem' },
-  footer: { padding: '20px', textAlign: 'center' as const, fontSize: '0.8rem', borderTop: '1px solid #1a1a1a', marginTop: 'auto', fontStyle: 'normal' as const, color: '#666' }
-};
+import React, { useState, useEffect, useRef } from 'react';
+import { Scissors, Volume2, Clock, CheckCircle, X, Settings, Play, Wand2, FileVideo } from 'lucide-react';
 
 export default function App() {
   const [page, setPage] = useState(1);
-  const [duration, setDuration] = useState(90);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [volume, setVolume] = useState(100);
+  const [duration, setDuration] = useState(10);
+  const videoRef = useRef(null);
 
-  const renderTabs = () => (
-    <div style={styles.topTabs}>
-      <button onClick={() => setPage(11)} style={{ ...styles.tab, backgroundColor: page === 11 ? '#8a2be2' : '#1a1a1a' }}>Editor Home</button>
-      <button onClick={() => setPage(12)} style={{ ...styles.tab, backgroundColor: page === 12 ? '#8a2be2' : '#1a1a1a' }}>Media Library</button>
-      <button onClick={() => setPage(13)} style={{ ...styles.tab, backgroundColor: page === 13 ? '#8a2be2' : '#1a1a1a' }}>Timeline</button>
-      <button onClick={() => setPage(15)} style={{ ...styles.tab, backgroundColor: page === 15 ? '#8a2be2' : '#1a1a1a' }}>Audio Mixer</button>
-      <button onClick={() => setPage(14)} style={{ ...styles.tab, backgroundColor: page === 14 ? '#8a2be2' : '#1a1a1a' }}>Settings</button>
-      <button onClick={() => setPage(18)} style={{ ...styles.tab, backgroundColor: page === 18 ? '#8a2be2' : '#1a1a1a' }}>Export</button>
-      <button onClick={() => setPage(20)} style={{ ...styles.tab, backgroundColor: page === 20 ? '#8a2be2' : '#1a1a1a' }}>Grok Help</button>
+  useEffect(() => {
+    if (videoRef.current && page <= 2) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, [page]);
+
+  const Navigation = () => (
+    <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-[100] ${isEditorOpen ? 'hidden' : 'flex'}`}>
+      <button onClick={() => setPage(Math.max(1, page - 1))} className="bg-black text-white px-8 py-2 rounded-full font-black uppercase text-[10px] border border-white/20">BACK</button>
+      <button onClick={() => setPage(page + 1)} className="bg-black text-white px-8 py-2 rounded-full font-black uppercase text-[10px] border border-white/20">NEXT</button>
     </div>
   );
 
   return (
-    <div style={styles.container}>
-      {/* PAGE 1: SPLASH */}
+    <div className="h-screen bg-black overflow-hidden relative font-black italic text-white">
+      <video ref={videoRef} className={`absolute inset-0 w-full h-full object-cover transition-opacity ${page <= 2 ? 'opacity-100' : 'opacity-0'}`} src="background.mp4" loop playsInline />
+      
+      {/* NODE 1: SPLASH */}
       {page === 1 && (
-        <div style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("https://images.unsplash.com/photo-1505118380757-91f5f45d8de4")', backgroundSize: 'cover', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '6rem', margin: 0 }}>MANDASTRONG'S STUDIO</h1>
-          <p style={{ fontSize: '1.8rem', marginBottom: '40px' }}>THE ALL-IN-ONE MAKE-A-MOVIE APP</p>
-          <div style={{ display: 'flex', gap: '20px' }}>
-            <button onClick={() => setPage(2)} style={styles.purpleBtn}>NEXT</button>
-            <button onClick={() => setPage(3)} style={styles.purpleBtn}>LOGIN</button>
-          </div>
+        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center">
+          <h1 className="text-8xl text-black uppercase leading-none font-black tracking-tighter">MANDASTRONG'S STUDIO</h1>
+          <button onClick={() => setPage(3)} className="bg-black text-white px-12 py-4 rounded-xl font-black mt-10 uppercase shadow-2xl">Enter Studio</button>
         </div>
       )}
 
-      {/* PAGE 3: LOGIN & PLANS */}
+      {/* NODE 3: PRICING ($20, $40, $80) */}
       {page === 3 && (
-        <div style={{ padding: '40px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '40px' }}>
-            <div style={{ border: '3px solid #8a2be2', padding: '20px', width: '45%' }}>
-              <h2 style={{ color: '#8a2be2' }}>LOGIN</h2>
-              <input placeholder="EMAIL" style={{ width: '90%', padding: '10px', margin: '10px 0', background: 'black', border: '1px solid #333', color: 'white' }} />
-              <button onClick={() => setPage(4)} style={{ ...styles.purpleBtn, width: '100%' }}>LOGIN</button>
-            </div>
-            <div style={{ border: '3px solid #8a2be2', padding: '20px', width: '45%' }}>
-              <h2 style={{ color: '#8a2be2' }}>REGISTER</h2>
-              <input placeholder="NAME" style={{ width: '90%', padding: '10px', margin: '10px 0', background: 'black', border: '1px solid #333', color: 'white' }} />
-              <button onClick={() => setPage(4)} style={{ ...styles.purpleBtn, width: '100%' }}>REGISTER</button>
-            </div>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-             {["BASIC - $10", "PRO - $20", "STUDIO - $30"].map(plan => (
-               <div key={plan} style={{ border: '1px solid #333', padding: '20px', width: '200px', textAlign: 'center' }}>
-                 <h3>{plan}</h3>
-                 <button onClick={() => setPage(4)} style={styles.purpleBtn}>SELECT</button>
-               </div>
-             ))}
+        <div className="h-full bg-black flex flex-col items-center p-8 border-[15px] border-zinc-900 overflow-y-auto pb-32">
+          <h2 className="text-6xl uppercase font-black mb-12 mt-10">Select Plan</h2>
+          <div className="grid grid-cols-3 gap-6 w-full max-w-6xl">
+            {[{t:"BASIC", p:"20"}, {t:"PRO", p:"40"}, {t:"STUDIO", p:"80"}].map((plan, i) => (
+              <div key={i} className="bg-zinc-900 p-10 rounded-3xl border-2 border-white/5 text-center">
+                <h3 className="text-xl opacity-60 mb-2 uppercase tracking-widest">{plan.t}</h3>
+                <div className="text-7xl font-black mb-6 tracking-tighter">${plan.p}</div>
+                <button onClick={() => setPage(11)} className="w-full bg-white text-black py-4 rounded-xl font-black uppercase hover:bg-cyan-500 transition-all">Select</button>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-      {/* PAGE 13: TIMELINE (180 MIN) */}
-      {page === 13 && (
-        <>
-          <div style={styles.header}><h2>TIMELINE</h2><button onClick={() => setPage(14)} style={styles.purpleBtn}>NEXT</button></div>
-          {renderTabs()}
-          <div style={{ padding: '40px' }}>
-            <div style={{ height: '300px', background: '#000', border: '1px solid #1a1a1a', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icons.Play />
+      {/* NODE 11: MEDIA LIBRARY + ATTACHMENT */}
+      {page === 11 && (
+        <div className="h-full bg-[#050505] flex flex-col border-[20px] border-zinc-900 relative">
+          <div className="p-10 flex flex-col h-full">
+            <div className="flex justify-between items-center mb-10 text-left">
+              <div>
+                <h2 className="text-5xl uppercase font-black tracking-tighter leading-none">Media Library</h2>
+                <p className="text-cyan-500 text-[10px] mt-2 tracking-[0.3em] uppercase font-black">Studio Assets 2026</p>
+              </div>
+              <div className="flex gap-4">
+                <button onClick={() => setIsEditorOpen(true)} className="bg-cyan-500 px-6 py-3 rounded-xl font-black text-black uppercase flex items-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:bg-white transition-all">
+                  <Scissors size={18}/> Open Video Editor
+                </button>
+                <button className="bg-purple-600 px-6 py-3 rounded-xl font-black uppercase flex items-center gap-2 opacity-40">
+                  <Wand2 size={18}/> Enhancement Suite
+                </button>
+              </div>
             </div>
-            <div style={{ background: '#050505', border: '1px solid #8a2be2', padding: '20px', borderRadius: '10px', textAlign: 'center' }}>
-              <h3>MOVIE DURATION</h3>
-              <div style={{ fontSize: '4rem', color: '#8a2be2' }}>{duration} MINUTES</div>
-              <input type="range" min="0" max="180" value={duration} onChange={(e) => setDuration(parseInt(e.target.value))} style={{ width: '100%', accentColor: '#8a2be2' }} />
+            <div className="bg-zinc-900 p-8 rounded-3xl border border-white/5 w-48 text-center opacity-40 italic">
+              Raw_Footage_01.mp4
             </div>
           </div>
-        </>
-      )}
 
-      {/* PAGE 19: LEGAL AGREEMENT */}
-      {page === 19 && (
-        <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>
-          <div style={{ border: '1px solid #8a2be2', padding: '40px', backgroundColor: '#0a0a0a', borderRadius: '15px', textAlign: 'center' }}>
-            <Icons.Shield />
-            <h2 style={{ color: '#8a2be2', marginTop: '20px' }}>Legal Agreement</h2>
-            <div style={{ height: '300px', overflowY: 'auto', background: '#000', padding: '20px', marginTop: '20px', fontSize: '0.85rem', textAlign: 'left', fontWeight: 'normal', fontStyle: 'normal' }}>
-              <p>Welcome to MandaStrong Studio. By accessing this application, you agree to be bound by these Terms of Service.</p>
-              <p>1. Acceptance of Terms: Create an account and you agree to bully prevention standards.</p>
-              <p>2. License Grant: Limited, non-transferable, revocable license for movie creation.</p>
+          {/* ATTACHMENT: ADVANCED ENHANCEMENT PANEL */}
+          {isEditorOpen && (
+            <div className="absolute inset-0 z-[200] bg-[#050505] flex flex-col p-12 animate-in slide-in-from-bottom duration-300">
+              <div className="flex justify-between items-start mb-10 text-left">
+                <div>
+                  <h2 className="text-7xl uppercase font-black text-cyan-400 tracking-tighter leading-none">Advanced Enhancer</h2>
+                  <p className="text-zinc-500 text-xs mt-2 tracking-widest uppercase">Master Studio Quality Controls</p>
+                </div>
+                <button onClick={() => setIsEditorOpen(false)} className="bg-zinc-900 p-4 rounded-full border border-white/10 hover:bg-red-500 transition-all"><X size={32}/></button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-12 flex-1 pb-20">
+                <div className="space-y-12 bg-zinc-900/40 p-12 rounded-[3.5rem] border border-white/5 shadow-2xl backdrop-blur-xl">
+                  {/* SLIDERS */}
+                  <div>
+                    <div className="flex justify-between mb-4 uppercase text-zinc-400 tracking-widest"><span>Audio Gain</span><span className="text-cyan-400 text-3xl font-black">{volume}%</span></div>
+                    <input type="range" min="0" max="200" value={volume} onChange={(e)=>setVolume(parseInt(e.target.value))} className="w-full accent-cyan-400 h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer" />
+                  </div>
+                  <div>
+                    <div className="flex justify-between mb-4 uppercase text-zinc-400 tracking-widest"><span>Duration (0-180m)</span><span className="text-cyan-400 text-3xl">{duration}m</span></div>
+                    <input type="range" min="0" max="180" value={duration} onChange={(e)=>setDuration(parseInt(e.target.value))} className="w-full accent-cyan-400 h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer" />
+                  </div>
+                  {/* TOOLS */}
+                  <div className="grid grid-cols-2 gap-4 pt-10 border-t border-white/5">
+                    {['4K Upscale', 'AI Color', 'De-Noise', 'Frame Gen'].map(t => (
+                      <button key={t} className="bg-black/50 p-6 rounded-2xl border border-white/5 text-[10px] uppercase font-black flex justify-between items-center group">{t} <Settings size={14} className="group-hover:rotate-90 transition-all"/></button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-black rounded-[3.5rem] border-2 border-cyan-500/20 flex flex-col items-center justify-center relative shadow-inner overflow-hidden text-center">
+                   <Play size={64} className="text-cyan-500 mb-6" />
+                   <p className="uppercase text-[10px] opacity-30 mb-8 tracking-widest">Previewing Enhanced Output</p>
+                   <button className="bg-white text-black px-12 py-4 rounded-full font-black uppercase text-xl flex items-center gap-3 shadow-2xl"><CheckCircle size={24}/> Export Movie</button>
+                </div>
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: '10px', marginTop: '30px' }}>
-              <button onClick={() => setPage(20)} style={{ ...styles.purpleBtn, flex: 1 }}>Accept & Continue</button>
-              <button onClick={() => setPage(1)} style={{ ...styles.purpleBtn, flex: 1, backgroundColor: '#333' }}>Decline</button>
-            </div>
-          </div>
+          )}
         </div>
       )}
 
-      {/* PAGE 21: MISSION STATEMENT */}
-      {page === 21 && (
-        <div style={{ padding: '40px', textAlign: 'center', maxWidth: '900px', margin: '0 auto' }}>
-          <h1 style={{ fontSize: '5rem', color: '#8a2be2' }}>THAT'S ALL FOLKS!</h1>
-          <div style={{ background: '#0a0a0a', border: '1px solid #1a1a1a', padding: '30px', borderRadius: '20px' }}>
-            <h2>About Our Mission</h2>
-            <p style={{ fontStyle: 'normal', fontWeight: 'normal', lineHeight: '1.6' }}>
-              MandaStrong Studio is part of a comprehensive educational initiative designed to bring awareness regarding bullying prevention.
-            </p>
-            <div style={{ background: '#8a2be222', padding: '20px', border: '1px solid #8a2be2', marginTop: '20px', borderRadius: '10px' }}>
-              <h3 style={{ margin: 0 }}>Supporting Our Heroes</h3>
-              <p style={{ fontStyle: 'normal', marginTop: '10px' }}>100% of all proceeds from our Etsy Store fundraiser are donated directly to <strong>Veterans Mental Health Services</strong>.</p>
-            </div>
-          </div>
-          <button onClick={() => setPage(1)} style={{ ...styles.purpleBtn, marginTop: '30px' }}>RETURN HOME</button>
-        </div>
+      {/* FALLBACK FOR OTHER NODES */}
+      {![1,3,11].includes(page) && (
+        <div className="h-full bg-black border-[20px] border-zinc-900 flex flex-col items-center justify-center text-white italic font-black opacity-10 uppercase text-9xl">Node {page}</div>
       )}
-
-      {/* FALLBACK FOR OTHER PAGES */}
-      {![1,3,13,19,21].includes(page) && (
-        <div style={{ padding: '100px', textAlign: 'center' }}>
-          <h1>PAGE {page} OF 22</h1>
-          <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '40px' }}>
-            <button onClick={() => setPage(page - 1)} style={{ ...styles.purpleBtn, backgroundColor: '#333' }}>BACK</button>
-            <button onClick={() => setPage(page + 1)} style={styles.purpleBtn}>NEXT</button>
-          </div>
-        </div>
-      )}
-
-      {page >= 3 && (
-        <footer style={styles.footer}>
-          MandaStrong1 • Author Of Doxy The School Bully • MandaStrong1.Etsy.com
-        </footer>
-      )}
+      
+      <Navigation />
     </div>
   );
 }
