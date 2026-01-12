@@ -1,29 +1,64 @@
-import { Link } from "react-router-dom";
+import { Film } from 'lucide-react';
 
-export default function Page1() {
+interface PageProps {
+  onNavigate: (page: number) => void;
+}
+
+export default function Page1({ onNavigate }: PageProps) {
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-10">
-      <h1 className="text-5xl font-black mb-6 text-purple-400">
-        MANDASTRONG STUDIO
-      </h1>
-      <p className="text-lg text-gray-300 mb-10 text-center max-w-xl">
-        Build full-length movies using AI, media tools, and your original vision.
-      </p>
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4 relative overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/30 via-black to-slate-900/30 animate-pulse"></div>
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,_white_1px,_transparent_1px)] bg-[length:50px_50px]"></div>
+        </div>
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-800/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
+      </div>
 
-      <div className="flex gap-6">
-        <Link
-          to="/media"
-          className="px-8 py-4 bg-purple-700 rounded-xl font-bold"
-        >
-          Open Media Library
-        </Link>
+      <div className="relative z-10 text-center max-w-5xl">
+        <div className="flex justify-center mb-8">
+          <div className="bg-slate-900/30 backdrop-blur-sm p-6 rounded-2xl border border-blue-500/50 shadow-2xl">
+            <Film className="w-20 h-20 text-white" />
+          </div>
+        </div>
 
-        <Link
-          to="/editor"
-          className="px-8 py-4 border border-purple-600 rounded-xl font-bold"
-        >
-          Open Editor Suite
-        </Link>
+        <h1 className="text-7xl md:text-8xl font-black mb-6 tracking-tight">
+          <span className="bg-gradient-to-r from-blue-400 via-white to-blue-400 bg-clip-text text-transparent">
+            MANDASTRONG'S
+          </span>
+          <br />
+          <span className="bg-gradient-to-r from-blue-400 via-white to-blue-400 bg-clip-text text-transparent">
+            STUDIO
+          </span>
+        </h1>
+
+        <p className="text-2xl md:text-3xl font-bold italic mb-12 text-blue-400">
+          Welcome To The All-In-One Make-A-Movie-With-Two-Hours-Duration App!
+        </p>
+
+        <div className="flex flex-wrap gap-4 justify-center">
+          <button
+            onClick={() => onNavigate(1)}
+            className="bg-blue-600 text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-blue-500 transition-all transform hover:scale-105 shadow-xl"
+          >
+            Next
+          </button>
+          <button
+            onClick={() => onNavigate(2)}
+            className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-slate-900 transition-all border border-blue-500 shadow-xl"
+          >
+            Login
+          </button>
+          <button
+            onClick={() => onNavigate(2)}
+            className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-slate-900 transition-all border border-blue-500 shadow-xl"
+          >
+            Register
+          </button>
+        </div>
       </div>
     </div>
   );
