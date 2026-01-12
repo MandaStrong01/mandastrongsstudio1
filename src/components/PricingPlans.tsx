@@ -142,8 +142,7 @@ export default function PricingPlans({ onNavigate }: PricingPlansProps) {
         </div>
 
         <div className="text-center text-slate-400 text-sm">
-          <p>All plans include a 14-day free trial. Cancel anytime.</p>
-          <p className="mt-2">Need a custom solution? <a href="mailto:support@mandastrong.com" className="text-cyan-400 hover:text-cyan-300">Contact us</a></p>
+          <p>Need a custom solution? <a href="mailto:support@mandastrong.com" className="text-cyan-400 hover:text-cyan-300">Contact us</a></p>
         </div>
       </div>
     </div>
