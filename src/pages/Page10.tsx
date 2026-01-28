@@ -1,9 +1,35 @@
-import { ArrowLeft, ArrowRight, Play, Pause, SkipBack, SkipForward, Upload } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Play, Pause, Upload, Loader2, SkipBack, SkipForward } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile, getAssets } from '../lib/storage';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
+import AdvancedTimeline from '../components/AdvancedTimeline';
+import VideoFilters from '../components/VideoFilters';
+import VideoEffects from '../components/VideoEffects';
+import AudioManager from '../components/AudioManager';
+import TextOverlayEditor from '../components/TextOverlayEditor';
+import StickerPanel from '../components/StickerPanel';
+import ExportPanel, { ExportFormat, ExportQuality } from '../components/ExportPanel';
+import {
+  VideoProject,
+  createVideoProject,
+  addVideoClip,
+  addAudioClip,
+  addTextOverlay,
+  addSticker,
+  applyFilterToClip,
+  applyEffectToClip,
+  splitClip,
+  removeClip,
+  removeTextOverlay,
+  removeSticker,
+  Filter,
+  Effect,
+  TextOverlay,
+  Sticker,
+} from '../lib/videoEngine';
+import { createRenderEngine, RenderProgress } from '../lib/renderEngine';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -22,6 +48,7 @@ export default function Page10({ onNavigate }: PageProps) {
   const [uploading, setUploading] = useState(false);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<Asset | null>(null);
+  const [loading, setLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -29,6 +56,12 @@ export default function Page10({ onNavigate }: PageProps) {
       loadAssets();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (selectedVideo && videoRef.current) {
+      videoRef.current.load();
+    }
+  }, [selectedVideo]);
 
   const loadAssets = async () => {
     if (!user) return;
@@ -98,7 +131,7 @@ export default function Page10({ onNavigate }: PageProps) {
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="max-w-6xl w-full">
-          <h1 className="text-2xl md:text-4xl font-black text-purple-400 mb-6 text-center">DOXY THE SCHOOL BULLY</h1>
+          <h1 className="text-2xl md:text-4xl font-black text-purple-400 mb-6 text-center">VIDEO STUDIO</h1>
 
           <div className="mb-6 text-center">
             <button
@@ -150,6 +183,14 @@ export default function Page10({ onNavigate }: PageProps) {
                   src={selectedVideo.file_url}
                   onPlay={() => setIsPlaying(true)}
                   onPause={() => setIsPlaying(false)}
+                  onLoadStart={() => setLoading(true)}
+                  onLoadedData={() => setLoading(false)}
+                  onError={() => {
+                    setLoading(false);
+                    alert('Failed to load video');
+                  }}
+                  preload="metadata"
+                  controls
                 />
               ) : (
                 <div className="text-center p-8">
@@ -188,14 +229,14 @@ export default function Page10({ onNavigate }: PageProps) {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => onNavigate(9)}
+              onClick={() => onNavigate(8)}
               className="flex items-center justify-center gap-2 bg-black text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-900 transition-all border border-purple-500"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
-              onClick={() => onNavigate(11)}
+              onClick={() => onNavigate(10)}
               className="flex items-center justify-center gap-2 bg-purple-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-500 transition-all"
             >
               Next
