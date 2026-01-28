@@ -1,161 +1,69 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Play, Bot, Menu, Search, X, Send, ChevronRight, ChevronLeft, Sparkles, Check, MessageCircle, Grid3X3
-} from 'lucide-react';
-
-// --- DATA LOCKED TO IMAGES ---
-const TOOL_BOARDS = {
-  Writing: ["Dialogue Writer", "Plot Generator", "Scene Writer", "Story Outliner", "Character Developer", "Dialogue Editor", "Plot Designer", "Story Planner", "Treatment Writer", "Script Formatter", "Plot Creator", "Three Act Builder", "Backstory Generator", "Motivation Builder", "Theme Generator", "Advanced Story Outliner", "Story Consultant", "Plot Twist Creator", "Scene Analyzer", "Conflict Generator"],
-  Voice: ["Voice Maker", "Voice Cloner", "Voice Creator Tool", "Voice Recorder", "Speech Converter", "Voice Builder", "Advanced Voice Gener...", "Voice Studio Tool", "Premium Voice Gener...", "Voice Audio Tool", "Emotional Voice Gener...", "Advanced Speech Crea...", "Natural Voice Generator", "Voice Reader", "Speech Generator", "Narration Creator", "Voice Imitator", "Fast Speech Generator", "Live Voice Tool", "Streaming Voice Gener..."],
-  Image: ["Image Creator", "Advanced Image Gene...", "Design Generator", "Image Tool", "Art Maker", "Art Mixer", "Image Stream Tool", "Art Library Tool", "Workflow Tool", "Auto Image Generator", "Image Studio Pro", "Easy Image Generator", "Text Inversion Tool", "Style Tool", "Model Trainer", "Style Transfer Tool", "Turnaround Generator", "Expression Grid Tool", "Depth Controller", "Edge Guide Tool"],
-  Video: ["Motion Video Maker", "Video Creator", "Avatar Generator", "Video Synthesizer", "Video Studio", "Video Flow Generator", "Video Creator Studio", "Video Crafter", "Image to Motion Tool", "Video Style Tool", "Temporal Flow Tool", "Frame Blender", "Dynamic Pan Tool", "Tilt Shot Tool", "Tracking Shot Tool", "Crane Movement Tool", "Steadycam Tool", "Handheld Effect Tool", "Shot Transition Tool", "Establishing Shot Tool"],
-  Motion: ["Motion Animator", "Motion Studio", "Auto Animator", "Motion Flow Tool", "Motion Capture Pro", "Webcam Motion Tool", "Skeleton Tracker", "Joint Tracker", "Character Rigger", "3D Character Studio", "Player Avatar Creator", "Avatar Generator", "Face Tracker", "Facial Motion Tool", "Audio to Face Tool", "Face Audio Syncer", "3D Shape Generator", "3D Model Tool", "Gaussian Splat Render", "3D From Image Tool"]
-};
+import { useState } from 'react';
+import { AuthProvider } from './contexts/AuthContext';
+import Page1 from './pages/Page1';
+import Page2 from './pages/Page2';
+import Page3 from './pages/Page3';
+import Page4 from './pages/Page4';
+import Page5 from './pages/Page5';
+import Page6 from './pages/Page6';
+import Page7 from './pages/Page7';
+import Page8 from './pages/Page8';
+import Page9 from './pages/Page9';
+import Page10 from './pages/Page10';
+import Page11 from './pages/Page11';
+import Page12 from './pages/Page12';
+import Page13 from './pages/Page13';
+import Page14 from './pages/Page14';
+import Page15 from './pages/Page15';
+import Page16 from './pages/Page16';
+import Page17 from './pages/Page17';
+import Page18 from './pages/Page18';
+import Page19 from './pages/Page19';
+import Page20 from './pages/Page20';
+import Page21 from './pages/Page21';
+import Page22 from './pages/Page22';
 
 export default function App() {
-  const [page, setPage] = useState(1);
-  const [duration, setDuration] = useState(90);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => { window.scrollTo(0, 0); }, [page]);
-
-  // GLOBAL UI ELEMENTS
-  const GlobalFooter = () => (
-    <div className="fixed bottom-0 left-0 w-full z-50 bg-black/95 border-t border-purple-900/30 py-4 text-center">
-      <p className="text-[10px] font-black text-white uppercase tracking-widest">
-        MandaStrong1 2026 ~ Author Of Doxy The School Bully ~ Also Find Me On MandaStrong1.Etsy.com
-      </p>
-    </div>
-  );
-
-  const NavButtons = () => (
-    <div className="fixed bottom-16 left-1/2 -translate-x-1/2 flex gap-6 z-50">
-      <button onClick={() => setPage(page - 1)} className="bg-zinc-900 border-2 border-purple-600 px-12 py-3 rounded-xl text-purple-400 font-black uppercase text-xl shadow-2xl flex items-center gap-3"><ChevronLeft size={28}/> Back</button>
-      <button onClick={() => setPage(page + 1)} className="bg-purple-600 border-2 border-purple-400 px-14 py-3 rounded-2xl text-white font-black uppercase text-xl shadow-[0_0_50px_rgba(168,85,247,0.4)] flex items-center gap-3">Next <ChevronRight size={28}/></button>
-    </div>
-  );
+  const navigate = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo(0, 0);
+  };
 
   const renderPage = () => {
-    switch (page) {
-      case 1: // LANDING
-        return (
-          <div className="h-screen relative flex flex-col items-center justify-center overflow-hidden">
-            <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
-              <source src="background__2_.mp4" type="video/mp4" />
-            </video>
-            <div className="relative z-10 text-center px-4">
-              <h1 className="text-7xl md:text-9xl font-black text-black italic tracking-tighter leading-none mb-4" style={{ fontFamily: 'Impact, sans-serif' }}>MANDASTRONG'S STUDIO</h1>
-              <p className="text-2xl font-black text-black uppercase italic tracking-tight mb-32 underline underline-offset-8 decoration-4 decoration-black">Welcome To The All-In-One Make-A-Movie App!</p>
-              <div className="flex gap-6 justify-center scale-110">
-                <button onClick={() => setPage(2)} className="bg-black text-white px-16 py-5 rounded-2xl font-bold text-2xl shadow-2xl border-2 border-zinc-800">Next</button>
-                <button onClick={() => setPage(3)} className="bg-black text-white px-16 py-5 rounded-2xl font-bold text-2xl shadow-2xl border-2 border-zinc-800">Login</button>
-                <button onClick={() => setPage(3)} className="bg-black text-white px-16 py-5 rounded-2xl font-bold text-2xl shadow-2xl border-2 border-zinc-800">Register</button>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 3: // UPDATED PLANS: $20, $30, $50
-        return (
-          <div className="min-h-screen pt-20 pb-64 px-6 flex flex-col items-center bg-black">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl">
-              {[
-                {t:'Basic', p:'$20', d:['HD Export', '100 AI Tools', 'Basic Templates', '10GB Storage']},
-                {t:'Pro', p:'$30', d:['4K Export', '300 AI Tools', 'Premium Templates', '100GB Storage'], s:true},
-                {t:'Studio', p:'$50', d:['8K Export', 'All 600 AI Tools', 'Unlimited Templates', '1TB Storage']}
-              ].map(plan => (
-                <div key={plan.t} className={`p-10 rounded-[50px] border-2 transition-all flex flex-col ${plan.s ? 'border-yellow-500 scale-105 bg-zinc-900 shadow-2xl' : 'border-purple-900/30 bg-zinc-950'}`}>
-                  {plan.s && <div className="bg-purple-600 text-white text-[10px] px-5 py-1.5 rounded-full font-black uppercase w-fit mb-6">Popular</div>}
-                  <h3 className="text-4xl font-black text-white mb-2 uppercase italic">{plan.t}</h3>
-                  <div className="text-6xl font-black text-purple-400 mb-10">{plan.p}<span className="text-xl text-white/40">/mo</span></div>
-                  <ul className="space-y-4 mb-10 flex-grow text-white/80 font-bold uppercase italic">
-                    {plan.d.map(item => <li key={item} className="text-xs flex gap-4"><Check size={20} className="text-purple-500"/> {item}</li>)}
-                  </ul>
-                  <button onClick={() => setPage(4)} className="w-full bg-purple-600 py-6 rounded-[30px] font-black text-2xl uppercase italic text-white">Select Plan</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-
-      case 4: case 5: case 6: case 7: case 8: // AI TOOL BOARDS
-        const boardKey = Object.keys(TOOL_BOARDS)[page-4];
-        return (
-          <div className="min-h-screen bg-black p-12 pt-24 pb-64">
-            <div className="flex justify-between items-center mb-16 px-10">
-              <h1 className="text-8xl font-black text-purple-600 uppercase italic tracking-tighter underline underline-offset-8 decoration-purple-900/30">
-                {boardKey.toUpperCase()} BOARD
-              </h1>
-              <div className="relative w-96">
-                <Search className="absolute left-6 top-6 text-purple-600" size={24} />
-                <input placeholder="SEARCH TOOLS..." className="w-full bg-zinc-900 border-2 border-purple-900/40 p-6 pl-16 rounded-3xl font-black text-white text-lg focus:border-purple-500 outline-none uppercase italic" />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-10 max-h-[55vh] overflow-y-auto custom-scrollbar">
-              {TOOL_BOARDS[boardKey as keyof typeof TOOL_BOARDS].map((tool, i) => (
-                <button key={i} className="bg-zinc-950 border-2 border-purple-900/30 p-10 rounded-[35px] group hover:bg-purple-600 transition-all text-left flex items-center gap-8 relative overflow-hidden">
-                  <div className="bg-purple-600/10 p-5 rounded-2xl group-hover:bg-white/20 transition"><Sparkles size={40} className="text-purple-500 group-hover:text-white" /></div>
-                  <span className="text-3xl md:text-5xl font-black text-white group-hover:text-black uppercase italic tracking-tighter leading-none">{tool}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        );
-
-      case 14: // ENHANCEMENT STUDIO (0-180 MIN SLIDER)
-        return (
-          <div className="min-h-screen bg-black p-12 pt-24 pb-64 flex flex-col">
-            <h1 className="text-8xl font-black text-purple-600 uppercase italic mb-16 tracking-tighter underline underline-offset-8 decoration-purple-900/30">ENHANCEMENT STUDIO</h1>
-            <div className="flex-1 grid md:grid-cols-2 gap-12 mb-10">
-              <div className="bg-zinc-900 border-2 border-purple-900/30 rounded-[60px] flex items-center justify-center relative shadow-inner">
-                <Play size={120} className="text-purple-600 opacity-20" />
-                <div className="absolute top-10 left-10 bg-purple-600 px-8 py-3 rounded-2xl text-xs font-black uppercase text-white shadow-lg italic">Live Cinematic Viewer</div>
-              </div>
-              <div className="bg-zinc-950 p-16 rounded-[60px] border-2 border-purple-900/20 flex flex-col justify-center text-center">
-                <label className="text-3xl font-black block mb-12 italic text-purple-500 uppercase tracking-widest underline underline-offset-8 decoration-purple-600">Movie Duration Slider</label>
-                <div className="text-9xl font-black text-white mb-12 italic tracking-tighter">{duration}<span className="text-2xl text-gray-600 uppercase ml-6 font-black">MIN</span></div>
-                <input type="range" min="0" max="180" value={duration} onChange={(e) => setDuration(parseInt(e.target.value))} className="w-full h-4 bg-zinc-900 rounded-lg appearance-none cursor-pointer accent-purple-600" />
-                <div className="flex justify-between mt-8 text-xs font-black uppercase text-gray-700 tracking-[0.2em]"><span>0 min</span><span>180 min cap</span></div>
-              </div>
-            </div>
-            <div className="flex justify-center"><button onClick={() => setPage(15)} className="bg-purple-600 border-4 border-purple-400 px-32 py-8 rounded-[40px] font-black text-4xl uppercase italic shadow-2xl">Continue Rendering</button></div>
-          </div>
-        );
-
-      case 21: // THE FINALE
-        return (
-          <div className="min-h-screen bg-black p-12 pt-24 flex flex-col items-center">
-            <div className="max-w-[1400px] w-full bg-zinc-950 border-[6px] border-purple-600 rounded-[120px] p-24 text-center">
-              <h1 className="text-[10rem] font-black text-purple-600 mb-12 uppercase italic leading-none tracking-tighter underline underline-offset-[20px] decoration-purple-900/40">THAT'S ALL FOLKS!</h1>
-              <div className="bg-purple-900/10 border-2 border-purple-600 p-16 rounded-[80px] mb-20 text-center">
-                <h2 className="text-5xl font-black text-white mb-10 uppercase italic underline underline-offset-8">A Special Thank You</h2>
-                <p className="text-2xl text-gray-300 italic mb-12 font-medium leading-relaxed max-w-5xl mx-auto uppercase">Supporting Veterans Mental Health & School Safety Initiatives Through Your Creative Vision.</p>
-                <button onClick={() => window.open('https://MandaStrong1.Etsy.com')} className="bg-purple-600 px-24 py-6 rounded-3xl font-black text-3xl uppercase italic shadow-2xl border-2 border-purple-400">Visit Etsy Store</button>
-              </div>
-              <button onClick={() => setPage(1)} className="bg-green-600 px-32 py-8 rounded-[40px] font-black text-4xl border-4 border-green-400 uppercase italic shadow-2xl">Return Home</button>
-            </div>
-          </div>
-        );
-
-      default: return <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white"><h1 className="text-6xl font-black text-purple-500 italic uppercase">Module {page}</h1><NavButtons /></div>;
+    switch (currentPage) {
+      case 1: return <Page1 onNavigate={navigate} />;
+      case 2: return <Page2 onNavigate={navigate} />;
+      case 3: return <Page3 onNavigate={navigate} />;
+      case 4: return <Page4 onNavigate={navigate} />;
+      case 5: return <Page5 onNavigate={navigate} />;
+      case 6: return <Page6 onNavigate={navigate} />;
+      case 7: return <Page7 onNavigate={navigate} />;
+      case 8: return <Page8 onNavigate={navigate} />;
+      case 9: return <Page9 onNavigate={navigate} />;
+      case 10: return <Page10 onNavigate={navigate} />;
+      case 11: return <Page11 onNavigate={navigate} />;
+      case 12: return <Page12 onNavigate={navigate} />;
+      case 13: return <Page13 onNavigate={navigate} />;
+      case 14: return <Page14 onNavigate={navigate} />;
+      case 15: return <Page15 onNavigate={navigate} />;
+      case 16: return <Page16 onNavigate={navigate} />;
+      case 17: return <Page17 onNavigate={navigate} />;
+      case 18: return <Page18 onNavigate={navigate} />;
+      case 19: return <Page19 onNavigate={navigate} />;
+      case 20: return <Page20 onNavigate={navigate} />;
+      case 21: return <Page21 onNavigate={navigate} />;
+      case 22: return <Page22 onNavigate={navigate} />;
+      default: return <Page1 onNavigate={navigate} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-black overflow-x-hidden font-sans selection:bg-purple-600">
-      {renderPage()}
-      <GlobalFooter />
-      {page > 1 && page < 21 && <NavButtons />}
-      <button className="fixed bottom-10 right-10 bg-purple-600 p-6 rounded-full shadow-[0_0_50px_rgba(168,85,247,0.5)] z-[100] hover:scale-110 transition border-2 border-purple-400">
-        <MessageCircle size={40} className="text-white fill-white" />
-      </button>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        .custom-scrollbar::-webkit-scrollbar { width: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #8a2be2; border-radius: 20px; border: 3px solid black; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 40px; width: 40px; border-radius: 50%; background: #fff; cursor: pointer; border: 4px solid #8a2be2; box-shadow: 0 0 20px #8a2be2; }
-      `}} />
-    </div>
+    <AuthProvider>
+      <div className="min-h-screen bg-black">
+        {renderPage()}
+      </div>
+    </AuthProvider>
   );
 }
