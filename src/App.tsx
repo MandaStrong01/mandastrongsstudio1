@@ -1,19 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Video, Music, Image as ImageIcon, Mic, Settings, HelpCircle, Save, Share2, Download, 
-  Upload, Play, Heart, MessageSquare, Menu, X, Search, Info, BookOpen, ChevronRight, 
-  ChevronLeft, Monitor, HardDrive, Layers, Film, Sliders, Palette, Sparkles, Check, 
-  MessageCircle, Activity, Grid3X3, Trash2, Scissors, Wand2, Volume2, MonitorPlay
+  Play, Bot, Menu, Search, X, Send, ChevronRight, ChevronLeft, Sparkles, Check, MessageCircle, Grid3X3
 } from 'lucide-react';
 
-// --- DATA LOCKED TO PREVIOUS INSTRUCTIONS ---
+// --- DATA LOCKED TO IMAGES ---
 const TOOL_BOARDS = {
   Writing: ["Dialogue Writer", "Plot Generator", "Scene Writer", "Story Outliner", "Character Developer", "Dialogue Editor", "Plot Designer", "Story Planner", "Treatment Writer", "Script Formatter", "Plot Creator", "Three Act Builder", "Backstory Generator", "Motivation Builder", "Theme Generator", "Advanced Story Outliner", "Story Consultant", "Plot Twist Creator", "Scene Analyzer", "Conflict Generator"],
   Voice: ["Voice Maker", "Voice Cloner", "Voice Creator Tool", "Voice Recorder", "Speech Converter", "Voice Builder", "Advanced Voice Gener...", "Voice Studio Tool", "Premium Voice Gener...", "Voice Audio Tool", "Emotional Voice Gener...", "Advanced Speech Crea...", "Natural Voice Generator", "Voice Reader", "Speech Generator", "Narration Creator", "Voice Imitator", "Fast Speech Generator", "Live Voice Tool", "Streaming Voice Gener..."],
   Image: ["Image Creator", "Advanced Image Gene...", "Design Generator", "Image Tool", "Art Maker", "Art Mixer", "Image Stream Tool", "Art Library Tool", "Workflow Tool", "Auto Image Generator", "Image Studio Pro", "Easy Image Generator", "Text Inversion Tool", "Style Tool", "Model Trainer", "Style Transfer Tool", "Turnaround Generator", "Expression Grid Tool", "Depth Controller", "Edge Guide Tool"],
   Video: ["Motion Video Maker", "Video Creator", "Avatar Generator", "Video Synthesizer", "Video Studio", "Video Flow Generator", "Video Creator Studio", "Video Crafter", "Image to Motion Tool", "Video Style Tool", "Temporal Flow Tool", "Frame Blender", "Dynamic Pan Tool", "Tilt Shot Tool", "Tracking Shot Tool", "Crane Movement Tool", "Steadycam Tool", "Handheld Effect Tool", "Shot Transition Tool", "Establishing Shot Tool"],
-  Motion: ["Motion Animator", "Motion Studio", "Auto Animator", "Motion Flow Tool", "Motion Capture Pro", "Webcam Motion Tool", "Skeleton Tracker", "Joint Tracker", "Character Rigger", "3D Character Studio", "Player Avatar Creator", "Avatar Generator", "Face Tracker", "Facial Motion Tool", "Audio to Face Tool", "Face Audio Syncer", "3D Shape Generator", "3D Model Tool", "Gaussian Splat Render", "3D From Image Tool"],
-  Editing: ["Smart Video Editor", "Auto Editor", "Video Tools Suite", "Edit Master", "Scene Detector", "Beat Syncer", "Auto Assembly Tool", "Smart Timeline", "Highlight Finder", "Key Moment Finder", "Context Editor", "Intelligent Cutter", "Word Remover", "Filler Word Remover", "Gap Closer", "Smart Trimmer", "Smart Fade Tool", "Transition Matcher", "Flow Transition Tool", "Smooth Cut Tool"]
+  Motion: ["Motion Animator", "Motion Studio", "Auto Animator", "Motion Flow Tool", "Motion Capture Pro", "Webcam Motion Tool", "Skeleton Tracker", "Joint Tracker", "Character Rigger", "3D Character Studio", "Player Avatar Creator", "Avatar Generator", "Face Tracker", "Facial Motion Tool", "Audio to Face Tool", "Face Audio Syncer", "3D Shape Generator", "3D Model Tool", "Gaussian Splat Render", "3D From Image Tool"]
 };
 
 export default function App() {
@@ -23,9 +19,10 @@ export default function App() {
 
   useEffect(() => { window.scrollTo(0, 0); }, [page]);
 
+  // GLOBAL UI ELEMENTS
   const GlobalFooter = () => (
     <div className="fixed bottom-0 left-0 w-full z-50 bg-black/95 border-t border-purple-900/30 py-4 text-center">
-      <p className="text-[10px] font-black text-white uppercase tracking-widest mb-4">
+      <p className="text-[10px] font-black text-white uppercase tracking-widest">
         MandaStrong1 2026 ~ Author Of Doxy The School Bully ~ Also Find Me On MandaStrong1.Etsy.com
       </p>
     </div>
@@ -33,7 +30,7 @@ export default function App() {
 
   const NavButtons = () => (
     <div className="fixed bottom-16 left-1/2 -translate-x-1/2 flex gap-6 z-50">
-      {page > 1 && <button onClick={() => setPage(page - 1)} className="bg-zinc-900 border-2 border-purple-600 px-12 py-3 rounded-xl text-purple-400 font-black uppercase text-xl shadow-2xl flex items-center gap-3"><ChevronLeft size={28}/> Back</button>}
+      <button onClick={() => setPage(page - 1)} className="bg-zinc-900 border-2 border-purple-600 px-12 py-3 rounded-xl text-purple-400 font-black uppercase text-xl shadow-2xl flex items-center gap-3"><ChevronLeft size={28}/> Back</button>
       <button onClick={() => setPage(page + 1)} className="bg-purple-600 border-2 border-purple-400 px-14 py-3 rounded-2xl text-white font-black uppercase text-xl shadow-[0_0_50px_rgba(168,85,247,0.4)] flex items-center gap-3">Next <ChevronRight size={28}/></button>
     </div>
   );
@@ -58,7 +55,7 @@ export default function App() {
           </div>
         );
 
-      case 3: // UPDATED PRICING: $20, $30, $50
+      case 3: // UPDATED PLANS: $20, $30, $50
         return (
           <div className="min-h-screen pt-20 pb-64 px-6 flex flex-col items-center bg-black">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl">
@@ -71,18 +68,17 @@ export default function App() {
                   {plan.s && <div className="bg-purple-600 text-white text-[10px] px-5 py-1.5 rounded-full font-black uppercase w-fit mb-6">Popular</div>}
                   <h3 className="text-4xl font-black text-white mb-2 uppercase italic">{plan.t}</h3>
                   <div className="text-6xl font-black text-purple-400 mb-10">{plan.p}<span className="text-xl text-white/40">/mo</span></div>
-                  <ul className="space-y-4 mb-10 flex-grow text-white/80 font-bold">
-                    {plan.d.map(item => <li key={item} className="text-sm flex gap-4"><Check size={20} className="text-purple-500"/> {item}</li>)}
+                  <ul className="space-y-4 mb-10 flex-grow text-white/80 font-bold uppercase italic">
+                    {plan.d.map(item => <li key={item} className="text-xs flex gap-4"><Check size={20} className="text-purple-500"/> {item}</li>)}
                   </ul>
-                  <button onClick={() => setPage(4)} className="w-full bg-purple-600 py-6 rounded-[30px] font-black text-2xl uppercase italic text-white shadow-xl">Select Plan</button>
+                  <button onClick={() => setPage(4)} className="w-full bg-purple-600 py-6 rounded-[30px] font-black text-2xl uppercase italic text-white">Select Plan</button>
                 </div>
               ))}
             </div>
-            <button onClick={() => setPage(4)} className="mt-20 bg-purple-600 text-white px-32 py-8 rounded-[40px] text-4xl font-black uppercase italic shadow-[0_0_80px_rgba(168,85,247,0.5)]">Continue to Payment</button>
           </div>
         );
 
-      case 4: case 5: case 6: case 7: case 8: case 9: // AI TOOL BOARDS
+      case 4: case 5: case 6: case 7: case 8: // AI TOOL BOARDS
         const boardKey = Object.keys(TOOL_BOARDS)[page-4];
         return (
           <div className="min-h-screen bg-black p-12 pt-24 pb-64">
@@ -92,7 +88,7 @@ export default function App() {
               </h1>
               <div className="relative w-96">
                 <Search className="absolute left-6 top-6 text-purple-600" size={24} />
-                <input placeholder="SEARCH TOOLS..." className="w-full bg-zinc-900 border-2 border-purple-900/40 p-6 pl-16 rounded-3xl font-black text-white text-lg focus:border-purple-500 outline-none uppercase" />
+                <input placeholder="SEARCH TOOLS..." className="w-full bg-zinc-900 border-2 border-purple-900/40 p-6 pl-16 rounded-3xl font-black text-white text-lg focus:border-purple-500 outline-none uppercase italic" />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-10 max-h-[55vh] overflow-y-auto custom-scrollbar">
@@ -106,18 +102,18 @@ export default function App() {
           </div>
         );
 
-      case 14: // ENHANCEMENT STUDIO (0-180 MIN)
+      case 14: // ENHANCEMENT STUDIO (0-180 MIN SLIDER)
         return (
           <div className="min-h-screen bg-black p-12 pt-24 pb-64 flex flex-col">
             <h1 className="text-8xl font-black text-purple-600 uppercase italic mb-16 tracking-tighter underline underline-offset-8 decoration-purple-900/30">ENHANCEMENT STUDIO</h1>
             <div className="flex-1 grid md:grid-cols-2 gap-12 mb-10">
-              <div className="bg-zinc-900 border-2 border-purple-900/30 rounded-[60px] flex items-center justify-center relative overflow-hidden shadow-inner">
+              <div className="bg-zinc-900 border-2 border-purple-900/30 rounded-[60px] flex items-center justify-center relative shadow-inner">
                 <Play size={120} className="text-purple-600 opacity-20" />
                 <div className="absolute top-10 left-10 bg-purple-600 px-8 py-3 rounded-2xl text-xs font-black uppercase text-white shadow-lg italic">Live Cinematic Viewer</div>
               </div>
               <div className="bg-zinc-950 p-16 rounded-[60px] border-2 border-purple-900/20 flex flex-col justify-center text-center">
                 <label className="text-3xl font-black block mb-12 italic text-purple-500 uppercase tracking-widest underline underline-offset-8 decoration-purple-600">Movie Duration Slider</label>
-                <div className="text-9xl font-black text-white mb-12 italic tracking-tighter">{duration}<span className="text-2xl text-gray-600 uppercase ml-6">MIN</span></div>
+                <div className="text-9xl font-black text-white mb-12 italic tracking-tighter">{duration}<span className="text-2xl text-gray-600 uppercase ml-6 font-black">MIN</span></div>
                 <input type="range" min="0" max="180" value={duration} onChange={(e) => setDuration(parseInt(e.target.value))} className="w-full h-4 bg-zinc-900 rounded-lg appearance-none cursor-pointer accent-purple-600" />
                 <div className="flex justify-between mt-8 text-xs font-black uppercase text-gray-700 tracking-[0.2em]"><span>0 min</span><span>180 min cap</span></div>
               </div>
@@ -126,27 +122,27 @@ export default function App() {
           </div>
         );
 
-      case 21: // FINALE
+      case 21: // THE FINALE
         return (
           <div className="min-h-screen bg-black p-12 pt-24 flex flex-col items-center">
             <div className="max-w-[1400px] w-full bg-zinc-950 border-[6px] border-purple-600 rounded-[120px] p-24 text-center">
               <h1 className="text-[10rem] font-black text-purple-600 mb-12 uppercase italic leading-none tracking-tighter underline underline-offset-[20px] decoration-purple-900/40">THAT'S ALL FOLKS!</h1>
               <div className="bg-purple-900/10 border-2 border-purple-600 p-16 rounded-[80px] mb-20 text-center">
-                <h2 className="text-5xl font-black text-white mb-10 uppercase italic">A Special Thank You</h2>
-                <p className="text-2xl text-gray-300 italic mb-12 font-medium max-w-5xl mx-auto">Supporting Veterans Mental Health & School Safety Initiatives Through Your Creative Vision.</p>
+                <h2 className="text-5xl font-black text-white mb-10 uppercase italic underline underline-offset-8">A Special Thank You</h2>
+                <p className="text-2xl text-gray-300 italic mb-12 font-medium leading-relaxed max-w-5xl mx-auto uppercase">Supporting Veterans Mental Health & School Safety Initiatives Through Your Creative Vision.</p>
                 <button onClick={() => window.open('https://MandaStrong1.Etsy.com')} className="bg-purple-600 px-24 py-6 rounded-3xl font-black text-3xl uppercase italic shadow-2xl border-2 border-purple-400">Visit Etsy Store</button>
               </div>
-              <button onClick={() => setPage(1)} className="bg-green-600 px-32 py-8 rounded-[40px] font-black text-4xl border-4 border-green-400 uppercase italic">Return Home</button>
+              <button onClick={() => setPage(1)} className="bg-green-600 px-32 py-8 rounded-[40px] font-black text-4xl border-4 border-green-400 uppercase italic shadow-2xl">Return Home</button>
             </div>
           </div>
         );
 
-      default: return <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white"><h1 className="text-6xl font-black text-purple-500 italic uppercase">Module {page}</h1></div>;
+      default: return <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white"><h1 className="text-6xl font-black text-purple-500 italic uppercase">Module {page}</h1><NavButtons /></div>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-black overflow-x-hidden font-sans">
+    <div className="min-h-screen bg-black overflow-x-hidden font-sans selection:bg-purple-600">
       {renderPage()}
       <GlobalFooter />
       {page > 1 && page < 21 && <NavButtons />}
