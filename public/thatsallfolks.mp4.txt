@@ -1,0 +1,22 @@
+HOW TO ADD YOUR THATSALLFOLKS.MP4 VIDEO
+==========================================
+
+This placeholder exists because your app references a video file called "thatsallfolks.mp4"
+but the actual video file needs to be added to your deployment.
+
+WHAT TO DO:
+-----------
+1. Create or find your "That's All Folks!" outro video (MP4 format)
+2. Place it at: /public/thatsallfolks.mp4
+3. The video will be used as an outro/ending for generated movies
+
+WHERE IT'S USED:
+----------------
+- Page 18: Video preview
+- Page 21: Movie outro/ending scene
+- Page 23: Final export preview
+
+For local development, you can use any MP4 video file as a placeholder.
+For production, ensure the file is included in your build/deployment.
+
+Note: The app will continue to work without this file, but some preview features may not display the outro video.
