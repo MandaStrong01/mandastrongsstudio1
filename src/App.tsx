@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Play, Bot, Menu, Search, X, Send, ChevronRight, ChevronLeft, Sparkles, Check, MessageCircle, Grid3X3
+  Play, Bot, Menu, Search, X, Send, ChevronRight, ChevronLeft, Sparkles, Check, MessageCircle, Film, Volume2, Palette, Layers, Scissors, Wand2
 } from 'lucide-react';
 
-// --- DATA LOCKED TO IMAGES ---
+// --- DATA LOCKED TO DESIGN SPECIFICATIONS ---
 const TOOL_BOARDS = {
   Writing: ["Dialogue Writer", "Plot Generator", "Scene Writer", "Story Outliner", "Character Developer", "Dialogue Editor", "Plot Designer", "Story Planner", "Treatment Writer", "Script Formatter", "Plot Creator", "Three Act Builder", "Backstory Generator", "Motivation Builder", "Theme Generator", "Advanced Story Outliner", "Story Consultant", "Plot Twist Creator", "Scene Analyzer", "Conflict Generator"],
   Voice: ["Voice Maker", "Voice Cloner", "Voice Creator Tool", "Voice Recorder", "Speech Converter", "Voice Builder", "Advanced Voice Gener...", "Voice Studio Tool", "Premium Voice Gener...", "Voice Audio Tool", "Emotional Voice Gener...", "Advanced Speech Crea...", "Natural Voice Generator", "Voice Reader", "Speech Generator", "Narration Creator", "Voice Imitator", "Fast Speech Generator", "Live Voice Tool", "Streaming Voice Gener..."],
@@ -19,7 +19,6 @@ export default function App() {
 
   useEffect(() => { window.scrollTo(0, 0); }, [page]);
 
-  // GLOBAL UI ELEMENTS
   const GlobalFooter = () => (
     <div className="fixed bottom-0 left-0 w-full z-50 bg-black/95 border-t border-purple-900/30 py-4 text-center">
       <p className="text-[10px] font-black text-white uppercase tracking-widest">
@@ -30,8 +29,8 @@ export default function App() {
 
   const NavButtons = () => (
     <div className="fixed bottom-16 left-1/2 -translate-x-1/2 flex gap-6 z-50">
-      <button onClick={() => setPage(page - 1)} className="bg-zinc-900 border-2 border-purple-600 px-12 py-3 rounded-xl text-purple-400 font-black uppercase text-xl shadow-2xl flex items-center gap-3"><ChevronLeft size={28}/> Back</button>
-      <button onClick={() => setPage(page + 1)} className="bg-purple-600 border-2 border-purple-400 px-14 py-3 rounded-2xl text-white font-black uppercase text-xl shadow-[0_0_50px_rgba(168,85,247,0.4)] flex items-center gap-3">Next <ChevronRight size={28}/></button>
+      {page > 1 && <button onClick={() => setPage(page - 1)} className="bg-zinc-900 border-2 border-purple-600 px-12 py-3 rounded-xl text-purple-400 font-black uppercase text-xl shadow-2xl flex items-center gap-3 transition hover:bg-purple-950"><ChevronLeft size={28}/> Back</button>}
+      <button onClick={() => setPage(page + 1)} className="bg-purple-600 border-2 border-purple-400 px-14 py-3 rounded-2xl text-white font-black uppercase text-xl shadow-[0_0_50px_rgba(168,85,247,0.4)] flex items-center gap-3 transition hover:scale-105">Next <ChevronRight size={28}/></button>
     </div>
   );
 
@@ -47,15 +46,15 @@ export default function App() {
               <h1 className="text-7xl md:text-9xl font-black text-black italic tracking-tighter leading-none mb-4" style={{ fontFamily: 'Impact, sans-serif' }}>MANDASTRONG'S STUDIO</h1>
               <p className="text-2xl font-black text-black uppercase italic tracking-tight mb-32 underline underline-offset-8 decoration-4 decoration-black">Welcome To The All-In-One Make-A-Movie App!</p>
               <div className="flex gap-6 justify-center scale-110">
-                <button onClick={() => setPage(2)} className="bg-black text-white px-16 py-5 rounded-2xl font-bold text-2xl shadow-2xl border-2 border-zinc-800">Next</button>
-                <button onClick={() => setPage(3)} className="bg-black text-white px-16 py-5 rounded-2xl font-bold text-2xl shadow-2xl border-2 border-zinc-800">Login</button>
-                <button onClick={() => setPage(3)} className="bg-black text-white px-16 py-5 rounded-2xl font-bold text-2xl shadow-2xl border-2 border-zinc-800">Register</button>
+                <button onClick={() => setPage(2)} className="bg-black text-white px-16 py-5 rounded-2xl font-bold text-2xl shadow-2xl border-2 border-zinc-800 uppercase italic">Next</button>
+                <button onClick={() => setPage(3)} className="bg-black text-white px-16 py-5 rounded-2xl font-bold text-2xl shadow-2xl border-2 border-zinc-800 uppercase italic">Login</button>
+                <button onClick={() => setPage(3)} className="bg-black text-white px-16 py-5 rounded-2xl font-bold text-2xl shadow-2xl border-2 border-zinc-800 uppercase italic">Register</button>
               </div>
             </div>
           </div>
         );
 
-      case 3: // UPDATED PLANS: $20, $30, $50
+      case 3: // UPDATED PLANS
         return (
           <div className="min-h-screen pt-20 pb-64 px-6 flex flex-col items-center bg-black">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl">
@@ -71,14 +70,15 @@ export default function App() {
                   <ul className="space-y-4 mb-10 flex-grow text-white/80 font-bold uppercase italic">
                     {plan.d.map(item => <li key={item} className="text-xs flex gap-4"><Check size={20} className="text-purple-500"/> {item}</li>)}
                   </ul>
-                  <button onClick={() => setPage(4)} className="w-full bg-purple-600 py-6 rounded-[30px] font-black text-2xl uppercase italic text-white">Select Plan</button>
+                  <button onClick={() => setPage(11)} className="w-full bg-purple-600 py-6 rounded-[30px] font-black text-2xl uppercase italic text-white shadow-xl">Select Plan</button>
                 </div>
               ))}
             </div>
+            <button onClick={() => setPage(11)} className="mt-20 bg-purple-600 text-white px-32 py-8 rounded-[40px] text-4xl font-black uppercase italic shadow-[0_0_80px_rgba(168,85,247,0.5)]">Continue to Payment</button>
           </div>
         );
 
-      case 4: case 5: case 6: case 7: case 8: // AI TOOL BOARDS
+      case 4: case 5: case 6: case 7: case 8: // TOOL BOARDS
         const boardKey = Object.keys(TOOL_BOARDS)[page-4];
         return (
           <div className="min-h-screen bg-black p-12 pt-24 pb-64">
@@ -102,34 +102,30 @@ export default function App() {
           </div>
         );
 
-      case 14: // ENHANCEMENT STUDIO (0-180 MIN SLIDER)
+      case 14: // ENHANCEMENT STUDIO (3H SLIDER)
         return (
           <div className="min-h-screen bg-black p-12 pt-24 pb-64 flex flex-col">
-            <h1 className="text-8xl font-black text-purple-600 uppercase italic mb-16 tracking-tighter underline underline-offset-8 decoration-purple-900/30">ENHANCEMENT STUDIO</h1>
+            <h1 className="text-8xl font-black text-purple-600 uppercase italic mb-16 tracking-tighter underline underline-offset-8 decoration-purple-900/30 text-center uppercase italic">ENHANCEMENT STUDIO</h1>
             <div className="flex-1 grid md:grid-cols-2 gap-12 mb-10">
-              <div className="bg-zinc-900 border-2 border-purple-900/30 rounded-[60px] flex items-center justify-center relative shadow-inner">
-                <Play size={120} className="text-purple-600 opacity-20" />
-                <div className="absolute top-10 left-10 bg-purple-600 px-8 py-3 rounded-2xl text-xs font-black uppercase text-white shadow-lg italic">Live Cinematic Viewer</div>
-              </div>
+              <div className="bg-zinc-900 border-2 border-purple-600/30 rounded-[60px] flex items-center justify-center relative shadow-inner overflow-hidden"><Play size={120} className="text-purple-600 opacity-20" /></div>
               <div className="bg-zinc-950 p-16 rounded-[60px] border-2 border-purple-900/20 flex flex-col justify-center text-center">
                 <label className="text-3xl font-black block mb-12 italic text-purple-500 uppercase tracking-widest underline underline-offset-8 decoration-purple-600">Movie Duration Slider</label>
-                <div className="text-9xl font-black text-white mb-12 italic tracking-tighter">{duration}<span className="text-2xl text-gray-600 uppercase ml-6 font-black">MIN</span></div>
+                <div className="text-9xl font-black text-white mb-12 italic tracking-tighter">{duration}<span className="text-2xl text-gray-600 uppercase ml-6">MIN</span></div>
                 <input type="range" min="0" max="180" value={duration} onChange={(e) => setDuration(parseInt(e.target.value))} className="w-full h-4 bg-zinc-900 rounded-lg appearance-none cursor-pointer accent-purple-600" />
                 <div className="flex justify-between mt-8 text-xs font-black uppercase text-gray-700 tracking-[0.2em]"><span>0 min</span><span>180 min cap</span></div>
               </div>
             </div>
-            <div className="flex justify-center"><button onClick={() => setPage(15)} className="bg-purple-600 border-4 border-purple-400 px-32 py-8 rounded-[40px] font-black text-4xl uppercase italic shadow-2xl">Continue Rendering</button></div>
           </div>
         );
 
       case 21: // THE FINALE
         return (
           <div className="min-h-screen bg-black p-12 pt-24 flex flex-col items-center">
-            <div className="max-w-[1400px] w-full bg-zinc-950 border-[6px] border-purple-600 rounded-[120px] p-24 text-center">
+            <div className="max-w-[1400px] w-full bg-zinc-950 border-[6px] border-purple-600 rounded-[120px] p-24 text-center shadow-[0_0_150px_rgba(138,43,226,0.3)]">
               <h1 className="text-[10rem] font-black text-purple-600 mb-12 uppercase italic leading-none tracking-tighter underline underline-offset-[20px] decoration-purple-900/40">THAT'S ALL FOLKS!</h1>
               <div className="bg-purple-900/10 border-2 border-purple-600 p-16 rounded-[80px] mb-20 text-center">
                 <h2 className="text-5xl font-black text-white mb-10 uppercase italic underline underline-offset-8">A Special Thank You</h2>
-                <p className="text-2xl text-gray-300 italic mb-12 font-medium leading-relaxed max-w-5xl mx-auto uppercase">Supporting Veterans Mental Health & School Safety Initiatives Through Your Creative Vision.</p>
+                <p className="text-2xl text-gray-300 italic mb-12 font-medium max-w-5xl mx-auto uppercase">Supporting Veterans Mental Health & School Safety Initiatives Through Your Creative Vision.</p>
                 <button onClick={() => window.open('https://MandaStrong1.Etsy.com')} className="bg-purple-600 px-24 py-6 rounded-3xl font-black text-3xl uppercase italic shadow-2xl border-2 border-purple-400">Visit Etsy Store</button>
               </div>
               <button onClick={() => setPage(1)} className="bg-green-600 px-32 py-8 rounded-[40px] font-black text-4xl border-4 border-green-400 uppercase italic shadow-2xl">Return Home</button>
@@ -137,12 +133,12 @@ export default function App() {
           </div>
         );
 
-      default: return <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white"><h1 className="text-6xl font-black text-purple-500 italic uppercase">Module {page}</h1><NavButtons /></div>;
+      default: return <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white p-10"><h1 className="text-6xl font-black text-purple-500 uppercase italic mb-10 tracking-widest tracking-tighter">Module {page}</h1></div>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-black overflow-x-hidden font-sans selection:bg-purple-600">
+    <div className="app bg-black min-h-screen font-sans selection:bg-purple-600 overflow-x-hidden">
       {renderPage()}
       <GlobalFooter />
       {page > 1 && page < 21 && <NavButtons />}
