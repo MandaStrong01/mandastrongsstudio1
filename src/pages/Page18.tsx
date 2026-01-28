@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, FileText, Shield } from 'lucide-react';
+import { ArrowLeft, ArrowRight, FileText, Shield, Play } from 'lucide-react';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
 
@@ -6,11 +6,27 @@ interface PageProps {
   onNavigate: (page: number) => void;
 }
 
+const VIDEO_PATH = '/static/video/thatsallfolks.mp4';
+
 export default function Page18({ onNavigate }: PageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
+      <button className="fixed top-6 right-6 z-50 w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 hover:from-purple-400 hover:to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/50 transition-all hover:scale-110">
+        <Play className="w-6 h-6 text-white" />
+      </button>
       <div className="flex-1 flex flex-col px-4 py-12">
         <div className="max-w-4xl w-full mx-auto">
+          <div className="aspect-video bg-black rounded-lg overflow-hidden border border-purple-500/30 mb-8">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            >
+              <source src={VIDEO_PATH} type="video/mp4" />
+            </video>
+          </div>
           <h1 className="text-5xl font-black text-purple-400 mb-8 text-center">Terms of Service & Disclaimer</h1>
 
           <div className="grid gap-6 mb-8">
@@ -65,14 +81,14 @@ export default function Page18({ onNavigate }: PageProps) {
 
           <div className="flex gap-4 justify-center">
             <button
-              onClick={() => onNavigate(17)}
+              onClick={() => onNavigate(16)}
               className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
-              onClick={() => onNavigate(19)}
+              onClick={() => onNavigate(18)}
               className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
             >
               I Agree - Next

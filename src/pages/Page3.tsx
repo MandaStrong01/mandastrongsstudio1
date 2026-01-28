@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
+import QuickAccess from '../components/QuickAccess';
+import { LogIn, UserPlus, Play } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -13,204 +15,306 @@ const STRIPE_LINKS = {
 };
 
 export default function Page3({ onNavigate }: PageProps) {
+  const { signIn, signUp } = useAuth();
+
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
-  const [selectedPlan, setSelectedPlan] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+
+  const [loginError, setLoginError] = useState('');
+  const [registerError, setRegisterError] = useState('');
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [registerSuccess, setRegisterSuccess] = useState(false);
+
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
+    setLoginError('');
+    setLoginSuccess(false);
+    setIsLoggingIn(true);
 
-    try {
-      await signIn(loginEmail, loginPassword);
-      onNavigate(4);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Login failed';
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
+    const { error } = await signIn(loginEmail, loginPassword);
+
+    if (error) {
+      setLoginError(error.message);
+    } else {
+      setLoginSuccess(true);
+      setLoginEmail('');
+      setLoginPassword('');
     }
+
+    setIsLoggingIn(false);
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setRegisterError('');
+    setRegisterSuccess(false);
+    setIsRegistering(true);
 
-    if (!selectedPlan) {
-      setError('Please select a plan to continue');
-      return;
+    const { error } = await signUp(registerEmail, registerPassword);
+
+    if (error) {
+      setRegisterError(error.message);
+    } else {
+      setRegisterSuccess(true);
+      setRegisterEmail('');
+      setRegisterPassword('');
     }
 
-    setLoading(true);
-
-    try {
-      await signUp(registerEmail, registerPassword);
-      onNavigate(4);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Registration failed';
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
+    setIsRegistering(false);
   };
 
   const openStripeLink = (url: string) => {
     if (url) {
-      window.open(url, '_blank');
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-black to-slate-900 text-white flex flex-col">
+      <button className="fixed top-6 right-6 z-50 w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 hover:from-purple-400 hover:to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/50 transition-all hover:scale-110">
+        <Play className="w-6 h-6 text-white" />
+      </button>
       <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-6xl flex flex-col">
-        <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-4xl mx-auto items-start">
-          <div className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl p-8 rounded-3xl border-2 border-purple-500/60 shadow-2xl shadow-purple-900/50">
-            <form onSubmit={handleLogin} className="space-y-4">
-              <input
-                type="email"
-                placeholder="Email"
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-lg bg-black border border-purple-500/50 text-white placeholder-white/60 focus:outline-none focus:border-purple-400"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-lg bg-black border border-purple-500/50 text-white placeholder-white/60 focus:outline-none focus:border-purple-400"
-              />
-              {error && (
-                <div className="text-white text-sm bg-purple-600/30 px-4 py-2 rounded-lg border border-purple-500">
-                  {error}
-                </div>
-              )}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg hover:bg-purple-500 transition-all disabled:opacity-50"
-              >
-                {loading ? 'Please wait...' : 'LOGIN'}
-              </button>
-            </form>
+        <div className="w-full max-w-7xl">
+          <div className="mb-12">
+            <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              GET STARTED WITH MANDASTRONG
+            </h2>
+            <p className="text-center text-white/70 text-lg">
+              Choose your path to start creating professional movies
+            </p>
           </div>
 
-          <div className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl p-8 rounded-3xl border-2 border-purple-500/60 shadow-2xl shadow-purple-900/50">
-            <form onSubmit={handleRegister} className="space-y-4">
-              <input
-                type="email"
-                placeholder="Email"
-                value={registerEmail}
-                onChange={(e) => setRegisterEmail(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-lg bg-black border border-purple-500/50 text-white placeholder-white/60 focus:outline-none focus:border-purple-400"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={registerPassword}
-                onChange={(e) => setRegisterPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-lg bg-black border border-purple-500/50 text-white placeholder-white/60 focus:outline-none focus:border-purple-400"
-              />
-              <div>
-                <label className="block text-sm font-bold mb-2 text-white/80">Select Plan *</label>
-                <select
-                  value={selectedPlan}
-                  onChange={(e) => setSelectedPlan(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 rounded-lg bg-black border border-purple-500/50 text-white focus:outline-none focus:border-purple-400"
-                >
-                  <option value="">Choose a plan...</option>
-                  <option value="basic">BASIC - $10/month (30 min films)</option>
-                  <option value="pro">PRO - $20/month (1 hour films)</option>
-                  <option value="studio">STUDIO - $30/month (2.5 hour films)</option>
-                </select>
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
+            <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-purple-500/40 rounded-2xl p-10 shadow-2xl">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-4 bg-purple-500/20 rounded-xl">
+                  <LogIn className="w-8 h-8 text-purple-400" />
+                </div>
+                <h3 className="text-3xl font-bold text-white">Login</h3>
               </div>
-              {error && (
-                <div className="text-white text-sm bg-purple-600/30 px-4 py-2 rounded-lg border border-purple-500">
-                  {error}
+
+              <p className="text-white/70 mb-6">
+                Welcome back! Sign in to access your account.
+              </p>
+
+              {loginError && (
+                <div className="mb-4 p-3 bg-red-500/20 border border-red-500/40 rounded-lg text-red-200 text-sm">
+                  {loginError}
                 </div>
               )}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg hover:bg-purple-500 transition-all disabled:opacity-50"
-              >
-                {loading ? 'Please wait...' : 'REGISTER'}
-              </button>
-            </form>
+
+              {loginSuccess && (
+                <div className="mb-4 p-3 bg-green-500/20 border border-green-500/40 rounded-lg text-green-200 text-sm">
+                  Successfully logged in!
+                </div>
+              )}
+
+              <form className="space-y-4" onSubmit={handleLogin}>
+                <div>
+                  <label htmlFor="login-email" className="block text-sm font-medium text-white/80 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="login-email"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    required
+                    disabled={isLoggingIn}
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="your@email.com"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="login-password" className="block text-sm font-medium text-white/80 mb-2">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="login-password"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    required
+                    disabled={isLoggingIn}
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="••••••••"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isLoggingIn}
+                  className="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoggingIn ? 'Signing In...' : 'Sign In'}
+                </button>
+              </form>
+            </div>
+
+            <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-pink-500/40 rounded-2xl p-10 shadow-2xl relative overflow-hidden">
+              <div className="absolute -top-3 -right-3">
+                <div className="px-4 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-bold rounded-full shadow-lg rotate-12">
+                  NEW USER
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-4 bg-pink-500/20 rounded-xl">
+                  <UserPlus className="w-8 h-8 text-pink-400" />
+                </div>
+                <h3 className="text-3xl font-bold text-white">Register</h3>
+              </div>
+
+              <p className="text-white/70 mb-6">
+                Create your account and start your creative journey today.
+              </p>
+
+              {registerError && (
+                <div className="mb-4 p-3 bg-red-500/20 border border-red-500/40 rounded-lg text-red-200 text-sm">
+                  {registerError}
+                </div>
+              )}
+
+              {registerSuccess && (
+                <div className="mb-4 p-3 bg-green-500/20 border border-green-500/40 rounded-lg text-green-200 text-sm">
+                  Account created successfully! You can now log in.
+                </div>
+              )}
+
+              <form className="space-y-4" onSubmit={handleRegister}>
+                <div>
+                  <label htmlFor="register-email" className="block text-sm font-medium text-white/80 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="register-email"
+                    value={registerEmail}
+                    onChange={(e) => setRegisterEmail(e.target.value)}
+                    required
+                    disabled={isRegistering}
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-pink-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="your@email.com"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="register-password" className="block text-sm font-medium text-white/80 mb-2">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="register-password"
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
+                    required
+                    disabled={isRegistering}
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-pink-500/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="••••••••"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isRegistering}
+                  className="w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-pink-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isRegistering ? 'Creating Account...' : 'Create Account'}
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
 
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-center mb-6 text-purple-400">SUBSCRIPTION PLANS</h2>
-          <p className="text-center text-white/70 mb-8">Choose the plan that fits your creative vision</p>
-        </div>
+          <div className="mb-8 text-center">
+            <h3 className="text-3xl font-bold mb-4 text-white">Choose Your Plan</h3>
+            <p className="text-white/60 mb-2">All plans include full access to MandaStrong Movie Studio</p>
+            <p className="text-sm text-yellow-400/80">Secure payment processing via Stripe • Allow pop-ups when subscribing</p>
+          </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
-          <button
-            onClick={() => openStripeLink(STRIPE_LINKS.basic)}
-            className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-purple-900/30"
-          >
-            <div className="text-center">
-              <div className="text-3xl font-black mb-2">BASIC</div>
-              <div className="text-4xl font-black mb-2 text-purple-400">$10</div>
-              <div className="text-lg font-semibold mb-2">30 Minutes</div>
-              <p className="text-sm text-white/80">Perfect for short films, music videos, and quick creative projects</p>
-            </div>
-          </button>
+          <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-6xl mx-auto">
+            <button
+              onClick={() => openStripeLink(STRIPE_LINKS.basic)}
+              className="group bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-purple-500/40 hover:border-purple-400 hover:from-slate-800 hover:to-slate-900 hover:scale-105 text-white font-bold py-8 px-6 rounded-2xl transition-all shadow-xl hover:shadow-purple-500/20 cursor-pointer"
+            >
+              <div className="text-center">
+                <div className="inline-block px-4 py-1 bg-purple-500/20 rounded-full mb-4">
+                  <span className="text-sm font-semibold text-purple-300">BASIC</span>
+                </div>
+                <div className="text-5xl font-black mb-3 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">$10</div>
+                <div className="text-xl font-bold mb-4 text-white/90">30 Minutes</div>
+                <p className="text-sm text-white/70 leading-relaxed mb-4">
+                  Perfect for content creators, social media influencers, and small businesses. Create professional short films, music videos, promotional content, and quick creative projects with ease.
+                </p>
+                <div className="pt-4 border-t border-white/10">
+                  <p className="text-xs text-purple-300 font-semibold group-hover:text-purple-200 transition-colors">Subscribe with Stripe</p>
+                </div>
+              </div>
+            </button>
 
-          <button
-            onClick={() => openStripeLink(STRIPE_LINKS.pro)}
-            className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-purple-900/30"
-          >
-            <div className="text-center">
-              <div className="text-3xl font-black mb-2">PRO</div>
-              <div className="text-4xl font-black mb-2 text-purple-400">$20</div>
-              <div className="text-lg font-semibold mb-2">1 Hour</div>
-              <p className="text-sm text-white/80">Ideal for standard documentaries, corporate videos, and feature-length content</p>
-            </div>
-          </button>
+            <button
+              onClick={() => openStripeLink(STRIPE_LINKS.pro)}
+              className="group bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-pink-500/40 hover:border-pink-400 hover:from-slate-800 hover:to-slate-900 hover:scale-105 text-white font-bold py-8 px-6 rounded-2xl transition-all shadow-xl hover:shadow-pink-500/20 cursor-pointer relative"
+            >
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="px-4 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-bold rounded-full shadow-lg">
+                  POPULAR
+                </span>
+              </div>
+              <div className="text-center">
+                <div className="inline-block px-4 py-1 bg-pink-500/20 rounded-full mb-4">
+                  <span className="text-sm font-semibold text-pink-300">PRO</span>
+                </div>
+                <div className="text-5xl font-black mb-3 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">$20</div>
+                <div className="text-xl font-bold mb-4 text-white/90">1 Hour</div>
+                <p className="text-sm text-white/70 leading-relaxed mb-4">
+                  Ideal for professional videographers, marketing agencies, and corporate communications. Produce documentaries, training videos, webinars, and extended feature-length content with advanced editing capabilities.
+                </p>
+                <div className="pt-4 border-t border-white/10">
+                  <p className="text-xs text-pink-300 font-semibold group-hover:text-pink-200 transition-colors">Subscribe with Stripe</p>
+                </div>
+              </div>
+            </button>
 
-          <button
-            onClick={() => openStripeLink(STRIPE_LINKS.studio)}
-            className="bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-purple-900/30"
-          >
-            <div className="text-center">
-              <div className="text-3xl font-black mb-2">STUDIO</div>
-              <div className="text-4xl font-black mb-2 text-purple-400">$30</div>
-              <div className="text-lg font-semibold mb-2">2.5 Hours</div>
-              <p className="text-sm text-white/80">Complete cinematic experience with full-length film capabilities and unlimited creative freedom</p>
-            </div>
-          </button>
-        </div>
+            <button
+              onClick={() => openStripeLink(STRIPE_LINKS.studio)}
+              className="group bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-cyan-500/40 hover:border-cyan-400 hover:from-slate-800 hover:to-slate-900 hover:scale-105 text-white font-bold py-8 px-6 rounded-2xl transition-all shadow-xl hover:shadow-cyan-500/20 cursor-pointer"
+            >
+              <div className="text-center">
+                <div className="inline-block px-4 py-1 bg-cyan-500/20 rounded-full mb-4">
+                  <span className="text-sm font-semibold text-cyan-300">STUDIO</span>
+                </div>
+                <div className="text-5xl font-black mb-3 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">$30</div>
+                <div className="text-xl font-bold mb-4 text-white/90">2.5 Hours</div>
+                <p className="text-sm text-white/70 leading-relaxed mb-4">
+                  Designed for film studios, production companies, and serious filmmakers. Create full-length feature films, complete cinematic experiences, television episodes, and premium long-form content with unlimited creative potential.
+                </p>
+                <div className="pt-4 border-t border-white/10">
+                  <p className="text-xs text-cyan-300 font-semibold group-hover:text-cyan-200 transition-colors">Subscribe with Stripe</p>
+                </div>
+              </div>
+            </button>
+          </div>
 
-        <div className="flex justify-center gap-4">
-          <button
-            onClick={() => onNavigate(2)}
-            className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
-          >
-            Back
-          </button>
-          <button
-            onClick={() => onNavigate(4)}
-            className="bg-purple-600 text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all border border-purple-500"
-          >
-            Next
-          </button>
-        </div>
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => onNavigate(1)}
+              className="bg-slate-800 text-white font-bold px-10 py-4 rounded-xl text-lg hover:bg-slate-700 transition-all border border-slate-600"
+            >
+              Back
+            </button>
+            <button
+              onClick={() => onNavigate(4)}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold px-10 py-4 rounded-xl text-lg hover:from-purple-500 hover:to-pink-500 transition-all shadow-lg shadow-purple-500/30"
+            >
+              Continue
+            </button>
+          </div>
         </div>
       </div>
+      <QuickAccess onNavigate={onNavigate} />
       <Footer />
     </div>
   );
