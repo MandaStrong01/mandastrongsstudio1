@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  optimizeDeps: {
-    exclude: ['lucide-react'],
+  // THIS LINE BELOW TELLS GITHUB WHERE YOUR APP LIVES
+  base: '/mandastrong-studio-2025/', 
+  build: {
+    outDir: 'dist',
   },
 });
