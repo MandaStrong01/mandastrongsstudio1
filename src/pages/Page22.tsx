@@ -1,4 +1,4 @@
-import { ArrowLeft, Upload, Sparkles, File, Image, Video, Music, FileText, Check, Cloud, Link, Plus, FolderOpen } from 'lucide-react';
+import { ArrowLeft, Upload, Sparkles, File, Image, Video, Music, FileText, Check, Cloud, Link } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadFile } from '../lib/storage';
@@ -19,10 +19,6 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
   const [googleDriveReady, setGoogleDriveReady] = useState(false);
   const [showUrlImport, setShowUrlImport] = useState(false);
   const [importUrl, setImportUrl] = useState('');
-  const [showPrompt, setShowPrompt] = useState(false);
-  const [promptText, setPromptText] = useState('');
-  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
-  const [showCreateDropdown, setShowCreateDropdown] = useState(false);
 
   useEffect(() => {
     initializeGoogleDrive().then(ready => {
@@ -63,34 +59,26 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
       return;
     }
 
-    setPendingFiles(files);
-    setShowPrompt(true);
-  };
-
-  const proceedWithUpload = async () => {
-    setShowPrompt(false);
     setUploading(true);
     try {
-      const uploadPromises = pendingFiles.map(file => uploadFile(file, user!.id));
+      const uploadPromises = files.map(file => uploadFile(file, user.id));
       const results = await Promise.all(uploadPromises);
 
       const successfulFiles = results
         .filter(r => r.success)
-        .map((_, i) => pendingFiles[i].name);
+        .map((_, i) => files[i].name);
 
       setUploadedFiles(prev => [...prev, ...successfulFiles]);
 
       const failedCount = results.filter(r => !r.success).length;
       if (failedCount > 0) {
-        alert(`${successfulFiles.length} of ${pendingFiles.length} files uploaded successfully`);
+        alert(`${successfulFiles.length} of ${files.length} files uploaded successfully`);
       }
     } catch (error) {
       console.error('Upload error:', error);
       alert('Failed to upload files');
     } finally {
       setUploading(false);
-      setPendingFiles([]);
-      setPromptText('');
     }
   };
 
@@ -214,7 +202,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
         <div className="max-w-6xl w-full mx-auto flex-1 flex flex-col">
           <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
             <button
-              onClick={() => onNavigate(3)}
+              onClick={() => onNavigate(4)}
               className="flex items-center gap-2 px-4 sm:px-6 py-3 bg-black border border-purple-500/50 hover:bg-purple-900/50 rounded-lg transition-all w-full md:w-auto justify-center"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -375,7 +363,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
 
                 <div className="mt-6 flex gap-4 justify-end">
                   <button
-                    onClick={() => onNavigate(10)}
+                    onClick={() => onNavigate(11)}
                     disabled={uploadedFiles.length === 0 && !uploading}
                     className="px-8 py-3 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed rounded-lg font-semibold transition-all"
                   >
@@ -388,113 +376,48 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                 <div className="text-center mb-8">
                   <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
                   <h2 className="text-3xl font-bold mb-2">Create with AI</h2>
-                  <p className="text-white/70">Describe what you want to create</p>
+                  <p className="text-white/70">Generate a new asset using AI</p>
                 </div>
 
-                <div className="flex-1 bg-purple-900/10 border border-purple-500/30 rounded-xl p-6">
-                  <div className="space-y-4">
+                <div className="flex-1 bg-purple-900/10 border border-purple-500/30 rounded-xl p-8">
+                  <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-semibold mb-2">Description</label>
+                      <label className="block text-sm font-semibold mb-2">Asset Description</label>
                       <textarea
-                        value={promptText}
-                        onChange={(e) => setPromptText(e.target.value)}
                         placeholder="Describe what you want to create..."
                         className="w-full h-32 bg-black/50 border border-purple-500/50 rounded-lg p-4 text-white placeholder-white/60 focus:outline-none focus:border-purple-400"
                       />
                     </div>
 
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="block text-sm font-semibold">Add Files (Optional)</label>
-                        <div className="relative">
-                          <button
-                            onClick={() => setShowCreateDropdown(!showCreateDropdown)}
-                            className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg transition-all"
-                          >
-                            <Plus className="w-4 h-4" />
-                            <span className="text-sm font-semibold">Add</span>
-                          </button>
-
-                          {showCreateDropdown && (
-                            <div className="absolute top-full mt-2 right-0 bg-gradient-to-br from-purple-900/95 to-black/95 border-2 border-purple-500/60 rounded-xl p-3 min-w-[220px] shadow-2xl z-10">
-                              <div className="space-y-2">
-                                <button
-                                  onClick={() => {
-                                    document.getElementById('create-file-input-photos')?.click();
-                                    setShowCreateDropdown(false);
-                                  }}
-                                  className="w-full flex items-center gap-3 px-3 py-2 bg-purple-900/40 hover:bg-purple-900/60 border border-purple-500/30 hover:border-purple-400 rounded-lg transition-all text-left"
-                                >
-                                  <Video className="w-4 h-4 text-purple-400" />
-                                  <span className="text-white font-semibold text-sm">Photos/Videos</span>
-                                </button>
-
-                                <button
-                                  onClick={() => {
-                                    document.getElementById('create-file-input-files')?.click();
-                                    setShowCreateDropdown(false);
-                                  }}
-                                  className="w-full flex items-center gap-3 px-3 py-2 bg-purple-900/40 hover:bg-purple-900/60 border border-purple-500/30 hover:border-purple-400 rounded-lg transition-all text-left"
-                                >
-                                  <FolderOpen className="w-4 h-4 text-purple-400" />
-                                  <span className="text-white font-semibold text-sm">Files</span>
-                                </button>
-
-                                <button
-                                  onClick={() => {
-                                    handleGooglePhotos();
-                                    setShowCreateDropdown(false);
-                                  }}
-                                  disabled={!googleDriveReady || uploading}
-                                  className="w-full flex items-center gap-3 px-3 py-2 bg-purple-900/40 hover:bg-purple-900/60 border border-purple-500/30 hover:border-purple-400 disabled:bg-gray-800 disabled:border-gray-600 disabled:cursor-not-allowed rounded-lg transition-all text-left"
-                                >
-                                  <Cloud className="w-4 h-4 text-purple-400" />
-                                  <span className="text-white font-semibold text-sm">Google Drive</span>
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Style</label>
+                        <select className="w-full bg-black/50 border border-purple-500/50 rounded-lg p-3 text-white focus:outline-none focus:border-purple-400">
+                          <option>Cinematic</option>
+                          <option>Realistic</option>
+                          <option>Artistic</option>
+                          <option>Abstract</option>
+                        </select>
                       </div>
-
-                      {uploadedFiles.length > 0 && (
-                        <div className="bg-black/30 border border-purple-500/30 rounded-lg p-3">
-                          <p className="text-white/90 text-sm font-semibold mb-2">{uploadedFiles.length} file(s) added:</p>
-                          <div className="max-h-24 overflow-y-auto space-y-1">
-                            {uploadedFiles.map((filename, i) => (
-                              <div key={i} className="flex items-center gap-2 text-xs text-white/70">
-                                <Check className="w-3 h-3 text-green-400" />
-                                {filename}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Quality</label>
+                        <select className="w-full bg-black/50 border border-purple-500/50 rounded-lg p-3 text-white focus:outline-none focus:border-purple-400">
+                          <option>Standard</option>
+                          <option>High</option>
+                          <option>Ultra</option>
+                        </select>
+                      </div>
                     </div>
 
-                    <input
-                      id="create-file-input-photos"
-                      type="file"
-                      className="hidden"
-                      onChange={handleFileSelect}
-                      multiple
-                      accept="image/*,video/*"
-                    />
-
-                    <input
-                      id="create-file-input-files"
-                      type="file"
-                      className="hidden"
-                      onChange={handleFileSelect}
-                      multiple
-                      accept="*"
-                    />
+                    <button className="w-full py-4 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 rounded-lg font-bold text-lg transition-all">
+                      Generate Asset
+                    </button>
                   </div>
                 </div>
 
                 <div className="mt-6 flex gap-4 justify-end">
                   <button
-                    onClick={() => onNavigate(10)}
+                    onClick={() => onNavigate(11)}
                     className="px-8 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold transition-all"
                   >
                     Save to Media Box
@@ -507,40 +430,6 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
       </div>
 
       <Footer />
-
-      {showPrompt && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-gradient-to-br from-purple-900/90 to-black/90 border-2 border-purple-500/60 rounded-2xl max-w-lg w-full p-6">
-            <h3 className="text-2xl font-bold text-purple-400 mb-4">Describe Your Upload</h3>
-            <p className="text-white/70 mb-4">Add a description or notes for these files:</p>
-            <textarea
-              value={promptText}
-              onChange={(e) => setPromptText(e.target.value)}
-              placeholder="Enter description, notes, or context for this upload..."
-              className="w-full h-32 bg-black/50 border border-purple-500/50 rounded-lg p-4 text-white placeholder-white/60 focus:outline-none focus:border-purple-400 mb-4"
-              autoFocus
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  setShowPrompt(false);
-                  setPendingFiles([]);
-                  setPromptText('');
-                }}
-                className="flex-1 px-6 py-3 bg-black/50 border border-white/20 hover:bg-white/10 rounded-lg font-semibold transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={proceedWithUpload}
-                className="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold transition-all"
-              >
-                Upload
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

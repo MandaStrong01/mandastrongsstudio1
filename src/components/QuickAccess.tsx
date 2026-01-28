@@ -9,12 +9,12 @@ export default function QuickAccess({ onNavigate }: QuickAccessProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const quickLinks = [
-    { page: 0, icon: Home, label: 'Home', color: 'text-purple-400' },
-    { page: 3, icon: Wand2, label: 'AI Tools Hub', color: 'text-blue-400' },
-    { page: 9, icon: Film, label: 'Doxy Movie', color: 'text-green-400' },
-    { page: 10, icon: FileText, label: 'Editor Dashboard', color: 'text-yellow-400' },
-    { page: 18, icon: HelpCircle, label: 'Help Desk', color: 'text-pink-400' },
-    { page: 19, icon: Users, label: 'Community', color: 'text-cyan-400' },
+    { page: 1, icon: Home, label: 'Home', color: 'text-purple-400' },
+    { page: 4, icon: Wand2, label: 'AI Tools Hub', color: 'text-blue-400' },
+    { page: 10, icon: Film, label: 'Doxy Movie', color: 'text-green-400' },
+    { page: 11, icon: FileText, label: 'Editor Dashboard', color: 'text-yellow-400' },
+    { page: 19, icon: HelpCircle, label: 'Help Desk', color: 'text-pink-400' },
+    { page: 20, icon: Users, label: 'Community', color: 'text-cyan-400' },
   ];
 
   return (
