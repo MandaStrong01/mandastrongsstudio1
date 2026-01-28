@@ -19,8 +19,7 @@ export default function VideoEditor({ projectId }: VideoEditorProps) {
   const [activePanel, setActivePanel] = useState<'timeline' | 'filters' | 'effects' | 'text' | 'audio' | 'export'>('timeline');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(30);
-  const [targetDuration, setTargetDuration] = useState(30);
+  const [duration, setDuration] = useState(60);
   const [clips, setClips] = useState<any[]>([]);
   const [showMediaAcceptor, setShowMediaAcceptor] = useState(false);
   const [availableAssets, setAvailableAssets] = useState<any[]>([]);
@@ -45,8 +44,7 @@ export default function VideoEditor({ projectId }: VideoEditorProps) {
 
     if (data && !error) {
       setClips(data.clips || []);
-      setTargetDuration(data.duration || 30);
-      setDuration((data.duration || 30) * 60);
+      setDuration(data.duration || 60);
     }
   };
 
@@ -84,18 +82,6 @@ export default function VideoEditor({ projectId }: VideoEditorProps) {
     }
   };
 
-  const handleDurationChange = async (newDuration: number) => {
-    setTargetDuration(newDuration);
-    setDuration(newDuration * 60);
-
-    if (projectId) {
-      await supabase
-        .from('movie_projects')
-        .update({ duration: newDuration })
-        .eq('id', projectId);
-    }
-  };
-
   const panels = [
     { id: 'timeline' as const, label: 'Timeline', icon: Layers },
     { id: 'filters' as const, label: 'Filters', icon: Sparkles },
@@ -128,24 +114,7 @@ export default function VideoEditor({ projectId }: VideoEditorProps) {
     <div className="flex flex-col h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       <div className="flex-1 flex flex-col">
         <div className="bg-black/40 border-b border-white/10 px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <h2 className="text-white font-bold text-lg">Video Editor</h2>
-            <div className="flex items-center gap-3">
-              <label className="text-white/60 text-sm font-medium">Target Duration:</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="range"
-                  min="5"
-                  max="180"
-                  step="5"
-                  value={targetDuration}
-                  onChange={(e) => handleDurationChange(parseInt(e.target.value))}
-                  className="w-32 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-500 [&::-moz-range-thumb]:border-0"
-                />
-                <span className="text-white font-semibold text-sm min-w-[60px]">{targetDuration} min</span>
-              </div>
-            </div>
-          </div>
+          <h2 className="text-white font-bold text-lg">Video Editor</h2>
           <button
             onClick={() => setShowMediaAcceptor(true)}
             className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all"

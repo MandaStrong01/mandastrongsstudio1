@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface Project {
   id: string;
-  title: string;
+  name: string;
   description: string;
   duration: number;
   updated_at: string;
@@ -51,9 +51,9 @@ export default function ProjectsDashboard({ onEditProject }: ProjectsDashboardPr
       .from('movie_projects')
       .insert({
         user_id: user.id,
-        title: newProjectName.trim(),
+        name: newProjectName.trim(),
         description: '',
-        duration: 30,
+        duration: 0,
         settings: { resolution: '1080p', fps: 30 },
       })
       .select()
@@ -89,13 +89,10 @@ export default function ProjectsDashboard({ onEditProject }: ProjectsDashboardPr
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  const formatDuration = (minutes: number) => {
-    if (minutes < 60) {
-      return `${minutes} min`;
-    }
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   if (loading) {
@@ -185,7 +182,7 @@ export default function ProjectsDashboard({ onEditProject }: ProjectsDashboardPr
                 </button>
               </div>
               <div className="p-4">
-                <h3 className="text-white font-semibold mb-1 truncate">{project.title}</h3>
+                <h3 className="text-white font-semibold mb-1 truncate">{project.name}</h3>
                 <div className="flex items-center gap-4 text-sm text-white/50 mb-3">
                   <div className="flex items-center gap-1">
                     <Clock className="w-4 h-4" />
