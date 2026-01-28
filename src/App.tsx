@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Film, Play, Bot, Zap, Upload, Menu, Check, ChevronRight, Search, X, Music, Settings, Layers, Video, Clapperboard, Cpu } from 'lucide-react';
+import { Sparkles, Film, Play, Bot, Zap, Upload, Menu, Check, ChevronRight, Search, Video, Clapperboard, Music } from 'lucide-react';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -8,9 +8,10 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // OWNER/ADMIN BYPASS
   const handleLogin = () => {
     if (email.toLowerCase() === 'woolleya129@gmail.com') {
-      setCurrentPage(11); // Admin bypass
+      setCurrentPage(11); 
     } else {
       setCurrentPage(4);
     }
@@ -22,13 +23,14 @@ export default function App() {
     }
   }, [currentPage]);
 
+  // GLOBAL UI COMPONENTS
   const QuickAccess = () => (
     <div className="fixed top-6 right-6 z-50 group">
       <button className="bg-purple-600 p-4 rounded-full shadow-2xl flex items-center gap-2 border-2 border-purple-400">
         <Menu size={24} /> <span className="font-bold hidden group-hover:block italic uppercase text-xs">Quick Access</span>
       </button>
-      <div className="hidden group-hover:block absolute right-0 mt-2 w-56 bg-gray-900 border-2 border-purple-600 rounded-xl shadow-2xl">
-        {['Editor Home', 'Media Library', 'AI Tool Boards', 'Agent Grok Help'].map((item) => (
+      <div className="hidden group-hover:block absolute right-0 mt-2 w-56 bg-gray-900 border-2 border-purple-600 rounded-xl shadow-2xl overflow-hidden">
+        {['Editor Home', 'Media Library', 'Tool Boards', 'Help Desk'].map((item) => (
           <button key={item} className="w-full text-left px-4 py-3 hover:bg-purple-600 text-xs font-bold uppercase border-b border-purple-900/50 last:border-0">{item}</button>
         ))}
       </div>
@@ -58,7 +60,7 @@ export default function App() {
     switch (currentPage) {
       case 1: // LANDING
         return (
-          <div className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden">
+          <div className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-black">
             <video ref={videoRef} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
               <source src="background__2_.mp4" type="video/mp4" />
             </video>
@@ -73,9 +75,9 @@ export default function App() {
           </div>
         );
 
-      case 3: // PLANS
+      case 3: // PLANS & LOGIN
         return (
-          <div className="min-h-screen bg-black/95 text-white p-8">
+          <div className="min-h-screen bg-black/95 text-white p-8 overflow-y-auto">
             <div className="max-w-7xl mx-auto mb-40 pt-10">
               <div className="grid md:grid-cols-2 gap-10 mb-20">
                 <div className="bg-purple-950/20 border-2 border-purple-600 rounded-3xl p-10 shadow-2xl">
@@ -109,7 +111,7 @@ export default function App() {
               </div>
               <h1 className="text-5xl font-black text-purple-500 italic uppercase tracking-tighter underline decoration-purple-600 underline-offset-8">AI TOOL BOARD</h1>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto opacity-30 italic font-bold text-center pt-20">Full Library of 600 Tools Active for Owner...</div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto opacity-30 italic font-bold text-center pt-20 underline">Full Library of 600 Tools Active for Owner...</div>
             <NavButtons prev={3} next={5} /><Footer />
           </div>
         );
@@ -130,7 +132,7 @@ export default function App() {
           </div>
         );
 
-      case 14: // ENHANCEMENT
+      case 14: // ENHANCEMENT STUDIO
         return (
           <div className="min-h-screen bg-black text-white p-10 flex flex-col">
             <h1 className="text-5xl font-black mb-12 text-purple-500 italic uppercase underline decoration-purple-600 underline-offset-8 tracking-tighter">Enhancement Studio</h1>
@@ -158,8 +160,7 @@ export default function App() {
           <div className="min-h-screen bg-black text-white p-10 flex flex-col items-center justify-center text-center">
             <h1 className="text-7xl md:text-9xl font-black mb-12 text-purple-500 italic uppercase tracking-tighter leading-none">THAT'S ALL FOLKS!</h1>
             <div className="bg-purple-950/20 border-2 border-purple-600 rounded-3xl p-16 max-w-5xl shadow-2xl backdrop-blur-md">
-              <h2 className="text-4xl font-black mb-10 italic uppercase tracking-widest text-white">A Special Thank You</h2>
-              <p className="text-2xl text-gray-300 italic mb-12 font-medium leading-relaxed">Supporting Veterans Mental Health & School Safety Initiatives Through Your Creative Vision.</p>
+              <p className="text-2xl text-gray-300 italic mb-12 font-medium leading-relaxed underline decoration-purple-500 underline-offset-8">Supporting Veterans Mental Health & School Safety Initiatives Through Your Creative Vision.</p>
               <button onClick={() => window.open('https://MandaStrong1.Etsy.com')} className="bg-purple-600 px-20 py-5 rounded-2xl font-black text-2xl uppercase tracking-tighter shadow-xl hover:bg-purple-500 border-2 border-purple-400 italic">Visit Etsy Store</button>
             </div>
             <button onClick={() => setCurrentPage(1)} className="mt-20 bg-green-600 px-32 py-7 rounded-3xl font-black text-3xl border-4 border-green-400 hover:bg-green-500 transition-all uppercase italic shadow-2xl">🏠 Home</button>
