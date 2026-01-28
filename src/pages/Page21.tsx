@@ -1,4 +1,4 @@
-import { Home, ArrowLeft, BookOpen, Play } from 'lucide-react';
+import { Home, ArrowLeft, BookOpen } from 'lucide-react';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
 
@@ -16,9 +16,6 @@ const VIDEO_PATH = import.meta.env.VITE_OUTRO_VIDEO_PATH || '/static/video/thats
 export default function Page21({ onNavigate }: PageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
-      <button className="fixed top-6 right-6 z-50 w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 hover:from-purple-400 hover:to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/50 transition-all hover:scale-110">
-        <Play className="w-6 h-6 text-white" />
-      </button>
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="max-w-6xl w-full text-center">
           <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-8 mb-8">
@@ -78,15 +75,13 @@ export default function Page21({ onNavigate }: PageProps) {
                   regarding bullying prevention, social skills development, and the cultivation of humanity in our communities.
                 </p>
                 <p className="text-lg">
-                  <span className="font-semibold text-purple-300">Fundraiser: Educational Program on Bullying Prevention & Social Skills</span>
-                  {' '}~ Through this comprehensive program, we provide educational resources and movie-based content to help schools
+                  Through this corrected program, we provide educational resources and movie-based content to help schools
                   address these critical issues. Our goal is to create safe, supportive environments where every student can thrive.
                 </p>
                 <div className="bg-purple-900/40 rounded-xl p-6 border border-purple-400/30 mt-6">
                   <p className="text-xl font-semibold text-purple-200 mb-3 text-center">Supporting Our Heroes</p>
                   <p className="text-lg text-center">
-                    <span className="font-bold text-white">All Etsy Store Proceeds Benefit Veterans Mental Health Services</span>
-                    {' '}~ 100% of all proceeds from our Etsy Store fundraiser
+                    <span className="font-bold text-white">100% of all proceeds</span> from our Etsy Store fundraiser
                     are donated directly to <span className="font-bold text-purple-200">Veterans Mental Health Services</span>,
                     supporting those who have sacrificed so much for our freedom.
                   </p>
@@ -149,14 +144,14 @@ export default function Page21({ onNavigate }: PageProps) {
 
           <div className="flex gap-4 justify-center">
             <button
-              onClick={() => onNavigate(19)}
+              onClick={() => onNavigate(20)}
               className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
-              onClick={() => onNavigate(0)}
+              onClick={() => onNavigate(1)}
               className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
             >
               <Home className="w-5 h-5" />
