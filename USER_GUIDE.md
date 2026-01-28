@@ -34,7 +34,7 @@ Your journey begins with our welcome pages where you'll learn about MandaStrong 
   - Selecting your subscription plan (Basic, Pro, or Studio)
   - Click "REGISTER" to complete setup
 
-**Important:** After registration, you'll have immediate access to all 720 AI tools and features based on your chosen plan.
+**Important:** After registration, you'll have immediate access to all 720+ AI tools and features based on your chosen plan.
 
 ---
 
@@ -47,29 +47,23 @@ Your journey begins with our welcome pages where you'll learn about MandaStrong 
 
 ### Page Overview
 - **Pages 1-3:** Welcome, Introduction, Login/Register
-- **Pages 4-9:** AI Tool Board (720 AI-powered creative tools - 120 per page)
+- **Pages 4-9:** AI Tool Board (720+ creative tools)
 - **Page 10:** "Doxy The School Bully" - Upload your existing movie files
-- **Page 11:** Editor Dashboard with Media Box and video generation
-- **Page 12:** Timeline Editor with multi-track editing
-- **Page 13:** Audio Studio with sound design tools
-- **Page 14:** Text Creator for titles and captions
-- **Page 15:** Animation Lab for bringing images to life
-- **Page 16:** Visual FX and export controls
+- **Page 11:** Editor Dashboard with Media Box
+- **Pages 12-16:** Professional editing tools with timeline
 - **Page 17:** Full-screen preview of your finished film
 - **Page 18:** Terms of Service and Disclaimer
-- **Page 19:** Agent Grok 24/7 AI Help Desk
+- **Page 19:** Agent Grok 24/7 Help Desk
 - **Page 20:** Community Hub
-- **Page 21:** Closing page with thank you message and resources
-- **Page 22:** Asset upload page (accessed from AI tools)
-- **Page 23:** Batch upload page (accessed from AI tools)
+- **Page 21:** Closing page with resources
 
 ---
 
 ## AI Tool Board
 
-### Pages 4-9: 720 AI-Powered Creative Tools
+### Pages 4-9: 720+ Creative Tools
 
-Our AI Tool Board features 720 specialized AI tools across six pages (120 tools per page), organized into comprehensive categories designed to handle everything a human can't easily do.
+Our AI Tool Board features over 720 specialized tools across six pages, each prefixed with "AI" for easy identification.
 
 #### How to Use AI Tools
 
@@ -80,39 +74,17 @@ Our AI Tool Board features 720 specialized AI tools across six pages (120 tools 
    - **Upload:** Import existing files to enhance with AI
    - **Create:** Generate new content from scratch using AI
 
-#### Tool Categories by Page:
+#### Tool Categories Include:
+- Image generation and enhancement
+- Video editing and effects
+- Audio processing and music creation
+- Script writing and story development
+- Voice synthesis and dubbing
+- Special effects and transitions
+- Color grading and correction
+- And much more!
 
-**PAGE 4 (Tools 1-120):**
-- Story & Script Writing (AI-generated plots, characters, dialogue)
-- Character Creation (faces, emotions, movements, voices)
-- Photo & Image Generation (upscaling, restoration, effects)
-
-**PAGE 5 (Tools 121-240):**
-- Photo Effects & Filters (LUTs, weather, lighting simulation)
-- Video Generation (text-to-video, scene creation, camera movements)
-- Animation & Motion (character animation, lip-sync, physics)
-
-**PAGE 6 (Tools 241-360):**
-- Advanced Animation (rigging, particles, physics simulation)
-- Sound & Music (AI voices, music generation, audio effects)
-- Audio Production (mixing, spatial audio, cleanup tools)
-
-**PAGE 7 (Tools 361-480):**
-- Video Editing (timeline tools, transitions, effects)
-- Cinematic Effects (color grading, film looks, transitions)
-- AI VFX (explosions, fire, magic effects, weather)
-
-**PAGE 8 (Tools 481-600):**
-- Special Effects (creature FX, transformations, destruction)
-- File Management (uploads, converters, organizers)
-- Export & Delivery (all formats, social media optimization)
-
-**PAGE 9 (Tools 601-720):**
-- Bonus Tools (AI help desk, troubleshooting, optimizers)
-- Advanced Features (continuity checking, auto-fix tools)
-- Production Tools (planners, analyzers, final polish)
-
-**Important:** All 720 tools use AI to handle tasks that would be impossible or extremely difficult for humans to do manually - from generating realistic characters to creating complex VFX sequences.
+**Pro Tip:** Tools are organized across pages 4-9, so explore all pages to discover the full range of creative possibilities.
 
 ---
 
@@ -221,25 +193,24 @@ Before finalizing your film, preview it in full-screen mode to ensure everything
 #### BASIC Plan - $10/month
 - **Film Length:** Up to 30 minutes
 - **Best For:** Short films, music videos, quick projects
-- **Access:** All 720 AI tools
+- **Access:** All 720+ AI tools
 - **Features:** Full editing suite, unlimited uploads
 
 #### PRO Plan - $20/month
 - **Film Length:** Up to 1 hour
 - **Best For:** Standard documentaries, corporate videos
-- **Access:** All 720 AI tools
+- **Access:** All 720+ AI tools
 - **Features:** Full editing suite, unlimited uploads, priority support
 
 #### STUDIO Plan - $30/month
-- **Film Length:** Up to 2.5 hours (150 minutes)
+- **Film Length:** Up to 2.5 hours
 - **Best For:** Feature-length films, complete cinematic experiences
-- **Access:** All 720 AI tools
+- **Access:** All 720+ AI tools
 - **Features:** Full editing suite, unlimited uploads, priority support, advanced export options
 
 **All plans include:**
-- Access to 720 AI creative tools
+- Access to 720+ AI creative tools
 - Unlimited cloud storage for your projects
-- Agent Grok 24/7 AI assistant
 - Regular updates and new features
 - Cancel anytime with 30-day refund policy
 
@@ -247,31 +218,16 @@ Before finalizing your film, preview it in full-screen mode to ensure everything
 
 ## Support
 
-### Page 19: Agent Grok 24/7 AI Help Desk
+### Page 19: Agent Grok 24/7 Help Desk
 
-Need assistance? Agent Grok is our AI-powered virtual assistant available 24/7 to help you with any questions about MandaStrong Studio.
-
-#### How Agent Grok Works:
-- **Live Chat Interface:** Real-time conversation with AI assistant
-- **Instant Responses:** Get immediate answers to your questions
-- **Message History:** All your conversations are saved and accessible
-- **Smart Assistance:** Agent Grok knows about all studio features
+Need assistance? Our AI-powered help desk is available around the clock.
 
 #### Get Help With:
-- **Uploads:** Learn how to upload media files
-- **AI Tools:** Discover how to use the 720 AI tools
-- **Editing:** Get guidance on timeline editing and effects
-- **Technical Issues:** Troubleshoot problems
-- **Feature Questions:** Understand how features work
-- **Navigation:** Find your way around the platform
-- **Export:** Learn how to download your finished films
-
-#### Example Questions to Ask Agent Grok:
-- "How do I upload videos?"
-- "What AI tools are available?"
-- "How do I edit my movie?"
-- "Where can I export my project?"
-- "How do I add music to my film?"
+- Technical issues
+- Feature questions
+- Creative guidance
+- Account management
+- Billing inquiries
 
 ### Page 20: Community Hub
 
@@ -300,14 +256,11 @@ Visit: **MandaStrong1.Etsy.com**
 
 1. **Start Small:** Familiarize yourself with the interface before tackling large projects
 2. **Explore AI Tools:** Try different tools to discover what works best for your style
-3. **Use the Search Bar:** On Pages 4-9, use the search bar to quickly find specific AI tools across all 720 options
-4. **Ask Agent Grok:** Don't hesitate to chat with Agent Grok on Page 19 for instant help
-5. **Organize Assets:** Keep your Media Box organized by deleting unused files
-6. **Save Often:** Your work auto-saves, but generate checkpoints regularly
-7. **Preview Frequently:** Check your work in preview mode throughout the editing process
-8. **Use Drag & Drop:** It's the fastest way to upload and organize files
-9. **Check the Guide:** Reference this guide whenever you need clarification
-10. **Navigate with Back/Next:** Every page has Back and Next buttons for easy navigation
+3. **Organize Assets:** Keep your Media Box organized by deleting unused files
+4. **Save Often:** Your work auto-saves, but generate checkpoints regularly
+5. **Preview Frequently:** Check your work in preview mode throughout the editing process
+6. **Use Drag & Drop:** It's the fastest way to upload and organize files
+7. **Check the Guide:** Reference this guide whenever you need clarification
 
 ---
 
@@ -324,43 +277,29 @@ Visit: **MandaStrong1.Etsy.com**
 
 ### Common Issues:
 
-**Can't Find a Specific Tool:**
-- Use the search bar on Pages 4-9 to search across all 720 AI tools
-- The search works across all 6 pages of tools simultaneously
-
 **Google Drive Not Loading:**
 - Ensure you've granted necessary permissions
 - Try using regular upload instead
 - Check your internet connection
-- Google Drive requires configuration - contact support if needed
 
 **Upload Failed:**
-- Verify file format is supported (MP4, MOV, JPG, PNG, MP3, etc.)
+- Verify file format is supported
 - Check file size (larger files may take longer)
 - Try compressing images before upload
-- Use the batch upload feature (Page 23) for multiple files
 
 **Video Not Playing:**
-- Ensure video format is compatible (MP4 recommended)
-- Check browser compatibility (Chrome or Edge recommended)
+- Ensure video format is compatible
+- Check browser compatibility (Chrome recommended)
 - Clear browser cache and reload
-- Wait for the video to fully load before playing
-
-**Need More Help:**
-- Visit Page 19 to chat with Agent Grok 24/7
-- Agent Grok can answer questions about any feature instantly
 
 ---
 
 ## Contact & Support
 
 For additional help, visit:
-- **Agent Grok (24/7 AI Assistant):** Page 19 in the app - Get instant answers to any question
-- **Community Hub:** Page 20 in the app - Connect with other creators
-- **Etsy Store & Fundraiser:** MandaStrong1.Etsy.com - Support our cause
-- **Quick Access Menu:** Available on every page for instant navigation
-
-**Pro Tip:** Agent Grok on Page 19 is your fastest way to get help. Just type your question and get an immediate answer!
+- **24/7 Help Desk:** Page 19 in the app
+- **Community Hub:** Page 20 in the app
+- **Etsy Store:** MandaStrong1.Etsy.com
 
 ---
 
