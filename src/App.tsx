@@ -1,95 +1,189 @@
-import { useState, useEffect } from 'react';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import Page1 from './pages/Page1';
-import Page2 from './pages/Page2';
-import Page3 from './pages/Page3';
-import Page4 from './pages/Page4';
-import Page5 from './pages/Page5';
-import Page6 from './pages/Page6';
-import Page7 from './pages/Page7';
-import Page8 from './pages/Page8';
-import Page9 from './pages/Page9';
-import Page10 from './pages/Page10';
-import Page11 from './pages/Page11';
-import Page12 from './pages/Page12';
-import Page13 from './pages/Page13';
-import Page14 from './pages/Page14';
-import Page15 from './pages/Page15';
-import Page16 from './pages/Page16';
-import Page17 from './pages/Page17';
-import Page18 from './pages/Page18';
-import Page19 from './pages/Page19';
-import Page20 from './pages/Page20';
-import Page21 from './pages/Page21';
-import Page22 from './pages/Page22';
+import React, { useState, useEffect, useRef } from 'react';
+import { Sparkles, Film, Play, Bot, Zap, Upload, Menu, Check, ChevronRight, Search, X, Music, Settings, Layers, Video, Clapperboard, Cpu } from 'lucide-react';
 
-function AppContent() {
+export default function App() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [assetPageData, setAssetPageData] = useState<{ toolName: string; mode: 'upload' | 'create' } | null>(null);
-  const { user, loading } = useAuth();
+  const [email, setEmail] = useState('');
+  const [movieDuration, setMovieDuration] = useState(90);
+  const [searchQuery, setSearchQuery] = useState('');
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // ADMIN/OWNER BYPASS LOGIC
+  const handleLogin = () => {
+    if (email.toLowerCase() === 'woolleya129@gmail.com') {
+      setCurrentPage(11); // Immediate bypass to Editor Suite as Owner/Admin
+    } else {
+      setCurrentPage(4);
+    }
+  };
 
   useEffect(() => {
-    if (currentPage >= 4 && !user) {
-      setCurrentPage(3);
+    if (currentPage === 1 && videoRef.current) {
+      videoRef.current.play().catch(() => {});
     }
-  }, [currentPage, user]);
+  }, [currentPage]);
 
-  const navigate = (page: number) => {
-    if (page >= 4 && !user) {
-      setCurrentPage(3);
-    } else {
-      setAssetPageData(null);
-      setCurrentPage(page);
-    }
-  };
-
-  const openAssetPage = (toolName: string, mode: 'upload' | 'create') => {
-    setAssetPageData({ toolName, mode });
-    setCurrentPage(22);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="text-white">Loading...</div>
+  // GLOBAL UI COMPONENTS
+  const QuickAccess = () => (
+    <div className="fixed top-6 right-6 z-50 group">
+      <button className="bg-purple-600 p-4 rounded-full shadow-2xl hover:scale-110 transition-all flex items-center gap-2 border-2 border-purple-400">
+        <Menu size={24} /> <span className="font-bold hidden group-hover:block italic uppercase text-xs">Quick Access</span>
+      </button>
+      <div className="hidden group-hover:block absolute right-0 mt-2 w-56 bg-gray-900 border-2 border-purple-600 rounded-xl overflow-hidden shadow-2xl">
+        {['Editor Home', 'Media Library', 'AI Tool Boards', 'Agent Grok Help', 'Community Hub'].map((item) => (
+          <button key={item} className="w-full text-left px-4 py-3 hover:bg-purple-600 text-xs font-bold uppercase border-b border-purple-900/50 last:border-0">{item}</button>
+        ))}
       </div>
-    );
-  }
-
-  const pages = [
-    <Page1 key={1} onNavigate={navigate} />,
-    <Page2 key={2} onNavigate={navigate} />,
-    <Page3 key={3} onNavigate={navigate} />,
-    <Page4 key={4} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
-    <Page5 key={5} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
-    <Page6 key={6} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
-    <Page7 key={7} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
-    <Page8 key={8} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
-    <Page9 key={9} onNavigate={navigate} onOpenAssetPage={openAssetPage} />,
-    <Page10 key={10} onNavigate={navigate} />,
-    <Page11 key={11} onNavigate={navigate} />,
-    <Page12 key={12} onNavigate={navigate} />,
-    <Page13 key={13} onNavigate={navigate} />,
-    <Page14 key={14} onNavigate={navigate} />,
-    <Page15 key={15} onNavigate={navigate} />,
-    <Page16 key={16} onNavigate={navigate} />,
-    <Page17 key={17} onNavigate={navigate} />,
-    <Page18 key={18} onNavigate={navigate} />,
-    <Page19 key={19} onNavigate={navigate} />,
-    <Page20 key={20} onNavigate={navigate} />,
-    <Page21 key={21} onNavigate={navigate} />,
-    <Page22 key={22} onNavigate={navigate} toolName={assetPageData?.toolName} mode={assetPageData?.mode} />,
-  ];
-
-  return <>{pages[currentPage - 1]}</>;
-}
-
-function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    </div>
   );
-}
 
-export default App;
+  const GrokBubble = () => (
+    <button onClick={() => setCurrentPage(19)} className="fixed bottom-8 right-8 bg-purple-600 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl z-50 border-2 border-purple-400 hover:scale-110 transition-all animate-pulse">
+      <Bot size={28} className="text-white" />
+    </button>
+  );
+
+  const NavButtons = ({ prev, next }: { prev: number; next: number }) => (
+    <div className="fixed bottom-16 left-1/2 -translate-x-1/2 flex gap-8 z-40">
+      <button onClick={() => setCurrentPage(prev)} className="bg-purple-900/80 hover:bg-purple-800 text-white px-14 py-3 rounded-xl font-bold border-2 border-purple-500 shadow-xl transition-all uppercase italic">Back</button>
+      <button onClick={() => setCurrentPage(next)} className="bg-purple-600 hover:bg-purple-500 text-white px-14 py-3 rounded-xl font-bold border-2 border-purple-400 shadow-xl transition-all uppercase italic">Next</button>
+    </div>
+  );
+
+  const Footer = () => (
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-full text-center z-30">
+      <p className="text-gray-500 text-[10px] font-black tracking-[0.2em] uppercase">MandaStrong1 2026 ~ Author Of Doxy The School Bully ~ MandaStrong1.Etsy.com</p>
+    </div>
+  );
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 1: // LANDING
+        return (
+          <div className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden">
+            <video ref={videoRef} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
+              <source src="background__2_.mp4" type="video/mp4" />
+            </video>
+            <div className="relative z-10 text-center px-4">
+              <h1 className="text-6xl md:text-9xl font-black mb-4 text-black italic tracking-tighter leading-none" style={{ fontFamily: 'Impact, sans-serif' }}>MANDASTRONG'S STUDIO</h1>
+              <p className="text-2xl md:text-4xl mb-32 text-black font-bold italic tracking-tight">Welcome To The All-In-One Make-A-Movie App!</p>
+              <div className="flex gap-6 justify-center">
+                <button onClick={() => setCurrentPage(2)} className="bg-black text-white px-16 py-5 rounded-2xl font-bold text-xl shadow-2xl border-2 border-gray-800">Next</button>
+                <button onClick={() => setCurrentPage(3)} className="bg-black text-white px-16 py-5 rounded-2xl font-bold text-xl shadow-2xl border-2 border-gray-800">Login</button>
+                <button onClick={() => setCurrentPage(3)} className="bg-black text-white px-16 py-5 rounded-2xl font-bold text-xl shadow-2xl border-2 border-gray-800">Register</button>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 3: // PRICING & LOGIN
+        return (
+          <div className="min-h-screen bg-black/95 text-white p-8 overflow-y-auto">
+            <div className="max-w-7xl mx-auto mb-40 pt-10">
+              <div className="grid md:grid-cols-2 gap-10 mb-20">
+                <div className="bg-purple-950/20 border-2 border-purple-600 rounded-3xl p-10 shadow-2xl">
+                  <h2 className="text-3xl font-black mb-8 italic uppercase text-purple-500">Login</h2>
+                  <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="woolleya129@gmail.com" className="w-full bg-black border-2 border-purple-800 rounded-xl p-4 mb-4 text-white font-bold" />
+                  <button onClick={handleLogin} className="w-full bg-purple-600 py-4 rounded-xl font-black text-xl hover:bg-purple-500 shadow-lg uppercase">Access Studio</button>
+                </div>
+                <div className="bg-purple-950/20 border-2 border-purple-600 rounded-3xl p-10 flex flex-col justify-center text-center">
+                  <h2 className="text-3xl font-black mb-8 italic uppercase text-purple-500">Register</h2>
+                  <button className="w-full bg-purple-600 py-4 rounded-xl font-black text-xl uppercase shadow-lg">Create Account</button>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-3 gap-8 border-t border-purple-900/60 pt-16">
+                <div className="border-2 border-purple-600 p-8 rounded-3xl text-center bg-black/50">
+                  <h3 className="text-3xl font-black mb-4 uppercase italic">Basic</h3>
+                  <p className="text-5xl font-black mb-6">$20<span className="text-lg text-gray-500 font-bold">/mo</span></p>
+                  <ul className="text-left space-y-3 mb-8 text-sm font-bold text-gray-400"><li>✓ 100 AI Tools</li><li>✓ HD Export</li><li>✓ Basic Support</li></ul>
+                  <button className="w-full bg-gray-800 py-3 rounded-xl font-bold uppercase">Select Plan</button>
+                </div>
+                <div className="border-2 border-yellow-400 p-8 rounded-3xl text-center relative bg-purple-900/20 shadow-2xl shadow-yellow-500/10 scale-105">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-500 text-black px-6 py-1 rounded-full text-xs font-black uppercase">Most Popular</div>
+                  <h3 className="text-3xl font-black mb-4 uppercase italic">Pro</h3>
+                  <p className="text-5xl font-black mb-6">$30<span className="text-lg text-gray-400 font-bold">/mo</span></p>
+                  <ul className="text-left space-y-3 mb-8 text-sm font-bold text-gray-200"><li>✓ 300 AI Tools</li><li>✓ 4K Export</li><li>✓ Priority Support</li></ul>
+                  <button className="w-full bg-yellow-500 text-black py-3 rounded-xl font-black uppercase">✓ SELECTED</button>
+                </div>
+                <div className="border-2 border-purple-600 p-8 rounded-3xl text-center bg-black/50">
+                  <h3 className="text-3xl font-black mb-4 uppercase italic">Studio</h3>
+                  <p className="text-5xl font-black mb-6">$50<span className="text-lg text-gray-400 font-bold">/mo</span></p>
+                  <ul className="text-left space-y-3 mb-8 text-sm font-bold text-gray-400"><li>✓ All 600 AI Tools</li><li>✓ 8K & 3-Hour Export</li><li>✓ 24/7 Live Support</li></ul>
+                  <button className="w-full bg-gray-800 py-3 rounded-xl font-bold uppercase">Select Plan</button>
+                </div>
+              </div>
+              <div className="flex justify-center mt-16"><button className="bg-purple-600 px-24 py-5 rounded-2xl font-black text-2xl shadow-2xl hover:scale-105 transition-all border-2 border-purple-400 uppercase italic">Continue</button></div>
+            </div>
+            <NavButtons prev={2} next={4} /><Footer />
+          </div>
+        );
+
+      case 4: // AI BOARD 1 (PAGES 4-9)
+        return (
+          <div className="min-h-screen bg-black text-white p-8">
+            <div className="flex justify-between items-center mb-12">
+              <div className="relative w-96 group">
+                <Search className="absolute left-4 top-4 text-purple-500" size={20} />
+                <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="SEARCH FOR TOOL" className="w-full bg-gray-900 border-2 border-purple-600 rounded-xl py-3 pl-12 pr-4 font-black uppercase text-sm focus:border-purple-400 outline-none" />
+              </div>
+              <h1 className="text-5xl font-black text-purple-500 italic uppercase tracking-tighter">AI TOOL BOARD</h1>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-6xl mx-auto opacity-40 italic font-bold text-center pt-20">Full Library of 600 Tools Active for Admin...</div>
+            <NavButtons prev={3} next={5} /><Footer />
+          </div>
+        );
+
+      case 12: // MEDIA LIBRARY
+        return (
+          <div className="min-h-screen bg-black text-white p-10">
+            <div className="flex justify-between items-start mb-16">
+              <h1 className="text-4xl font-black text-purple-500 italic uppercase tracking-widest underline decoration-purple-600 underline-offset-8">Media Library</h1>
+              <div className="flex gap-4">
+                <button onClick={() => setCurrentPage(14)} className="bg-blue-600 border-2 border-blue-400 px-10 py-4 rounded-xl font-black text-white flex items-center gap-3 shadow-2xl hover:bg-blue-500 transition-all uppercase italic">
+                  <Play size={20} fill="white" /> Open Enhancement Studio
+                </button>
+                <button className="bg-purple-600 px-10 py-4 rounded-xl font-black uppercase italic shadow-lg">Upload Media</button>
+              </div>
+            </div>
+            <div className="h-[40vh] bg-purple-900/5 border-2 border-dashed border-purple-900/50 rounded-3xl flex flex-col items-center justify-center italic text-gray-500 font-bold">Asset Grid Optimized for 3-Hour Cinematic Files...</div>
+            <NavButtons prev={11} next={13} /><Footer />
+          </div>
+        );
+
+      case 14: // ENHANCEMENT STUDIO (3-HOUR CAPACITY)
+        return (
+          <div className="min-h-screen bg-black text-white p-10 flex flex-col">
+            <h1 className="text-5xl font-black mb-12 text-purple-500 italic uppercase underline decoration-purple-600 underline-offset-8 tracking-tighter">Enhancement Studio</h1>
+            <div className="flex-1 grid md:grid-cols-2 gap-12 mb-20">
+              <div className="bg-gray-900 border-2 border-purple-600 rounded-3xl flex items-center justify-center relative shadow-inner overflow-hidden">
+                <Play size={100} className="text-purple-600 opacity-20" />
+                <div className="absolute top-6 left-6 bg-purple-600 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-[0.2em] shadow-lg">Live Cinematic Viewer</div>
+              </div>
+              <div className="bg-gray-950 p-12 rounded-3xl border border-purple-900/30 flex flex-col justify-center">
+                <label className="text-3xl font-black block mb-12 italic text-purple-400 uppercase tracking-widest">Movie Duration Slider</label>
+                <input type="range" min="0" max="180" value={movieDuration} onChange={(e) => setMovieDuration(parseInt(e.target.value))} className="w-full h-5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-purple-600 shadow-xl" />
+                <div className="flex justify-between mt-12 text-6xl font-black text-white tracking-tighter">
+                  <span>{movieDuration} MIN</span>
+                  <span className="text-gray-700 text-xl uppercase tracking-[0.3em] self-end">180 Min Cap</span>
+                </div>
+                <div className="grid grid-cols-2 gap-6 mt-20">
+                  <button className="bg-gray-900 border-2 border-purple-900/40 p-6 rounded-2xl font-black uppercase text-sm hover:bg-purple-900/20 transition-all">Color Grading</button>
+                  <button className="bg-gray-900 border-2 border-purple-900/40 p-6 rounded-2xl font-black uppercase text-sm hover:bg-purple-900/20 transition-all">Audio Mixer</button>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-center mb-10"><button className="bg-purple-600 px-24 py-6 rounded-3xl font-black text-3xl shadow-2xl hover:scale-105 transition-all border-2 border-purple-400 uppercase italic">Continue Rendering</button></div>
+            <NavButtons prev={12} next={15} /><Footer />
+          </div>
+        );
+
+      case 21: // FINALE
+        return (
+          <div className="min-h-screen bg-black text-white p-10 flex flex-col items-center justify-center text-center">
+            <h1 className="text-7xl md:text-9xl font-black mb-12 text-purple-500 italic uppercase tracking-tighter leading-none">THAT'S ALL FOLKS!</h1>
+            <div className="bg-purple-950/20 border-2 border-purple-600 rounded-3xl p-16 max-w-5xl shadow-2xl backdrop-blur-md">
+              <h2 className="text-4xl font-black mb-10 italic uppercase tracking-widest">A Special Thank You</h2>
+              <p className="text-2xl text-gray-300 italic mb-12 font-medium leading-relaxed">Supporting Veterans Mental Health & School Safety Initiatives Through Your Creative Vision.</p>
+              <button onClick={() => window.open('https://MandaStrong1.Etsy.com')} className="bg-purple-600 px-20 py-5 rounded-2xl font-black text-2xl uppercase tracking-tighter shadow-xl hover:bg-purple-500 border-2 border-purple-400">Visit Etsy Store</button>
+            </div>
+            <button onClick={() => setCurrentPage(1)} className="mt-20 bg-green-600 px-32 py-7 rounded-3xl font-black text-3xl border-4 border-green-400 hover:bg-green-500 transition-all uppercase italic shadow-2
