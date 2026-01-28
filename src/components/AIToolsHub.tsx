@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Sparkles, Search } from 'lucide-react';
 import AIToolModal from './AIToolModal';
 import Footer from './Footer';
 import QuickAccess from './QuickAccess';
+import { getToolsForPage } from '../data/aiTools';
 
 interface AIToolsHubProps {
   tools: string[];
@@ -15,9 +16,25 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredTools = tools.filter(tool =>
-    tool.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Search across all pages if there's a query, otherwise show current page
+  const getFilteredTools = () => {
+    if (!searchQuery.trim()) {
+      return tools;
+    }
+
+    // Search across all tool pages
+    const allTools: string[] = [];
+    for (let page = 4; page <= 9; page++) {
+      const pageTools = getToolsForPage(page);
+      allTools.push(...pageTools);
+    }
+
+    return allTools.filter(tool =>
+      tool.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
+  const filteredTools = getFilteredTools();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
@@ -43,19 +60,33 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
           </div>
 
           <div className="bg-black/30 backdrop-blur-sm p-4 md:p-6 rounded-2xl border border-purple-500/30 mb-6 flex-1 overflow-y-auto max-h-[600px]">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {filteredTools.map((tool, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedTool(tool)}
-                  className="bg-purple-900/20 border border-purple-500/30 hover:border-purple-400 hover:bg-purple-900/40 rounded-lg p-5 transition-all cursor-pointer text-left h-24 flex items-center justify-center"
-                >
-                  <h3 className="font-semibold text-white text-base leading-tight text-center">
-                    {tool}
-                  </h3>
-                </button>
-              ))}
-            </div>
+            {searchQuery.trim() && (
+              <div className="mb-4 text-purple-300 text-sm">
+                Found {filteredTools.length} tool{filteredTools.length !== 1 ? 's' : ''} matching "{searchQuery}"
+              </div>
+            )}
+
+            {filteredTools.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <Search className="w-16 h-16 text-purple-400/50 mb-4" />
+                <h3 className="text-xl font-semibold text-purple-300 mb-2">No tools found</h3>
+                <p className="text-purple-400/70">Try a different search term</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {filteredTools.map((tool, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedTool(tool)}
+                    className="bg-purple-900/20 border border-purple-500/30 hover:border-purple-400 hover:bg-purple-900/40 rounded-lg p-5 transition-all cursor-pointer text-left h-24 flex items-center justify-center"
+                  >
+                    <h3 className="font-semibold text-white text-base leading-tight text-center">
+                      {tool}
+                    </h3>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
