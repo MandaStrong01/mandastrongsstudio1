@@ -8,10 +8,10 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // OWNER/ADMIN BYPASS
+  // OWNER ACCESS: woolleya129@gmail.com
   const handleLogin = () => {
     if (email.toLowerCase() === 'woolleya129@gmail.com') {
-      setCurrentPage(11);
+      setCurrentPage(11); 
     } else {
       setCurrentPage(4);
     }
@@ -38,7 +38,7 @@ export default function App() {
   );
 
   const GrokBubble = () => (
-    <button onClick={() => setCurrentPage(19)} className="fixed bottom-8 right-8 bg-purple-600 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl z-50 border-2 border-purple-400">
+    <button onClick={() => setCurrentPage(19)} className="fixed bottom-8 right-8 bg-purple-600 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl z-50 border-2 border-purple-400 hover:scale-110 transition-all">
       <Bot size={28} className="text-white" />
     </button>
   );
@@ -60,15 +60,15 @@ export default function App() {
 
   const renderPage = () => {
     switch (currentPage) {
-      case 1: // LANDING WITH VIDEO
+      case 1: // LANDING
         return (
           <div className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden">
             <video ref={videoRef} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
               <source src="background__2_.mp4" type="video/mp4" />
             </video>
             <div className="relative z-10 text-center px-4">
-              <h1 className="text-7xl md:text-9xl font-black mb-4 text-black italic tracking-tighter" style={{ fontFamily: 'Impact, sans-serif' }}>MANDASTRONG'S STUDIO</h1>
-              <p className="text-2xl md:text-3xl mb-32 text-black font-bold italic tracking-tight underline decoration-black underline-offset-8">Welcome To The All-In-One Make-A-Movie App!</p>
+              <h1 className="text-7xl md:text-9xl font-black mb-4 text-black italic tracking-tighter leading-none" style={{ fontFamily: 'Impact, sans-serif' }}>MANDASTRONG'S STUDIO</h1>
+              <p className="text-2xl md:text-3xl mb-32 text-black font-bold italic tracking-tight underline decoration-black decoration-4 underline-offset-8">Welcome To The All-In-One Make-A-Movie App!</p>
               <div className="flex gap-6 justify-center">
                 <button onClick={() => setCurrentPage(2)} className="bg-black text-white px-14 py-5 rounded-2xl font-bold text-xl shadow-2xl">Next</button>
                 <button onClick={() => setCurrentPage(3)} className="bg-black text-white px-14 py-5 rounded-2xl font-bold text-xl shadow-2xl">Login</button>
@@ -82,7 +82,7 @@ export default function App() {
           <div className="min-h-screen bg-black/90 text-white p-8 overflow-y-auto pb-48">
             <div className="max-w-7xl mx-auto pt-10">
               <div className="grid md:grid-cols-2 gap-8 mb-20">
-                <div className="bg-purple-950/20 border-2 border-purple-600 rounded-3xl p-10">
+                <div className="bg-purple-950/20 border-2 border-purple-600 rounded-3xl p-10 shadow-2xl">
                   <h2 className="text-3xl font-black mb-8 italic uppercase text-purple-500 text-center underline decoration-purple-600">Login</h2>
                   <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="woolleya129@gmail.com" className="w-full bg-black border-2 border-purple-800 rounded-xl p-4 mb-4 text-white" />
                   <button onClick={handleLogin} className="w-full bg-purple-600 py-4 rounded-xl font-black text-xl uppercase italic">Access Studio</button>
@@ -91,10 +91,10 @@ export default function App() {
               </div>
               <div className="grid md:grid-cols-3 gap-6 border-t border-purple-900/60 pt-16">
                 <div className="border-2 border-purple-600 p-8 rounded-3xl text-center"><h3 className="text-2xl font-black mb-4 uppercase">Basic</h3><p className="text-5xl font-black mb-6">$20<span className="text-lg text-gray-500 font-bold">/mo</span></p><button className="w-full bg-gray-800 py-3 rounded-xl font-bold uppercase">Select</button></div>
-                <div className="border-2 border-yellow-400 p-8 rounded-3xl text-center bg-purple-900/20 scale-105 shadow-2xl shadow-yellow-500/10"><h3 className="text-2xl font-black mb-4 uppercase italic">Pro</h3><p className="text-5xl font-black mb-6">$30<span className="text-lg text-gray-500 font-bold">/mo</span></p><button className="w-full bg-yellow-500 text-black py-3 rounded-xl font-black uppercase italic">✓ SELECTED</button></div>
+                <div className="border-2 border-yellow-400 p-8 rounded-3xl text-center relative bg-purple-900/20 scale-105 shadow-2xl shadow-yellow-500/10"><h3 className="text-2xl font-black mb-4 uppercase italic">Pro</h3><p className="text-5xl font-black mb-6">$30<span className="text-lg text-gray-500 font-bold">/mo</span></p><button className="w-full bg-yellow-500 text-black py-3 rounded-xl font-black uppercase italic">✓ SELECTED</button></div>
                 <div className="border-2 border-purple-600 p-8 rounded-3xl text-center"><h3 className="text-2xl font-black mb-4 uppercase">Studio</h3><p className="text-5xl font-black mb-6">$50<span className="text-lg text-gray-500 font-bold">/mo</span></p><button className="w-full bg-gray-800 py-3 rounded-xl font-bold uppercase">Select</button></div>
               </div>
-              <div className="flex justify-center mt-12"><button className="bg-purple-600 px-24 py-5 rounded-2xl font-black text-2xl border-2 border-purple-400 uppercase italic">Continue</button></div>
+              <div className="flex justify-center mt-12"><button className="bg-purple-600 px-24 py-5 rounded-2xl font-black text-2xl border-2 border-purple-400 shadow-2xl uppercase italic">Continue</button></div>
             </div>
             <Nav p={2} n={4} /><Footer />
           </div>
@@ -108,7 +108,7 @@ export default function App() {
                 <Search className="absolute left-4 top-4 text-purple-500" size={20} />
                 <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="SEARCH FOR TOOL" className="w-full bg-gray-900 border-2 border-purple-600 rounded-xl py-3 pl-12 pr-4 font-black uppercase text-xs" />
               </div>
-              <h1 className="text-4xl font-black text-purple-500 italic uppercase underline decoration-purple-600 underline-offset-8 tracking-tighter">AI Tool Board</h1>
+              <h1 className="text-4xl font-black text-purple-500 italic uppercase underline decoration-purple-600 underline-offset-8">AI Tool Board</h1>
             </div>
             <div className="text-center italic opacity-30 pt-32 font-bold uppercase">All 600 AI Tools Ready For Owner Access</div>
             <Nav p={3} n={5} /><Footer />
@@ -132,25 +132,20 @@ export default function App() {
           </div>
         );
 
-      case 21: // FULL PAGE 21 RESTORED
+      case 21: // FINALE
         return (
           <div className="min-h-screen bg-black text-white p-10 flex flex-col items-center justify-start text-center overflow-y-auto pb-20">
             <h1 className="text-7xl md:text-9xl font-black mb-12 text-purple-500 italic uppercase tracking-tighter leading-none pt-10">THAT'S ALL FOLKS!</h1>
             <div className="bg-purple-950/20 border-2 border-purple-600 rounded-3xl p-12 max-w-5xl shadow-2xl backdrop-blur-md mb-12">
               <h2 className="text-4xl font-black mb-10 italic uppercase tracking-widest text-white underline decoration-purple-600">A Special Thank You</h2>
               <p className="text-2xl text-gray-300 italic mb-8 font-medium leading-relaxed underline decoration-purple-500 underline-offset-8">Supporting Veterans Mental Health & School Safety Initiatives Through Your Creative Vision.</p>
-              <div className="text-left text-gray-400 space-y-4 mb-10 bg-black/40 p-6 rounded-2xl">
-                <p className="font-bold uppercase tracking-widest text-purple-400">About Our Mission:</p>
-                <p className="text-sm">MandaStrong Studio is part of a comprehensive educational initiative designed to bring awareness to critical issues like bullying prevention and social skills development.</p>
-                <p className="text-sm">Supporting Our Heroes: 100% of all Etsy store fundraiser proceeds are donated directly to Veterans Mental Health Services.</p>
-              </div>
               <button onClick={() => window.open('https://MandaStrong1.Etsy.com')} className="bg-purple-600 px-20 py-5 rounded-2xl font-black text-2xl uppercase tracking-tighter shadow-xl border-2 border-purple-400 italic">Visit Etsy Store</button>
             </div>
             <button onClick={() => setCurrentPage(1)} className="bg-green-600 px-32 py-7 rounded-3xl font-black text-3xl border-4 border-green-400 uppercase italic shadow-2xl mb-10">🏠 Home</button>
           </div>
         );
 
-      default: return <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white"><h1 className="text-5xl font-black text-purple-500 uppercase italic mb-10 tracking-widest">Module {currentPage}</h1><Nav p={currentPage - 1} n={currentPage + 1} /><Footer /></div>;
+      default: return <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white p-10"><h1 className="text-5xl font-black text-purple-500 uppercase italic mb-10 tracking-widest">Module {currentPage}</h1><Nav p={currentPage - 1} n={currentPage + 1} /><Footer /></div>;
     }
   };
 
