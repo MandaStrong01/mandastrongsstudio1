@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MandaStrong Studio - All-In-One Make-A-Movie App</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .app-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Page 1 - Welcome/Landing */
+        .page-1 {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-1 video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .page-1-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: #000;
+        }
+
+        .page-1 h1 {
+            font-size: 5rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.3);
+        }
+
+        .page-1 .tagline {
+            font-size: 2.5rem;
+            font-style: italic;
+            font-weight: 700;
+            margin-bottom: 3rem;
+        }
+
+        .page-1 .buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .page-1 button {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-1 button:hover {
+            background: #333;
+            transform: scale(1.05);
+        }
+
+        /* Page 2 - Intro */
+        .page-2 {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a0033 0%, #330066 50%, #5500aa 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            position: relative;
+        }
+
+        .page-2 .logo {
+            font-size: 1.5rem;
+            color: #a855f7;
+            margin-bottom: 2rem;
+        }
+
+        .page-2 h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-2 .subtitle {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #c084fc;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-2 .nav-buttons {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .page-2 button {
+            padding: 1rem 2.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-radius: 0.75rem;
+            border: 2px solid #a855f7;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-2 .back-btn {
+            background: transparent;
+            color: #fff;
+        }
+
+        .page-2 .next-btn {
+            background: #a855f7;
+            color: #fff;
+            border-color: #a855f7;
+        }
+
+        .page-2 button:hover {
+            transform: scale(1.05);
+        }
+
+        .chat-icon {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: #a855f7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #fff;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Page 3 - Login/Register */
+        .page-3 {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a0033 0%, #330066 50%, #5500aa 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            overflow-y: auto;
+            color: #fff;
+        }
+
+        .page-3 .back-btn {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: transparent;
+            border: 2px solid #a855f7;
+            color: #fff;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+        .auth-container {
+            display: flex;
+            gap: 2rem;
+            margin: 4rem 0 3rem 0;
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        .auth-box {
+            flex: 1;
+            background: rgba(168, 85, 247, 0.1);
+            border: 2px solid #a855f7;
+            border-radius: 1rem;
+            padding: 2.5rem;
+        }
+
+        .auth-box h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .auth-box label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .auth-box input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #a855f7;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .auth-box button {
+            width: 100%;
+            padding: 1rem;
+            background: #a855f7;
+            border: none;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 1.25rem;
+        }
+
+        .browse-guest {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .browse-guest button {
+            background: #2563eb;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .pricing-plans {
+            display: flex;
+            gap: 2rem;
+            margin-top: 3rem;
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        .plan-card {
+            flex: 1;
+            background: rgba(168, 85, 247, 0.1);
+            border: 2px solid #a855f7;
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .plan-card.popular {
+            border-color: #fbbf24;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #a855f7;
+            padding: 0.5rem 1.5rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+
+        .plan-card h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .plan-card .price {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+        }
+
+        .plan-card .price span {
+            font-size: 1.25rem;
+        }
+
+        .plan-card ul {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .plan-card li {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .plan-card li:before {
+            content: "✓";
+            color: #22c55e;
+            font-weight: 900;
+        }
+
+        .plan-card .selected {
+            background: #fbbf24;
+            color: #000;
+            text-align: center;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .continue-payment {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .continue-payment button {
+            background: #a855f7;
+            padding: 1.25rem 3rem;
+            border: none;
+            border-radius: 0.75rem;
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .stripe-text {
+            text-align: center;
+            margin-top: 1rem;
+            color: #94a3b8;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        /* AI Tool Board Pages (4-9) */
+        .tool-board {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            color: #fff;
+        }
+
+        .tool-board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-board-header h1 {
+            font-size: 2.5rem;
+            color: #39ff14;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .quick-access-btn, .next-btn-tool {
+            padding: 0.75rem 1.5rem;
+            background: #a855f7;
+            border: none;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .search-tools {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-tools input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(57, 255, 20, 0.1);
+            border: 2px solid #39ff14;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .tool-button {
+            background: rgba(57, 255, 20, 0.1);
+            border: 2px solid #39ff14;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tool-button:hover {
+            background: rgba(57, 255, 20, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tool-icon {
+            font-size: 1.5rem;
+            color: #a855f7;
+        }
+
+        .tool-name {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .audio-controls {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .audio-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #6b7280;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Page 10 - Editor's Choice */
+        .page-10 {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .page-10 h1 {
+            position: absolute;
+            top: 2rem;
+            font-size: 3rem;
+            color: #a855f7;
+        }
+
+        .video-player {
+            width: 90%;
+            height: 80%;
+            background: #1a1a1a;
+            border: 3px solid #a855f7;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Page 11 - Media Library */
+        .page-11 {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a0033 0%, #330066 50%, #5500aa 100%);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            color: #fff;
+        }
+
+        .enhancement-btn {
+            background: #a855f7;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.75rem;
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            align-self: flex-start;
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .media-item {
+            aspect-ratio: 1;
+            background: rgba(168, 85, 247, 0.2);
+            border: 2px solid #a855f7;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Editor Suite Pages (12-16) */
+        .editor-suite {
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+        }
+
+        .editor-header {
+            padding: 1rem 2rem;
+            background: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-preview {
+            flex: 1;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .preview-screen {
+            width: 80%;
+            height: 80%;
+            background: #2a2a2a;
+            border: 2px solid #a855f7;
+        }
+
+        .editor-timeline {
+            height: 200px;
+            background: #2a2a2a;
+            padding: 1rem;
+            border-top: 2px solid #a855f7;
+        }
+
+        .editor-controls {
+            padding: 1.5rem;
+            background: #000;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        .control-group input[type="range"] {
+            width: 200px;
+        }
+
+        /* Page 17 - Export */
+        .page-17 {
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .export-container {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .export-container h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            color: #a855f7;
+        }
+
+        .export-container select {
+            width: 100%;
+            padding: 1rem;
+            background: #2a2a2a;
+            border: 2px solid #a855f7;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .export-container button {
+            padding: 1rem 3rem;
+            background: #a855f7;
+            border: none;
+            border-radius: 0.75rem;
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .fullscreen-player {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-player {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: #a855f7;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Page 18 - Disclaimer/TOS */
+        .page-18 {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a0033 0%, #330066 50%, #5500aa 100%);
+            padding: 3rem;
+            overflow-y: auto;
+            color: #fff;
+        }
+
+        .page-18 h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .page-18 .content {
+            max-width: 900px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* Page 19 - Agent Grok Support */
+        .page-19 {
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+        }
+
+        .grok-header {
+            padding: 2rem;
+            background: #a855f7;
+            text-align: center;
+        }
+
+        .grok-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .grok-header .status {
+            font-size: 1rem;
+            color: #22c55e;
+        }
+
+        .grok-chat {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .grok-input {
+            padding: 1.5rem;
+            background: #2a2a2a;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .grok-input input {
+            flex: 1;
+            padding: 1rem;
+            background: #000;
+            border: 2px solid #a855f7;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .grok-input button {
+            padding: 1rem 2rem;
+            background: #a855f7;
+            border: none;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Page 20 - Community Hub */
+        .page-20 {
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            color: #fff;
+            overflow-y: auto;
+        }
+
+        .page-20 h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #a855f7;
+        }
+
+        .community-posts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .post-card {
+            background: #2a2a2a;
+            border: 2px solid #a855f7;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .post-video {
+            aspect-ratio: 16/9;
+            background: #000;
+        }
+
+        .post-info {
+            padding: 1rem;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-top: 1px solid #444;
+        }
+
+        .post-actions button {
+            background: transparent;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Page 21 - Thank You */
+        .page-21 {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a0033 0%, #330066 50%, #5500aa 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: #fff;
+            overflow-y: auto;
+        }
+
+        .page-21 h1 {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            color: #c084fc;
+        }
+
+        .thank-you-content {
+            max-width: 800px;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        .thank-you-content h2 {
+            font-size: 2rem;
+            margin: 2rem 0 1rem 0;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function App() {
+            const [currentPage, setCurrentPage] = useState(1);
+            const [showPlayer, setShowPlayer] = useState(false);
+            const [searchQuery, setSearchQuery] = useState('');
+
+            // AI Tools - 600 most used and popular tools (100 per page for 6 pages)
+            const generateAITools = (pageNum) => {
+                const toolCategories = [
+                    // Page 4 - Writing Tools
+                    ['Dialogue Writer', 'Plot Generator', 'Scene Writer', 'Story Outliner', 'Character Developer', 
+                     'Dialogue Editor', 'Plot Designer', 'Story Planner', 'Treatment Writer', 'Script Formatter',
+                     'Plot Creator', 'Three Act Builder', 'Backstory Generator', 'Motivation Builder', 'Theme Generator',
+                     'Advanced Story Outliner', 'Story Consultant', 'Plot Twist Creator', 'Scene Analyzer', 'Conflict Generator',
+                     'Concept Designer', 'Visual Reference Tool', 'Pacing Analyzer', 'Character Arc Builder', 'World Builder',
+                     'Subplot Generator', 'Story Beat Creator', 'Theme Weaver', 'Climax Designer', 'Resolution Builder',
+                     'Opening Hook Generator', 'Scene Transition Tool', 'Flashback Designer', 'Story Structure Analyzer', 'Genre Mixer',
+                     'Plot Point Generator', 'Character Relationship Mapper', 'Timeline Builder', 'Story Bible Creator', 'Character Voice Generator',
+                     'Dialogue Rhythm Analyzer', 'Scene Objective Tool', 'Emotional Arc Designer', 'Story Tension Builder', 'Foreshadowing Tool',
+                     'Character Motivation Analyzer', 'Story Goal Setter', 'Conflict Escalation Tool', 'Resolution Planner', 'Story Theme Analyzer',
+                     'Character Background Generator', 'Plot Complexity Analyzer', 'Story Pacing Tool', 'Character Development Tracker', 'Scene Purpose Analyzer',
+                     'Story Hook Generator', 'Character Flaw Creator', 'Plot Hole Detector', 'Story Momentum Builder', 'Character Goal Setter',
+                     'Dialogue Subtext Tool', 'Scene Energy Analyzer', 'Story Rhythm Builder', 'Character Voice Consistency Checker', 'Plot Thread Weaver',
+                     'Story Opening Designer', 'Character Interaction Simulator', 'Scene Conflict Builder', 'Story Climax Enhancer', 'Character Arc Analyzer',
+                     'Dialogue Pace Controller', 'Scene Transition Smoother', 'Story Theme Reinforcer', 'Character Decision Maker', 'Plot Resolution Designer',
+                     'Story Beat Analyzer', 'Character Chemistry Tool', 'Scene Impact Maximizer', 'Story Structure Validator', 'Character Consistency Checker',
+                     'Dialogue Authenticity Tool', 'Scene Purpose Clarifier', 'Story Flow Optimizer', 'Character Growth Tracker', 'Plot Complexity Manager',
+                     'Story Engagement Analyzer', 'Character Relationship Developer', 'Scene Tension Adjuster', 'Story Pacing Optimizer', 'Character Voice Refiner',
+                     'Dialogue Natural Flow Tool', 'Scene Emotional Impact Tool', 'Story Hook Strengthener', 'Character Arc Completer', 'Plot Twist Validator',
+                     'Story Theme Integrator', 'Character Motivation Clarifier', 'Scene Objective Aligner', 'Story Momentum Maintainer', 'Character Flaw Explorer'],
+                    
+                    // Page 5 - Voice & Audio Tools
+                    ['Voice Maker', 'Voice Cloner', 'Voice Creator Tool', 'Voice Recorder', 'Speech Converter', 'Voice Builder',
+                     'Advanced Voice Generator', 'Voice Studio Tool', 'Premium Voice Generator', 'Voice Audio Tool', 'Emotional Voice Generator', 'Advanced Speech Creator',
+                     'Natural Voice Generator', 'Voice Reader', 'Speech Generator', 'Narration Creator', 'Voice Imitator', 'Fast Speech Generator',
+                     'Live Voice Tool', 'Streaming Voice Generator', 'Accent Creator', 'Dialect Generator', 'Voice Age Adjuster', 'Voice Gender Changer',
+                     'Voice Emotion Controller', 'Voice Speed Modifier', 'Voice Pitch Adjuster', 'Voice Tone Shifter', 'Voice Character Creator', 'Voice Style Mixer',
+                     'Voice Accent Remover', 'Voice Clarity Enhancer', 'Voice Background Noise Remover', 'Voice Echo Adder', 'Voice Reverb Tool', 'Voice Equalizer',
+                     'Voice Compression Tool', 'Voice Normalization', 'Voice De-esser', 'Voice De-clicker', 'Voice Hum Remover', 'Voice Breath Remover',
+                     'Voice Sibilance Reducer', 'Voice Dynamic Range Compressor', 'Voice Limiter', 'Voice Noise Gate', 'Voice Expander', 'Voice Spatial Enhancer',
+                     'Voice Stereo Widener', 'Voice Mono to Stereo', 'Voice Phase Corrector', 'Voice Time Stretcher', 'Voice Pitch Corrector', 'Voice Auto-Tune',
+                     'Voice Formant Shifter', 'Voice Robotic Effect', 'Voice Underwater Effect', 'Voice Telephone Effect', 'Voice Radio Effect', 'Voice Megaphone Effect',
+                     'Voice Cave Effect', 'Voice Stadium Effect', 'Voice Concert Hall Effect', 'Voice Church Effect', 'Voice Studio Effect', 'Voice Garage Effect',
+                     'Voice Bathroom Effect', 'Voice Tunnel Effect', 'Voice Forest Effect', 'Voice Mountain Effect', 'Voice Desert Effect', 'Voice Space Effect',
+                     'Voice Alien Effect', 'Voice Monster Effect', 'Voice Robot Effect', 'Voice Chipmunk Effect', 'Voice Deep Effect', 'Voice Whisper Effect',
+                     'Voice Shout Effect', 'Voice Sing Effect', 'Voice Rap Effect', 'Voice Opera Effect', 'Voice Jazz Effect', 'Voice Rock Effect',
+                     'Voice Classical Effect', 'Voice Pop Effect', 'Voice Country Effect', 'Voice Blues Effect', 'Voice Electronic Effect', 'Voice Ambient Effect',
+                     'Voice Cinematic Effect', 'Voice Documentary Effect', 'Voice Podcast Effect', 'Voice Audiobook Effect', 'Voice Commercial Effect', 'Voice Trailer Effect'],
+                    
+                    // Page 6 - Image & Visual Tools
+                    ['Image Creator', 'Advanced Image Generator', 'Design Generator', 'Image Tool', 'Art Maker', 'Art Mixer',
+                     'Image Stream Tool', 'Art Library Tool', 'Workflow Tool', 'Auto Image Generator', 'Image Studio Pro', 'Easy Image Generator',
+                     'Text Inversion Tool', 'Style Tool', 'Model Trainer', 'Style Transfer Tool', 'Turnaround Generator', 'Expression Grid Tool',
+                     'Depth Controller', 'Edge Guide Tool', 'Photo Character Tool', 'Consistency Tool', 'Portrait Generator', 'Landscape Creator',
+                     'Abstract Art Generator', 'Realistic Image Tool', 'Cartoon Style Creator', 'Anime Art Generator', 'Comic Book Tool', 'Watercolor Effect',
+                     'Oil Painting Effect', 'Pencil Sketch Tool', 'Charcoal Drawing Tool', 'Pastel Art Creator', 'Digital Painting Tool', 'Pixel Art Generator',
+                     'Vector Art Creator', ' 3D Render Tool', 'Photo Realistic Generator', 'Fantasy Art Creator', 'Sci-Fi Art Tool', 'Steampunk Generator',
+                     'Cyberpunk Art Tool', 'Medieval Art Creator', 'Ancient Art Generator', 'Modern Art Tool', 'Contemporary Art Creator', 'Minimalist Art Tool',
+                     'Maximalist Art Generator', 'Surreal Art Creator', 'Pop Art Tool', 'Art Deco Generator', 'Art Nouveau Tool', 'Bauhaus Style Creator',
+                     'Renaissance Art Tool', 'Baroque Art Generator', 'Rococo Style Creator', 'Neoclassical Art Tool', 'Romantic Art Generator', 'Impressionist Tool',
+                     'Post-Impressionist Art', 'Expressionist Tool', 'Cubist Art Generator', 'Futurist Art Creator', 'Dada Art Tool', 'Constructivist Generator',
+                     'De Stijl Art Tool', 'Suprematist Art Creator', 'Abstract Expressionist', 'Color Field Art Tool', 'Hard-Edge Art Generator', 'Minimalist Art Tool',
+                     'Pop Art Generator', 'Op Art Tool', 'Kinetic Art Creator', 'Conceptual Art Tool', 'Installation Art Generator', 'Performance Art Tool',
+                     'Land Art Creator', 'Street Art Generator', 'Graffiti Art Tool', 'Mural Art Creator', 'Mosaic Art Generator', 'Stained Glass Tool',
+                     'Collage Art Creator', 'Mixed Media Tool', 'Assemblage Art Generator', 'Found Object Art Tool', 'Readymade Art Creator', 'Video Art Generator'],
+                    
+                    // Page 7 - Animation & Motion Tools
+                    ['Motion Graphics Tool', 'Animation Creator', '2D Animation Tool', '3D Animation Generator', 'Character Animator', 'Keyframe Tool',
+                     'Timeline Animator', 'Motion Path Tool', 'Ease Curve Editor', 'Animation Speed Controller', 'Loop Creator', 'Animation Presets',
+                     'Particle System', 'Fluid Simulation', 'Cloth Simulation', 'Hair Simulation', 'Fur Simulator', 'Smoke Generator',
+                     'Fire Effect Tool', 'Water Effect Creator', 'Explosion Generator', 'Magic Effect Tool', 'Energy Effect Creator', 'Light Ray Generator',
+                     'Glow Effect Tool', 'Sparkle Creator', 'Shimmer Effect', 'Glitter Tool', 'Shine Generator', 'Gleam Effect',
+                     'Camera Movement Tool', 'Dolly Zoom Creator', 'Pan Animation Tool', 'Tilt Animator', 'Zoom Effect Creator', 'Crane Shot Tool',
+                     'Steadicam Effect', 'Handheld Camera Shake', 'Tracking Shot Tool', 'Arc Shot Creator', 'Overhead Shot Tool', 'POV Camera Effect',
+                     'Slow Motion Tool', 'Fast Motion Effect', 'Time Lapse Creator', 'Freeze Frame Tool', 'Speed Ramp Generator', 'Reverse Motion Tool',
+                     'Puppet Tool', 'Rigging System', 'Inverse Kinematics', 'Forward Kinematics', 'Motion Capture Tool', 'Performance Capture',
+                     'Facial Animation', 'Lip Sync Tool', 'Eye Animation', 'Blink Generator', 'Expression Creator', 'Emotion Animator',
+                     'Walk Cycle Tool', 'Run Cycle Generator', 'Jump Animation', 'Fall Effect', 'Turn Animation', 'Sit Animation',
+                     'Stand Animation', 'Idle Motion', 'Combat Animation', 'Dance Motion Tool', 'Sports Animation', 'Action Sequence Creator',
+                     'Transition Effect', 'Fade Tool', 'Dissolve Effect', 'Wipe Transition', 'Slide Animation', 'Push Effect',
+                     'Cover Transition', 'Uncover Tool', 'Iris Effect', 'Clock Wipe', 'Shape Transition', 'Morphing Tool',
+                     'Morph Target System', 'Blend Shape Tool', 'Deformation System', 'Lattice Deformer', 'Wrap Deformer', 'Shrinkwrap Tool',
+                     'Displacement Tool', 'Wave Deformer', 'Twist Effect', 'Bend Tool', 'Taper Deformer', 'Flare Effect',
+                     'Bulge Tool', 'Shear Deformer', 'Squash & Stretch', 'Anticipation Tool', 'Follow Through Effect', 'Overlapping Action'],
+                    
+                    // Page 8 - Color & Lighting Tools
+                    ['Color Grader', 'Color Correction Tool', 'Color Palette Generator', 'Color Harmony Tool', 'Color Wheel', 'Color Picker',
+                     'Hue Shifter', 'Saturation Adjuster', 'Brightness Controller', 'Contrast Tool', 'Vibrance Enhancer', 'Tint Adjuster',
+                     'Color Temperature Tool', 'White Balance Corrector', 'Color Cast Remover', 'Selective Color Tool', 'Color Replace', 'Color Match',
+                     'Gradient Creator', 'Gradient Map Tool', 'Color Ramp', 'Color Lookup Table', 'LUT Creator', 'LUT Loader',
+                     'Lighting Setup Tool', 'Three-Point Lighting', 'Key Light Controller', 'Fill Light Tool', 'Back Light Adjuster', 'Rim Light Creator',
+                     'Ambient Light Tool', 'Directional Light', 'Point Light Source', 'Spot Light Tool', 'Area Light Creator', 'IES Light',
+                     'HDRI Lighting', 'Global Illumination', 'Light Bounce Tool', 'Caustics Generator', 'Volumetric Lighting', 'God Rays',
+                     'Shadow Controller', 'Shadow Softener', 'Shadow Color Tool', 'Shadow Opacity', 'Shadow Distance', 'Shadow Blur',
+                     'Ambient Occlusion', 'Screen Space AO', 'Ray Traced AO', 'Contact Shadows', 'Shadow Map Quality', 'Shadow Cascade',
+                     'Bloom Effect', 'Lens Flare Tool', 'Chromatic Aberration', 'Vignette Effect', 'Film Grain', 'Noise Texture',
+                     'Color Banding Fixer', 'Posterization Tool', 'Duotone Effect', 'Tritone Creator', 'Split Toning', 'Cross Processing',
+                     'Film Emulation', 'Cinematic LUT', 'Log to Rec709', 'HDR Tonemapping', 'Exposure Control', 'Gamma Correction',
+                     'Linear to sRGB', 'ACES Color Space', 'DCI-P3 Converter', 'Rec2020 Tool', 'Color Space Transformer', 'OCIO Config',
+                     'Day to Night Tool', 'Golden Hour Effect', 'Blue Hour Creator', 'Magic Hour Tool', 'Sunset Effect', 'Sunrise Creator',
+                     'Moonlight Effect', 'Candlelight Tool', 'Firelight Creator', 'Neon Light Effect', 'Studio Lighting', 'Natural Light Tool',
+                     'Overcast Effect', 'Sunny Day Tool', 'Cloudy Sky Creator', 'Foggy Morning Effect', 'Misty Atmosphere', 'Hazy Light Tool',
+                     'Color Harmony Analyzer', 'Complementary Colors', 'Analogous Colors', 'Triadic Color Tool', 'Tetradic Colors', 'Monochromatic Tool'],
+                    
+                    // Page 9 - Sound & Music Tools
+                    ['Music Generator', 'Beat Maker', 'Melody Creator', 'Harmony Tool', 'Chord Progression', 'Bass Line Generator',
+                     'Drum Pattern Tool', 'Rhythm Creator', 'Tempo Controller', 'Metronome', 'Time Signature Tool', 'Key Signature',
+                     'Scale Generator', 'Mode Selector', 'Interval Tool', 'Arpeggiator', 'Sequencer', 'Step Sequencer',
+                     'Piano Roll', 'MIDI Editor', 'Note Quantizer', 'Velocity Editor', 'Note Length Tool', 'Note Pitch Bend',
+                     'Audio Sampler', 'Loop Creator', 'Sample Slicer', 'Audio Stretcher', 'Pitch Shifter', 'Time Stretcher',
+                     'Sound Effect Generator', 'Foley Creator', 'Ambient Sound Tool', 'Nature Sounds', 'City Sounds', 'Indoor Ambience',
+                     'Outdoor Ambience', 'Weather Sounds', 'Water Sounds', 'Fire Sounds', 'Wind Sounds', 'Thunder Creator',
+                     'Rain Generator', 'Ocean Waves', 'Forest Ambience', 'Jungle Sounds', 'Desert Sounds', 'Mountain Ambience',
+                     'Cave Sounds', 'Underground Ambience', 'Space Sounds', 'Sci-Fi Effects', 'Fantasy Sounds', 'Magic Effects',
+                     'Instrument Synthesizer', 'Organ Sound', 'Piano Tool', 'Guitar Synth', 'Bass Synth', 'Drums Synth',
+                     'Strings Synth', 'Brass Synth', 'Woodwinds Tool', 'Percussion Synth', 'Ethnic Instruments', 'World Music Tool',
+                     'Electronic Synth', 'Analog Synth', 'FM Synthesis', 'Wavetable Synth', 'Granular Synth', 'Additive Synth',
+                     'Subtractive Synth', 'Physical Modeling', 'Sample-Based Synth', 'Hybrid Synth', 'Modular Synth', 'Semi-Modular',
+                     'Audio Mixer', 'Channel Strip', 'EQ Tool', 'Compressor', 'Limiter', 'Gate',
+                     'Expander', 'De-Esser', 'Multiband Compressor', 'Dynamic EQ', 'Parametric EQ', 'Graphic EQ',
+                     'Reverb Creator', 'Delay Effect', 'Echo Tool', 'Chorus Effect', 'Flanger', 'Phaser',
+                     'Tremolo', 'Vibrato', 'Distortion', 'Overdrive', 'Fuzz Effect', 'Bit Crusher',
+                     'Ring Modulator', 'Frequency Shifter', 'Pitch Corrector', 'Auto-Tune', 'Vocoder', 'Talkbox Effect',
+                     'Harmonizer', 'Octaver', 'Doubler', 'Stereo Enhancer', 'Mono to Stereo', 'Mid-Side Processing']
+                ];
+
+                const pageIndex = pageNum - 4;
+                if (pageIndex < 0 || pageIndex >= toolCategories.length) return [];
+                return toolCategories[pageIndex];
+            };
+
+            const renderPage = () => {
+                switch(currentPage) {
+                    case 1:
+                        return (
+                            <div className="page-1">
+                                <video autoPlay loop muted>
+                                    <source src="background.mp4" type="video/mp4" />
+                                </video>
+                                <div className="page-1-content">
+                                    <h1>MANDASTRONG'S STUDIO</h1>
+                                    <div className="tagline">Welcome To The All-In-One Make-A-Movie App!</div>
+                                    <div className="buttons">
+                                        <button onClick={() => setCurrentPage(2)}>Next</button>
+                                        <button onClick={() => setCurrentPage(3)}>Login</button>
+                                        <button onClick={() => setCurrentPage(3)}>Register</button>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    
+                    case 2:
+                        return (
+                            <div className="page-2">
+                                <div className="logo">✨+</div>
+                                <h1>MANDASTRONG'S STUDIO</h1>
+                                <div className="subtitle">Make Amazing Family Movies<br/>& Bring Dreams To Life!</div>
+                                <div className="nav-buttons">
+                                    <button className="back-btn" onClick={() => setCurrentPage(1)}>← Back</button>
+                                    <button className="next-btn" onClick={() => setCurrentPage(3)}>Next →</button>
+                                </div>
+                                <div className="chat-icon">💬</div>
+                            </div>
+                        );
+                    
+                    case 3:
+                        return (
+                            <div className="page-3">
+                                <button className="back-btn" onClick={() => setCurrentPage(2)}>← Back</button>
+                                <div className="auth-container">
+                                    <div className="auth-box">
+                                        <h2>Login</h2>
+                                        <label>Email</label>
+                                        <input type="email" placeholder="your@email.com" />
+                                        <label>Password</label>
+                                        <input type="password" placeholder="••••••••" />
+                                        <button>Login</button>
+                                    </div>
+                                    <div className="auth-box">
+                                        <h2>Register</h2>
+                                        <label>Name</label>
+                                        <input type="text" placeholder="Your Name" />
+                                        <label>Email</label>
+                                        <input type="email" placeholder="your@email.com" />
+                                        <label>Password</label>
+                                        <input type="password" placeholder="••••••••" />
+                                        <button>Create Account</button>
+                                    </div>
+                                </div>
+                                <div className="divider">or</div>
+                                <div className="browse-guest">
+                                    <button>👁️ Browse as Guest (View Only)</button>
+                                </div>
+                                <div className="pricing-plans">
+                                    <div className="plan-card">
+                                        <h3>Basic</h3>
+                                        <div className="price">$20<span>/mo</span></div>
+                                        <ul>
+                                            <li>HD Export</li>
+                                            <li>100 AI Tools</li>
+                                            <li>Basic Templates</li>
+                                            <li>10GB Storage</li>
+                                            <li>Email Support</li>
+                                        </ul>
+                                    </div>
+                                    <div className="plan-card popular">
+                                        <div className="popular-badge">POPULAR</div>
+                                        <h3>Pro</h3>
+                                        <div className="price">$40<span>/mo</span></div>
+                                        <ul>
+                                            <li>4K Export</li>
+                                            <li>300 AI Tools</li>
+                                            <li>Premium Templates</li>
+                                            <li>100GB Storage</li>
+                                            <li>Priority Support</li>
+                                            <li>Commercial License</li>
+                                        </ul>
+                                        <div className="selected">✓ SELECTED</div>
+                                    </div>
+                                    <div className="plan-card">
+                                        <h3>Studio</h3>
+                                        <div className="price">$80<span>/mo</span></div>
+                                        <ul>
+                                            <li>8K Export</li>
+                                            <li>All 600 AI Tools</li>
+                                            <li>Unlimited Templates</li>
+                                            <li>1TB Storage</li>
+                                            <li>24/7 Live Support</li>
+                                            <li>Full Commercial Rights</li>
+                                            <li>Team Collaboration</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div className="continue-payment">
+                                    <button onClick={() => setCurrentPage(4)}>Continue to Payment</button>
+                                </div>
+                                <div className="stripe-text">Secure payment powered by Stripe</div>
+                                <div className="footer-text">
+                                    MandaStrong1 2025 ~ Author Of Doxy The School Bully ~ Also Find Me On MandaStrong1.Etsy.com
+                                </div>
+                                <div className="chat-icon">💬</div>
+                            </div>
+                        );
+                    
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                        const tools = generateAITools(currentPage);
+                        const filteredTools = tools.filter(tool => 
+                            tool.toLowerCase().includes(searchQuery.toLowerCase())
+                        );
+                        return (
+                            <div className="tool-board">
+                                <div className="tool-board-header">
+                                    <h1>AI TOOL BOARD</h1>
+                                    <div className="header-buttons">
+                                        <button className="quick-access-btn">☰ Quick Access</button>
+                                        <button className="next-btn-tool" onClick={() => setCurrentPage(currentPage + 1)}>
+                                            Next →
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="search-tools">
+                                    <input 
+                                        type="text" 
+                                        placeholder="🔍 Search Tools..." 
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                </div>
+                                <div className="tools-grid">
+                                    {filteredTools.map((tool, index) => (
+                                        <button key={index} className="tool-button">
+                                            <span className="tool-icon">✨</span>
+                                            <span className="tool-name">{tool}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="audio-controls">
+                                    <button className="audio-btn">⋯</button>
+                                    <button className="audio-btn">♪</button>
+                                </div>
+                                <div className="chat-icon">💬</div>
+                            </div>
+                        );
+                    
+                    case 10:
+                        return (
+                            <div className="page-10">
+                                <h1>Editor's Choice</h1>
+                                <div className="video-player">
+                                    <video controls style={{width: '100%', height: '100%'}}>
+                                        <source src="editors-choice.mp4" type="video/mp4" />
+                                    </video>
+                                </div>
+                                <button 
+                                    style={{position: 'absolute', bottom: '2rem', padding: '1rem 2rem', background: '#a855f7', border: 'none', borderRadius: '0.5rem', color: '#fff', fontSize: '1.25rem', fontWeight: 700, cursor: 'pointer'}}
+                                    onClick={() => setCurrentPage(11)}
+                                >
+                                    Continue →
+                                </button>
+                                <div className="chat-icon">💬</div>
+                            </div>
+                        );
+                    
+                    case 11:
+                        return (
+                            <div className="page-11">
+                                <button className="enhancement-btn" onClick={() => setCurrentPage(12)}>
+                                    Open Enhancement Studio
+                                </button>
+                                <h1 style={{fontSize: '3rem', marginBottom: '2rem'}}>Media Library</h1>
+                                <div className="media-grid">
+                                    {[...Array(12)].map((_, i) => (
+                                        <div key={i} className="media-item">Media {i + 1}</div>
+                                    ))}
+                                </div>
+                                <div className="chat-icon">💬</div>
+                            </div>
+                        );
+                    
+                    case 12:
+                    case 13:
+                    case 14:
+                    case 15:
+                    case 16:
+                        const editorTitles = {
+                            12: 'Sound Editor',
+                            13: 'Text Editor',
+                            14: 'Animation Studio',
+                            15: 'Color Grading',
+                            16: 'Render Studio'
+                        };
+                        return (
+                            <div className="editor-suite">
+                                <div className="editor-header">
+                                    <h2>{editorTitles[currentPage]}</h2>
+                                    <button onClick={() => setCurrentPage(currentPage + 1)} style={{background: '#a855f7', border: 'none', padding: '0.75rem 2rem', borderRadius: '0.5rem', color: '#fff', fontWeight: 700, cursor: 'pointer'}}>
+                                        Next →
+                                    </button>
+                                </div>
+                                <div className="editor-preview">
+                                    <div className="preview-screen"></div>
+                                </div>
+                                <div className="editor-timeline">
+                                    <div style={{background: '#444', height: '100%', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', padding: '1rem'}}>
+                                        Timeline 0:00 - 180:00
+                                    </div>
+                                </div>
+                                <div className="editor-controls">
+                                    <div className="control-group">
+                                        <label>Volume</label>
+                                        <input type="range" min="0" max="100" />
+                                    </div>
+                                    <div className="control-group">
+                                        <label>Duration (0-180 min)</label>
+                                        <input type="range" min="0" max="180" />
+                                    </div>
+                                    <div className="control-group">
+                                        <label>Speed</label>
+                                        <input type="range" min="0.25" max="4" step="0.25" />
+                                    </div>
+                                    <button style={{background: '#a855f7', border: 'none', padding: '1rem 2rem', borderRadius: '0.5rem', color: '#fff', fontWeight: 700, cursor: 'pointer'}}>
+                                        Upload Media
+                                    </button>
+                                </div>
+                                <div className="chat-icon">💬</div>
+                            </div>
+                        );
+                    
+                    case 17:
+                        return (
+                            <div className="page-17">
+                                <div className="export-container">
+                                    <h1>Export Your Movie</h1>
+                                    <select>
+                                        <option>Select Platform...</option>
+                                        <option>YouTube</option>
+                                        <option>Google Drive</option>
+                                        <option>X (Twitter)</option>
+                                        <option>Instagram</option>
+                                        <option>TikTok</option>
+                                        <option>Facebook</option>
+                                        <option>Vimeo</option>
+                                        <option>Download MP4</option>
+                                    </select>
+                                    <button onClick={() => setShowPlayer(true)}>Export & Preview</button>
+                                </div>
+                                {showPlayer && (
+                                    <div className="fullscreen-player">
+                                        <button className="close-player" onClick={() => setShowPlayer(false)}>✕ Close</button>
+                                        <video controls autoPlay style={{maxWidth: '90%', maxHeight: '90%'}}>
+                                            <source src="final-movie.mp4" type="video/mp4" />
+                                        </video>
+                                    </div>
+                                )}
+                                <div className="chat-icon">💬</div>
+                            </div>
+                        );
+                    
+                    case 18:
+                        return (
+                            <div className="page-18">
+                                <h1>Terms of Service & Disclaimer</h1>
+                                <div className="content">
+                                    <h2>Terms of Service</h2>
+                                    <p>Welcome to MandaStrong Studio. By using this platform, you agree to comply with and be bound by the following terms and conditions...</p>
+                                    
+                                    <h2>User Responsibilities</h2>
+                                    <p>You are responsible for maintaining the confidentiality of your account and password. You agree to accept responsibility for all activities that occur under your account.</p>
+                                    
+                                    <h2>Content Guidelines</h2>
+                                    <p>All content created using MandaStrong Studio must comply with our community guidelines. We reserve the right to remove any content that violates these guidelines.</p>
+                                    
+                                    <h2>Intellectual Property</h2>
+                                    <p>Content created using our AI tools is yours to use according to your subscription plan. However, you agree not to misuse or redistribute the underlying AI technology.</p>
+                                    
+                                    <h2>Disclaimer</h2>
+                                    <p>MandaStrong Studio is provided "as is" without warranty of any kind. We do not guarantee uninterrupted or error-free service.</p>
+                                </div>
+                                <button onClick={() => setCurrentPage(19)} style={{position: 'fixed', bottom: '2rem', right: '2rem', background: '#a855f7', border: 'none', padding: '1rem 2rem', borderRadius: '0.5rem', color: '#fff', fontSize: '1.25rem', fontWeight: 700, cursor: 'pointer'}}>
+                                    I Agree →
+                                </button>
+                                <div className="chat-icon">💬</div>
+                            </div>
+                        );
+                    
+                    case 19:
+                        return (
+                            <div className="page-19">
+                                <div className="grok-header">
+                                    <h1>Agent Grok - 24/7 Support</h1>
+                                    <div className="status">🟢 Always Live & Ready to Help</div>
+                                </div>
+                                <div className="grok-chat">
+                                    <div style={{background: '#2a2a2a', padding: '1rem', borderRadius: '0.75rem', marginBottom: '1rem'}}>
+                                        <strong>Agent Grok:</strong> Hello! I'm Agent Grok, your 24/7 AI assistant. I'm here to answer any questions about MandaStrong Studio. How can I help you today?
+                                    </div>
+                                </div>
+                                <div className="grok-input">
+                                    <input type="text" placeholder="Ask me anything..." />
+                                    <button>Send</button>
+                                </div>
+                                <button onClick={() => setCurrentPage(20)} style={{position: 'fixed', bottom: '7rem', right: '2rem', background: '#a855f7', border: 'none', padding: '1rem 2rem', borderRadius: '0.5rem', color: '#fff', fontSize: '1.25rem', fontWeight: 700, cursor: 'pointer'}}>
+                                    Continue →
+                                </button>
+                                <div className="chat-icon">💬</div>
+                            </div>
+                        );
+                    
+                    case 20:
+                        return (
+                            <div className="page-20">
+                                <h1>Community Hub</h1>
+                                <div className="community-posts">
+                                    {[...Array(6)].map((_, i) => (
+                                        <div key={i} className="post-card">
+                                            <div className="post-video"></div>
+                                            <div className="post-info">
+                                                <h3>User Movie {i + 1}</h3>
+                                                <p>Created by User{i + 1}</p>
+                                            </div>
+                                            <div className="post-actions">
+                                                <button>❤️ Like</button>
+                                                <button>😍 Love</button>
+                                                <button>💬 Comment</button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <button onClick={() => setCurrentPage(21)} style={{position: 'fixed', bottom: '2rem', right: '2rem', background: '#a855f7', border: 'none', padding: '1rem 2rem', borderRadius: '0.5rem', color: '#fff', fontSize: '1.25rem', fontWeight: 700, cursor: 'pointer'}}>
+                                    Finish →
+                                </button>
+                                <div className="chat-icon">💬</div>
+                            </div>
+                        );
+                    
+                    case 21:
+                        return (
+                            <div className="page-21">
+                                <h1>THAT'S ALL FOLKS!</h1>
+                                <div className="thank-you-content">
+                                    <h2>A Special Thank You</h2>
+                                    <p>To all current and future creators, dreamers, and storytellers...</p>
+                                    <p>Your creativity and passion inspire positive change in the world. Through your films and stories, you have the power to educate, inspire, and bring awareness to critical issues like bullying prevention, social skills development, and humanity's collective growth.</p>
+                                    <p>Every piece of content you create has the potential to touch hearts, change minds, and make our world a better place. Thank you for being part of this mission to combine creative expression with meaningful impact.</p>
+                                    <p>Together, we are building a community of creators who use their talents to spread kindness, understanding, and hope. Your impact matters more than you know.</p>
+                                    
+                                    <h2>About Our Mission</h2>
+                                    <p><strong>MandaStrong Studio</strong> is more than a filmmaking platform. It's part of a comprehensive educational initiative designed to bring awareness and action to schools regarding bullying prevention, social skills development, and the cultivation of humanity in our communities.</p>
+                                    <p><strong>Fundraiser: Educational Program on Bullying Prevention & Social Skills</strong> ~ Through this comprehensive program, we provide educational resources and movie-based content to help schools address these critical issues. Our goal is to create safe, supportive environments where every student can thrive.</p>
+                                    
+                                    <h2>Supporting Our Heroes</h2>
+                                    <p><strong>All Etsy Store Proceeds Benefit Veterans Mental Health Services</strong> ~ 100% of all proceeds from our Etsy Store fundraiser are donated directly to <strong>Veterans Mental Health Services</strong>, supporting those who have sacrificed so much for our freedom.</p>
+                                    <p>Visit our fundraiser and learn more at <strong>MandaStrong1.Etsy.com</strong></p>
+                                </div>
+                                <button onClick={() => setCurrentPage(1)} style={{marginTop: '3rem', background: '#a855f7', border: 'none', padding: '1rem 3rem', borderRadius: '0.75rem', color: '#fff', fontSize: '1.25rem', fontWeight: 700, cursor: 'pointer'}}>
+                                    Return to Home
+                                </button>
+                            </div>
+                        );
+                    
+                    default:
+                        return <div>Page not found</div>;
+                }
+            };
+
+            return (
+                <div className="app-container">
+                    {renderPage()}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
