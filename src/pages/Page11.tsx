@@ -6,6 +6,7 @@ import { uploadFile } from '../lib/storage';
 import { initializeGoogleDrive, openGooglePicker, downloadGoogleDriveFile } from '../lib/googleDrive';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
+import GrokChat from '../components/GrokChat';
 import { Asset, isMediaAsset } from '../types/ai-tools';
 
 interface PageProps {
@@ -860,6 +861,7 @@ export default function Page11({ onNavigate }: PageProps) {
       )}
 
       <QuickAccess onNavigate={onNavigate} />
+      <GrokChat onNavigate={onNavigate} />
       <Footer />
     </div>
   );

@@ -1,12 +1,36 @@
-import { ArrowLeft, ArrowRight, Users, Share2, Star } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, ArrowRight, Users, Share2, Star, Heart, ThumbsUp } from 'lucide-react';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
+import GrokChat from '../components/GrokChat';
 
 interface PageProps {
   onNavigate: (page: number) => void;
 }
 
 export default function Page20({ onNavigate }: PageProps) {
+  const [likes, setLikes] = useState<Record<number, { liked: boolean; loved: boolean }>>({});
+
+  const toggleLike = (id: number) => {
+    setLikes(prev => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        liked: !prev[id]?.liked
+      }
+    }));
+  };
+
+  const toggleLove = (id: number) => {
+    setLikes(prev => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        loved: !prev[id]?.loved
+      }
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-12">
@@ -34,14 +58,39 @@ export default function Page20({ onNavigate }: PageProps) {
 
           <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-8 mb-8">
             <h2 className="text-2xl font-bold mb-6 text-purple-400">Featured Projects</h2>
+            <p className="text-white/70 mb-6 text-center">A welcoming space for creators to share their artwork. Show your appreciation!</p>
             <div className="grid md:grid-cols-3 gap-4">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-black/50 rounded-lg border border-purple-500/30 p-4 hover:border-purple-400 transition-all cursor-pointer">
+                <div key={i} className="bg-black/50 rounded-lg border border-purple-500/30 p-4 hover:border-purple-400 transition-all">
                   <div className="aspect-video bg-purple-900/20 rounded-lg mb-3 flex items-center justify-center">
                     <Star className="w-8 h-8 text-purple-400" />
                   </div>
                   <h4 className="font-semibold mb-1">Creator Project #{i}</h4>
-                  <p className="text-xs text-white/60">By MandaStrong Creator</p>
+                  <p className="text-xs text-white/60 mb-3">By MandaStrong Creator</p>
+                  <div className="flex gap-2 justify-center">
+                    <button
+                      onClick={() => toggleLike(i)}
+                      className={`flex items-center gap-1 px-3 py-1 rounded-lg transition-all ${
+                        likes[i]?.liked
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-purple-900/30 text-white/70 hover:bg-purple-900/50'
+                      }`}
+                    >
+                      <ThumbsUp className="w-4 h-4" />
+                      <span className="text-sm">Like</span>
+                    </button>
+                    <button
+                      onClick={() => toggleLove(i)}
+                      className={`flex items-center gap-1 px-3 py-1 rounded-lg transition-all ${
+                        likes[i]?.loved
+                          ? 'bg-red-600 text-white'
+                          : 'bg-purple-900/30 text-white/70 hover:bg-purple-900/50'
+                      }`}
+                    >
+                      <Heart className="w-4 h-4" />
+                      <span className="text-sm">Love</span>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -66,6 +115,7 @@ export default function Page20({ onNavigate }: PageProps) {
         </div>
       </div>
       <QuickAccess onNavigate={onNavigate} />
+      <GrokChat onNavigate={onNavigate} />
       <Footer />
     </div>
   );

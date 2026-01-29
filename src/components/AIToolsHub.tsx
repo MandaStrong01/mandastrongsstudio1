@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Sparkles, Search } from 'lucide-react';
 import AIToolModal from './AIToolModal';
 import Footer from './Footer';
 import QuickAccess from './QuickAccess';
+import GrokChat from './GrokChat';
 
 interface AIToolsHubProps {
   tools: string[];
@@ -43,14 +44,14 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
           </div>
 
           <div className="bg-black/30 backdrop-blur-sm p-4 md:p-6 rounded-2xl border border-purple-500/30 mb-6 flex-1 overflow-y-auto max-h-[600px]">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredTools.map((tool, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedTool(tool)}
-                  className="bg-purple-900/20 border border-purple-500/30 hover:border-purple-400 hover:bg-purple-900/40 rounded-lg p-5 transition-all cursor-pointer text-left h-24 flex items-center justify-center"
+                  className="bg-purple-900/20 border border-purple-500/30 hover:border-purple-400 hover:bg-purple-900/40 rounded-lg p-5 transition-all cursor-pointer aspect-square flex items-center justify-center"
                 >
-                  <h3 className="font-semibold text-white text-base leading-tight text-center">
+                  <h3 className="font-semibold text-white text-sm leading-tight text-center">
                     {tool}
                   </h3>
                 </button>
@@ -80,6 +81,7 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
       <Footer />
 
       <QuickAccess onNavigate={onNavigate} />
+      <GrokChat onNavigate={onNavigate} />
 
       {selectedTool && (
         <AIToolModal

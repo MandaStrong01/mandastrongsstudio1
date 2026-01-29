@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
+import GrokChat from '../components/GrokChat';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -348,6 +349,7 @@ export default function Page15({ onNavigate }: PageProps) {
         </div>
       </div>
       <QuickAccess onNavigate={onNavigate} />
+      <GrokChat onNavigate={onNavigate} />
       <Footer />
     </div>
   );

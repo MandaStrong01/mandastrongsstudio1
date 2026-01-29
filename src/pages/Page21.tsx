@@ -1,6 +1,7 @@
 import { Home, ArrowLeft, BookOpen } from 'lucide-react';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
+import GrokChat from '../components/GrokChat';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -87,7 +88,7 @@ export default function Page21({ onNavigate }: PageProps) {
                   </p>
                 </div>
                 <p className="text-lg text-center mt-6">
-                  Visit our fundraiser and learn more at{' '}
+                  Visit Our Fundraiser and learn more at{' '}
                   <a
                     href={EXTERNAL_URLS.store}
                     target="_blank"
@@ -161,6 +162,7 @@ export default function Page21({ onNavigate }: PageProps) {
         </div>
       </div>
       <QuickAccess onNavigate={onNavigate} />
+      <GrokChat onNavigate={onNavigate} />
       <Footer />
     </div>
   );

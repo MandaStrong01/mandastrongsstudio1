@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from '../components/Footer';
+import QuickAccess from '../components/QuickAccess';
+import GrokChat from '../components/GrokChat';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -131,9 +133,9 @@ export default function Page3({ onNavigate }: PageProps) {
                   className="w-full px-4 py-3 rounded-lg bg-black border border-purple-500/50 text-white focus:outline-none focus:border-purple-400"
                 >
                   <option value="">Choose a plan...</option>
-                  <option value="basic">BASIC - $10/month (30 min films)</option>
-                  <option value="pro">PRO - $20/month (1 hour films)</option>
-                  <option value="studio">STUDIO - $30/month (2.5 hour films)</option>
+                  <option value="basic">BASIC - $40/month (30 min films)</option>
+                  <option value="pro">PRO - $39/month (1 hour films)</option>
+                  <option value="studio">STUDIO - $50/month (2.5 hour films)</option>
                 </select>
               </div>
               {error && (
@@ -164,8 +166,8 @@ export default function Page3({ onNavigate }: PageProps) {
           >
             <div className="text-center">
               <div className="text-3xl font-black mb-2">BASIC</div>
-              <div className="text-4xl font-black mb-2 text-purple-400">$10</div>
-              <div className="text-lg font-semibold mb-2">30 Minutes</div>
+              <div className="text-4xl font-black mb-2 text-purple-400">$40</div>
+              <div className="text-lg font-semibold mb-2">Monthly</div>
               <p className="text-sm text-white/80">Perfect for short films, music videos, and quick creative projects</p>
             </div>
           </button>
@@ -176,8 +178,8 @@ export default function Page3({ onNavigate }: PageProps) {
           >
             <div className="text-center">
               <div className="text-3xl font-black mb-2">PRO</div>
-              <div className="text-4xl font-black mb-2 text-purple-400">$20</div>
-              <div className="text-lg font-semibold mb-2">1 Hour</div>
+              <div className="text-4xl font-black mb-2 text-purple-400">$39</div>
+              <div className="text-lg font-semibold mb-2">Monthly</div>
               <p className="text-sm text-white/80">Ideal for standard documentaries, corporate videos, and feature-length content</p>
             </div>
           </button>
@@ -188,8 +190,8 @@ export default function Page3({ onNavigate }: PageProps) {
           >
             <div className="text-center">
               <div className="text-3xl font-black mb-2">STUDIO</div>
-              <div className="text-4xl font-black mb-2 text-purple-400">$30</div>
-              <div className="text-lg font-semibold mb-2">2.5 Hours</div>
+              <div className="text-4xl font-black mb-2 text-purple-400">$50</div>
+              <div className="text-lg font-semibold mb-2">Monthly</div>
               <p className="text-sm text-white/80">Complete cinematic experience with full-length film capabilities and unlimited creative freedom</p>
             </div>
           </button>
@@ -211,6 +213,8 @@ export default function Page3({ onNavigate }: PageProps) {
         </div>
         </div>
       </div>
+      <QuickAccess onNavigate={onNavigate} />
+      <GrokChat onNavigate={onNavigate} />
       <Footer />
     </div>
   );

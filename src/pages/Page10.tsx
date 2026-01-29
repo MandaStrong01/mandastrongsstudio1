@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { uploadFile, getAssets } from '../lib/storage';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
+import GrokChat from '../components/GrokChat';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -98,7 +99,8 @@ export default function Page10({ onNavigate }: PageProps) {
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="max-w-6xl w-full">
-          <h1 className="text-2xl md:text-4xl font-black text-purple-400 mb-6 text-center">DOXY THE SCHOOL BULLY</h1>
+          <h1 className="text-2xl md:text-4xl font-black text-purple-400 mb-2 text-center">Timeline Editor</h1>
+          <p className="text-xl font-semibold text-purple-300 mb-6 text-center">Editor's Choice</p>
 
           <div className="mb-6 text-center">
             <button
@@ -107,7 +109,7 @@ export default function Page10({ onNavigate }: PageProps) {
               className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed px-6 py-3 rounded-lg font-semibold transition-all"
             >
               <Upload className="w-5 h-5" />
-              {uploading ? 'Uploading...' : 'Upload Video'}
+              {uploading ? 'Uploading...' : 'Admin Upload'}
             </button>
             <input
               id="video-upload"
@@ -205,6 +207,7 @@ export default function Page10({ onNavigate }: PageProps) {
         </div>
       </div>
       <QuickAccess onNavigate={onNavigate} />
+      <GrokChat onNavigate={onNavigate} />
       <Footer showDoxyCredit={true} />
     </div>
   );

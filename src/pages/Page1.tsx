@@ -1,4 +1,6 @@
 import { Film } from 'lucide-react';
+import QuickAccess from '../components/QuickAccess';
+import GrokChat from '../components/GrokChat';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -39,27 +41,32 @@ export default function Page1({ onNavigate }: PageProps) {
           Welcome To The All-In-One Make-A-Movie-With-Two-Hours-Duration App!
         </p>
 
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="flex flex-col items-center gap-6">
           <button
             onClick={() => onNavigate(2)}
-            className="bg-purple-600 text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all transform hover:scale-105 shadow-xl"
+            className="bg-purple-600 text-white font-bold px-16 py-4 rounded-lg text-xl hover:bg-purple-500 transition-all transform hover:scale-105 shadow-xl w-full max-w-md"
           >
             Next
           </button>
-          <button
-            onClick={() => onNavigate(3)}
-            className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500 shadow-xl"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => onNavigate(3)}
-            className="bg-black text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500 shadow-xl"
-          >
-            Register
-          </button>
+
+          <div className="flex gap-4 w-full max-w-md justify-center">
+            <button
+              onClick={() => onNavigate(3)}
+              className="flex-1 bg-black text-white font-bold px-8 py-3 rounded-lg text-lg hover:bg-purple-900 transition-all border-2 border-purple-500 shadow-xl"
+            >
+              Login
+            </button>
+            <button
+              onClick={() => onNavigate(3)}
+              className="flex-1 bg-black text-white font-bold px-8 py-3 rounded-lg text-lg hover:bg-purple-900 transition-all border-2 border-purple-500 shadow-xl"
+            >
+              Register
+            </button>
+          </div>
         </div>
       </div>
+      <QuickAccess onNavigate={onNavigate} />
+      <GrokChat onNavigate={onNavigate} />
     </div>
   );
 }

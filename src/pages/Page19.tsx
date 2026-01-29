@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import Footer from '../components/Footer';
 import QuickAccess from '../components/QuickAccess';
+import GrokChat from '../components/GrokChat';
 
 interface PageProps {
   onNavigate: (page: number) => void;
@@ -57,20 +58,22 @@ export default function Page19({ onNavigate }: PageProps) {
   const generateAIResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();
 
-    if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-      return "Hello! How can I assist you with MandaStrong Studio today?";
+    if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+      return "Hello there! Welcome to MandaStrong Studio! I'm here to help you create amazing movies. What can I assist you with today?";
     } else if (lowerMessage.includes('help')) {
-      return "I can help you with: uploading media, using AI tools, editing videos, and navigating the platform. What would you like to know more about?";
+      return "I'm happy to help! I can assist with uploading media, using our AI tools, editing videos, and navigating the platform. What would you like to learn about?";
     } else if (lowerMessage.includes('upload')) {
-      return "To upload media, go to Page 10 or Page 11 and click the 'Upload' button. You can upload videos, images, and audio files. They'll appear in your Media Box.";
+      return "Great question! To upload media, visit Page 10 (Timeline Editor) or Page 11 (Media Box) and click the 'Upload' button. You can upload videos, images, and audio files. They'll appear in your Media Box automatically!";
     } else if (lowerMessage.includes('ai tool')) {
-      return "MandaStrong Studio has 720+ AI tools across Pages 4-9. Click any tool to either upload assets or generate new content with AI. Your creations are automatically saved to your Media Box.";
+      return "Wonderful! MandaStrong Studio has over 720 AI tools across Pages 4-9. Each tool helps you create amazing content - just click any tool to get started. Your creations are automatically saved to your Media Box!";
     } else if (lowerMessage.includes('edit')) {
-      return "The Editor Dashboard (Page 11) lets you view your media. For advanced editing, check out the Timeline Editor (Page 12), Audio Studio (Page 13), Text Creator (Page 14), Animation Lab (Page 15), and Visual FX (Page 16).";
+      return "Excellent! You can view your media on the Editor Dashboard (Page 11). For advanced editing, explore the Timeline Editor (Page 10), Audio Studio (Page 13), Text Creator (Page 14), Animation Lab (Page 15), and Visual FX (Page 16).";
     } else if (lowerMessage.includes('export') || lowerMessage.includes('download')) {
-      return "To export your project, go to the Visual FX page (Page 16) and use the Export button. You can choose different quality settings and formats.";
+      return "Perfect! To export your project, go to the Visual FX page (Page 16) and use the Export button. You can choose different quality settings and formats that work best for you!";
+    } else if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('plan')) {
+      return "Great question! We have three wonderful plans: Basic ($40/month), Pro ($39/month), and Studio ($50/month). Each plan gives you full access to all our AI tools!";
     } else {
-      return "Thanks for your message! I'm here to help with any questions about MandaStrong Studio. Feel free to ask about uploads, AI tools, editing, or anything else!";
+      return "Thank you for reaching out! I'm here to help make your creative journey fun and easy. Feel free to ask me anything about MandaStrong Studio - I'm always happy to assist!";
     }
   };
 
@@ -220,6 +223,7 @@ export default function Page19({ onNavigate }: PageProps) {
         </div>
       </div>
       <QuickAccess onNavigate={onNavigate} />
+      <GrokChat onNavigate={onNavigate} />
       <Footer />
     </div>
   );

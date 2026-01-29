@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { uploadFile } from '../lib/storage';
 import { initializeGoogleDrive, openGooglePicker, downloadGoogleDriveFile } from '../lib/googleDrive';
 import Footer from '../components/Footer';
+import QuickAccess from '../components/QuickAccess';
+import GrokChat from '../components/GrokChat';
 
 interface Page22Props {
   onNavigate: (page: number) => void;
@@ -429,6 +431,8 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
         </div>
       </div>
 
+      <QuickAccess onNavigate={onNavigate} />
+      <GrokChat onNavigate={onNavigate} />
       <Footer />
     </div>
   );
