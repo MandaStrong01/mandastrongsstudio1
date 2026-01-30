@@ -41,28 +41,25 @@ export default function Page1({ onNavigate }: PageProps) {
           Welcome To The All-In-One Make-A-Movie-With-Two-Hours-Duration App!
         </p>
 
-        <div className="flex flex-col items-center gap-6">
+        <div className="flex gap-4 w-full max-w-2xl justify-center">
           <button
             onClick={() => onNavigate(2)}
-            className="bg-purple-600 text-white font-bold px-16 py-4 rounded-lg text-xl hover:bg-purple-500 transition-all transform hover:scale-105 shadow-xl w-full max-w-md"
+            className="flex-1 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all transform hover:scale-105 shadow-xl"
           >
             Next
           </button>
-
-          <div className="flex gap-4 w-full max-w-md justify-center">
-            <button
-              onClick={() => onNavigate(3)}
-              className="flex-1 bg-black text-white font-bold px-8 py-3 rounded-lg text-lg hover:bg-purple-900 transition-all border-2 border-purple-500 shadow-xl"
-            >
-              Login
-            </button>
-            <button
-              onClick={() => onNavigate(3)}
-              className="flex-1 bg-black text-white font-bold px-8 py-3 rounded-lg text-lg hover:bg-purple-900 transition-all border-2 border-purple-500 shadow-xl"
-            >
-              Register
-            </button>
-          </div>
+          <button
+            onClick={() => onNavigate(3)}
+            className="flex-1 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border-2 border-purple-500 shadow-xl"
+          >
+            Login
+          </button>
+          <button
+            onClick={() => onNavigate(3)}
+            className="flex-1 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border-2 border-purple-500 shadow-xl"
+          >
+            Register
+          </button>
         </div>
       </div>
       <QuickAccess onNavigate={onNavigate} />
