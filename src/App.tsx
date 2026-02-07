@@ -1,124 +1,146 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Scissors, Volume2, Clock, CheckCircle, X, Settings, Play, Wand2, FileVideo } from 'lucide-react';
+import React, { useState } from 'react';
+import { 
+  Film, Play, Save, User, Plus, ChevronRight, ChevronLeft, 
+  Upload, Wand2, Settings, Shield, Star, Video, Music
+} from 'lucide-react';
 
-export default function App() {
-  const [page, setPage] = useState(1);
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [volume, setVolume] = useState(100);
-  const [duration, setDuration] = useState(10);
-  const videoRef = useRef(null);
+const App = () => {
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const planPrice = "Studio Master $50";
 
-  useEffect(() => {
-    if (videoRef.current && page <= 2) {
-      videoRef.current.play().catch(() => {});
-    }
-  }, [page]);
+  // Navigation Logic
+  const next = () => setCurrentPage(p => Math.min(p + 1, 21));
+  const back = () => setCurrentPage(p => Math.max(p - 1, 0));
 
-  const Navigation = () => (
-    <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-[100] ${isEditorOpen ? 'hidden' : 'flex'}`}>
-      <button onClick={() => setPage(Math.max(1, page - 1))} className="bg-black text-white px-8 py-2 rounded-full font-black uppercase text-[10px] border border-white/20">BACK</button>
-      <button onClick={() => setPage(page + 1)} className="bg-black text-white px-8 py-2 rounded-full font-black uppercase text-[10px] border border-white/20">NEXT</button>
-    </div>
-  );
+  // Fix 8: Enhancement Studio Boxes (30 Titles)
+  const enhancementBoxes = Array.from({ length: 30 }, (_, i) => `Enhancement Tool ${i + 1}`);
 
   return (
-    <div className="h-screen bg-black overflow-hidden relative font-black italic text-white">
-      <video ref={videoRef} className={`absolute inset-0 w-full h-full object-cover transition-opacity ${page <= 2 ? 'opacity-100' : 'opacity-0'}`} src="background.mp4" loop playsInline />
-      
-      {/* NODE 1: SPLASH */}
-      {page === 1 && (
-        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center">
-          <h1 className="text-8xl text-black uppercase leading-none font-black tracking-tighter">MANDASTRONG'S STUDIO</h1>
-          <button onClick={() => setPage(3)} className="bg-black text-white px-12 py-4 rounded-xl font-black mt-10 uppercase shadow-2xl">Enter Studio</button>
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500/30">
+      {/* Global Theme: Deep Purple (#7e22ce) */}
+      <style>{`.bg-deep-purple { background-color: #7e22ce; } .text-deep-purple { color: #7e22ce; }`}</style>
+
+      {/* Fix 4: Navigation Bar */}
+      {currentPage > 0 && (
+        <div className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-center gap-4 bg-black/80 backdrop-blur-md">
+          <button onClick={back} className="flex items-center px-6 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700 transition">
+            <ChevronLeft size={20} /> Back
+          </button>
+          <button onClick={next} className="flex items-center px-6 py-2 bg-deep-purple rounded-full hover:opacity-90 transition">
+            Next <ChevronRight size={20} />
+          </button>
         </div>
       )}
 
-      {/* NODE 3: PRICING ($20, $40, $80) */}
-      {page === 3 && (
-        <div className="h-full bg-black flex flex-col items-center p-8 border-[15px] border-zinc-900 overflow-y-auto pb-32">
-          <h2 className="text-6xl uppercase font-black mb-12 mt-10">Select Plan</h2>
-          <div className="grid grid-cols-3 gap-6 w-full max-w-6xl">
-            {[{t:"BASIC", p:"20"}, {t:"PRO", p:"40"}, {t:"STUDIO", p:"80"}].map((plan, i) => (
-              <div key={i} className="bg-zinc-900 p-10 rounded-3xl border-2 border-white/5 text-center">
-                <h3 className="text-xl opacity-60 mb-2 uppercase tracking-widest">{plan.t}</h3>
-                <div className="text-7xl font-black mb-6 tracking-tighter">${plan.p}</div>
-                <button onClick={() => setPage(11)} className="w-full bg-white text-black py-4 rounded-xl font-black uppercase hover:bg-cyan-500 transition-all">Select</button>
-              </div>
-            ))}
+      <main className="pt-24 pb-20 px-4 max-w-7xl mx-auto">
+        
+        {/* Fix 1: Page 0 Splash Screen */}
+        {currentPage === 0 && (
+          <div className="flex flex-col items-center justify-center min-h-[80vh] text-center animate-in fade-in duration-1000">
+            <div className="p-4 bg-deep-purple rounded-3xl mb-8 shadow-2xl shadow-purple-500/20">
+              <Film size={80} />
+            </div>
+            <h1 className="text-7xl font-black tracking-tighter mb-4">MANDASTRONG STUDIO</h1>
+            <p className="text-zinc-400 text-2xl max-w-2xl">The Professional Cinema Production Platform.</p>
+            <button onClick={next} className="mt-12 px-10 py-4 bg-deep-purple rounded-full text-xl font-bold hover:scale-105 transition">
+              Launch Studio
+            </button>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* NODE 11: MEDIA LIBRARY + ATTACHMENT */}
-      {page === 11 && (
-        <div className="h-full bg-[#050505] flex flex-col border-[20px] border-zinc-900 relative">
-          <div className="p-10 flex flex-col h-full">
-            <div className="flex justify-between items-center mb-10 text-left">
-              <div>
-                <h2 className="text-5xl uppercase font-black tracking-tighter leading-none">Media Library</h2>
-                <p className="text-cyan-500 text-[10px] mt-2 tracking-[0.3em] uppercase font-black">Studio Assets 2026</p>
-              </div>
-              <div className="flex gap-4">
-                <button onClick={() => setIsEditorOpen(true)} className="bg-cyan-500 px-6 py-3 rounded-xl font-black text-black uppercase flex items-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:bg-white transition-all">
-                  <Scissors size={18}/> Open Video Editor
-                </button>
-                <button className="bg-purple-600 px-6 py-3 rounded-xl font-black uppercase flex items-center gap-2 opacity-40">
-                  <Wand2 size={18}/> Enhancement Suite
-                </button>
-              </div>
+        {/* Fix 2: Page 1 Control Hub */}
+        {currentPage === 1 && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10">
+            <button onClick={() => setCurrentPage(2)} className="h-64 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center justify-center hover:border-purple-500 transition">
+              <User size={40} className="mb-4 text-deep-purple" />
+              <span className="text-xl font-bold">Login</span>
+            </button>
+            <button className="h-64 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center justify-center hover:border-purple-500 transition">
+              <Plus size={40} className="mb-4 text-deep-purple" />
+              <span className="text-xl font-bold">Register</span>
+            </button>
+            <button onClick={next} className="h-64 bg-deep-purple rounded-2xl flex flex-col items-center justify-center hover:opacity-90 transition shadow-lg shadow-purple-900/40">
+              <ChevronRight size={40} className="mb-4" />
+              <span className="text-xl font-bold">Next</span>
+            </button>
+          </div>
+        )}
+
+        {/* Fix 5 & 6: Page 3 Plans (Free Removed) */}
+        {currentPage === 3 && (
+          <div className="space-y-10">
+            <div className="flex justify-center gap-4 mb-10">
+              <button className="px-8 py-2 bg-zinc-800 rounded-lg">Login</button>
+              <button className="px-8 py-2 bg-zinc-800 rounded-lg">Register</button>
             </div>
-            <div className="bg-zinc-900 p-8 rounded-3xl border border-white/5 w-48 text-center opacity-40 italic">
-              Raw_Footage_01.mp4
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {['Basic $20', 'Pro $30', 'Studio Master $50'].map((tier) => (
+                <div key={tier} className={`p-8 rounded-2xl border ${tier.includes('50') ? 'border-purple-500 bg-zinc-900/50' : 'border-zinc-800 bg-zinc-900'}`}>
+                  <h3 className="text-2xl font-bold mb-4">{tier}</h3>
+                  <ul className="text-zinc-400 space-y-3 mb-8">
+                    <li>• Advanced Cinema Tools</li>
+                    <li>• No Watermark Export</li>
+                    <li>• Cloud Asset Storage</li>
+                  </ul>
+                  <button className="w-full py-3 bg-deep-purple rounded-xl font-bold">Select Plan</button>
+                </div>
+              ))}
             </div>
           </div>
+        )}
 
-          {/* ATTACHMENT: ADVANCED ENHANCEMENT PANEL */}
-          {isEditorOpen && (
-            <div className="absolute inset-0 z-[200] bg-[#050505] flex flex-col p-12 animate-in slide-in-from-bottom duration-300">
-              <div className="flex justify-between items-start mb-10 text-left">
-                <div>
-                  <h2 className="text-7xl uppercase font-black text-cyan-400 tracking-tighter leading-none">Advanced Enhancer</h2>
-                  <p className="text-zinc-500 text-xs mt-2 tracking-widest uppercase">Master Studio Quality Controls</p>
-                </div>
-                <button onClick={() => setIsEditorOpen(false)} className="bg-zinc-900 p-4 rounded-full border border-white/10 hover:bg-red-500 transition-all"><X size={32}/></button>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-12 flex-1 pb-20">
-                <div className="space-y-12 bg-zinc-900/40 p-12 rounded-[3.5rem] border border-white/5 shadow-2xl backdrop-blur-xl">
-                  {/* SLIDERS */}
-                  <div>
-                    <div className="flex justify-between mb-4 uppercase text-zinc-400 tracking-widest"><span>Audio Gain</span><span className="text-cyan-400 text-3xl font-black">{volume}%</span></div>
-                    <input type="range" min="0" max="200" value={volume} onChange={(e)=>setVolume(parseInt(e.target.value))} className="w-full accent-cyan-400 h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer" />
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-4 uppercase text-zinc-400 tracking-widest"><span>Duration (0-180m)</span><span className="text-cyan-400 text-3xl">{duration}m</span></div>
-                    <input type="range" min="0" max="180" value={duration} onChange={(e)=>setDuration(parseInt(e.target.value))} className="w-full accent-cyan-400 h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer" />
-                  </div>
-                  {/* TOOLS */}
-                  <div className="grid grid-cols-2 gap-4 pt-10 border-t border-white/5">
-                    {['4K Upscale', 'AI Color', 'De-Noise', 'Frame Gen'].map(t => (
-                      <button key={t} className="bg-black/50 p-6 rounded-2xl border border-white/5 text-[10px] uppercase font-black flex justify-between items-center group">{t} <Settings size={14} className="group-hover:rotate-90 transition-all"/></button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-black rounded-[3.5rem] border-2 border-cyan-500/20 flex flex-col items-center justify-center relative shadow-inner overflow-hidden text-center">
-                   <Play size={64} className="text-cyan-500 mb-6" />
-                   <p className="uppercase text-[10px] opacity-30 mb-8 tracking-widest">Previewing Enhanced Output</p>
-                   <button className="bg-white text-black px-12 py-4 rounded-full font-black uppercase text-xl flex items-center gap-3 shadow-2xl"><CheckCircle size={24}/> Export Movie</button>
-                </div>
-              </div>
+        {/* Fix 7: Page 12 Asset Manager */}
+        {currentPage === 12 && (
+          <div>
+            <div className="flex justify-between items-center mb-10">
+              <h2 className="text-4xl font-bold">Asset Manager</h2>
+              <button className="flex items-center gap-2 px-6 py-3 bg-deep-purple rounded-lg font-bold">
+                <Upload size={20} /> Upload Asset
+              </button>
             </div>
-          )}
-        </div>
-      )}
+            <div className="grid grid-cols-4 gap-4">
+              {[1, 2, 3, 4].map(i => <div key={i} className="aspect-video bg-zinc-900 rounded-lg border border-zinc-800 flex items-center justify-center text-zinc-700">Empty Slot</div>)}
+            </div>
+          </div>
+        )}
 
-      {/* FALLBACK FOR OTHER NODES */}
-      {![1,3,11].includes(page) && (
-        <div className="h-full bg-black border-[20px] border-zinc-900 flex flex-col items-center justify-center text-white italic font-black opacity-10 uppercase text-9xl">Node {page}</div>
-      )}
-      
-      <Navigation />
+        {/* Fix 8: Page 13 Enhancement Studio */}
+        {currentPage === 13 && (
+          <div>
+            <h2 className="text-4xl font-bold mb-8">Enhancement Studio</h2>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              {enhancementBoxes.map((title, i) => (
+                <div key={i} className="p-4 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-purple-500 cursor-pointer transition text-center text-sm font-medium">
+                  {title}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Fix 9: Page 21 Finale */}
+        {currentPage === 21 && (
+          <div className="text-center py-10 max-w-3xl mx-auto">
+            <h2 className="text-5xl font-black mb-8 text-deep-purple">FINALE</h2>
+            <div className="aspect-video bg-zinc-900 rounded-3xl mb-10 flex items-center justify-center border-2 border-dashed border-zinc-700">
+              <Play size={60} className="text-zinc-700" />
+            </div>
+            <div className="p-8 bg-zinc-900 rounded-2xl border border-purple-500/30">
+              <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
+              <p className="text-zinc-400 leading-relaxed">
+                MandaStrong Studio is dedicated to empowering creators. A portion of every Studio Master subscription goes toward our local fundraiser initiatives and community arts programs.
+              </p>
+            </div>
+          </div>
+        )}
+      </main>
+
+      <footer className="fixed bottom-0 w-full p-6 bg-black border-t border-zinc-900 text-center text-xs text-zinc-500">
+        <p>MandaStrong Studio 2026 • Dedicated to Community Arts • MandaStrong1.Etsy.com</p>
+      </footer>
     </div>
   );
-}
+};
+
+export default App;
