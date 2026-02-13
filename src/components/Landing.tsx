@@ -38,15 +38,15 @@ export default function Landing({ onGetStarted }: LandingProps) {
           </div>
 
           <h1 className="text-6xl font-bold text-white mb-6 leading-tight">
-            Create Amazing Movies
+            Make Your Own Movie
             <br />
             <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
-              With AI Technology
+              In One App
             </span>
           </h1>
 
           <p className="text-xl text-white/70 mb-8 max-w-2xl mx-auto">
-            Professional movie creation studio powered by cutting-edge AI. Generate content, edit videos, and produce cinema-quality films all in one place.
+            Create movies from 0 to 180 minutes with our all-in-one platform. Professional editing tools, AI-powered features, and seamless workflow - everything you need in a single app.
           </p>
 
           <div className="flex items-center justify-center gap-4">
