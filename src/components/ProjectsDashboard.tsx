@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Film, Clock, Trash2, Play } from 'lucide-react';
+import { Plus, Film, Clock, Trash2, Play, Crown } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -17,11 +17,12 @@ interface ProjectsDashboardProps {
 }
 
 export default function ProjectsDashboard({ onEditProject }: ProjectsDashboardProps) {
-  const { user } = useAuth();
+  const { user, subscription } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showNewProject, setShowNewProject] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
+  const [selectedDuration, setSelectedDuration] = useState(30);
 
   useEffect(() => {
     loadProjects();
@@ -47,13 +48,16 @@ export default function ProjectsDashboard({ onEditProject }: ProjectsDashboardPr
   const createProject = async () => {
     if (!user || !newProjectName.trim()) return;
 
+    const maxAllowed = subscription?.maxDuration || 30;
+    const finalDuration = Math.min(selectedDuration, maxAllowed);
+
     const { data, error } = await supabase
       .from('movie_projects')
       .insert({
         user_id: user.id,
         title: newProjectName.trim(),
         description: '',
-        duration: 30,
+        duration: finalDuration,
         settings: { resolution: '1080p', fps: 30 },
       })
       .select()
@@ -64,6 +68,7 @@ export default function ProjectsDashboard({ onEditProject }: ProjectsDashboardPr
     } else if (data) {
       setProjects([data, ...projects]);
       setNewProjectName('');
+      setSelectedDuration(30);
       setShowNewProject(false);
       onEditProject(data.id);
     }
@@ -131,9 +136,54 @@ export default function ProjectsDashboard({ onEditProject }: ProjectsDashboardPr
             onChange={(e) => setNewProjectName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && createProject()}
             placeholder="Enter project name..."
-            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-blue-400 mb-4"
+            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-blue-400 mb-6"
             autoFocus
           />
+
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <label className="text-white font-medium flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                Movie Duration: {formatDuration(selectedDuration)}
+              </label>
+              {!subscription && (
+                <div className="flex items-center gap-1 text-xs text-amber-400">
+                  <Crown className="w-3 h-3" />
+                  Subscribe for up to 180 min
+                </div>
+              )}
+            </div>
+
+            <input
+              type="range"
+              min="0"
+              max={subscription?.maxDuration || 180}
+              step="5"
+              value={selectedDuration}
+              onChange={(e) => setSelectedDuration(Number(e.target.value))}
+              className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+              style={{
+                background: `linear-gradient(to right, rgb(59, 130, 246) 0%, rgb(59, 130, 246) ${(selectedDuration / (subscription?.maxDuration || 180)) * 100}%, rgb(51, 65, 85) ${(selectedDuration / (subscription?.maxDuration || 180)) * 100}%, rgb(51, 65, 85) 100%)`
+              }}
+            />
+
+            <div className="flex justify-between text-xs text-white/50 mt-2">
+              <span>0 min</span>
+              <span className="text-white/70">
+                {subscription ? `Max: ${subscription.maxDuration} min` : 'Max: 180 min (Subscribe)'}
+              </span>
+            </div>
+
+            {!subscription && selectedDuration > 30 && (
+              <div className="mt-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                <p className="text-amber-400 text-sm flex items-center gap-2">
+                  <Crown className="w-4 h-4" />
+                  Subscribe to create movies longer than 30 minutes
+                </p>
+              </div>
+            )}
+          </div>
+
           <div className="flex gap-3">
             <button
               onClick={createProject}
@@ -145,6 +195,7 @@ export default function ProjectsDashboard({ onEditProject }: ProjectsDashboardPr
               onClick={() => {
                 setShowNewProject(false);
                 setNewProjectName('');
+                setSelectedDuration(30);
               }}
               className="px-6 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg font-medium transition-colors"
             >
