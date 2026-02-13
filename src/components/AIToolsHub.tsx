@@ -40,23 +40,22 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
     <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col">
-          <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
-            <div className="w-full md:flex-1 md:max-w-md">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
-                <input
-                  type="text"
-                  placeholder="Search For Tools"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-black/50 border border-purple-500/50 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-400"
-                />
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="w-full md:w-80">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
+                  <input
+                    type="text"
+                    placeholder="Search For Tool"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-black/50 border border-purple-500/50 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20"
+                  />
+                </div>
               </div>
+              <h1 className="text-2xl md:text-4xl font-black text-purple-400 text-center md:text-right flex-1">AI TOOL BOARD</h1>
             </div>
-
-            <h1 className="text-2xl md:text-4xl font-black text-purple-400 text-center">AI TOOL BOARD</h1>
-
-            <div className="hidden md:block md:w-48"></div>
           </div>
 
           <div className="bg-black/30 backdrop-blur-sm p-4 md:p-6 rounded-2xl border border-purple-500/30 mb-6 flex-1 overflow-y-auto max-h-[600px]">
