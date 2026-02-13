@@ -6,6 +6,7 @@ import AIToolsView from './AIToolsView';
 import VideoEditor from './VideoEditor';
 import AssetLibrary from './AssetLibrary';
 import AuthModal from './AuthModal';
+import AdminModal from './AdminModal';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Studio() {
@@ -13,6 +14,7 @@ export default function Studio() {
   const [activeView, setActiveView] = useState<'projects' | 'ai-tools' | 'editor' | 'assets'>('projects');
   const [currentProjectId, setCurrentProjectId] = useState<string | undefined>();
   const [showAuth, setShowAuth] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
 
   const handleEditProject = (projectId: string) => {
     setCurrentProjectId(projectId);
@@ -56,7 +58,10 @@ export default function Studio() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      <Header onShowAuth={() => setShowAuth(true)} />
+      <Header
+        onShowAuth={() => setShowAuth(true)}
+        onShowAdmin={() => setShowAdmin(true)}
+      />
       {activeView !== 'editor' && (
         <StudioNav activeView={activeView} onViewChange={setActiveView} />
       )}
@@ -64,6 +69,7 @@ export default function Studio() {
         {renderView()}
       </div>
       <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
+      {showAdmin && <AdminModal onClose={() => setShowAdmin(false)} />}
     </div>
   );
 }
