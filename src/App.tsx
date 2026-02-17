@@ -26,7 +26,7 @@ export default function App() {
   // TOOL MODAL - Shows Upload/Paste/Create With AI
   const ToolModal = ({ tool, onClose }: { tool: string; onClose: () => void }) => (
     <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-gradient-to-br from-[#4c1d95] to-[#2e1065] border-2 border-[#7c3aed] rounded-3xl max-w-3xl w-full p-8" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-black border-2 border-[#7c3aed] rounded-3xl max-w-3xl w-full p-8" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-start mb-6">
           <div>
             <h2 className="text-3xl font-black text-white mb-2">{tool}</h2>
@@ -735,7 +735,7 @@ export default function App() {
         );
 
       default:
-        return <div className="min-h-screen bg-[#4c1d95] text-white flex items-center justify-center"><p>Page not found</p></div>;
+        return <div className="min-h-screen bg-black text-white flex items-center justify-center"><p>Page not found</p></div>;
     }
   };
 
