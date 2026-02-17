@@ -56,7 +56,7 @@ export default function GrokChat({ onNavigate }: GrokChatProps) {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 sm:bottom-6 left-4 sm:left-6 z-50 bg-[#5b21b6] hover:bg-[#6d28d9] text-white p-3 sm:p-4 rounded-full shadow-2xl transition-all hover:scale-110"
+        className="fixed bottom-4 sm:bottom-6 left-4 sm:left-6 z-50 bg-[#2d1554] hover:bg-[#2d1554] text-white p-3 sm:p-4 rounded-full shadow-2xl transition-all hover:scale-110"
         aria-label="Grok Assistant"
       >
         {isOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Bot className="w-5 h-5 sm:w-6 sm:h-6" />}
@@ -68,15 +68,15 @@ export default function GrokChat({ onNavigate }: GrokChatProps) {
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="fixed bottom-16 sm:bottom-24 left-4 sm:left-6 z-50 bg-black/90 backdrop-blur-xl rounded-2xl border border-[#6d28d9]/50 shadow-2xl p-4 w-[calc(100vw-2rem)] sm:w-96 max-h-[500px] flex flex-col">
-            <div className="flex items-center gap-2 mb-3 pb-3 border-b border-[#6d28d9]/30">
-              <Bot className="w-6 h-6 text-[#a78bfa]" />
+          <div className="fixed bottom-16 sm:bottom-24 left-4 sm:left-6 z-50 bg-black/90 backdrop-blur-xl rounded-2xl border border-[#2d1554]/50 shadow-2xl p-4 w-[calc(100vw-2rem)] sm:w-96 max-h-[500px] flex flex-col">
+            <div className="flex items-center gap-2 mb-3 pb-3 border-b border-[#2d1554]/30">
+              <Bot className="w-6 h-6 text-[#7c3aed]" />
               <h3 className="text-white font-bold text-lg">Grok Assistant</h3>
             </div>
 
             <div className="flex-1 overflow-y-auto mb-3 space-y-3 min-h-[200px]">
               {messages.length === 0 ? (
-                <div className="bg-[#4c1d95]/30 rounded-lg p-3 border border-[#6d28d9]/30">
+                <div className="bg-[#2d1554]/30 rounded-lg p-3 border border-[#2d1554]/30">
                   <p className="text-white/90 text-sm">
                     Hi! I'm Grok, your friendly assistant. Ask me anything about MandaStrong Studio!
                   </p>
@@ -87,8 +87,8 @@ export default function GrokChat({ onNavigate }: GrokChatProps) {
                     key={idx}
                     className={`rounded-lg p-3 ${
                       msg.isUser
-                        ? 'bg-[#5b21b6]/30 border border-[#7c3aed]/30 ml-8'
-                        : 'bg-[#4c1d95]/30 border border-[#6d28d9]/30 mr-8'
+                        ? 'bg-[#2d1554]/30 border border-[#7c3aed]/30 ml-8'
+                        : 'bg-[#2d1554]/30 border border-[#2d1554]/30 mr-8'
                     }`}
                   >
                     <p className="text-white/90 text-sm">{msg.text}</p>
@@ -104,12 +104,12 @@ export default function GrokChat({ onNavigate }: GrokChatProps) {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything..."
-                className="flex-1 px-3 py-2 bg-black border border-[#6d28d9]/50 rounded-lg text-white text-sm placeholder-white/60 focus:outline-none focus:border-[#a78bfa]"
+                className="flex-1 px-3 py-2 bg-black border border-[#2d1554]/50 rounded-lg text-white text-sm placeholder-white/60 focus:outline-none focus:border-[#7c3aed]"
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim()}
-                className="bg-[#5b21b6] hover:bg-[#6d28d9] disabled:bg-[#4c1d95] disabled:cursor-not-allowed text-white p-2 rounded-lg transition-all"
+                className="bg-[#2d1554] hover:bg-[#2d1554] disabled:bg-[#2d1554] disabled:cursor-not-allowed text-white p-2 rounded-lg transition-all"
               >
                 <Send className="w-4 h-4" />
               </button>
