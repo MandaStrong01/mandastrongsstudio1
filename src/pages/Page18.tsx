@@ -9,15 +9,15 @@ interface PageProps {
 
 export default function Page18({ onNavigate }: PageProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#4c1d95]/20 via-black to-[#4c1d95]/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-12">
         <div className="max-w-4xl w-full mx-auto">
-          <h1 className="text-5xl font-black text-purple-400 mb-8 text-center">Terms of Service & Disclaimer</h1>
+          <h1 className="text-5xl font-black text-[#a78bfa] mb-8 text-center">Terms of Service & Disclaimer</h1>
 
           <div className="grid gap-6 mb-8">
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-8">
+            <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-8">
               <div className="flex items-center gap-3 mb-4">
-                <FileText className="w-8 h-8 text-purple-400" />
+                <FileText className="w-8 h-8 text-[#a78bfa]" />
                 <h2 className="text-2xl font-bold">Terms of Service</h2>
               </div>
               <div className="space-y-4 text-white/80 leading-relaxed">
@@ -38,9 +38,9 @@ export default function Page18({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-8">
+            <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-8">
               <div className="flex items-center gap-3 mb-4">
-                <Shield className="w-8 h-8 text-purple-400" />
+                <Shield className="w-8 h-8 text-[#a78bfa]" />
                 <h2 className="text-2xl font-bold">Disclaimer</h2>
               </div>
               <div className="space-y-4 text-white/80 leading-relaxed">
@@ -57,7 +57,7 @@ export default function Page18({ onNavigate }: PageProps) {
                   The platform may experience downtime for maintenance or technical issues. We strive to
                   provide reliable service but do not guarantee uninterrupted access.
                 </p>
-                <p className="font-semibold text-purple-400">
+                <p className="font-semibold text-[#a78bfa]">
                   By clicking "Next" you acknowledge that you have read and agree to these terms.
                 </p>
               </div>
@@ -67,14 +67,14 @@ export default function Page18({ onNavigate }: PageProps) {
           <div className="flex gap-4 justify-center">
             <button
               onClick={() => onNavigate(17)}
-              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
+              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#4c1d95] transition-all border border-[#6d28d9]"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
               onClick={() => onNavigate(19)}
-              className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
+              className="flex items-center gap-2 bg-[#5b21b6] text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#6d28d9] transition-all"
             >
               I Agree - Next
               <ArrowRight className="w-5 h-5" />

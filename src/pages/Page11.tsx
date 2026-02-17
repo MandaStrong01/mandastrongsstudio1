@@ -352,32 +352,32 @@ export default function Page11({ onNavigate }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#4c1d95]/20 via-black to-[#4c1d95]/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-full w-full mx-auto flex-1 flex flex-col">
-          <h1 className="text-2xl md:text-3xl font-black text-purple-400 mb-4 text-center">Editor Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-[#a78bfa] mb-4 text-center">Editor Dashboard</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
             <div
               className={`relative lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border p-4 transition-all ${
                 isDragging
-                  ? 'border-purple-400 border-4 bg-purple-900/40'
-                  : 'border-purple-500/30'
+                  ? 'border-[#a78bfa] border-4 bg-[#4c1d95]/40'
+                  : 'border-[#6d28d9]/30'
               }`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
               <div className="mb-4">
-                <h2 className="text-xl font-bold text-purple-400 mb-2">MEDIA BOX</h2>
-                <div className="bg-purple-900/30 border border-purple-400/40 rounded-lg p-3 mb-2">
-                  <p className="text-sm text-purple-200 font-semibold mb-1">Select Asset / Drag & Drop</p>
+                <h2 className="text-xl font-bold text-[#a78bfa] mb-2">MEDIA BOX</h2>
+                <div className="bg-[#4c1d95]/30 border border-[#a78bfa]/40 rounded-lg p-3 mb-2">
+                  <p className="text-sm text-[#a78bfa] font-semibold mb-1">Select Asset / Drag & Drop</p>
                   <p className="text-xs text-white/80 leading-relaxed">
                     Click any asset below to preview it, or drag files directly into this box to upload.
                   </p>
                 </div>
-                <div className="bg-gradient-to-r from-purple-900/40 to-purple-800/40 border border-purple-300/50 rounded-lg p-3">
-                  <p className="text-sm text-purple-100 font-bold text-center animate-pulse">
+                <div className="bg-gradient-to-r from-[#4c1d95]/40 to-[#4c1d95]/40 border border-[#a78bfa]/50 rounded-lg p-3">
+                  <p className="text-sm text-[#a78bfa] font-bold text-center animate-pulse">
                     Have I Missed A Thing?
                   </p>
                   <p className="text-xs text-white/70 text-center mt-1">
@@ -387,34 +387,34 @@ export default function Page11({ onNavigate }: PageProps) {
               </div>
 
               {isDragging && (
-                <div className="absolute inset-4 bg-purple-900/60 backdrop-blur-sm border-4 border-dashed border-purple-400 rounded-2xl flex items-center justify-center z-10 pointer-events-none">
+                <div className="absolute inset-4 bg-[#4c1d95]/60 backdrop-blur-sm border-4 border-dashed border-[#a78bfa] rounded-2xl flex items-center justify-center z-10 pointer-events-none">
                   <div className="text-center">
-                    <Upload className="w-16 h-16 mx-auto mb-3 text-purple-400 animate-bounce" />
-                    <p className="text-xl font-bold text-purple-400">Drop files here</p>
-                    <p className="text-sm text-purple-300 mt-2">Images auto-compress for faster uploads</p>
+                    <Upload className="w-16 h-16 mx-auto mb-3 text-[#a78bfa] animate-bounce" />
+                    <p className="text-xl font-bold text-[#a78bfa]">Drop files here</p>
+                    <p className="text-sm text-[#a78bfa] mt-2">Images auto-compress for faster uploads</p>
                   </div>
                 </div>
               )}
 
               {uploading && (
-                <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-purple-900/90 to-black/95 backdrop-blur-md rounded-2xl flex items-center justify-center z-20 p-8">
+                <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-[#4c1d95]/90 to-black/95 backdrop-blur-md rounded-2xl flex items-center justify-center z-20 p-8">
                   <div className="w-full max-w-lg">
                     <div className="text-center mb-6">
-                      <Loader2 className="w-16 h-16 mx-auto mb-3 text-purple-400 animate-spin" />
+                      <Loader2 className="w-16 h-16 mx-auto mb-3 text-[#a78bfa] animate-spin" />
                       <p className="text-2xl font-bold text-white mb-1">Fast Upload in Progress</p>
-                      <p className="text-sm text-purple-300">Optimizing and uploading your files</p>
+                      <p className="text-sm text-[#a78bfa]">Optimizing and uploading your files</p>
                     </div>
                     {Object.keys(uploadProgress).length > 0 ? (
                       <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                         {Object.entries(uploadProgress).map(([fileName, progress]) => (
-                          <div key={fileName} className="bg-black/40 backdrop-blur-sm border border-purple-500/30 rounded-lg p-4 shadow-lg">
+                          <div key={fileName} className="bg-black/40 backdrop-blur-sm border border-[#6d28d9]/30 rounded-lg p-4 shadow-lg">
                             <div className="flex items-center justify-between mb-2">
                               <p className="text-sm text-white/95 font-medium truncate flex-1 mr-3">{fileName}</p>
-                              <p className="text-sm font-bold text-purple-400 min-w-[45px] text-right">{Math.round(progress)}%</p>
+                              <p className="text-sm font-bold text-[#a78bfa] min-w-[45px] text-right">{Math.round(progress)}%</p>
                             </div>
                             <div className="w-full bg-purple-950/50 rounded-full h-2.5 overflow-hidden">
                               <div
-                                className="bg-gradient-to-r from-purple-600 via-purple-500 to-purple-400 h-2.5 rounded-full transition-all duration-200 ease-out shadow-lg shadow-purple-500/50"
+                                className="bg-gradient-to-r from-[#5b21b6] via-[#6d28d9] to-[#a78bfa] h-2.5 rounded-full transition-all duration-200 ease-out shadow-lg shadow-[#6d28d9]/50"
                                 style={{ width: `${progress}%` }}
                               />
                             </div>
@@ -423,7 +423,7 @@ export default function Page11({ onNavigate }: PageProps) {
                       </div>
                     ) : (
                       <div className="text-center">
-                        <p className="text-purple-300 animate-pulse">Preparing files...</p>
+                        <p className="text-[#a78bfa] animate-pulse">Preparing files...</p>
                       </div>
                     )}
                   </div>
@@ -436,7 +436,7 @@ export default function Page11({ onNavigate }: PageProps) {
                     document.getElementById('files-upload')?.click();
                   }}
                   disabled={uploading}
-                  className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
+                  className="w-full bg-gradient-to-br from-[#4c1d95]/30 to-black/50 backdrop-blur-xl border-2 border-[#6d28d9]/60 hover:border-[#a78bfa] hover:from-[#4c1d95]/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
                 >
                   <div className="flex items-center justify-center gap-2">
                     {uploading ? (
@@ -453,7 +453,7 @@ export default function Page11({ onNavigate }: PageProps) {
                     document.getElementById('photos-upload')?.click();
                   }}
                   disabled={uploading}
-                  className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
+                  className="w-full bg-gradient-to-br from-[#4c1d95]/30 to-black/50 backdrop-blur-xl border-2 border-[#6d28d9]/60 hover:border-[#a78bfa] hover:from-[#4c1d95]/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
                 >
                   <div className="flex items-center justify-center gap-2">
                     {uploading ? (
@@ -468,7 +468,7 @@ export default function Page11({ onNavigate }: PageProps) {
                 <button
                   onClick={handleGoogleDriveUpload}
                   disabled={uploading || !googleDriveReady}
-                  className="w-full bg-gradient-to-br from-purple-900/30 to-black/50 backdrop-blur-xl border-2 border-purple-500/60 hover:border-purple-400 hover:from-purple-900/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
+                  className="w-full bg-gradient-to-br from-[#4c1d95]/30 to-black/50 backdrop-blur-xl border-2 border-[#6d28d9]/60 hover:border-[#a78bfa] hover:from-[#4c1d95]/40 hover:to-black/60 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-4 rounded-xl transition-all text-white font-semibold"
                 >
                   <div className="flex items-center justify-center gap-2">
                     {uploading || !googleDriveReady ? (
@@ -498,8 +498,8 @@ export default function Page11({ onNavigate }: PageProps) {
                 onChange={handleFileUpload}
               />
 
-              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 mb-4">
-                <p className="text-xs text-purple-200 leading-relaxed">
+              <div className="bg-[#4c1d95]/20 border border-[#6d28d9]/30 rounded-lg p-3 mb-4">
+                <p className="text-xs text-[#a78bfa] leading-relaxed">
                   <span className="font-semibold block mb-1">Permissions Needed:</span>
                   Upload images, videos, and audio files from your device or connect your Google Drive to access your cloud files directly.
                 </p>
@@ -523,15 +523,15 @@ export default function Page11({ onNavigate }: PageProps) {
                       <div key={asset.id} className="relative group">
                         <button
                           onClick={() => setSelectedAsset(asset)}
-                          className={`w-full bg-purple-900/20 border rounded-lg p-3 text-left transition-all hover:bg-purple-900/40 ${
-                            selectedAsset?.id === asset.id ? 'border-purple-400 bg-purple-900/40' : 'border-purple-500/30'
+                          className={`w-full bg-[#4c1d95]/20 border rounded-lg p-3 text-left transition-all hover:bg-[#4c1d95]/40 ${
+                            selectedAsset?.id === asset.id ? 'border-[#a78bfa] bg-[#4c1d95]/40' : 'border-[#6d28d9]/30'
                           }`}
                         >
                           <div className="flex items-center gap-2 mb-1">
                             {isMedia ? (
-                              <File className="w-4 h-4 text-purple-400" />
+                              <File className="w-4 h-4 text-[#a78bfa]" />
                             ) : (
-                              <Sparkles className="w-4 h-4 text-purple-400" />
+                              <Sparkles className="w-4 h-4 text-[#a78bfa]" />
                             )}
                             <h3 className="font-semibold text-sm truncate pr-6">
                               {isMedia ? asset.file_name : asset.tool_name}
@@ -543,7 +543,7 @@ export default function Page11({ onNavigate }: PageProps) {
                         </button>
                         <button
                           onClick={(e) => handleDeleteAsset(asset, e)}
-                          className="absolute top-2 right-2 p-1 bg-red-600 hover:bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                          className="absolute top-2 right-2 p-1 bg-[#5b21b6] hover:bg-[#5b21b6] rounded-full opacity-0 group-hover:opacity-100 transition-all"
                           title="Delete asset"
                         >
                           <X className="w-3 h-3 text-white" />
@@ -555,10 +555,10 @@ export default function Page11({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="lg:col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4 flex flex-col">
-              <h2 className="text-xl font-bold mb-4 text-purple-400">VIEWER</h2>
+            <div className="lg:col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-4 flex flex-col">
+              <h2 className="text-xl font-bold mb-4 text-[#a78bfa]">VIEWER</h2>
               <div className="flex-1 flex flex-col">
-                <div className="aspect-video bg-black rounded-lg border border-purple-500/30 mb-4 flex items-center justify-center overflow-hidden">
+                <div className="aspect-video bg-black rounded-lg border border-[#6d28d9]/30 mb-4 flex items-center justify-center overflow-hidden">
                   {selectedAsset ? (
                     isMediaAsset(selectedAsset) ? (
                       selectedAsset.asset_type === 'image' ? (
@@ -575,20 +575,20 @@ export default function Page11({ onNavigate }: PageProps) {
                         />
                       ) : selectedAsset.asset_type === 'audio' ? (
                         <div className="text-center p-8">
-                          <Volume2 className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+                          <Volume2 className="w-16 h-16 mx-auto mb-4 text-[#a78bfa]" />
                           <h3 className="text-lg font-bold mb-4">{selectedAsset.file_name}</h3>
                           <audio src={selectedAsset.file_url} controls className="w-full" />
                         </div>
                       ) : (
                         <div className="text-center p-8">
-                          <File className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+                          <File className="w-16 h-16 mx-auto mb-4 text-[#a78bfa]" />
                           <h3 className="text-lg font-bold mb-2">{selectedAsset.file_name}</h3>
                           <p className="text-sm text-slate-400">{selectedAsset.file_type}</p>
                         </div>
                       )
                     ) : (
                       <div className="text-center p-8">
-                        <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+                        <Sparkles className="w-16 h-16 mx-auto mb-4 text-[#a78bfa]" />
                         <h3 className="text-lg font-bold mb-2">{selectedAsset.tool_name}</h3>
                         <pre className="text-sm text-slate-300 font-sans max-h-48 overflow-y-auto text-left">
                           {JSON.stringify(selectedAsset.output_data, null, 2)}
@@ -607,7 +607,7 @@ export default function Page11({ onNavigate }: PageProps) {
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => setIsPlaying(!isPlaying)}
-                      className="p-2 bg-purple-600 hover:bg-purple-500 rounded-lg transition-all"
+                      className="p-2 bg-[#5b21b6] hover:bg-[#6d28d9] rounded-lg transition-all"
                     >
                       {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                     </button>
@@ -622,7 +622,7 @@ export default function Page11({ onNavigate }: PageProps) {
                       step="0.1"
                       value={currentTime}
                       onChange={(e) => setCurrentTime(parseFloat(e.target.value))}
-                      className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                      className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
                       style={{
                         background: `linear-gradient(to right, #9333ea ${(currentTime / duration) * 100}%, rgba(147, 51, 234, 0.2) ${(currentTime / duration) * 100}%)`
                       }}
@@ -636,12 +636,12 @@ export default function Page11({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4">
-              <h2 className="text-xl font-bold mb-4 text-purple-400">CONTROLS</h2>
+            <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-4">
+              <h2 className="text-xl font-bold mb-4 text-[#a78bfa]">CONTROLS</h2>
               <div className="space-y-6">
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Volume2 className="w-4 h-4 text-purple-400" />
+                    <Volume2 className="w-4 h-4 text-[#a78bfa]" />
                     Volume
                   </label>
                   <input
@@ -650,20 +650,20 @@ export default function Page11({ onNavigate }: PageProps) {
                     max="100"
                     value={volume}
                     onChange={(e) => setVolume(parseInt(e.target.value))}
-                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="text-right text-xs text-slate-400 mt-1">{volume}%</div>
                 </div>
 
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Maximize className="w-4 h-4 text-purple-400" />
+                    <Maximize className="w-4 h-4 text-[#a78bfa]" />
                     Ratio
                   </label>
                   <select
                     value={ratio}
                     onChange={(e) => setRatio(e.target.value)}
-                    className="w-full px-3 py-2 bg-black border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-400"
+                    className="w-full px-3 py-2 bg-black border border-[#6d28d9]/50 rounded-lg text-white focus:outline-none focus:border-[#a78bfa]"
                   >
                     <option value="16:9">16:9</option>
                     <option value="4:3">4:3</option>
@@ -677,7 +677,7 @@ export default function Page11({ onNavigate }: PageProps) {
                   <select
                     value={size}
                     onChange={(e) => setSize(e.target.value)}
-                    className="w-full px-3 py-2 bg-black border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-400"
+                    className="w-full px-3 py-2 bg-black border border-[#6d28d9]/50 rounded-lg text-white focus:outline-none focus:border-[#a78bfa]"
                   >
                     <option value="720p">720p</option>
                     <option value="1080p">1080p</option>
@@ -691,15 +691,15 @@ export default function Page11({ onNavigate }: PageProps) {
                     <label className="text-sm font-semibold">Duration</label>
                     <button
                       onClick={handleAIDuration}
-                      className="flex items-center gap-1 text-xs bg-purple-600 hover:bg-purple-500 px-2 py-1 rounded transition-all"
+                      className="flex items-center gap-1 text-xs bg-[#5b21b6] hover:bg-[#6d28d9] px-2 py-1 rounded transition-all"
                     >
                       <Sparkles className="w-3 h-3" />
                       AI Help
                     </button>
                   </div>
-                  <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3">
+                  <div className="bg-[#4c1d95]/20 border border-[#6d28d9]/30 rounded-lg p-3">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-400">{formatTime(currentTime)}</div>
+                      <div className="text-2xl font-bold text-[#a78bfa]">{formatTime(currentTime)}</div>
                       <div className="text-xs text-slate-400 mt-1">/ {formatTime(duration)}</div>
                     </div>
                     <input
@@ -708,7 +708,7 @@ export default function Page11({ onNavigate }: PageProps) {
                       max="120"
                       value={duration}
                       onChange={(e) => handleDurationChange(parseInt(e.target.value))}
-                      className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer mt-3"
+                      className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer mt-3"
                     />
                     <div className="text-xs text-slate-400 mt-1 text-center">Max: 120 minutes</div>
                   </div>
@@ -720,7 +720,7 @@ export default function Page11({ onNavigate }: PageProps) {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
             <button
               onClick={() => onNavigate(10)}
-              className="flex items-center justify-center gap-2 bg-black text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-900 transition-all border border-purple-500"
+              className="flex items-center justify-center gap-2 bg-black text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-[#4c1d95] transition-all border border-[#6d28d9]"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
@@ -728,7 +728,7 @@ export default function Page11({ onNavigate }: PageProps) {
             <button
               onClick={handleGenerate}
               disabled={generating || !selectedAsset}
-              className="flex items-center justify-center gap-2 bg-green-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-green-500 transition-all disabled:bg-green-800 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-2 bg-[#5b21b6] text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-[#5b21b6] transition-all disabled:bg-[#5b21b6] disabled:cursor-not-allowed"
             >
               {generating ? (
                 <>
@@ -744,7 +744,7 @@ export default function Page11({ onNavigate }: PageProps) {
             </button>
             <button
               onClick={() => onNavigate(12)}
-              className="flex items-center justify-center gap-2 bg-purple-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-500 transition-all"
+              className="flex items-center justify-center gap-2 bg-[#5b21b6] text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-[#6d28d9] transition-all"
             >
               Next
               <ArrowRight className="w-5 h-5" />
@@ -755,9 +755,9 @@ export default function Page11({ onNavigate }: PageProps) {
 
       {showScriptModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-gradient-to-br from-purple-900/90 to-black/90 border-2 border-purple-400 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+          <div className="bg-gradient-to-br from-[#4c1d95]/90 to-black/90 border-2 border-[#a78bfa] rounded-2xl p-8 max-w-md w-full shadow-2xl">
             <div className="text-center mb-6">
-              <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+              <Sparkles className="w-16 h-16 mx-auto mb-4 text-[#a78bfa]" />
               <h2 className="text-2xl font-bold text-white mb-3">Create Scenes & Script?</h2>
               <p className="text-white/80 text-lg">
                 Do You Wish App To Create Scenes And Script?
@@ -766,13 +766,13 @@ export default function Page11({ onNavigate }: PageProps) {
             <div className="flex gap-4">
               <button
                 onClick={() => handleScriptResponse(false)}
-                className="flex-1 bg-black hover:bg-gray-900 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all border border-purple-500/50"
+                className="flex-1 bg-black hover:bg-gray-900 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all border border-[#6d28d9]/50"
               >
                 NO
               </button>
               <button
                 onClick={() => handleScriptResponse(true)}
-                className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
+                className="flex-1 bg-[#5b21b6] hover:bg-[#6d28d9] text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
               >
                 YES
               </button>
@@ -783,15 +783,15 @@ export default function Page11({ onNavigate }: PageProps) {
 
       {showAIDurationModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-gradient-to-br from-purple-900/90 to-black/90 border-2 border-purple-400 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+          <div className="bg-gradient-to-br from-[#4c1d95]/90 to-black/90 border-2 border-[#a78bfa] rounded-2xl p-8 max-w-md w-full shadow-2xl">
             <div className="text-center mb-6">
-              <Sparkles className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+              <Sparkles className="w-16 h-16 mx-auto mb-4 text-[#a78bfa]" />
               <h2 className="text-2xl font-bold text-white mb-3">AI Duration Assistant</h2>
               <p className="text-white/80 text-lg">
                 Let AI calculate the optimal film duration based on your uploaded assets?
               </p>
-              <div className="mt-4 bg-purple-900/30 border border-purple-500/30 rounded-lg p-3">
-                <p className="text-sm text-purple-200">
+              <div className="mt-4 bg-[#4c1d95]/30 border border-[#6d28d9]/30 rounded-lg p-3">
+                <p className="text-sm text-[#a78bfa]">
                   <span className="font-bold">Assets:</span> {assets.length} items
                 </p>
               </div>
@@ -800,14 +800,14 @@ export default function Page11({ onNavigate }: PageProps) {
               <button
                 onClick={() => setShowAIDurationModal(false)}
                 disabled={aiCalculating}
-                className="flex-1 bg-black hover:bg-gray-900 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all border border-purple-500/50 disabled:opacity-50"
+                className="flex-1 bg-black hover:bg-gray-900 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all border border-[#6d28d9]/50 disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={calculateAIDuration}
                 disabled={aiCalculating}
-                className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all disabled:bg-purple-800 flex items-center justify-center gap-2"
+                className="flex-1 bg-[#5b21b6] hover:bg-[#6d28d9] text-white font-bold py-4 px-6 rounded-lg text-lg transition-all disabled:bg-[#4c1d95] flex items-center justify-center gap-2"
               >
                 {aiCalculating ? (
                   <>
@@ -825,9 +825,9 @@ export default function Page11({ onNavigate }: PageProps) {
 
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-gradient-to-br from-green-900/90 to-black/90 border-2 border-green-400 rounded-2xl p-8 max-w-lg w-full shadow-2xl">
+          <div className="bg-gradient-to-br from-[#5b21b6]/90 to-black/90 border-2 border-[#a78bfa] rounded-2xl p-8 max-w-lg w-full shadow-2xl">
             <div className="text-center mb-6">
-              <div className="w-20 h-20 mx-auto mb-4 bg-green-500 rounded-full flex items-center justify-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-[#5b21b6] rounded-full flex items-center justify-center">
                 <Sparkles className="w-10 h-10 text-white" />
               </div>
               <h2 className="text-3xl font-bold text-white mb-3">Generation Complete!</h2>
@@ -835,16 +835,16 @@ export default function Page11({ onNavigate }: PageProps) {
                 Your content has been successfully generated and saved.
               </p>
               {generatedOutput && (
-                <div className="bg-black/50 border border-green-500/30 rounded-lg p-4 mb-4 text-left">
-                  <p className="text-sm text-green-300 mb-2">
+                <div className="bg-black/50 border border-[#a78bfa]/30 rounded-lg p-4 mb-4 text-left">
+                  <p className="text-sm text-[#a78bfa] mb-2">
                     <span className="font-bold">Project:</span>{' '}
                     {generatedOutput.output_data.projectName}
                   </p>
-                  <p className="text-sm text-green-300 mb-2">
+                  <p className="text-sm text-[#a78bfa] mb-2">
                     <span className="font-bold">Settings:</span> {generatedOutput.output_data.settings.size},{' '}
                     {generatedOutput.output_data.settings.ratio}, {generatedOutput.output_data.settings.duration} min
                   </p>
-                  <p className="text-xs text-green-400/70">
+                  <p className="text-xs text-[#a78bfa]/70">
                     Generated at {new Date(generatedOutput.created_at).toLocaleString()}
                   </p>
                 </div>
@@ -852,7 +852,7 @@ export default function Page11({ onNavigate }: PageProps) {
             </div>
             <button
               onClick={() => setShowSuccessModal(false)}
-              className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
+              className="w-full bg-[#5b21b6] hover:bg-[#5b21b6] text-white font-bold py-4 px-6 rounded-lg text-lg transition-all"
             >
               Done
             </button>
