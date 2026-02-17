@@ -21,35 +21,35 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#4c1d95]/20 via-black to-[#4c1d95]/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col">
           <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
             <div className="w-full md:flex-1 md:max-w-md">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#a78bfa]" />
                 <input
                   type="text"
                   placeholder="Search For Tools"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-black/50 border border-purple-500/50 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-400"
+                  className="w-full pl-10 pr-4 py-3 bg-black/50 border border-[#6d28d9]/50 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-[#a78bfa]"
                 />
               </div>
             </div>
 
-            <h1 className="text-2xl md:text-4xl font-black text-purple-400 text-center">AI TOOL BOARD</h1>
+            <h1 className="text-2xl md:text-4xl font-black text-[#a78bfa] text-center">AI TOOL BOARD</h1>
 
             <div className="hidden md:block md:w-48"></div>
           </div>
 
-          <div className="bg-black/30 backdrop-blur-sm p-4 md:p-6 rounded-2xl border border-purple-500/30 mb-6 flex-1 overflow-y-auto max-h-[600px]">
+          <div className="bg-black/30 backdrop-blur-sm p-4 md:p-6 rounded-2xl border border-[#6d28d9]/30 mb-6 flex-1 overflow-y-auto max-h-[600px]">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {filteredTools.map((tool, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedTool(tool)}
-                  className="bg-purple-900/20 border border-purple-500/30 hover:border-purple-400 hover:bg-purple-900/40 rounded-lg p-5 transition-all cursor-pointer aspect-square flex items-center justify-center"
+                  className="bg-[#4c1d95]/20 border border-[#6d28d9]/30 hover:border-[#a78bfa] hover:bg-[#4c1d95]/40 rounded-lg p-5 transition-all cursor-pointer aspect-square flex items-center justify-center"
                 >
                   <h3 className="font-semibold text-white text-sm leading-tight text-center">
                     {tool}
@@ -62,14 +62,14 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => onNavigate(pageNumber - 1)}
-              className="flex items-center justify-center gap-2 bg-black text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-900 transition-all border border-purple-500"
+              className="flex items-center justify-center gap-2 bg-black text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-[#4c1d95] transition-all border border-[#6d28d9]"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
               onClick={() => onNavigate(pageNumber + 1)}
-              className="flex items-center justify-center gap-2 bg-purple-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-500 transition-all"
+              className="flex items-center justify-center gap-2 bg-[#5b21b6] text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-[#6d28d9] transition-all"
             >
               Next
               <ArrowRight className="w-5 h-5" />
