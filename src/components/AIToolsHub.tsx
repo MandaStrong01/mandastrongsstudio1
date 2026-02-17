@@ -44,7 +44,7 @@ export default function AIToolsHub({ tools, pageNumber, onNavigate, onOpenAssetP
           </div>
 
           <div className="bg-black/30 backdrop-blur-sm p-4 md:p-6 rounded-2xl border border-purple-500/30 mb-6 flex-1 overflow-y-auto max-h-[600px]">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredTools.map((tool, index) => (
                 <button
                   key={index}
