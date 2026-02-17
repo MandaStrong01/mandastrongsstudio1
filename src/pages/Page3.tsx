@@ -81,7 +81,7 @@ export default function Page3({ onNavigate }: PageProps) {
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-lg bg-black border border-[#2d1554]/50 text-white placeholder-white/60 focus:outline-none focus:border-[#7c3aed]"
+                className="w-full px-4 py-3 rounded-lg bg-black border border-[#2d1554]/50 text-[#7c3aed] placeholder-[#7c3aed]/60 focus:outline-none focus:border-[#7c3aed]"
               />
               <input
                 type="password"
@@ -89,17 +89,17 @@ export default function Page3({ onNavigate }: PageProps) {
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-lg bg-black border border-[#2d1554]/50 text-white placeholder-white/60 focus:outline-none focus:border-[#7c3aed]"
+                className="w-full px-4 py-3 rounded-lg bg-black border border-[#2d1554]/50 text-[#7c3aed] placeholder-[#7c3aed]/60 focus:outline-none focus:border-[#7c3aed]"
               />
               {error && (
-                <div className="text-white text-sm bg-[#2d1554]/30 px-4 py-2 rounded-lg border border-[#2d1554]">
+                <div className="text-[#7c3aed] text-sm bg-[#2d1554]/30 px-4 py-2 rounded-lg border border-[#2d1554]">
                   {error}
                 </div>
               )}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#2d1554] text-white font-bold py-3 rounded-lg hover:bg-[#2d1554] transition-all disabled:opacity-50"
+                className="w-full bg-[#2d1554] text-[#7c3aed] font-bold py-3 rounded-lg hover:bg-[#2d1554] transition-all disabled:opacity-50"
               >
                 {loading ? 'Please wait...' : 'LOGIN'}
               </button>
@@ -114,7 +114,7 @@ export default function Page3({ onNavigate }: PageProps) {
                 value={registerEmail}
                 onChange={(e) => setRegisterEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-lg bg-black border border-[#2d1554]/50 text-white placeholder-white/60 focus:outline-none focus:border-[#7c3aed]"
+                className="w-full px-4 py-3 rounded-lg bg-black border border-[#2d1554]/50 text-[#7c3aed] placeholder-[#7c3aed]/60 focus:outline-none focus:border-[#7c3aed]"
               />
               <input
                 type="password"
@@ -122,15 +122,15 @@ export default function Page3({ onNavigate }: PageProps) {
                 value={registerPassword}
                 onChange={(e) => setRegisterPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-lg bg-black border border-[#2d1554]/50 text-white placeholder-white/60 focus:outline-none focus:border-[#7c3aed]"
+                className="w-full px-4 py-3 rounded-lg bg-black border border-[#2d1554]/50 text-[#7c3aed] placeholder-[#7c3aed]/60 focus:outline-none focus:border-[#7c3aed]"
               />
               <div>
-                <label className="block text-sm font-bold mb-2 text-white/80">Select Plan *</label>
+                <label className="block text-sm font-bold mb-2 text-[#7c3aed]/80">Select Plan *</label>
                 <select
                   value={selectedPlan}
                   onChange={(e) => setSelectedPlan(e.target.value)}
                   required
-                  className="w-full px-4 py-3 rounded-lg bg-black border border-[#2d1554]/50 text-white focus:outline-none focus:border-[#7c3aed]"
+                  className="w-full px-4 py-3 rounded-lg bg-black border border-[#2d1554]/50 text-[#7c3aed] focus:outline-none focus:border-[#7c3aed]"
                 >
                   <option value="">Choose a plan...</option>
                   <option value="basic">BASIC - $20/month (30 min films)</option>
@@ -139,14 +139,14 @@ export default function Page3({ onNavigate }: PageProps) {
                 </select>
               </div>
               {error && (
-                <div className="text-white text-sm bg-[#2d1554]/30 px-4 py-2 rounded-lg border border-[#2d1554]">
+                <div className="text-[#7c3aed] text-sm bg-[#2d1554]/30 px-4 py-2 rounded-lg border border-[#2d1554]">
                   {error}
                 </div>
               )}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#2d1554] text-white font-bold py-3 rounded-lg hover:bg-[#2d1554] transition-all disabled:opacity-50"
+                className="w-full bg-[#2d1554] text-[#7c3aed] font-bold py-3 rounded-lg hover:bg-[#2d1554] transition-all disabled:opacity-50"
               >
                 {loading ? 'Please wait...' : 'REGISTER'}
               </button>
@@ -156,43 +156,43 @@ export default function Page3({ onNavigate }: PageProps) {
 
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-center mb-6 text-[#7c3aed]">SUBSCRIPTION PLANS</h2>
-          <p className="text-center text-white/70 mb-8">Choose the plan that fits your creative vision</p>
+          <p className="text-center text-[#7c3aed]/70 mb-8">Choose the plan that fits your creative vision</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
           <button
             onClick={() => openStripeLink(STRIPE_LINKS.basic)}
-            className="bg-gradient-to-br from-[#2d1554]/30 to-black/50 backdrop-blur-xl border-2 border-[#2d1554]/60 hover:border-[#7c3aed] hover:from-[#2d1554]/40 hover:to-black/60 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-[#2d1554]/30"
+            className="bg-gradient-to-br from-[#2d1554]/30 to-black/50 backdrop-blur-xl border-2 border-[#2d1554]/60 hover:border-[#7c3aed] hover:from-[#2d1554]/40 hover:to-black/60 text-[#7c3aed] font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-[#2d1554]/30"
           >
             <div className="text-center">
               <div className="text-3xl font-black mb-2">BASIC</div>
               <div className="text-4xl font-black mb-2 text-[#7c3aed]">$20</div>
               <div className="text-lg font-semibold mb-2">Monthly</div>
-              <p className="text-sm text-white/80">Perfect for short films, music videos, and quick creative projects</p>
+              <p className="text-sm text-[#7c3aed]/80">Perfect for short films, music videos, and quick creative projects</p>
             </div>
           </button>
 
           <button
             onClick={() => openStripeLink(STRIPE_LINKS.pro)}
-            className="bg-gradient-to-br from-[#2d1554]/30 to-black/50 backdrop-blur-xl border-2 border-[#2d1554]/60 hover:border-[#7c3aed] hover:from-[#2d1554]/40 hover:to-black/60 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-[#2d1554]/30"
+            className="bg-gradient-to-br from-[#2d1554]/30 to-black/50 backdrop-blur-xl border-2 border-[#2d1554]/60 hover:border-[#7c3aed] hover:from-[#2d1554]/40 hover:to-black/60 text-[#7c3aed] font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-[#2d1554]/30"
           >
             <div className="text-center">
               <div className="text-3xl font-black mb-2">PRO</div>
               <div className="text-4xl font-black mb-2 text-[#7c3aed]">$30</div>
               <div className="text-lg font-semibold mb-2">Monthly</div>
-              <p className="text-sm text-white/80">Ideal for standard documentaries, corporate videos, and feature-length content</p>
+              <p className="text-sm text-[#7c3aed]/80">Ideal for standard documentaries, corporate videos, and feature-length content</p>
             </div>
           </button>
 
           <button
             onClick={() => openStripeLink(STRIPE_LINKS.studio)}
-            className="bg-gradient-to-br from-[#2d1554]/30 to-black/50 backdrop-blur-xl border-2 border-[#2d1554]/60 hover:border-[#7c3aed] hover:from-[#2d1554]/40 hover:to-black/60 text-white font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-[#2d1554]/30"
+            className="bg-gradient-to-br from-[#2d1554]/30 to-black/50 backdrop-blur-xl border-2 border-[#2d1554]/60 hover:border-[#7c3aed] hover:from-[#2d1554]/40 hover:to-black/60 text-[#7c3aed] font-bold py-6 px-6 rounded-3xl transition-all shadow-lg shadow-[#2d1554]/30"
           >
             <div className="text-center">
               <div className="text-3xl font-black mb-2">STUDIO</div>
               <div className="text-4xl font-black mb-2 text-[#7c3aed]">$50</div>
               <div className="text-lg font-semibold mb-2">Monthly</div>
-              <p className="text-sm text-white/80">Complete cinematic experience with full-length film capabilities and unlimited creative freedom</p>
+              <p className="text-sm text-[#7c3aed]/80">Complete cinematic experience with full-length film capabilities and unlimited creative freedom</p>
             </div>
           </button>
         </div>
@@ -200,13 +200,13 @@ export default function Page3({ onNavigate }: PageProps) {
         <div className="flex justify-center gap-4">
           <button
             onClick={() => onNavigate(2)}
-            className="bg-[#2d1554] text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-[#2d1554] transition-all border border-[#2d1554]"
+            className="bg-[#2d1554] text-[#7c3aed] font-bold px-10 py-4 rounded-lg text-lg hover:bg-[#2d1554] transition-all border border-[#2d1554]"
           >
             Back
           </button>
           <button
             onClick={() => onNavigate(4)}
-            className="bg-[#2d1554] text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-[#2d1554] transition-all border border-[#2d1554]"
+            className="bg-[#2d1554] text-[#7c3aed] font-bold px-10 py-4 rounded-lg text-lg hover:bg-[#2d1554] transition-all border border-[#2d1554]"
           >
             Next
           </button>
