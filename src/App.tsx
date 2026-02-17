@@ -8,7 +8,7 @@ export default function App() {
   const thatsAllFolksRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (currentPage === 21 && thatsAllFolksRef.current) {
+    if (currentPage === 20 && thatsAllFolksRef.current) {
       thatsAllFolksRef.current.play().catch(() => {});
     }
   }, [currentPage]);
@@ -239,10 +239,6 @@ export default function App() {
                     <source src="/exported_movie.mp4" type="video/mp4" />
                   </video>
                 </div>
-                <div className="bg-[#2e1065] p-6 border-t-2 border-[#7c3aed]">
-                  <h2 className="text-2xl font-bold text-white mb-2">Your Masterpiece</h2>
-                  <p className="text-purple-300">Exported from Timeline Editor • Ready to Watch & Share</p>
-                </div>
               </div>
             </div>
             <div className="flex justify-center gap-6 pb-6">
@@ -386,42 +382,35 @@ export default function App() {
       case 15:
         return (
           <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white p-8">
-            <h1 className="text-4xl font-bold text-purple-300 mb-8 text-center">HOW TO USE GUIDE</h1>
+            <h1 className="text-4xl font-bold text-purple-300 mb-8 text-center">TUTORIALS & LEARNING CENTER</h1>
             <div className="max-w-6xl mx-auto">
-              <div className="bg-[#2e1065] border-2 border-[#7c3aed] rounded-3xl p-8 mb-6">
-                <h2 className="text-3xl font-bold text-white mb-6">Welcome to MandaStrong Studio</h2>
-                <div className="space-y-6 text-purple-200">
-                  <div className="bg-[#4c1d95] rounded-2xl p-6 border-2 border-[#7c3aed]">
-                    <h3 className="text-2xl font-bold text-white mb-3">Step 1: Choose Your AI Tools</h3>
-                    <p>Browse through pages 4-9 to access 600+ professional AI tools. Each tool board has 120 tools organized in 4 rows. Click any tool to Upload, Paste, or Create With AI.</p>
+              <div className="grid md:grid-cols-2 gap-8 mb-8">
+                <div className="bg-[#2e1065] border-2 border-[#7c3aed] rounded-3xl overflow-hidden">
+                  <div className="bg-black h-64 flex items-center justify-center">
+                    <button className="w-20 h-20 bg-[#5b21b6] hover:bg-[#6d28d9] rounded-full flex items-center justify-center text-3xl transition-all">▶</button>
                   </div>
-                  <div className="bg-[#4c1d95] rounded-2xl p-6 border-2 border-[#7c3aed]">
-                    <h3 className="text-2xl font-bold text-white mb-3">Step 2: Create Your Content</h3>
-                    <p>Use Text-to-Video, Image-to-Animation, Audio-to-Motion tools to create amazing content. All tools support multiple formats and transformations.</p>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold mb-2 text-white">Getting Started with MandaStrong Studio</h3>
+                    <p className="text-purple-300 text-sm mb-3">Welcome to MandaStrong Studio! This tutorial shows you how to access all tools.</p>
+                    <span className="bg-[#5b21b6] px-3 py-1 rounded-full text-xs font-bold text-white">Beginner • 5:30</span>
                   </div>
-                  <div className="bg-[#4c1d95] rounded-2xl p-6 border-2 border-[#7c3aed]">
-                    <h3 className="text-2xl font-bold text-white mb-3">Step 3: Upload to Media Library</h3>
-                    <p>Page 11 is your Media Library. Upload videos, audio, images. Drag and drop supported. All files are saved automatically.</p>
-                  </div>
-                  <div className="bg-[#4c1d95] rounded-2xl p-6 border-2 border-[#7c3aed]">
-                    <h3 className="text-2xl font-bold text-white mb-3">Step 4: Edit on Timeline</h3>
-                    <p>Page 12 Timeline Editor lets you arrange your media. Drag files from library to video, audio, and text tracks. Preview in real-time.</p>
-                  </div>
-                  <div className="bg-[#4c1d95] rounded-2xl p-6 border-2 border-[#7c3aed]">
-                    <h3 className="text-2xl font-bold text-white mb-3">Step 5: Mix Your Audio</h3>
-                    <p>Page 13 Audio Mixer gives you professional control over music, voice, sound effects, and master output levels.</p>
-                  </div>
-                  <div className="bg-[#4c1d95] rounded-2xl p-6 border-2 border-[#7c3aed]">
-                    <h3 className="text-2xl font-bold text-white mb-3">Step 6: Configure & Export</h3>
-                    <p>Page 14 Settings lets you choose resolution (HD/4K/8K), frame rate, and duration. Then export your masterpiece.</p>
-                  </div>
-                  <div className="bg-[#4c1d95] rounded-2xl p-6 border-2 border-[#7c3aed]">
-                    <h3 className="text-2xl font-bold text-white mb-3">Step 7: Watch & Share</h3>
-                    <p>Page 10 Editor's Choice shows your completed movie in a full cinema screen with play controls. Share with the world!</p>
-                  </div>
-                  <div className="bg-[#5b21b6] rounded-2xl p-6 border-2 border-purple-400">
-                    <h3 className="text-2xl font-bold text-white mb-3">Need Help? Ask Agent Grok!</h3>
-                    <p>Click the Grok button (bottom right) on any page for instant 24/7 help. Agent Grok answers all your questions immediately.</p>
+                </div>
+                <div className="bg-[#2e1065] border-2 border-[#7c3aed] rounded-3xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Tutorial Library</h3>
+                  <div className="space-y-3">
+                    {[
+                      {title:'Getting Started with MandaStrong Studio',time:'5:30',level:'Beginner'},
+                      {title:'Multi-Track Timeline Editing',time:'12:45',level:'Intermediate'},
+                      {title:'Professional Color Grading Techniques',time:'18:20',level:'Advanced'},
+                      {title:'Audio Mixing & Mastering',time:'15:10',level:'Intermediate'},
+                      {title:'Creating Stunning Visual Effects',time:'22:35',level:'Advanced'},
+                      {title:'Export Settings for Social Media',time:'8:15',level:'Beginner'},
+                    ].map((t,i) => (
+                      <button key={i} className={`w-full bg-[#4c1d95] hover:bg-[#5b21b6] rounded-xl p-4 text-left transition-all border-2 ${i===0?'border-purple-400':'border-[#7c3aed]'}`}>
+                        <p className="font-bold text-sm mb-1 text-white">{t.title}</p>
+                        <p className="text-purple-400 text-xs">⏱ {t.time} • {t.level}</p>
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -665,7 +654,7 @@ export default function App() {
         );
 
       // ================================================================
-      // PAGE 20 - THAT'S ALL FOLKS - LARGER WINDOW
+      // PAGE 20 - THAT'S ALL FOLKS - LARGER WINDOW WITH HOW TO GUIDE
       // ================================================================
       case 20:
         return (
@@ -693,6 +682,44 @@ export default function App() {
                 <p className="text-center text-2xl font-bold text-white mt-8">
                   Visit our fundraiser at <a href="https://MandaStrong1.Etsy.com" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white underline">MandaStrong1.Etsy.com</a>
                 </p>
+              </div>
+            </div>
+
+            <div className="max-w-6xl mx-auto bg-[#4c1d95] border-2 border-[#7c3aed] rounded-3xl p-8 mb-8">
+              <h2 className="text-4xl font-bold mb-6 text-center text-white">📚 How To Use MandaStrong Studio</h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-[#2e1065] rounded-2xl p-6 border-2 border-[#7c3aed]">
+                  <h3 className="text-2xl font-bold text-white mb-3">Step 1: Choose Your AI Tools</h3>
+                  <p className="text-purple-200">Browse through pages 4-9 to access 600+ professional AI tools. Each tool board has 120 tools organized in 4 rows. Click any tool to Upload, Paste, or Create With AI.</p>
+                </div>
+                <div className="bg-[#2e1065] rounded-2xl p-6 border-2 border-[#7c3aed]">
+                  <h3 className="text-2xl font-bold text-white mb-3">Step 2: Create Your Content</h3>
+                  <p className="text-purple-200">Use Text-to-Video, Image-to-Animation, Audio-to-Motion tools to create amazing content. All tools support multiple formats and transformations.</p>
+                </div>
+                <div className="bg-[#2e1065] rounded-2xl p-6 border-2 border-[#7c3aed]">
+                  <h3 className="text-2xl font-bold text-white mb-3">Step 3: Upload to Media Library</h3>
+                  <p className="text-purple-200">Page 11 is your Media Library. Upload videos, audio, images. Drag and drop supported. All files are saved automatically.</p>
+                </div>
+                <div className="bg-[#2e1065] rounded-2xl p-6 border-2 border-[#7c3aed]">
+                  <h3 className="text-2xl font-bold text-white mb-3">Step 4: Edit on Timeline</h3>
+                  <p className="text-purple-200">Page 12 Timeline Editor lets you arrange your media. Drag files from library to video, audio, and text tracks. Preview in real-time.</p>
+                </div>
+                <div className="bg-[#2e1065] rounded-2xl p-6 border-2 border-[#7c3aed]">
+                  <h3 className="text-2xl font-bold text-white mb-3">Step 5: Mix Your Audio</h3>
+                  <p className="text-purple-200">Page 13 Audio Mixer gives you professional control over music, voice, sound effects, and master output levels.</p>
+                </div>
+                <div className="bg-[#2e1065] rounded-2xl p-6 border-2 border-[#7c3aed]">
+                  <h3 className="text-2xl font-bold text-white mb-3">Step 6: Configure & Export</h3>
+                  <p className="text-purple-200">Page 14 Settings lets you choose resolution (HD/4K/8K), frame rate, and duration. Then export your masterpiece.</p>
+                </div>
+                <div className="bg-[#2e1065] rounded-2xl p-6 border-2 border-[#7c3aed]">
+                  <h3 className="text-2xl font-bold text-white mb-3">Step 7: Watch & Share</h3>
+                  <p className="text-purple-200">Page 10 Editor's Choice shows your completed movie in a full cinema screen with play controls. Share with the world!</p>
+                </div>
+                <div className="bg-[#5b21b6] rounded-2xl p-6 border-2 border-purple-400">
+                  <h3 className="text-2xl font-bold text-white mb-3">Need Help? Ask Agent Grok!</h3>
+                  <p className="text-purple-200">Click the Grok button (bottom right) on any page for instant 24/7 help. Agent Grok answers all your questions immediately.</p>
+                </div>
               </div>
             </div>
 
