@@ -94,7 +94,7 @@ export default function App() {
       // ================================================================
       case 2:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white flex flex-col items-center justify-between px-4 py-12">
+          <div className="min-h-screen bg-black text-white flex flex-col items-center justify-between px-4 py-12">
             <div className="flex-1 flex flex-col items-center justify-center text-center max-w-5xl">
               <div className="flex justify-center mb-8">
                 <Sparkles size={80} className="text-purple-300" />
@@ -186,7 +186,7 @@ export default function App() {
         const filtered = tools.filter(t => t.toLowerCase().includes(searchTerm.toLowerCase()));
 
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white p-6">
+          <div className="min-h-screen bg-black text-white p-6">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h1 className="text-4xl font-bold text-purple-300">AI TOOL BOARD</h1>
@@ -225,7 +225,7 @@ export default function App() {
       // ================================================================
       case 10:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white flex flex-col px-8 py-6">
+          <div className="min-h-screen bg-black text-white flex flex-col px-8 py-6">
             <h1 className="text-5xl font-black text-center text-white mb-8">EDITOR'S CHOICE</h1>
             <div className="flex-1 flex items-center justify-center mb-8">
               <div className="w-full max-w-6xl bg-black rounded-3xl overflow-hidden border-4 border-[#7c3aed] shadow-2xl">
@@ -254,7 +254,7 @@ export default function App() {
       // ================================================================
       case 11:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white p-8">
+          <div className="min-h-screen bg-black text-white p-8">
             <div className="flex justify-between items-center mb-8">
               <h1 className="text-4xl font-bold text-purple-300">MEDIA LIBRARY</h1>
               <div className="flex gap-4">
@@ -289,7 +289,7 @@ export default function App() {
 
       case 12:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white p-8">
+          <div className="min-h-screen bg-black text-white p-8">
             <h1 className="text-4xl font-bold text-purple-300 mb-8 text-center">TIMELINE EDITOR</h1>
             <div className="grid grid-cols-4 gap-4 mb-8">
               <div className="col-span-1 bg-[#2e1065] border-2 border-[#7c3aed] rounded-2xl p-4">
@@ -327,7 +327,7 @@ export default function App() {
 
       case 13:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white p-8">
+          <div className="min-h-screen bg-black text-white p-8">
             <h1 className="text-4xl font-bold text-purple-300 mb-8 text-center">AUDIO MIXER</h1>
             <div className="bg-[#2e1065] border-2 border-[#7c3aed] rounded-3xl p-8 mb-6">
               <div className="grid grid-cols-4 gap-6">
@@ -356,7 +356,7 @@ export default function App() {
 
       case 14:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white p-8">
+          <div className="min-h-screen bg-black text-white p-8">
             <h1 className="text-4xl font-bold text-purple-300 mb-8 text-center">SETTINGS & CONFIGURATION</h1>
             <div className="space-y-6 max-w-4xl mx-auto">
               <div className="bg-[#2e1065] border-2 border-[#7c3aed] rounded-3xl p-8">
@@ -381,7 +381,7 @@ export default function App() {
 
       case 15:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white p-8">
+          <div className="min-h-screen bg-black text-white p-8">
             <h1 className="text-4xl font-bold text-purple-300 mb-8 text-center">TUTORIALS & LEARNING CENTER</h1>
             <div className="max-w-6xl mx-auto">
               <div className="grid md:grid-cols-2 gap-8 mb-8">
@@ -425,7 +425,7 @@ export default function App() {
 
       case 16:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white p-8">
+          <div className="min-h-screen bg-black text-white p-8">
             <h1 className="text-4xl font-bold text-purple-300 mb-8 text-center">EXPORT CENTER</h1>
             <div className="max-w-5xl mx-auto">
               <div className="grid md:grid-cols-2 gap-8 mb-8">
@@ -467,7 +467,7 @@ export default function App() {
       // ================================================================
       case 17:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white p-8">
+          <div className="min-h-screen bg-black text-white p-8">
             <h1 className="text-4xl font-bold text-purple-300 mb-8 text-center">TERMS OF SERVICE & DISCLAIMER</h1>
             <div className="max-w-5xl mx-auto">
               <div className="bg-[#5b21b6] rounded-t-3xl p-8 text-center border-2 border-[#7c3aed]">
@@ -532,7 +532,7 @@ export default function App() {
       // ================================================================
       case 18:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white p-8">
+          <div className="min-h-screen bg-black text-white p-8">
             <h1 className="text-4xl font-bold text-purple-300 mb-8 text-center">AGENT GROK - 24/7 HELP DESK</h1>
             <div className="max-w-6xl mx-auto">
               <div className="grid md:grid-cols-2 gap-8 mb-8">
@@ -607,7 +607,7 @@ export default function App() {
       // ================================================================
       case 19:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white p-8">
+          <div className="min-h-screen bg-black text-white p-8">
             <h1 className="text-4xl font-bold text-purple-300 mb-8 text-center">COMMUNITY HUB</h1>
             <div className="flex justify-center gap-4 mb-8">
               {['Recent','Popular','Trending'].map(tab => (
@@ -658,7 +658,7 @@ export default function App() {
       // ================================================================
       case 20:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#3b0764] via-[#4c1d95] to-[#5b21b6] text-white p-8">
+          <div className="min-h-screen bg-black text-white p-8">
             <h1 className="text-6xl md:text-8xl font-black text-white text-center mb-8">THAT'S ALL FOLKS!</h1>
 
             <div className="max-w-7xl mx-auto mb-10 rounded-3xl overflow-hidden border-4 border-[#7c3aed] shadow-2xl">
