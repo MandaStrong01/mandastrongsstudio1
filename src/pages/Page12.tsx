@@ -68,14 +68,14 @@ export default function Page12({ onNavigate }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#4c1d95]/20 via-black to-[#4c1d95]/20 text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#2d1554]/20 via-black to-[#2d1554]/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-full w-full mx-auto flex-1 flex flex-col">
-          <h1 className="text-3xl font-black text-[#a78bfa] mb-4 text-center">DOXY THE SCHOOL BULLY - Timeline Editor</h1>
+          <h1 className="text-3xl font-black text-[#7c3aed] mb-4 text-center">DOXY THE SCHOOL BULLY - Timeline Editor</h1>
 
           <div className="grid grid-cols-12 gap-4 flex-1">
-            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-4 overflow-y-auto">
-              <h2 className="text-xl font-bold mb-4 text-[#a78bfa]">MEDIA BOX</h2>
+            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#2d1554]/30 p-4 overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4 text-[#7c3aed]">MEDIA BOX</h2>
               <div className="space-y-2">
                 {loading ? (
                   <div className="text-center py-8">
@@ -92,12 +92,12 @@ export default function Page12({ onNavigate }: PageProps) {
                     <button
                       key={asset.id}
                       onClick={() => setSelectedAsset(asset)}
-                      className={`w-full bg-[#4c1d95]/20 border rounded-lg p-3 text-left transition-all hover:bg-[#4c1d95]/40 ${
-                        selectedAsset?.id === asset.id ? 'border-[#a78bfa] bg-[#4c1d95]/40' : 'border-[#6d28d9]/30'
+                      className={`w-full bg-[#2d1554]/20 border rounded-lg p-3 text-left transition-all hover:bg-[#2d1554]/40 ${
+                        selectedAsset?.id === asset.id ? 'border-[#7c3aed] bg-[#2d1554]/40' : 'border-[#2d1554]/30'
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <Sparkles className="w-4 h-4 text-[#a78bfa]" />
+                        <Sparkles className="w-4 h-4 text-[#7c3aed]" />
                         <h3 className="font-semibold text-sm truncate">{asset.tool_name}</h3>
                       </div>
                       <p className="text-xs text-slate-400">
@@ -109,13 +109,13 @@ export default function Page12({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-4 flex flex-col">
-              <h2 className="text-xl font-bold mb-4 text-[#a78bfa]">VIEWER</h2>
+            <div className="col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#2d1554]/30 p-4 flex flex-col">
+              <h2 className="text-xl font-bold mb-4 text-[#7c3aed]">VIEWER</h2>
               <div className="flex-1 flex flex-col">
-                <div className="aspect-video bg-black rounded-lg border border-[#6d28d9]/30 mb-4 flex items-center justify-center">
+                <div className="aspect-video bg-black rounded-lg border border-[#2d1554]/30 mb-4 flex items-center justify-center">
                   {selectedAsset ? (
                     <div className="text-center p-8">
-                      <Film className="w-16 h-16 mx-auto mb-4 text-[#a78bfa]" />
+                      <Film className="w-16 h-16 mx-auto mb-4 text-[#7c3aed]" />
                       <h3 className="text-lg font-bold mb-2">{selectedAsset.tool_name}</h3>
                       <p className="text-sm text-white/70">Trim, Crop, Combine, Add Music, Subtitles, Filters</p>
                     </div>
@@ -131,7 +131,7 @@ export default function Page12({ onNavigate }: PageProps) {
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => setIsPlaying(!isPlaying)}
-                      className="p-2 bg-[#5b21b6] hover:bg-[#6d28d9] rounded-lg transition-all"
+                      className="p-2 bg-[#2d1554] hover:bg-[#2d1554] rounded-lg transition-all"
                     >
                       {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                     </button>
@@ -146,7 +146,7 @@ export default function Page12({ onNavigate }: PageProps) {
                       step="0.1"
                       value={currentTime}
                       onChange={(e) => setCurrentTime(parseFloat(e.target.value))}
-                      className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+                      className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
                       style={{
                         background: `linear-gradient(to right, #9333ea ${(currentTime / duration) * 100}%, rgba(147, 51, 234, 0.2) ${(currentTime / duration) * 100}%)`
                       }}
@@ -160,64 +160,64 @@ export default function Page12({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-4 overflow-y-auto">
-              <h2 className="text-xl font-bold mb-4 text-[#a78bfa]">EDITING TOOLS</h2>
+            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#2d1554]/30 p-4 overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4 text-[#7c3aed]">EDITING TOOLS</h2>
               <div className="space-y-4">
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Scissors className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Scissors className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Trim</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Crop className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Crop className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Crop</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Film className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Film className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Combine</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Music className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Music className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Add Music</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <FileText className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <FileText className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Subtitles</span>
                 </button>
 
-                <div className="pt-4 border-t border-[#6d28d9]/30">
+                <div className="pt-4 border-t border-[#2d1554]/30">
                   <label className="text-sm font-semibold mb-2 block">Speed Controls</label>
                   <div className="grid grid-cols-5 gap-1 mb-2">
                     <button
                       onClick={() => setSpeed(0.25)}
-                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 0.25 ? 'bg-[#5b21b6]' : 'bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50'} border border-[#6d28d9]/30`}
+                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 0.25 ? 'bg-[#2d1554]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50'} border border-[#2d1554]/30`}
                     >
                       0.25x
                     </button>
                     <button
                       onClick={() => setSpeed(0.5)}
-                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 0.5 ? 'bg-[#5b21b6]' : 'bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50'} border border-[#6d28d9]/30`}
+                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 0.5 ? 'bg-[#2d1554]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50'} border border-[#2d1554]/30`}
                     >
                       0.5x
                     </button>
                     <button
                       onClick={() => setSpeed(1)}
-                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 1 ? 'bg-[#5b21b6]' : 'bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50'} border border-[#6d28d9]/30`}
+                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 1 ? 'bg-[#2d1554]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50'} border border-[#2d1554]/30`}
                     >
                       1x
                     </button>
                     <button
                       onClick={() => setSpeed(2)}
-                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 2 ? 'bg-[#5b21b6]' : 'bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50'} border border-[#6d28d9]/30`}
+                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 2 ? 'bg-[#2d1554]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50'} border border-[#2d1554]/30`}
                     >
                       2x
                     </button>
                     <button
                       onClick={() => setSpeed(4)}
-                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 4 ? 'bg-[#5b21b6]' : 'bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50'} border border-[#6d28d9]/30`}
+                      className={`px-2 py-1 text-xs rounded transition-all ${speed === 4 ? 'bg-[#2d1554]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50'} border border-[#2d1554]/30`}
                     >
                       4x
                     </button>
@@ -226,48 +226,48 @@ export default function Page12({ onNavigate }: PageProps) {
 
                 <button
                   onClick={() => setReverseVideo(!reverseVideo)}
-                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${reverseVideo ? 'bg-[#5b21b6] border-[#a78bfa]' : 'bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border-[#6d28d9]/30'}`}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${reverseVideo ? 'bg-[#2d1554] border-[#7c3aed]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border-[#2d1554]/30'}`}
                 >
-                  <RotateCcw className="w-5 h-5 text-[#a78bfa]" />
+                  <RotateCcw className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Reverse Video</span>
                 </button>
 
                 <button
                   onClick={() => setStabilization(!stabilization)}
-                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${stabilization ? 'bg-[#5b21b6] border-[#a78bfa]' : 'bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border-[#6d28d9]/30'}`}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${stabilization ? 'bg-[#2d1554] border-[#7c3aed]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border-[#2d1554]/30'}`}
                 >
-                  <Shield className="w-5 h-5 text-[#a78bfa]" />
+                  <Shield className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Stabilization</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Sparkles className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Sparkles className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Green Screen/Chroma Key</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Target className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Target className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Motion Tracking</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Key className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Key className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Keyframe Animation</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Grid3X3 className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Grid3X3 className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Split Screen Effects</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <PictureInPicture2 className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <PictureInPicture2 className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Picture-in-Picture</span>
                 </button>
 
-                <div className="pt-4 border-t border-[#6d28d9]/30">
+                <div className="pt-4 border-t border-[#2d1554]/30">
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Volume2 className="w-4 h-4 text-[#a78bfa]" />
+                    <Volume2 className="w-4 h-4 text-[#7c3aed]" />
                     Volume
                   </label>
                   <input
@@ -276,20 +276,20 @@ export default function Page12({ onNavigate }: PageProps) {
                     max="100"
                     value={volume}
                     onChange={(e) => setVolume(parseInt(e.target.value))}
-                    className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="text-right text-xs text-slate-400 mt-1">{volume}%</div>
                 </div>
 
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Maximize className="w-4 h-4 text-[#a78bfa]" />
+                    <Maximize className="w-4 h-4 text-[#7c3aed]" />
                     Ratio
                   </label>
                   <select
                     value={ratio}
                     onChange={(e) => setRatio(e.target.value)}
-                    className="w-full px-3 py-2 bg-black border border-[#6d28d9]/50 rounded-lg text-white focus:outline-none focus:border-[#a78bfa]"
+                    className="w-full px-3 py-2 bg-black border border-[#2d1554]/50 rounded-lg text-white focus:outline-none focus:border-[#7c3aed]"
                   >
                     <option value="16:9">16:9</option>
                     <option value="4:3">4:3</option>
@@ -303,7 +303,7 @@ export default function Page12({ onNavigate }: PageProps) {
                   <select
                     value={size}
                     onChange={(e) => setSize(e.target.value)}
-                    className="w-full px-3 py-2 bg-black border border-[#6d28d9]/50 rounded-lg text-white focus:outline-none focus:border-[#a78bfa]"
+                    className="w-full px-3 py-2 bg-black border border-[#2d1554]/50 rounded-lg text-white focus:outline-none focus:border-[#7c3aed]"
                   >
                     <option value="720p">720p</option>
                     <option value="1080p">1080p</option>
@@ -318,14 +318,14 @@ export default function Page12({ onNavigate }: PageProps) {
           <div className="flex gap-4 justify-center mt-6">
             <button
               onClick={() => onNavigate(11)}
-              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#4c1d95] transition-all border border-[#6d28d9]"
+              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#2d1554] transition-all border border-[#2d1554]"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
               onClick={() => onNavigate(13)}
-              className="flex items-center gap-2 bg-[#5b21b6] text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#6d28d9] transition-all"
+              className="flex items-center gap-2 bg-[#2d1554] text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#2d1554] transition-all"
             >
               Next
               <ArrowRight className="w-5 h-5" />

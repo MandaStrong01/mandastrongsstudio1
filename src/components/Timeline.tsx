@@ -8,10 +8,10 @@ interface TimelineProps {
 
 export default function Timeline({ duration, currentTime, onSeek }: TimelineProps) {
   const tracks = [
-    { name: 'SRT', icon: FileText, color: 'bg-[#5b21b6]/20 border-[#5b21b6]/50' },
-    { name: 'VIDEO', icon: Film, color: 'bg-[#6d28d9]/20 border-[#6d28d9]/50' },
+    { name: 'SRT', icon: FileText, color: 'bg-[#2d1554]/20 border-[#2d1554]/50' },
+    { name: 'VIDEO', icon: Film, color: 'bg-[#2d1554]/20 border-[#2d1554]/50' },
     { name: 'AUDIO', icon: Volume2, color: 'bg-[#7c3aed]/20 border-[#7c3aed]/50' },
-    { name: 'TEXT', icon: Type, color: 'bg-[#a78bfa]/20 border-[#a78bfa]/50' },
+    { name: 'TEXT', icon: Type, color: 'bg-[#7c3aed]/20 border-[#7c3aed]/50' },
   ];
 
   const formatTime = (minutes: number) => {
@@ -21,10 +21,10 @@ export default function Timeline({ duration, currentTime, onSeek }: TimelineProp
   };
 
   return (
-    <div className="bg-black/50 rounded-lg border border-[#6d28d9]/30 p-4">
+    <div className="bg-black/50 rounded-lg border border-[#2d1554]/30 p-4">
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm text-white/70">Timeline</span>
-        <span className="text-sm text-[#a78bfa] font-semibold">
+        <span className="text-sm text-[#7c3aed] font-semibold">
           {formatTime(currentTime)} / {formatTime(duration)}
         </span>
       </div>
@@ -42,7 +42,7 @@ export default function Timeline({ duration, currentTime, onSeek }: TimelineProp
                 style={{ width: `${(currentTime / duration) * 100}%` }}
               />
               <div
-                className="absolute top-0 bottom-0 w-0.5 bg-[#a78bfa]"
+                className="absolute top-0 bottom-0 w-0.5 bg-[#7c3aed]"
                 style={{ left: `${(currentTime / duration) * 100}%` }}
               />
             </div>
@@ -58,7 +58,7 @@ export default function Timeline({ duration, currentTime, onSeek }: TimelineProp
           step="0.1"
           value={currentTime}
           onChange={(e) => onSeek(parseFloat(e.target.value))}
-          className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+          className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
           style={{
             background: `linear-gradient(to right, #9333ea ${(currentTime / duration) * 100}%, rgba(147, 51, 234, 0.2) ${(currentTime / duration) * 100}%)`
           }}

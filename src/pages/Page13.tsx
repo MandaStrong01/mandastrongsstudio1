@@ -71,14 +71,14 @@ export default function Page13({ onNavigate }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#4c1d95]/20 via-black to-[#4c1d95]/20 text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#2d1554]/20 via-black to-[#2d1554]/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-full w-full mx-auto flex-1 flex flex-col">
-          <h1 className="text-3xl font-black text-[#a78bfa] mb-4 text-center">DOXY THE SCHOOL BULLY - Sound & Voice Studio</h1>
+          <h1 className="text-3xl font-black text-[#7c3aed] mb-4 text-center">DOXY THE SCHOOL BULLY - Sound & Voice Studio</h1>
 
           <div className="grid grid-cols-12 gap-4 flex-1">
-            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-4 overflow-y-auto">
-              <h2 className="text-xl font-bold mb-4 text-[#a78bfa]">MEDIA BOX</h2>
+            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#2d1554]/30 p-4 overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4 text-[#7c3aed]">MEDIA BOX</h2>
               <div className="space-y-2">
                 {loading ? (
                   <div className="text-center py-8">
@@ -95,12 +95,12 @@ export default function Page13({ onNavigate }: PageProps) {
                     <button
                       key={asset.id}
                       onClick={() => setSelectedAsset(asset)}
-                      className={`w-full bg-[#4c1d95]/20 border rounded-lg p-3 text-left transition-all hover:bg-[#4c1d95]/40 ${
-                        selectedAsset?.id === asset.id ? 'border-[#a78bfa] bg-[#4c1d95]/40' : 'border-[#6d28d9]/30'
+                      className={`w-full bg-[#2d1554]/20 border rounded-lg p-3 text-left transition-all hover:bg-[#2d1554]/40 ${
+                        selectedAsset?.id === asset.id ? 'border-[#7c3aed] bg-[#2d1554]/40' : 'border-[#2d1554]/30'
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <Sparkles className="w-4 h-4 text-[#a78bfa]" />
+                        <Sparkles className="w-4 h-4 text-[#7c3aed]" />
                         <h3 className="font-semibold text-sm truncate">{asset.tool_name}</h3>
                       </div>
                       <p className="text-xs text-slate-400">
@@ -112,13 +112,13 @@ export default function Page13({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-4 flex flex-col">
-              <h2 className="text-xl font-bold mb-4 text-[#a78bfa]">VIEWER</h2>
+            <div className="col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#2d1554]/30 p-4 flex flex-col">
+              <h2 className="text-xl font-bold mb-4 text-[#7c3aed]">VIEWER</h2>
               <div className="flex-1 flex flex-col">
-                <div className="aspect-video bg-black rounded-lg border border-[#6d28d9]/30 mb-4 flex items-center justify-center">
+                <div className="aspect-video bg-black rounded-lg border border-[#2d1554]/30 mb-4 flex items-center justify-center">
                   {selectedAsset ? (
                     <div className="text-center p-8">
-                      <Volume2 className="w-16 h-16 mx-auto mb-4 text-[#a78bfa]" />
+                      <Volume2 className="w-16 h-16 mx-auto mb-4 text-[#7c3aed]" />
                       <h3 className="text-lg font-bold mb-2">{selectedAsset.tool_name}</h3>
                       <p className="text-sm text-white/70">Background Music, Voiceover, AI Speech Generation</p>
                     </div>
@@ -134,7 +134,7 @@ export default function Page13({ onNavigate }: PageProps) {
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => setIsPlaying(!isPlaying)}
-                      className="p-2 bg-[#5b21b6] hover:bg-[#6d28d9] rounded-lg transition-all"
+                      className="p-2 bg-[#2d1554] hover:bg-[#2d1554] rounded-lg transition-all"
                     >
                       {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                     </button>
@@ -149,7 +149,7 @@ export default function Page13({ onNavigate }: PageProps) {
                       step="0.1"
                       value={currentTime}
                       onChange={(e) => setCurrentTime(parseFloat(e.target.value))}
-                      className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+                      className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
                       style={{
                         background: `linear-gradient(to right, #9333ea ${(currentTime / duration) * 100}%, rgba(147, 51, 234, 0.2) ${(currentTime / duration) * 100}%)`
                       }}
@@ -163,15 +163,15 @@ export default function Page13({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-4 overflow-y-auto">
-              <h2 className="text-xl font-bold mb-4 text-[#a78bfa]">AUDIO CONTROLS</h2>
+            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#2d1554]/30 p-4 overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4 text-[#7c3aed]">AUDIO CONTROLS</h2>
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-semibold mb-2 block">Audio Type</label>
                   <select
                     value={audioType}
                     onChange={(e) => setAudioType(e.target.value)}
-                    className="w-full px-3 py-2 bg-black border border-[#6d28d9]/50 rounded-lg text-white focus:outline-none focus:border-[#a78bfa]"
+                    className="w-full px-3 py-2 bg-black border border-[#2d1554]/50 rounded-lg text-white focus:outline-none focus:border-[#7c3aed]"
                   >
                     <option value="music">Background Music</option>
                     <option value="voiceover">Voiceover</option>
@@ -180,42 +180,42 @@ export default function Page13({ onNavigate }: PageProps) {
                   </select>
                 </div>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Music className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Music className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Add Music Track</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Mic className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Mic className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Voiceover Recording</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Sparkles className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Sparkles className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Generate AI Voice</span>
                 </button>
 
-                <div className="pt-4 border-t border-[#6d28d9]/30">
+                <div className="pt-4 border-t border-[#2d1554]/30">
                   <button
                     onClick={() => setAudioDucking(!audioDucking)}
-                    className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all mb-2 ${audioDucking ? 'bg-[#5b21b6] border-[#a78bfa]' : 'bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border-[#6d28d9]/30'}`}
+                    className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all mb-2 ${audioDucking ? 'bg-[#2d1554] border-[#7c3aed]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border-[#2d1554]/30'}`}
                   >
-                    <VolumeX className="w-5 h-5 text-[#a78bfa]" />
+                    <VolumeX className="w-5 h-5 text-[#7c3aed]" />
                     <span className="font-semibold">Audio Ducking</span>
                   </button>
 
                   <button
                     onClick={() => setNoiseReduction(!noiseReduction)}
-                    className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${noiseReduction ? 'bg-[#5b21b6] border-[#a78bfa]' : 'bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border-[#6d28d9]/30'}`}
+                    className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${noiseReduction ? 'bg-[#2d1554] border-[#7c3aed]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border-[#2d1554]/30'}`}
                   >
-                    <Radio className="w-5 h-5 text-[#a78bfa]" />
+                    <Radio className="w-5 h-5 text-[#7c3aed]" />
                     <span className="font-semibold">Noise Reduction</span>
                   </button>
                 </div>
 
-                <div className="pt-4 border-t border-[#6d28d9]/30">
+                <div className="pt-4 border-t border-[#2d1554]/30">
                   <label className="flex items-center gap-2 text-sm font-semibold mb-3">
-                    <Sliders className="w-4 h-4 text-[#a78bfa]" />
+                    <Sliders className="w-4 h-4 text-[#7c3aed]" />
                     Equalizer
                   </label>
                   <div className="space-y-3">
@@ -227,7 +227,7 @@ export default function Page13({ onNavigate }: PageProps) {
                         max="100"
                         value={bass}
                         onChange={(e) => setBass(parseInt(e.target.value))}
-                        className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
                       />
                     </div>
                     <div>
@@ -238,7 +238,7 @@ export default function Page13({ onNavigate }: PageProps) {
                         max="100"
                         value={mid}
                         onChange={(e) => setMid(parseInt(e.target.value))}
-                        className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
                       />
                     </div>
                     <div>
@@ -249,7 +249,7 @@ export default function Page13({ onNavigate }: PageProps) {
                         max="100"
                         value={treble}
                         onChange={(e) => setTreble(parseInt(e.target.value))}
-                        className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
                       />
                     </div>
                   </div>
@@ -257,33 +257,33 @@ export default function Page13({ onNavigate }: PageProps) {
 
                 <button
                   onClick={() => setCompressor(!compressor)}
-                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${compressor ? 'bg-[#5b21b6] border-[#a78bfa]' : 'bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border-[#6d28d9]/30'}`}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${compressor ? 'bg-[#2d1554] border-[#7c3aed]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border-[#2d1554]/30'}`}
                 >
-                  <BarChart3 className="w-5 h-5 text-[#a78bfa]" />
+                  <BarChart3 className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Compressor</span>
                 </button>
 
                 <button
                   onClick={() => setNormalize(!normalize)}
-                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${normalize ? 'bg-[#5b21b6] border-[#a78bfa]' : 'bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border-[#6d28d9]/30'}`}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${normalize ? 'bg-[#2d1554] border-[#7c3aed]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border-[#2d1554]/30'}`}
                 >
-                  <Headphones className="w-5 h-5 text-[#a78bfa]" />
+                  <Headphones className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Normalize Audio</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Layers className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Layers className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Multi-track Mixer</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Music className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Music className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Audio Sync Tools</span>
                 </button>
 
-                <div className="pt-4 border-t border-[#6d28d9]/30">
+                <div className="pt-4 border-t border-[#2d1554]/30">
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Volume2 className="w-4 h-4 text-[#a78bfa]" />
+                    <Volume2 className="w-4 h-4 text-[#7c3aed]" />
                     Volume
                   </label>
                   <input
@@ -292,7 +292,7 @@ export default function Page13({ onNavigate }: PageProps) {
                     max="100"
                     value={volume}
                     onChange={(e) => setVolume(parseInt(e.target.value))}
-                    className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="text-right text-xs text-slate-400 mt-1">{volume}%</div>
                 </div>
@@ -300,7 +300,7 @@ export default function Page13({ onNavigate }: PageProps) {
                 <div>
                   <label className="text-sm font-semibold mb-2 block">Voice Type</label>
                   <select
-                    className="w-full px-3 py-2 bg-black border border-[#6d28d9]/50 rounded-lg text-white focus:outline-none focus:border-[#a78bfa]"
+                    className="w-full px-3 py-2 bg-black border border-[#2d1554]/50 rounded-lg text-white focus:outline-none focus:border-[#7c3aed]"
                   >
                     <option>Male - Adult</option>
                     <option>Female - Adult</option>
@@ -313,13 +313,13 @@ export default function Page13({ onNavigate }: PageProps) {
                 <div>
                   <label className="text-sm font-semibold mb-2 block">Audio Effects</label>
                   <div className="space-y-2">
-                    <button className="w-full px-3 py-2 bg-[#4c1d95]/20 hover:bg-[#4c1d95]/40 border border-[#6d28d9]/30 rounded-lg text-sm transition-all">
+                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all">
                       Fade In/Out
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#4c1d95]/20 hover:bg-[#4c1d95]/40 border border-[#6d28d9]/30 rounded-lg text-sm transition-all">
+                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all">
                       Echo
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#4c1d95]/20 hover:bg-[#4c1d95]/40 border border-[#6d28d9]/30 rounded-lg text-sm transition-all">
+                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all">
                       Reverb
                     </button>
                   </div>
@@ -331,14 +331,14 @@ export default function Page13({ onNavigate }: PageProps) {
           <div className="flex gap-4 justify-center mt-6">
             <button
               onClick={() => onNavigate(12)}
-              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#4c1d95] transition-all border border-[#6d28d9]"
+              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#2d1554] transition-all border border-[#2d1554]"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
               onClick={() => onNavigate(14)}
-              className="flex items-center gap-2 bg-[#5b21b6] text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#6d28d9] transition-all"
+              className="flex items-center gap-2 bg-[#2d1554] text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#2d1554] transition-all"
             >
               Next
               <ArrowRight className="w-5 h-5" />

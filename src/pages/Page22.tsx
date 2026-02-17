@@ -199,26 +199,26 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#4c1d95]/20 via-black to-[#4c1d95]/20 text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#2d1554]/20 via-black to-[#2d1554]/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-6xl w-full mx-auto flex-1 flex flex-col">
           <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
             <button
               onClick={() => onNavigate(4)}
-              className="flex items-center gap-2 px-4 sm:px-6 py-3 bg-black border border-[#6d28d9]/50 hover:bg-[#4c1d95]/50 rounded-lg transition-all w-full md:w-auto justify-center"
+              className="flex items-center gap-2 px-4 sm:px-6 py-3 bg-black border border-[#2d1554]/50 hover:bg-[#2d1554]/50 rounded-lg transition-all w-full md:w-auto justify-center"
             >
               <ArrowLeft className="w-5 h-5" />
               Back to Tools
             </button>
-            <h1 className="text-2xl md:text-4xl font-black text-[#a78bfa] text-center flex-1">{toolName}</h1>
+            <h1 className="text-2xl md:text-4xl font-black text-[#7c3aed] text-center flex-1">{toolName}</h1>
             <div className="hidden md:block md:w-32"></div>
           </div>
 
-          <div className="flex-1 bg-black/30 backdrop-blur-sm border-2 border-[#6d28d9]/30 rounded-2xl p-8">
+          <div className="flex-1 bg-black/30 backdrop-blur-sm border-2 border-[#2d1554]/30 rounded-2xl p-8">
             {mode === 'upload' ? (
               <div className="h-full flex flex-col">
                 <div className="text-center mb-6">
-                  <Upload className="w-16 h-16 mx-auto mb-4 text-[#a78bfa]" />
+                  <Upload className="w-16 h-16 mx-auto mb-4 text-[#7c3aed]" />
                   <h2 className="text-3xl font-bold mb-2">Upload Your Asset</h2>
                   <p className="text-white/70">Drag and drop your file here or click to browse</p>
                 </div>
@@ -229,7 +229,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                     <button
                       onClick={handleGooglePhotos}
                       disabled={!googleDriveReady || uploading}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#5b21b6] to-[#5b21b6] hover:from-[#5b21b6] hover:to-[#5b21b6] disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg font-semibold transition-all text-sm"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2d1554] to-[#2d1554] hover:from-[#2d1554] hover:to-[#2d1554] disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg font-semibold transition-all text-sm"
                     >
                       <Cloud className="w-4 h-4" />
                       Google Photos
@@ -237,7 +237,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                     <button
                       onClick={handleGooglePhotos}
                       disabled={!googleDriveReady || uploading}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#5b21b6] to-[#5b21b6] hover:from-[#5b21b6] hover:to-[#5b21b6] disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg font-semibold transition-all text-sm"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2d1554] to-[#2d1554] hover:from-[#2d1554] hover:to-[#2d1554] disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg font-semibold transition-all text-sm"
                     >
                       <Cloud className="w-4 h-4" />
                       Google Drive
@@ -245,7 +245,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                     <button
                       onClick={() => setShowUrlImport(!showUrlImport)}
                       disabled={uploading}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#5b21b6] to-[#5b21b6] hover:from-[#5b21b6] hover:to-[#5b21b6] disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg font-semibold transition-all text-sm"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2d1554] to-[#2d1554] hover:from-[#2d1554] hover:to-[#2d1554] disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg font-semibold transition-all text-sm"
                     >
                       <Link className="w-4 h-4" />
                       Import from URL
@@ -253,13 +253,13 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                   </div>
 
                   {showUrlImport && (
-                    <div className="mt-4 p-4 bg-black/30 border border-[#a78bfa]/30 rounded-lg">
+                    <div className="mt-4 p-4 bg-black/30 border border-[#7c3aed]/30 rounded-lg">
                       <input
                         type="url"
                         value={importUrl}
                         onChange={(e) => setImportUrl(e.target.value)}
                         placeholder="https://example.com/image.jpg"
-                        className="w-full bg-black/50 border border-[#a78bfa]/50 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:border-[#a78bfa] mb-3"
+                        className="w-full bg-black/50 border border-[#7c3aed]/50 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:border-[#7c3aed] mb-3"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             handleUrlImport();
@@ -270,7 +270,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                         <button
                           onClick={handleUrlImport}
                           disabled={uploading || !importUrl.trim()}
-                          className="flex-1 px-4 py-2 bg-[#5b21b6] hover:bg-[#5b21b6] disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg font-semibold transition-all text-sm"
+                          className="flex-1 px-4 py-2 bg-[#2d1554] hover:bg-[#2d1554] disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg font-semibold transition-all text-sm"
                         >
                           Import
                         </button>
@@ -297,31 +297,31 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                   onDrop={handleDrop}
                   className={`flex-1 border-2 border-dashed rounded-xl flex items-center justify-center transition-all ${
                     dragActive
-                      ? 'border-[#a78bfa] bg-[#4c1d95]/20'
-                      : 'border-[#6d28d9]/50 hover:border-[#a78bfa]'
+                      ? 'border-[#7c3aed] bg-[#2d1554]/20'
+                      : 'border-[#2d1554]/50 hover:border-[#7c3aed]'
                   } ${uploading ? 'pointer-events-none opacity-50' : ''}`}
                 >
                   {uploading ? (
                     <div className="text-center">
-                      <div className="animate-spin w-16 h-16 border-4 border-[#5b21b6] border-t-transparent rounded-full mx-auto mb-4"></div>
+                      <div className="animate-spin w-16 h-16 border-4 border-[#2d1554] border-t-transparent rounded-full mx-auto mb-4"></div>
                       <p className="text-lg text-white/90">Uploading files...</p>
                       <p className="text-sm text-white/60 mt-2">Please wait</p>
                     </div>
                   ) : uploadedFiles.length > 0 ? (
                     <div className="text-center w-full p-8">
-                      <Check className="w-16 h-16 mx-auto mb-4 text-[#a78bfa]" />
+                      <Check className="w-16 h-16 mx-auto mb-4 text-[#7c3aed]" />
                       <p className="text-lg text-white/90 mb-4">{uploadedFiles.length} file(s) uploaded successfully!</p>
                       <div className="max-h-48 overflow-y-auto mb-4">
                         {uploadedFiles.map((filename, i) => (
                           <div key={i} className="flex items-center gap-2 justify-center py-1">
-                            <Check className="w-4 h-4 text-[#a78bfa]" />
+                            <Check className="w-4 h-4 text-[#7c3aed]" />
                             <span className="text-sm text-white/70">{filename}</span>
                           </div>
                         ))}
                       </div>
                       <button
                         onClick={() => setUploadedFiles([])}
-                        className="px-6 py-2 bg-[#5b21b6] hover:bg-[#6d28d9] rounded-lg font-semibold transition-all"
+                        className="px-6 py-2 bg-[#2d1554] hover:bg-[#2d1554] rounded-lg font-semibold transition-all"
                       >
                         Upload More Files
                       </button>
@@ -329,24 +329,24 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                   ) : (
                     <label className="cursor-pointer text-center">
                       <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4 mb-6">
-                        <div className="p-4 bg-[#4c1d95]/20 rounded-lg">
-                          <Video className="w-8 h-8 mx-auto text-[#a78bfa] mb-2" />
+                        <div className="p-4 bg-[#2d1554]/20 rounded-lg">
+                          <Video className="w-8 h-8 mx-auto text-[#7c3aed] mb-2" />
                           <p className="text-xs text-white/70">Video</p>
                         </div>
-                        <div className="p-4 bg-[#4c1d95]/20 rounded-lg">
-                          <Image className="w-8 h-8 mx-auto text-[#a78bfa] mb-2" />
+                        <div className="p-4 bg-[#2d1554]/20 rounded-lg">
+                          <Image className="w-8 h-8 mx-auto text-[#7c3aed] mb-2" />
                           <p className="text-xs text-white/70">Image</p>
                         </div>
-                        <div className="p-4 bg-[#4c1d95]/20 rounded-lg">
-                          <Music className="w-8 h-8 mx-auto text-[#a78bfa] mb-2" />
+                        <div className="p-4 bg-[#2d1554]/20 rounded-lg">
+                          <Music className="w-8 h-8 mx-auto text-[#7c3aed] mb-2" />
                           <p className="text-xs text-white/70">Audio</p>
                         </div>
-                        <div className="p-4 bg-[#4c1d95]/20 rounded-lg">
-                          <FileText className="w-8 h-8 mx-auto text-[#a78bfa] mb-2" />
+                        <div className="p-4 bg-[#2d1554]/20 rounded-lg">
+                          <FileText className="w-8 h-8 mx-auto text-[#7c3aed] mb-2" />
                           <p className="text-xs text-white/70">Document</p>
                         </div>
-                        <div className="p-4 bg-[#4c1d95]/20 rounded-lg">
-                          <File className="w-8 h-8 mx-auto text-[#a78bfa] mb-2" />
+                        <div className="p-4 bg-[#2d1554]/20 rounded-lg">
+                          <File className="w-8 h-8 mx-auto text-[#7c3aed] mb-2" />
                           <p className="text-xs text-white/70">Other</p>
                         </div>
                       </div>
@@ -367,7 +367,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                   <button
                     onClick={() => onNavigate(11)}
                     disabled={uploadedFiles.length === 0 && !uploading}
-                    className="px-8 py-3 bg-[#5b21b6] hover:bg-[#6d28d9] disabled:bg-[#4c1d95] disabled:cursor-not-allowed rounded-lg font-semibold transition-all"
+                    className="px-8 py-3 bg-[#2d1554] hover:bg-[#2d1554] disabled:bg-[#2d1554] disabled:cursor-not-allowed rounded-lg font-semibold transition-all"
                   >
                     Go to Media Box
                   </button>
@@ -376,25 +376,25 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
             ) : (
               <div className="h-full flex flex-col">
                 <div className="text-center mb-8">
-                  <Sparkles className="w-16 h-16 mx-auto mb-4 text-[#a78bfa]" />
+                  <Sparkles className="w-16 h-16 mx-auto mb-4 text-[#7c3aed]" />
                   <h2 className="text-3xl font-bold mb-2">Create with AI</h2>
                   <p className="text-white/70">Generate a new asset using AI</p>
                 </div>
 
-                <div className="flex-1 bg-[#4c1d95]/10 border border-[#6d28d9]/30 rounded-xl p-8">
+                <div className="flex-1 bg-[#2d1554]/10 border border-[#2d1554]/30 rounded-xl p-8">
                   <div className="space-y-6">
                     <div>
                       <label className="block text-sm font-semibold mb-2">Asset Description</label>
                       <textarea
                         placeholder="Describe what you want to create..."
-                        className="w-full h-32 bg-black/50 border border-[#6d28d9]/50 rounded-lg p-4 text-white placeholder-white/60 focus:outline-none focus:border-[#a78bfa]"
+                        className="w-full h-32 bg-black/50 border border-[#2d1554]/50 rounded-lg p-4 text-white placeholder-white/60 focus:outline-none focus:border-[#7c3aed]"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-semibold mb-2">Style</label>
-                        <select className="w-full bg-black/50 border border-[#6d28d9]/50 rounded-lg p-3 text-white focus:outline-none focus:border-[#a78bfa]">
+                        <select className="w-full bg-black/50 border border-[#2d1554]/50 rounded-lg p-3 text-white focus:outline-none focus:border-[#7c3aed]">
                           <option>Cinematic</option>
                           <option>Realistic</option>
                           <option>Artistic</option>
@@ -403,7 +403,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                       </div>
                       <div>
                         <label className="block text-sm font-semibold mb-2">Quality</label>
-                        <select className="w-full bg-black/50 border border-[#6d28d9]/50 rounded-lg p-3 text-white focus:outline-none focus:border-[#a78bfa]">
+                        <select className="w-full bg-black/50 border border-[#2d1554]/50 rounded-lg p-3 text-white focus:outline-none focus:border-[#7c3aed]">
                           <option>Standard</option>
                           <option>High</option>
                           <option>Ultra</option>
@@ -411,7 +411,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                       </div>
                     </div>
 
-                    <button className="w-full py-4 bg-gradient-to-r from-[#5b21b6] to-[#6d28d9] hover:from-[#6d28d9] hover:to-[#a78bfa] rounded-lg font-bold text-lg transition-all">
+                    <button className="w-full py-4 bg-gradient-to-r from-[#2d1554] to-[#2d1554] hover:from-[#2d1554] hover:to-[#7c3aed] rounded-lg font-bold text-lg transition-all">
                       Generate Asset
                     </button>
                   </div>
@@ -420,7 +420,7 @@ export default function Page22({ onNavigate, toolName = "AI Tool", mode = "uploa
                 <div className="mt-6 flex gap-4 justify-end">
                   <button
                     onClick={() => onNavigate(11)}
-                    className="px-8 py-3 bg-[#5b21b6] hover:bg-[#6d28d9] rounded-lg font-semibold transition-all"
+                    className="px-8 py-3 bg-[#2d1554] hover:bg-[#2d1554] rounded-lg font-semibold transition-all"
                   >
                     Save to Media Box
                   </button>

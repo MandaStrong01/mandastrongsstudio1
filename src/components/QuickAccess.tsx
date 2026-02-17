@@ -9,19 +9,19 @@ export default function QuickAccess({ onNavigate }: QuickAccessProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const quickLinks = [
-    { page: 1, icon: Home, label: 'Home', color: 'text-[#a78bfa]' },
-    { page: 4, icon: Wand2, label: 'AI Tools Hub', color: 'text-[#a78bfa]' },
-    { page: 10, icon: Film, label: 'Doxy Movie', color: 'text-[#a78bfa]' },
-    { page: 11, icon: FileText, label: 'Editor Dashboard', color: 'text-[#a78bfa]' },
-    { page: 19, icon: HelpCircle, label: 'Help Desk', color: 'text-[#a78bfa]' },
-    { page: 20, icon: Users, label: 'Community', color: 'text-[#a78bfa]' },
+    { page: 1, icon: Home, label: 'Home', color: 'text-[#7c3aed]' },
+    { page: 4, icon: Wand2, label: 'AI Tools Hub', color: 'text-[#7c3aed]' },
+    { page: 10, icon: Film, label: 'Doxy Movie', color: 'text-[#7c3aed]' },
+    { page: 11, icon: FileText, label: 'Editor Dashboard', color: 'text-[#7c3aed]' },
+    { page: 19, icon: HelpCircle, label: 'Help Desk', color: 'text-[#7c3aed]' },
+    { page: 20, icon: Users, label: 'Community', color: 'text-[#7c3aed]' },
   ];
 
   return (
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 sm:top-6 right-4 sm:right-6 z-50 bg-[#5b21b6] hover:bg-[#6d28d9] text-white p-3 sm:p-4 rounded-full shadow-2xl transition-all hover:scale-110"
+        className="fixed top-4 sm:top-6 right-4 sm:right-6 z-50 bg-[#2d1554] hover:bg-[#2d1554] text-white p-3 sm:p-4 rounded-full shadow-2xl transition-all hover:scale-110"
         aria-label="Quick Access Menu"
       >
         {isOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
@@ -33,7 +33,7 @@ export default function QuickAccess({ onNavigate }: QuickAccessProps) {
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="fixed top-16 sm:top-24 right-4 sm:right-6 z-50 bg-black/90 backdrop-blur-xl rounded-2xl border border-[#6d28d9]/50 shadow-2xl p-3 sm:p-4 min-w-[200px] sm:min-w-[250px] max-w-[calc(100vw-2rem)]">
+          <div className="fixed top-16 sm:top-24 right-4 sm:right-6 z-50 bg-black/90 backdrop-blur-xl rounded-2xl border border-[#2d1554]/50 shadow-2xl p-3 sm:p-4 min-w-[200px] sm:min-w-[250px] max-w-[calc(100vw-2rem)]">
             <h3 className="text-white font-bold text-base sm:text-lg mb-2 sm:mb-3 px-2">Quick Access</h3>
             <div className="space-y-2">
               {quickLinks.map((link) => (
@@ -43,7 +43,7 @@ export default function QuickAccess({ onNavigate }: QuickAccessProps) {
                     onNavigate(link.page);
                     setIsOpen(false);
                   }}
-                  className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all text-left group"
+                  className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all text-left group"
                 >
                   <link.icon className={`w-5 h-5 ${link.color} group-hover:scale-110 transition-transform`} />
                   <span className="text-white font-semibold">{link.label}</span>

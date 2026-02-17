@@ -67,14 +67,14 @@ export default function Page15({ onNavigate }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#4c1d95]/20 via-black to-[#4c1d95]/20 text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#2d1554]/20 via-black to-[#2d1554]/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-full w-full mx-auto flex-1 flex flex-col">
-          <h1 className="text-3xl font-black text-[#a78bfa] mb-4 text-center">DOXY THE SCHOOL BULLY - AI Animation Lab</h1>
+          <h1 className="text-3xl font-black text-[#7c3aed] mb-4 text-center">DOXY THE SCHOOL BULLY - AI Animation Lab</h1>
 
           <div className="grid grid-cols-12 gap-4 flex-1">
-            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-4 overflow-y-auto">
-              <h2 className="text-xl font-bold mb-4 text-[#a78bfa]">MEDIA BOX</h2>
+            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#2d1554]/30 p-4 overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4 text-[#7c3aed]">MEDIA BOX</h2>
               <div className="space-y-2">
                 {loading ? (
                   <div className="text-center py-8">
@@ -91,12 +91,12 @@ export default function Page15({ onNavigate }: PageProps) {
                     <button
                       key={asset.id}
                       onClick={() => setSelectedAsset(asset)}
-                      className={`w-full bg-[#4c1d95]/20 border rounded-lg p-3 text-left transition-all hover:bg-[#4c1d95]/40 ${
-                        selectedAsset?.id === asset.id ? 'border-[#a78bfa] bg-[#4c1d95]/40' : 'border-[#6d28d9]/30'
+                      className={`w-full bg-[#2d1554]/20 border rounded-lg p-3 text-left transition-all hover:bg-[#2d1554]/40 ${
+                        selectedAsset?.id === asset.id ? 'border-[#7c3aed] bg-[#2d1554]/40' : 'border-[#2d1554]/30'
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <Sparkles className="w-4 h-4 text-[#a78bfa]" />
+                        <Sparkles className="w-4 h-4 text-[#7c3aed]" />
                         <h3 className="font-semibold text-sm truncate">{asset.tool_name}</h3>
                       </div>
                       <p className="text-xs text-slate-400">
@@ -108,13 +108,13 @@ export default function Page15({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-4 flex flex-col">
-              <h2 className="text-xl font-bold mb-4 text-[#a78bfa]">VIEWER</h2>
+            <div className="col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#2d1554]/30 p-4 flex flex-col">
+              <h2 className="text-xl font-bold mb-4 text-[#7c3aed]">VIEWER</h2>
               <div className="flex-1 flex flex-col">
-                <div className="aspect-video bg-black rounded-lg border border-[#6d28d9]/30 mb-4 flex items-center justify-center">
+                <div className="aspect-video bg-black rounded-lg border border-[#2d1554]/30 mb-4 flex items-center justify-center">
                   {selectedAsset ? (
                     <div className="text-center p-8">
-                      <Wand2 className="w-16 h-16 mx-auto mb-4 text-[#a78bfa]" />
+                      <Wand2 className="w-16 h-16 mx-auto mb-4 text-[#7c3aed]" />
                       <h3 className="text-lg font-bold mb-2">{selectedAsset.tool_name}</h3>
                       <p className="text-sm text-white/70">Animate Still Images and Characters with AI</p>
                     </div>
@@ -130,7 +130,7 @@ export default function Page15({ onNavigate }: PageProps) {
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => setIsPlaying(!isPlaying)}
-                      className="p-2 bg-[#5b21b6] hover:bg-[#6d28d9] rounded-lg transition-all"
+                      className="p-2 bg-[#2d1554] hover:bg-[#2d1554] rounded-lg transition-all"
                     >
                       {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                     </button>
@@ -145,7 +145,7 @@ export default function Page15({ onNavigate }: PageProps) {
                       step="0.1"
                       value={currentTime}
                       onChange={(e) => setCurrentTime(parseFloat(e.target.value))}
-                      className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+                      className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
                       style={{
                         background: `linear-gradient(to right, #9333ea ${(currentTime / duration) * 100}%, rgba(147, 51, 234, 0.2) ${(currentTime / duration) * 100}%)`
                       }}
@@ -159,15 +159,15 @@ export default function Page15({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#6d28d9]/30 p-4 overflow-y-auto">
-              <h2 className="text-xl font-bold mb-4 text-[#a78bfa]">ANIMATION OPTIONS</h2>
+            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#2d1554]/30 p-4 overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4 text-[#7c3aed]">ANIMATION OPTIONS</h2>
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-semibold mb-2 block">Animation Style</label>
                   <select
                     value={animationStyle}
                     onChange={(e) => setAnimationStyle(e.target.value)}
-                    className="w-full px-3 py-2 bg-black border border-[#6d28d9]/50 rounded-lg text-white focus:outline-none focus:border-[#a78bfa]"
+                    className="w-full px-3 py-2 bg-black border border-[#2d1554]/50 rounded-lg text-white focus:outline-none focus:border-[#7c3aed]"
                   >
                     <option value="smooth">Smooth Motion</option>
                     <option value="dynamic">Dynamic</option>
@@ -177,24 +177,24 @@ export default function Page15({ onNavigate }: PageProps) {
                   </select>
                 </div>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Wand2 className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Wand2 className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Image to Video</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Zap className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Zap className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Morphing Effects</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Sparkles className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Sparkles className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Particle Effects</span>
                 </button>
 
-                <div className="pt-4 border-t border-[#6d28d9]/30">
+                <div className="pt-4 border-t border-[#2d1554]/30">
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Aperture className="w-4 h-4 text-[#a78bfa]" />
+                    <Aperture className="w-4 h-4 text-[#7c3aed]" />
                     Frame Interpolation (FPS): {fps}
                   </label>
                   <input
@@ -204,7 +204,7 @@ export default function Page15({ onNavigate }: PageProps) {
                     step="6"
                     value={fps}
                     onChange={(e) => setFps(parseInt(e.target.value))}
-                    className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between text-xs text-slate-500 mt-1">
                     <span>24</span>
@@ -213,9 +213,9 @@ export default function Page15({ onNavigate }: PageProps) {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#6d28d9]/30">
+                <div className="pt-4 border-t border-[#2d1554]/30">
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Layers3 className="w-4 h-4 text-[#a78bfa]" />
+                    <Layers3 className="w-4 h-4 text-[#7c3aed]" />
                     Depth/Parallax: {depthStrength}%
                   </label>
                   <input
@@ -224,39 +224,39 @@ export default function Page15({ onNavigate }: PageProps) {
                     max="100"
                     value={depthStrength}
                     onChange={(e) => setDepthStrength(parseInt(e.target.value))}
-                    className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
 
-                <div className="pt-4 border-t border-[#6d28d9]/30">
+                <div className="pt-4 border-t border-[#2d1554]/30">
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Camera className="w-4 h-4 text-[#a78bfa]" />
+                    <Camera className="w-4 h-4 text-[#7c3aed]" />
                     Camera Movements
                   </label>
                   <div className="space-y-2">
-                    <button className="w-full px-3 py-2 bg-[#4c1d95]/20 hover:bg-[#4c1d95]/40 border border-[#6d28d9]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
                       Pan
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#4c1d95]/20 hover:bg-[#4c1d95]/40 border border-[#6d28d9]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
                       Tilt
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#4c1d95]/20 hover:bg-[#4c1d95]/40 border border-[#6d28d9]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
                       Zoom
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#4c1d95]/20 hover:bg-[#4c1d95]/40 border border-[#6d28d9]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
                       Dolly
                     </button>
                   </div>
                 </div>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Clock className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Clock className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Time Remapping</span>
                 </button>
 
-                <div className="pt-4 border-t border-[#6d28d9]/30">
+                <div className="pt-4 border-t border-[#2d1554]/30">
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Wind className="w-4 h-4 text-[#a78bfa]" />
+                    <Wind className="w-4 h-4 text-[#7c3aed]" />
                     Motion Blur: {motionBlur}%
                   </label>
                   <input
@@ -265,16 +265,16 @@ export default function Page15({ onNavigate }: PageProps) {
                     max="100"
                     value={motionBlur}
                     onChange={(e) => setMotionBlur(parseInt(e.target.value))}
-                    className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
 
-                <button className="w-full flex items-center gap-3 bg-[#4c1d95]/30 hover:bg-[#4c1d95]/50 border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
-                  <Users className="w-5 h-5 text-[#a78bfa]" />
+                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
+                  <Users className="w-5 h-5 text-[#7c3aed]" />
                   <span className="font-semibold">Puppet Tool (Character)</span>
                 </button>
 
-                <div className="pt-4 border-t border-[#6d28d9]/30">
+                <div className="pt-4 border-t border-[#2d1554]/30">
                   <label className="text-sm font-semibold mb-2 block">Animation Speed: {animationSpeed}%</label>
                   <input
                     type="range"
@@ -282,47 +282,47 @@ export default function Page15({ onNavigate }: PageProps) {
                     max="200"
                     value={animationSpeed}
                     onChange={(e) => setAnimationSpeed(parseInt(e.target.value))}
-                    className="w-full h-2 bg-[#4c1d95]/50 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
 
                 <div>
                   <label className="text-sm font-semibold mb-2 block">Motion Presets</label>
                   <div className="space-y-2">
-                    <button className="w-full px-3 py-2 bg-[#4c1d95]/20 hover:bg-[#4c1d95]/40 border border-[#6d28d9]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
                       Parallax Zoom
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#4c1d95]/20 hover:bg-[#4c1d95]/40 border border-[#6d28d9]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
                       Ken Burns Effect
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#4c1d95]/20 hover:bg-[#4c1d95]/40 border border-[#6d28d9]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
                       Camera Pan
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#4c1d95]/20 hover:bg-[#4c1d95]/40 border border-[#6d28d9]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
                       Rotate 3D
                     </button>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#6d28d9]/30">
+                <div className="pt-4 border-t border-[#2d1554]/30">
                   <label className="text-sm font-semibold mb-2 block">AI Animation Options</label>
                   <div className="space-y-2">
                     <label className="flex items-center gap-2 text-sm">
-                      <input type="checkbox" className="rounded border-[#6d28d9]/50" />
+                      <input type="checkbox" className="rounded border-[#2d1554]/50" />
                       <span>Face Animation</span>
                     </label>
                     <label className="flex items-center gap-2 text-sm">
-                      <input type="checkbox" className="rounded border-[#6d28d9]/50" />
+                      <input type="checkbox" className="rounded border-[#2d1554]/50" />
                       <span>Body Movement</span>
                     </label>
                     <label className="flex items-center gap-2 text-sm">
-                      <input type="checkbox" className="rounded border-[#6d28d9]/50" />
+                      <input type="checkbox" className="rounded border-[#2d1554]/50" />
                       <span>Background Motion</span>
                     </label>
                   </div>
                 </div>
 
-                <button className="w-full flex items-center justify-center gap-2 bg-[#5b21b6] hover:bg-[#6d28d9] border border-[#6d28d9]/30 rounded-lg p-3 transition-all">
+                <button className="w-full flex items-center justify-center gap-2 bg-[#2d1554] hover:bg-[#2d1554] border border-[#2d1554]/30 rounded-lg p-3 transition-all">
                   <Sparkles className="w-5 h-5" />
                   <span className="font-semibold">Generate Animation</span>
                 </button>
@@ -333,14 +333,14 @@ export default function Page15({ onNavigate }: PageProps) {
           <div className="flex gap-4 justify-center mt-6">
             <button
               onClick={() => onNavigate(14)}
-              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#4c1d95] transition-all border border-[#6d28d9]"
+              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#2d1554] transition-all border border-[#2d1554]"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
               onClick={() => onNavigate(16)}
-              className="flex items-center gap-2 bg-[#5b21b6] text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#6d28d9] transition-all"
+              className="flex items-center gap-2 bg-[#2d1554] text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#2d1554] transition-all"
             >
               Next
               <ArrowRight className="w-5 h-5" />
