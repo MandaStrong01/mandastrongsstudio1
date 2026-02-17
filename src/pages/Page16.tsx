@@ -72,14 +72,14 @@ export default function Page16({ onNavigate }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#2d1554]/20 via-black to-[#2d1554]/20 text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col px-4 py-6">
         <div className="max-w-full w-full mx-auto flex-1 flex flex-col">
-          <h1 className="text-3xl font-black text-[#7c3aed] mb-4 text-center">DOXY THE SCHOOL BULLY - Color Grade / Visual FX</h1>
+          <h1 className="text-3xl font-black text-purple-400 mb-4 text-center">DOXY THE SCHOOL BULLY - Color Grade / Visual FX</h1>
 
           <div className="grid grid-cols-12 gap-4 flex-1">
-            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#2d1554]/30 p-4 overflow-y-auto">
-              <h2 className="text-xl font-bold mb-4 text-[#7c3aed]">MEDIA BOX</h2>
+            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4 overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4 text-purple-400">MEDIA BOX</h2>
               <div className="space-y-2">
                 {loading ? (
                   <div className="text-center py-8">
@@ -96,12 +96,12 @@ export default function Page16({ onNavigate }: PageProps) {
                     <button
                       key={asset.id}
                       onClick={() => setSelectedAsset(asset)}
-                      className={`w-full bg-[#2d1554]/20 border rounded-lg p-3 text-left transition-all hover:bg-[#2d1554]/40 ${
-                        selectedAsset?.id === asset.id ? 'border-[#7c3aed] bg-[#2d1554]/40' : 'border-[#2d1554]/30'
+                      className={`w-full bg-purple-900/20 border rounded-lg p-3 text-left transition-all hover:bg-purple-900/40 ${
+                        selectedAsset?.id === asset.id ? 'border-purple-400 bg-purple-900/40' : 'border-purple-500/30'
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <Sparkles className="w-4 h-4 text-[#7c3aed]" />
+                        <Sparkles className="w-4 h-4 text-purple-400" />
                         <h3 className="font-semibold text-sm truncate">{asset.tool_name}</h3>
                       </div>
                       <p className="text-xs text-slate-400">
@@ -113,13 +113,13 @@ export default function Page16({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#2d1554]/30 p-4 flex flex-col">
-              <h2 className="text-xl font-bold mb-4 text-[#7c3aed]">VIEWER</h2>
+            <div className="col-span-6 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4 flex flex-col">
+              <h2 className="text-xl font-bold mb-4 text-purple-400">VIEWER</h2>
               <div className="flex-1 flex flex-col">
-                <div className="aspect-video bg-black rounded-lg border border-[#2d1554]/30 mb-4 flex items-center justify-center">
+                <div className="aspect-video bg-black rounded-lg border border-purple-500/30 mb-4 flex items-center justify-center">
                   {selectedAsset ? (
                     <div className="text-center p-8">
-                      <Palette className="w-16 h-16 mx-auto mb-4 text-[#7c3aed]" />
+                      <Palette className="w-16 h-16 mx-auto mb-4 text-purple-400" />
                       <h3 className="text-lg font-bold mb-2">{selectedAsset.tool_name}</h3>
                       <p className="text-sm text-white/70">Apply LUTs, Filters, Transitions, and Effects</p>
                     </div>
@@ -135,7 +135,7 @@ export default function Page16({ onNavigate }: PageProps) {
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => setIsPlaying(!isPlaying)}
-                      className="p-2 bg-[#2d1554] hover:bg-[#2d1554] rounded-lg transition-all"
+                      className="p-2 bg-purple-600 hover:bg-purple-500 rounded-lg transition-all"
                     >
                       {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                     </button>
@@ -150,7 +150,7 @@ export default function Page16({ onNavigate }: PageProps) {
                       step="0.1"
                       value={currentTime}
                       onChange={(e) => setCurrentTime(parseFloat(e.target.value))}
-                      className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
+                      className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
                       style={{
                         background: `linear-gradient(to right, #9333ea ${(currentTime / duration) * 100}%, rgba(147, 51, 234, 0.2) ${(currentTime / duration) * 100}%)`
                       }}
@@ -164,12 +164,12 @@ export default function Page16({ onNavigate }: PageProps) {
               </div>
             </div>
 
-            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-[#2d1554]/30 p-4 overflow-y-auto">
-              <h2 className="text-xl font-bold mb-4 text-[#7c3aed]">COLOR & FX TOOLS</h2>
+            <div className="col-span-3 bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-4 overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4 text-purple-400">COLOR & FX TOOLS</h2>
               <div className="space-y-4">
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Sun className="w-4 h-4 text-[#7c3aed]" />
+                    <Sun className="w-4 h-4 text-purple-400" />
                     Brightness: {brightness}%
                   </label>
                   <input
@@ -178,13 +178,13 @@ export default function Page16({ onNavigate }: PageProps) {
                     max="200"
                     value={brightness}
                     onChange={(e) => setBrightness(parseInt(e.target.value))}
-                    className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
 
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Contrast className="w-4 h-4 text-[#7c3aed]" />
+                    <Contrast className="w-4 h-4 text-purple-400" />
                     Contrast: {contrast}%
                   </label>
                   <input
@@ -193,13 +193,13 @@ export default function Page16({ onNavigate }: PageProps) {
                     max="200"
                     value={contrast}
                     onChange={(e) => setContrast(parseInt(e.target.value))}
-                    className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
 
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Droplet className="w-4 h-4 text-[#7c3aed]" />
+                    <Droplet className="w-4 h-4 text-purple-400" />
                     Saturation: {saturation}%
                   </label>
                   <input
@@ -208,13 +208,13 @@ export default function Page16({ onNavigate }: PageProps) {
                     max="200"
                     value={saturation}
                     onChange={(e) => setSaturation(parseInt(e.target.value))}
-                    className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
 
-                <div className="pt-4 border-t border-[#2d1554]/30">
+                <div className="pt-4 border-t border-purple-500/30">
                   <label className="flex items-center gap-2 text-sm font-semibold mb-3">
-                    <Palette className="w-4 h-4 text-[#7c3aed]" />
+                    <Palette className="w-4 h-4 text-purple-400" />
                     Color Wheels
                   </label>
                   <div className="space-y-3">
@@ -226,7 +226,7 @@ export default function Page16({ onNavigate }: PageProps) {
                         max="100"
                         value={shadows}
                         onChange={(e) => setShadows(parseInt(e.target.value))}
-                        className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
                       />
                     </div>
                     <div>
@@ -237,7 +237,7 @@ export default function Page16({ onNavigate }: PageProps) {
                         max="100"
                         value={midtones}
                         onChange={(e) => setMidtones(parseInt(e.target.value))}
-                        className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
                       />
                     </div>
                     <div>
@@ -248,49 +248,49 @@ export default function Page16({ onNavigate }: PageProps) {
                         max="100"
                         value={highlights}
                         onChange={(e) => setHighlights(parseInt(e.target.value))}
-                        className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
                       />
                     </div>
                   </div>
                 </div>
 
-                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
-                  <Activity className="w-5 h-5 text-[#7c3aed]" />
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Activity className="w-5 h-5 text-purple-400" />
                   <span className="font-semibold">Curves Adjustment</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
-                  <Palette className="w-5 h-5 text-[#7c3aed]" />
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Palette className="w-5 h-5 text-purple-400" />
                   <span className="font-semibold">HSL by Color</span>
                 </button>
 
-                <div className="pt-4 border-t border-[#2d1554]/30">
+                <div className="pt-4 border-t border-purple-500/30">
                   <label className="text-sm font-semibold mb-2 block">Color Grading LUTs</label>
                   <div className="space-y-2">
-                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Cinematic
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Vintage
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Black & White
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Warm Tone
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Cool Tone
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Import Custom LUT
                     </button>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#2d1554]/30">
+                <div className="pt-4 border-t border-purple-500/30">
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Maximize2 className="w-4 h-4 text-[#7c3aed]" />
+                    <Maximize2 className="w-4 h-4 text-purple-400" />
                     Sharpness/Clarity: {sharpness}%
                   </label>
                   <input
@@ -299,31 +299,31 @@ export default function Page16({ onNavigate }: PageProps) {
                     max="100"
                     value={sharpness}
                     onChange={(e) => setSharpness(parseInt(e.target.value))}
-                    className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
 
                 <button
                   onClick={() => setDenoise(!denoise)}
-                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${denoise ? 'bg-[#2d1554] border-[#7c3aed]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border-[#2d1554]/30'}`}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${denoise ? 'bg-purple-600 border-purple-400' : 'bg-purple-900/30 hover:bg-purple-900/50 border-purple-500/30'}`}
                 >
-                  <Sparkles className="w-5 h-5 text-[#7c3aed]" />
+                  <Sparkles className="w-5 h-5 text-purple-400" />
                   <span className="font-semibold">Denoise</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
-                  <Circle className="w-5 h-5 text-[#7c3aed]" />
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Circle className="w-5 h-5 text-purple-400" />
                   <span className="font-semibold">Chromatic Aberration</span>
                 </button>
 
-                <button className="w-full flex items-center gap-3 bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border border-[#2d1554]/30 rounded-lg p-3 transition-all">
-                  <Flame className="w-5 h-5 text-[#7c3aed]" />
+                <button className="w-full flex items-center gap-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg p-3 transition-all">
+                  <Flame className="w-5 h-5 text-purple-400" />
                   <span className="font-semibold">Light Leaks Overlay</span>
                 </button>
 
-                <div className="pt-4 border-t border-[#2d1554]/30">
+                <div className="pt-4 border-t border-purple-500/30">
                   <label className="flex items-center gap-2 text-sm font-semibold mb-2">
-                    <Zap className="w-4 h-4 text-[#7c3aed]" />
+                    <Zap className="w-4 h-4 text-purple-400" />
                     Film Grain: {filmGrain}%
                   </label>
                   <input
@@ -332,54 +332,54 @@ export default function Page16({ onNavigate }: PageProps) {
                     max="100"
                     value={filmGrain}
                     onChange={(e) => setFilmGrain(parseInt(e.target.value))}
-                    className="w-full h-2 bg-[#2d1554]/50 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
 
                 <button
                   onClick={() => setSplitView(!splitView)}
-                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${splitView ? 'bg-[#2d1554] border-[#7c3aed]' : 'bg-[#2d1554]/30 hover:bg-[#2d1554]/50 border-[#2d1554]/30'}`}
+                  className={`w-full flex items-center gap-3 border rounded-lg p-3 transition-all ${splitView ? 'bg-purple-600 border-purple-400' : 'bg-purple-900/30 hover:bg-purple-900/50 border-purple-500/30'}`}
                 >
-                  <SplitSquareHorizontal className="w-5 h-5 text-[#7c3aed]" />
+                  <SplitSquareHorizontal className="w-5 h-5 text-purple-400" />
                   <span className="font-semibold">Split Before/After View</span>
                 </button>
 
-                <div className="pt-4 border-t border-[#2d1554]/30">
+                <div className="pt-4 border-t border-purple-500/30">
                   <label className="text-sm font-semibold mb-2 block">Visual Effects</label>
                   <div className="space-y-2">
-                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Blur / Focus
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Vignette
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Lens Flare
                     </button>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#2d1554]/30">
+                <div className="pt-4 border-t border-purple-500/30">
                   <label className="text-sm font-semibold mb-2 block">Transitions</label>
                   <div className="space-y-2">
-                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Fade
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Dissolve
                     </button>
-                    <button className="w-full px-3 py-2 bg-[#2d1554]/20 hover:bg-[#2d1554]/40 border border-[#2d1554]/30 rounded-lg text-sm transition-all text-left">
+                    <button className="w-full px-3 py-2 bg-purple-900/20 hover:bg-purple-900/40 border border-purple-500/30 rounded-lg text-sm transition-all text-left">
                       Wipe
                     </button>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#2d1554]/30 flex gap-2">
-                  <button className="flex-1 flex items-center justify-center gap-2 bg-[#2d1554] hover:bg-[#2d1554] rounded-lg p-3 transition-all">
+                <div className="pt-4 border-t border-purple-500/30 flex gap-2">
+                  <button className="flex-1 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 rounded-lg p-3 transition-all">
                     <Download className="w-4 h-4" />
                     <span className="font-semibold text-sm">Download</span>
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 bg-[#2d1554] hover:bg-[#2d1554] rounded-lg p-3 transition-all">
+                  <button className="flex-1 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 rounded-lg p-3 transition-all">
                     <Save className="w-4 h-4" />
                     <span className="font-semibold text-sm">Export</span>
                   </button>
@@ -391,14 +391,14 @@ export default function Page16({ onNavigate }: PageProps) {
           <div className="flex gap-4 justify-center mt-6">
             <button
               onClick={() => onNavigate(15)}
-              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#2d1554] transition-all border border-[#2d1554]"
+              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
               onClick={() => onNavigate(17)}
-              className="flex items-center gap-2 bg-[#2d1554] text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-[#2d1554] transition-all"
+              className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
             >
               Next
               <ArrowRight className="w-5 h-5" />

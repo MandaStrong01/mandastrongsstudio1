@@ -96,17 +96,17 @@ export default function Page10({ onNavigate }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#2d1554]/20 via-black to-[#2d1554]/20 text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="max-w-6xl w-full">
-          <h1 className="text-2xl md:text-4xl font-black text-[#7c3aed] mb-2 text-center">Timeline Editor</h1>
-          <p className="text-xl font-semibold text-[#7c3aed] mb-6 text-center">Editor's Choice</p>
+          <h1 className="text-2xl md:text-4xl font-black text-purple-400 mb-2 text-center">Timeline Editor</h1>
+          <p className="text-xl font-semibold text-purple-300 mb-6 text-center">Editor's Choice</p>
 
           <div className="mb-6 text-center">
             <button
               onClick={() => document.getElementById('video-upload')?.click()}
               disabled={uploading}
-              className="inline-flex items-center gap-2 bg-[#2d1554] hover:bg-[#2d1554] disabled:bg-[#2d1554] disabled:cursor-not-allowed px-6 py-3 rounded-lg font-semibold transition-all"
+              className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed px-6 py-3 rounded-lg font-semibold transition-all"
             >
               <Upload className="w-5 h-5" />
               {uploading ? 'Uploading...' : 'Admin Upload'}
@@ -132,8 +132,8 @@ export default function Page10({ onNavigate }: PageProps) {
                   }}
                   className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap transition-all ${
                     selectedVideo?.id === asset.id
-                      ? 'bg-[#2d1554] text-white'
-                      : 'bg-[#2d1554]/30 text-[#7c3aed] hover:bg-[#2d1554]/50'
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-purple-900/30 text-purple-300 hover:bg-purple-900/50'
                   }`}
                 >
                   {asset.file_name}
@@ -142,8 +142,8 @@ export default function Page10({ onNavigate }: PageProps) {
             </div>
           )}
 
-          <div className="bg-black/30 backdrop-blur-sm p-6 rounded-2xl border border-[#2d1554]/30 mb-6">
-            <div className="aspect-video bg-black rounded-lg overflow-hidden border border-[#2d1554]/30 mb-4 flex items-center justify-center">
+          <div className="bg-black/30 backdrop-blur-sm p-6 rounded-2xl border border-purple-500/30 mb-6">
+            <div className="aspect-video bg-black rounded-lg overflow-hidden border border-purple-500/30 mb-4 flex items-center justify-center">
               {selectedVideo ? (
                 <video
                   key={selectedVideo.id}
@@ -155,7 +155,7 @@ export default function Page10({ onNavigate }: PageProps) {
                 />
               ) : (
                 <div className="text-center p-8">
-                  <Upload className="w-16 h-16 mx-auto mb-4 text-[#7c3aed]" />
+                  <Upload className="w-16 h-16 mx-auto mb-4 text-purple-400" />
                   <p className="text-slate-400">No videos uploaded yet</p>
                   <p className="text-sm text-slate-500 mt-2">Click "Upload Video" to get started</p>
                 </div>
@@ -166,21 +166,21 @@ export default function Page10({ onNavigate }: PageProps) {
               <div className="flex items-center justify-center gap-4">
                 <button
                   onClick={skipBackward}
-                  className="p-3 bg-[#2d1554]/50 hover:bg-[#2d1554]/70 rounded-lg transition-all border border-[#2d1554]/30"
+                  className="p-3 bg-purple-900/50 hover:bg-purple-900/70 rounded-lg transition-all border border-purple-500/30"
                 >
                   <SkipBack className="w-6 h-6" />
                 </button>
 
                 <button
                   onClick={togglePlay}
-                  className="p-4 bg-[#2d1554] hover:bg-[#2d1554] rounded-lg transition-all"
+                  className="p-4 bg-purple-600 hover:bg-purple-500 rounded-lg transition-all"
                 >
                   {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
                 </button>
 
                 <button
                   onClick={skipForward}
-                  className="p-3 bg-[#2d1554]/50 hover:bg-[#2d1554]/70 rounded-lg transition-all border border-[#2d1554]/30"
+                  className="p-3 bg-purple-900/50 hover:bg-purple-900/70 rounded-lg transition-all border border-purple-500/30"
                 >
                   <SkipForward className="w-6 h-6" />
                 </button>
@@ -191,14 +191,14 @@ export default function Page10({ onNavigate }: PageProps) {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => onNavigate(9)}
-              className="flex items-center justify-center gap-2 bg-black text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-[#2d1554] transition-all border border-[#2d1554]"
+              className="flex items-center justify-center gap-2 bg-black text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-900 transition-all border border-purple-500"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
             <button
               onClick={() => onNavigate(11)}
-              className="flex items-center justify-center gap-2 bg-[#2d1554] text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-[#2d1554] transition-all"
+              className="flex items-center justify-center gap-2 bg-purple-600 text-white font-bold px-6 sm:px-8 py-4 rounded-lg text-base sm:text-lg hover:bg-purple-500 transition-all"
             >
               Next
               <ArrowRight className="w-5 h-5" />
