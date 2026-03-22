@@ -29,79 +29,65 @@ const H1 = { fontFamily:"'Cinzel',serif", color:GOLD, letterSpacing:5, textTrans
 const Card = (x) => ({ background:"#0a0a0a", border:`1px solid ${GOLDDIM}`, borderRadius:0, padding:18, ...(x||{}) });
 
 const STOCK_VOICES = [
-  { id:"aurora", name:"Aurora", desc:"Warm British Female", style:"Documentary · Narrator", accent:"British RP", pitch:1.0, rate:0.9 },
-  { id:"marcus", name:"Marcus", desc:"Deep American Male", style:"Cinematic · Authoritative", accent:"American", pitch:0.85, rate:0.95 },
-  { id:"sophia", name:"Sophia", desc:"Bright Australian Female", style:"Upbeat · Engaging", accent:"Australian", pitch:1.1, rate:1.05 },
-  { id:"james", name:"James", desc:"Dry British Male", style:"Sarcastic · Witty", accent:"British", pitch:0.92, rate:0.88 },
-  { id:"nova", name:"Nova", desc:"Neutral AI Female", style:"Clean · Professional", accent:"Neutral", pitch:1.05, rate:1.0 },
-  { id:"river", name:"River", desc:"Warm American Male", style:"Friendly · Intimate", accent:"American South", pitch:0.95, rate:0.92 },
+  { id:"aurora", name:"Aurora", desc:"Warm British Female", style:"Documentary · Narrator", accent:"British RP" },
+  { id:"marcus", name:"Marcus", desc:"Deep American Male", style:"Cinematic · Authoritative", accent:"American" },
+  { id:"sophia", name:"Sophia", desc:"Bright Australian Female", style:"Upbeat · Engaging", accent:"Australian" },
+  { id:"james",  name:"James",  desc:"Dry British Male", style:"Sarcastic · Witty", accent:"British" },
+  { id:"nova",   name:"Nova",   desc:"Neutral AI Female", style:"Clean · Professional", accent:"Neutral" },
+  { id:"river",  name:"River",  desc:"Warm American Male", style:"Friendly · Intimate", accent:"American South" },
 ];
 
-// MANDASTRONG CUSTOM VOICE ENGINE
-// Uses Web Speech API with AudioContext pitch processing for distinct voices
-// No third-party APIs needed — works with your existing Anthropic key
+const VOICE_TOOLS = ["Text to Voice","Text to Speech","Text to Narration","Text to Audiobook","Text to Voiceover","AI Voice Actor","Neural Voice Generator","Emotion Voice Synth","Documentary Voice","Trailer Voice Generator","Commercial Voice","Character Voice Creator","Audiobook Creator","Podcast Voice"];
 
-const VOICE_PROFILES = {
-  aurora: { pitch:1.0,  rate:0.88 },
-  marcus: { pitch:0.9,  rate:0.92 },
-  sophia: { pitch:1.1,  rate:1.05 },
-  james:  { pitch:0.85, rate:0.85 },
-  nova:   { pitch:1.0,  rate:1.00 },
-  river:  { pitch:0.9,  rate:0.90 },
-};
+// Global voice assignments — users pick their own voices from their device
+let VOICE_ASSIGNMENTS = {};
+try { VOICE_ASSIGNMENTS = JSON.parse(localStorage.getItem("ms_voice_assign")||"{}"); } catch{}
 
-let currentAudio = null;
+let currentUtterance = null;
 
 function speakText(voiceId, txt, onStart, onEnd) {
-  if (!txt || !txt.trim()) return;
-  if (currentAudio) { currentAudio.cancel && currentAudio.cancel(); }
+  if (!txt||!txt.trim()) return;
   window.speechSynthesis.cancel();
-
-  const profile = VOICE_PROFILES[voiceId] || VOICE_PROFILES.james;
+  currentUtterance = null;
   const clean = txt.replace(/\[pause\]/g,". ").replace(/[*\/]/g," ").slice(0,5000);
-
   const doSpeak = () => {
     const allVoices = window.speechSynthesis.getVoices();
     const utt = new SpeechSynthesisUtterance(clean);
-
-    // Set pitch and rate from profile
-    utt.pitch = profile.pitch;
-    utt.rate = profile.rate;
-
-    // Voice selection — male voices get male names, female get female names
-    const isMale = ["james","marcus","river"].includes(voiceId);
-    const femalePat = /samantha|zira|victoria|moira|karen|susan|lisa|fiona|serena|tessa|heather|hazel|allison|ava|nora|siri|female/i;
-    const malePat = /david|daniel|oliver|arthur|george|harry|lee|ryan|eric|reed|liam|aaron|rishi|wayne|brian|derek|steven|alan|albert|andy|tom|bruce|fred|mark|paul|peter|john|james|gordon|alex|eddy|bobby|ralph|male/i;
-
-    let picked = null;
-    if (isMale) {
-      picked = allVoices.find(x=>malePat.test(x.name))
-            || allVoices.find(x=>x.lang==="en-GB"&&!femalePat.test(x.name))
-            || allVoices.find(x=>x.lang==="en-US"&&x.localService&&!femalePat.test(x.name))
-            || allVoices.find(x=>x.lang.startsWith("en")&&!femalePat.test(x.name))
-            || allVoices[0];
-    } else {
-      picked = voiceId==="aurora" ? (allVoices.find(x=>/kate|serena|emily/i.test(x.name))||allVoices.find(x=>x.lang==="en-GB"))
-             : voiceId==="sophia" ? (allVoices.find(x=>/karen/i.test(x.name))||allVoices.find(x=>x.lang==="en-AU"))
-             : allVoices.find(x=>/samantha|victoria|zira/i.test(x.name));
-      picked = picked || allVoices.find(x=>x.lang.startsWith("en")) || allVoices[0];
+    utt.pitch = 1.0; utt.rate = 0.9;
+    // Use user-assigned voice if set
+    const assignedName = VOICE_ASSIGNMENTS[voiceId];
+    let picked = assignedName ? allVoices.find(v=>v.name===assignedName) : null;
+    // Auto-select if no assignment
+    if (!picked) {
+      const isMale = ["james","marcus","river"].includes(voiceId);
+      const femalePat = /samantha|zira|victoria|moira|karen|susan|lisa|fiona|serena|tessa|heather|hazel|allison|ava|nora|siri|female/i;
+      const malePat = /david|daniel|oliver|arthur|george|harry|lee|ryan|eric|reed|liam|aaron|rishi|wayne|brian|derek|steven|alan|albert|andy|tom|bruce|fred|mark|paul|peter|john|james|gordon|alex|eddy|bobby|ralph|male/i;
+      if (isMale) {
+        picked = allVoices.find(x=>malePat.test(x.name))
+              || allVoices.find(x=>x.lang==="en-GB"&&!femalePat.test(x.name))
+              || allVoices.find(x=>x.lang.startsWith("en")&&!femalePat.test(x.name))
+              || allVoices[0];
+      } else {
+        picked = voiceId==="aurora" ? (allVoices.find(x=>/kate|serena|emily/i.test(x.name))||allVoices.find(x=>x.lang==="en-GB"))
+               : voiceId==="sophia" ? (allVoices.find(x=>/karen/i.test(x.name))||allVoices.find(x=>x.lang==="en-AU"))
+               : allVoices.find(x=>/samantha|victoria|zira/i.test(x.name));
+        picked = picked||allVoices.find(x=>x.lang.startsWith("en"))||allVoices[0];
+      }
     }
-
     if (picked) utt.voice = picked;
-    currentAudio = utt;
+    currentUtterance = utt;
     if (onStart) onStart();
-    utt.onend = ()=>{ currentAudio=null; if(onEnd) onEnd(); };
-    utt.onerror = ()=>{ currentAudio=null; if(onEnd) onEnd(); };
+    utt.onend=()=>{ currentUtterance=null; if(onEnd)onEnd(); };
+    utt.onerror=()=>{ currentUtterance=null; if(onEnd)onEnd(); };
     window.speechSynthesis.speak(utt);
   };
-
-  if (window.speechSynthesis.getVoices().length>0) { doSpeak(); }
-  else { window.speechSynthesis.onvoiceschanged = ()=>{ doSpeak(); }; }
+  if (window.speechSynthesis.getVoices().length>0){doSpeak();}
+  else{window.speechSynthesis.onvoiceschanged=()=>{doSpeak();};}
 }
 
 function stopSpeaking() {
   window.speechSynthesis.cancel();
-  currentAudio = null;
+  currentUtterance = null;
 }
 
 const WRITING = ["Script to Movie","Text to Script","Script to Screenplay","Prompt to Story","Story to Script","Feature Film Script","Short Film Script","TV Pilot Script","Documentary Script","Commercial Script","YouTube Script","Podcast Script","Social Media Script","Explainer Script","Plot Generator","Story Outline","Three Act Structure","Five Act Structure","Beat Sheet Builder","Character Bio Writer","Character Arc Builder","Subplot Generator","Plot Twist Generator","Opening Hook Creator","Climax Designer","Logline Generator","Synopsis Writer","Treatment Writer","Scene Writer","Text to Dialogue","Dialogue Generator","Narration Writer","Voiceover Script","Interview Script","Action Line Writer","Scene Heading Tool","Parenthetical Generator","Script Formatter","Dialogue Tightener","Script Timer","Word Counter","Page Counter","Reading Time Estimator","Format Checker","Grammar Polish","Spell Checker","Continuity Checker","Plot Hole Detector","Tone Checker","Genre Classifier"];
@@ -109,8 +95,6 @@ const VOICE = ["Upload Own Voice","Record My Voice","Clone My Voice","Text to Vo
 const IMAGE_T = ["Text to Image","Prompt to Image","Image to Image","Image Upscaler","Image Generator","AI Art Generator","Photo to Painting","Sketch to Image","Wireframe to Image","Background Generator","Background Remover","Sky Replacer","Object Remover","Face Generator","Character Design","Portrait Generator","Avatar Creator","Product Image Generator","Architecture Visualizer","Interior Design Generator","Landscape Generator","Abstract Art Generator","Logo Generator","Icon Creator","Texture Generator","Pattern Maker","Color Palette Generator","Style Transfer","Photo Enhancer","Photo Restorer","Old Photo Colorizer","Black & White to Color","Image Denoiser","Sharpness Enhancer","Clarity Booster","Detail Enhancer","HDR Image Creator","Exposure Fixer","White Balance AI","Color Grading Studio","LUT Creator","Tone Mapper","Contrast Adjuster","Brightness Tool","Saturation Engine","Hue Shift","Temperature Control","Vignette Tool"];
 const VIDEO_T = ["Text to Video","Image to Video","Video to Video","AI Video Creator","AI Film Generator","Video Upscaler","AI Video Generator 4K","Set to Video","Video Colorizer","Color Grading Pro","Fast Look Generator","Film Restoration","Time Lapse Creator","Video Trimmer","Background Remover","Digital Human Video","Rotoscope Video","Animation Creator","Puppet Animator","Motion Capture","Character Animator","Video Stabilizer","Video Compressor","Cinematic LUT","Black & White Film","Film Texture","VHS Effect","Glitch Effect","Quick Film Creator","Opening Slate","Time Freeze","Bullet Time Effect","Rain Simulation","Snow Simulation","Smoke Generator","Fire Simulation","Particle System","AI Progressive Video","4K Upscaling"];
 const MOTION = ["AI 8K Upscaling","AI 4K Upscaling","Video Super Resolution","Frame Interpolation","Video Denoiser","Noise Reduction","Grain Remover","Artifact Remover","Scratch Remover","Video Sharpener","Clarity Booster","Detail Enhancer","Edge Enhancement","Texture Boost","White Balance AI","Color Correction","Auto Color Balance","Color Match Pro","Color Grading AI","Cinematic Color Grade","Film Stock Emulation","LUT Generator","Tone Mapping Pro","HDR Enhancement","Deep HDR Boost","Dynamic Range Expansion","Shadow Recovery","Highlight Recovery","Black Point Calibration","Gamma Correction","Contrast Enhancer","Brightness Optimizer","Saturation Booster","Smart Saturation","Face Enhancement","Face Retouch","Eye Enhancer","Teeth Whitener","Skin Tone Enhancer","Background Enhancer","Sky Enhancer","Landscape Enhancer","Night Video Enhancer","Low Light Clarity","Motion Stabilization","Shake Remover","Rolling Shutter Fix"];
-
-const VOICE_TOOLS = ["Text to Voice","Text to Speech","Text to Narration","Text to Audiobook","Text to Voiceover","AI Voice Actor","Neural Voice Generator","Emotion Voice Synth","Documentary Voice","Trailer Voice Generator","Commercial Voice","Character Voice Creator","Audiobook Creator","Podcast Voice"];
 
 const NAV = [{p:1,l:"Home"},{p:2,l:"Platform"},{p:3,l:"Examples"},{p:4,l:"Login / Pricing"},{p:5,l:"Writing Tools"},{p:6,l:"Voice Tools"},{p:7,l:"Image Tools"},{p:8,l:"Video Tools"},{p:9,l:"Motion & VFX"},{p:10,l:"Enhancement"},{p:11,l:"Upload Media"},{p:12,l:"Editor Suite"},{p:13,l:"Timeline Editor"},{p:14,l:"Enhancement Studio"},{p:15,l:"Audio Mixer"},{p:16,l:"Render Engine"},{p:17,l:"Film Preview"},{p:18,l:"Export & Distribute"},{p:19,l:"Tutorials"},{p:20,l:"Terms & Disclaimer"},{p:21,l:"Agent Grok"},{p:22,l:"Community Hub"},{p:23,l:"That's All Folks"}];
 
@@ -247,7 +231,6 @@ function ToolPanel({ tool, onClose, onSave }) {
             <button key={m} onClick={()=>setMode(m)} style={{...G(mode===m?"gold":"out",true),fontSize:11}}>{l}</button>
           ))}
         </div>
-
         {mode==="voice"&&isVoice&&(
           <div>
             <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:10}}>SELECT VOICE</div>
@@ -257,7 +240,7 @@ function ToolPanel({ tool, onClose, onSave }) {
                   style={{background:"#000",border:`2px solid ${selVoice===v.id?GOLD:GOLDDIM}`,padding:"10px 12px",cursor:"pointer",boxShadow:selVoice===v.id?`0 0 12px ${GOLD}44`:"none"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
                     <span style={{color:selVoice===v.id?GOLD:WHITE,fontSize:14,fontWeight:900}}>{v.name}</span>
-                    <button onClick={e=>{e.stopPropagation();speak(v.id,`Hi I am ${v.name}. ${v.desc}. Ready to narrate your documentary.`);}}
+                    <button onClick={e=>{e.stopPropagation();speak(v.id,`Hi I am ${v.name}. ${v.desc}. Ready to narrate.`);}}
                       style={{background:"none",border:`1px solid ${GOLDDIM}`,color:GOLD,padding:"2px 8px",cursor:"pointer",fontSize:10,fontWeight:900}}>
                       {playing===v.id?"⏹":"▶"}
                     </button>
@@ -267,35 +250,28 @@ function ToolPanel({ tool, onClose, onSave }) {
                 </div>
               ))}
             </div>
-            <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:6}}>PASTE YOUR SCRIPT OR DIALOGUE</div>
-            <textarea value={describe} onChange={e=>setDescribe(e.target.value)}
-              placeholder="Paste your narration text here..."
+            <textarea value={describe} onChange={e=>setDescribe(e.target.value)} placeholder="Paste your narration text here..."
               style={{...inp,height:110,resize:"none",lineHeight:1.7,marginBottom:10}}/>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:result?14:0}}>
-              <button onClick={runAI} disabled={loading||!describe.trim()}
-                style={{...G("gold",false),padding:"12px",opacity:loading||!describe.trim()?0.5:1}}>
+              <button onClick={runAI} disabled={loading||!describe.trim()} style={{...G("gold",false),padding:"12px",opacity:loading||!describe.trim()?0.5:1}}>
                 {loading?"⟳ GENERATING...":"AI FORMAT & SPEAK ✦"}
               </button>
-              <button onClick={()=>speak(selVoice,describe)} disabled={!describe.trim()}
-                style={{...G("out",false),padding:"12px",opacity:!describe.trim()?0.5:1}}>
+              <button onClick={()=>speak(selVoice,describe)} disabled={!describe.trim()} style={{...G("out",false),padding:"12px",opacity:!describe.trim()?0.5:1}}>
                 ▶ SPEAK NOW
               </button>
             </div>
             {result&&(
               <div>
-                <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:6}}>FORMATTED NARRATION</div>
-                <textarea value={result} onChange={e=>setResult(e.target.value)}
-                  style={{...inp,height:110,resize:"none",lineHeight:1.7,marginBottom:10}}/>
+                <textarea value={result} onChange={e=>setResult(e.target.value)} style={{...inp,height:110,resize:"none",lineHeight:1.7,marginBottom:10}}/>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
                   <button onClick={()=>speak(selVoice,result)} style={{...G("out",false),padding:"10px"}}>▶ PLAY</button>
-                  <button onClick={()=>stopSpeaking()} style={{...G("out",false),padding:"10px"}}>⏹ STOP</button>
+                  <button onClick={stopSpeaking} style={{...G("out",false),padding:"10px"}}>⏹ STOP</button>
                   <button onClick={saveAsset} style={{...G("gold",false),padding:"10px"}}>SAVE TO LIBRARY</button>
                 </div>
               </div>
             )}
           </div>
         )}
-
         {mode==="upload"&&(
           <div style={{marginBottom:14}}>
             <div onClick={()=>fileRef.current&&fileRef.current.click()}
@@ -312,37 +288,30 @@ function ToolPanel({ tool, onClose, onSave }) {
             }}/>
           </div>
         )}
-
         {mode==="paste"&&(
           <div style={{marginBottom:14}}>
             <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:6}}>ADD URL</div>
             <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Paste a URL..." style={{...inp,marginBottom:10}}/>
             <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:6}}>OR PASTE TEXT</div>
-            <textarea value={describe} onChange={e=>setDescribe(e.target.value)} placeholder="Paste your content here..."
-              style={{...inp,height:100,resize:"none",lineHeight:1.6}}/>
+            <textarea value={describe} onChange={e=>setDescribe(e.target.value)} placeholder="Paste your content here..." style={{...inp,height:100,resize:"none",lineHeight:1.6}}/>
             <button onClick={saveAsset} style={{...G("gold",false),marginTop:8,width:"100%",padding:"12px"}}>SAVE TO MEDIA LIBRARY</button>
           </div>
         )}
-
         {mode==="ai"&&(
           <div style={{marginBottom:14}}>
             <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:6}}>DESCRIBE</div>
-            <textarea value={describe} onChange={e=>setDescribe(e.target.value)} placeholder={`Describe what you want from ${tool}...`}
-              style={{...inp,height:80,resize:"none",lineHeight:1.6}}/>
-            <button onClick={runAI} disabled={loading||!describe.trim()}
-              style={{...G("gold",false),marginTop:8,width:"100%",padding:"12px",opacity:loading||!describe.trim()?0.5:1}}>
+            <textarea value={describe} onChange={e=>setDescribe(e.target.value)} placeholder={`Describe what you want from ${tool}...`} style={{...inp,height:80,resize:"none",lineHeight:1.6}}/>
+            <button onClick={runAI} disabled={loading||!describe.trim()} style={{...G("gold",false),marginTop:8,width:"100%",padding:"12px",opacity:loading||!describe.trim()?0.5:1}}>
               {loading?"⟳ GENERATING...":"AI CREATE ✦"}
             </button>
             {result&&(
               <div style={{marginTop:14}}>
-                <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:6}}>RESULT</div>
                 <textarea value={result} onChange={e=>setResult(e.target.value)} style={{...inp,height:140,resize:"none",lineHeight:1.7}}/>
                 <button onClick={saveAsset} style={{...G("gold",false),marginTop:8,width:"100%",padding:"12px"}}>GENERATE & SAVE</button>
               </div>
             )}
           </div>
         )}
-
         {saved&&(
           <div style={{marginTop:14,background:"#0a2a0a",border:"1px solid #22c55e",padding:"12px 16px",textAlign:"center"}}>
             <div style={{color:"#22c55e",fontWeight:900,fontSize:14,letterSpacing:2}}>✓ ASSET SAVED TO MEDIA LIBRARY</div>
@@ -382,6 +351,310 @@ function ToolPage({ title, subtitle, tools, onSave }) {
   );
 }
 
+function MusicVideoStudio({ onClose, onSave }) {
+  const [step, setStep] = useState(1);
+  const [generating, setGenerating] = useState(false);
+  const [result, setResult] = useState(null);
+  const [config, setConfig] = useState({
+    title:"",
+    artist:"",
+    genre:"",
+    subgenre:"",
+    mood:"",
+    tempo:"",
+    key:"",
+    structure:"",
+    vocals:"",
+    instruments:[],
+    vocalStyle:"",
+    lyrics:"",
+    lyricsMode:"write",
+    videoStyle:"",
+    colorGrade:"",
+    visualMood:"",
+    effects:[],
+    cuts:"",
+    aspectRatio:"16:9",
+    duration:"",
+    extras:[],
+  });
+
+  const set = (k,v) => setConfig(p=>({...p,[k]:v}));
+  const toggle = (k,v) => setConfig(p=>({...p,[k]:p[k].includes(v)?p[k].filter(x=>x!==v):[...p[k],v]}));
+
+  const GENRES = ["Pop","Rock","Hip Hop","R&B / Soul","Electronic / EDM","Country","Jazz","Classical","Metal","Punk","Reggae","Folk / Acoustic","Latin","K-Pop","Drill","Trap","Afrobeats","Gospel","Blues","Cinematic / Score"];
+  const MOODS = ["Euphoric","Melancholic","Energetic","Romantic","Angry","Peaceful","Mysterious","Empowering","Nostalgic","Dark","Playful","Epic","Haunting","Uplifting","Tense"];
+  const TEMPOS = ["Very Slow (40-60 BPM)","Slow (60-80 BPM)","Mid-Tempo (80-100 BPM)","Upbeat (100-120 BPM)","Fast (120-140 BPM)","Very Fast (140+ BPM)"];
+  const STRUCTURES = ["Verse / Chorus / Bridge","Verse / Pre-Chorus / Chorus","Intro / Verse / Chorus / Outro","Through-Composed","Loop-Based","Call & Response","Extended (10+ mins)"];
+  const VOCALS = ["Male Lead","Female Lead","Male & Female Duet","Group / Choir","No Vocals (Instrumental)","Spoken Word / Rap","Whisper / ASMR","Opera / Classical"];
+  const VOCAL_STYLES = ["Clean / Studio","Raspy / Gritty","Auto-Tuned","Falsetto","Belting","Breathy","Choral","Spoken Word","Lo-Fi"];
+  const INSTRUMENTS = ["Electric Guitar","Acoustic Guitar","Bass Guitar","Piano / Keys","Synthesizer","Drums / Percussion","Violin / Strings","Trumpet / Brass","Saxophone","Flute","808 Bass","TR-808 Drums","Choir Pad","Orchestra","Banjo","Ukulele","Harp","Didgeridoo","Steel Drums","Theremin"];
+  const VIDEO_STYLES = ["Cinematic Narrative","Performance / Live","Animated / Illustrated","Abstract / Visual Art","Dance Choreography","Documentary Style","Lyric Video","Split Screen","Stop Motion","Retro / VHS","Noir / Black & White","Neon / Cyberpunk","Nature / Landscape","Studio Session","Surrealist / Dreamlike","Vintage Film"];
+  const COLOR_GRADES = ["Natural / Clean","Golden Hour Warm","Cool Blue / Moody","High Contrast Black & White","Neon / Vivid","Pastel / Soft","Cinematic Teal & Orange","Vintage Film Grain","Dark & Desaturated","Hyper Colour Pop"];
+  const EFFECTS = ["Slow Motion","Speed Ramps","Glitch Effects","Light Leaks","Lens Flares","Rain / Water","Fire / Smoke","Bokeh / Blur","Double Exposure","Mirror / Kaleidoscope","Grain / Noise","Vignette","Colour Bleeding","Chromatic Aberration","Particle Effects"];
+  const CUTS = ["Fast Cuts / High Energy","Slow & Deliberate","Match Cuts","Jump Cuts","Long Takes","Beat-Synced Cuts","Cross-Cuts","Montage Style"];
+  const DURATIONS = ["2 Minutes","3 Minutes","3:30 Minutes","4 Minutes","5 Minutes","6+ Minutes (Extended)"];
+  const EXTRAS = ["Behind the Scenes Footage","Making Of Segment","Lyrics on Screen","Social Media Teaser Cut","Album Art Slide","Director Commentary","Fan Cam Version","360° Video"];
+
+  const sel = (k,v,arr) => (
+    <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:4}}>
+      {arr.map(item=>(
+        <button key={item} onClick={()=>set(k,item)}
+          style={{background:config[k]===item?GOLD:"#111",border:`1px solid ${config[k]===item?"#000":GOLDDIM}`,color:config[k]===item?"#000":WHITE,padding:"5px 12px",cursor:"pointer",fontSize:12,fontWeight:900,letterSpacing:1}}>
+          {item}
+        </button>
+      ))}
+    </div>
+  );
+
+  const multi = (k,arr) => (
+    <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:4}}>
+      {arr.map(item=>(
+        <button key={item} onClick={()=>toggle(k,item)}
+          style={{background:config[k].includes(item)?GOLD:"#111",border:`1px solid ${config[k].includes(item)?"#000":GOLDDIM}`,color:config[k].includes(item)?"#000":WHITE,padding:"5px 12px",cursor:"pointer",fontSize:12,fontWeight:900,letterSpacing:1}}>
+          {item}
+        </button>
+      ))}
+    </div>
+  );
+
+  const generateProject = async () => {
+    setGenerating(true);
+    try {
+      const prompt = `You are a professional music video director and music producer. Create a complete, detailed music video production brief and creative treatment for the following project:
+
+TITLE: ${config.title||"Untitled"}
+ARTIST: ${config.artist||"Unknown Artist"}
+GENRE: ${config.genre} ${config.subgenre?`/ ${config.subgenre}`:""}
+MOOD: ${config.mood}
+TEMPO: ${config.tempo}
+MUSICAL KEY: ${config.key||"Artist's choice"}
+SONG STRUCTURE: ${config.structure}
+VOCALS: ${config.vocals} — Style: ${config.vocalStyle}
+INSTRUMENTS: ${config.instruments.join(", ")||"Standard band"}
+VIDEO STYLE: ${config.videoStyle}
+COLOUR GRADE: ${config.colorGrade}
+VISUAL MOOD: ${config.visualMood||config.mood}
+VIDEO EFFECTS: ${config.effects.join(", ")||"None specified"}
+EDITING STYLE: ${config.cuts}
+ASPECT RATIO: ${config.aspectRatio}
+DURATION: ${config.duration}
+EXTRAS: ${config.extras.join(", ")||"None"}
+
+${config.lyricsMode==="write"&&config.lyrics?`LYRICS PROVIDED:\n${config.lyrics}`:`LYRICS: Please generate original lyrics that match the genre, mood and style.`}
+
+Please provide:
+1. SONG TITLE & ARTIST CONCEPT (2-3 sentences)
+2. COMPLETE LYRICS (verses, chorus, bridge, outro — full song)
+3. MUSIC PRODUCTION NOTES (key, chord progression, instrumentation breakdown, production style)
+4. VIDEO TREATMENT (scene by scene description, shot list, locations, props, wardrobe, cast direction)
+5. DIRECTOR'S VISION (the emotional arc of the video, how it connects to the lyrics)
+6. SHOT LIST (at least 10 specific shots with camera angles, movement and description)
+7. POST PRODUCTION NOTES (colour grade instructions, effects, editing rhythm, transitions)
+8. SOCIAL MEDIA STRATEGY (teaser clips, promotional angles, hashtag suggestions)
+
+Make it professional, creative, and production-ready. This is for a real music video shoot.`;
+
+      const res = await fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
+        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,messages:[{role:"user",content:prompt}]})
+      });
+      const d = await res.json();
+      const treatment = d.content&&d.content[0]?d.content[0].text:"Error generating — check API key.";
+      setResult(treatment);
+      setStep(4);
+    } catch(e) { setResult("Connection error — check your API key in Bolt settings."); setStep(4); }
+    setGenerating(false);
+  };
+
+  const inp = {width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"9px 12px",color:WHITE,fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"};
+  const label = (txt) => <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:8,marginTop:14}}>{txt}</div>;
+
+  const steps = ["🎵 MUSIC","🎤 VOCALS","🎬 VIDEO","✦ GENERATE"];
+
+  return (
+    <div style={{position:"fixed",inset:0,zIndex:1100,background:"rgba(0,0,0,0.97)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{width:"min(820px,98vw)",background:"#050505",border:`2px solid ${GOLD}`,maxHeight:"95vh",overflowY:"auto",display:"flex",flexDirection:"column"}}>
+
+        {/* HEADER */}
+        <div style={{background:`linear-gradient(135deg,#1a0a00,#0a0500)`,borderBottom:`1px solid ${GOLD}`,padding:"16px 24px",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
+          <div>
+            <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:20,fontWeight:900,letterSpacing:4,textShadow:`0 0 20px ${GOLD}88`}}>🎬 MUSIC VIDEO STUDIO</div>
+            <div style={{color:WHITE,fontSize:11,letterSpacing:3,marginTop:2}}>PROFESSIONAL MUSIC VIDEO PRODUCTION · AI POWERED</div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:`1px solid ${GOLD}`,color:GOLD,width:32,height:32,cursor:"pointer",fontSize:16}}>✕</button>
+        </div>
+
+        {/* STEP TABS */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",borderBottom:`1px solid ${GOLDDIM}`,flexShrink:0}}>
+          {steps.map((s,i)=>(
+            <button key={i} onClick={()=>setStep(i+1)}
+              style={{background:step===i+1?"#0a0500":"none",border:"none",borderBottom:step===i+1?`2px solid ${GOLD}`:"2px solid transparent",color:step===i+1?GOLD:WHITE,padding:"12px 8px",cursor:"pointer",fontSize:12,fontWeight:900,letterSpacing:2}}>
+              {s}
+            </button>
+          ))}
+        </div>
+
+        <div style={{padding:"20px 24px",flex:1}}>
+
+          {/* STEP 1 — MUSIC */}
+          {step===1&&(
+            <div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:4}}>
+                <div>
+                  {label("SONG TITLE")}
+                  <input value={config.title} onChange={e=>set("title",e.target.value)} placeholder="My Song Title..." style={inp}/>
+                </div>
+                <div>
+                  {label("ARTIST / BAND NAME")}
+                  <input value={config.artist} onChange={e=>set("artist",e.target.value)} placeholder="Artist Name..." style={inp}/>
+                </div>
+              </div>
+              {label("GENRE")}
+              {sel("genre","",GENRES)}
+              {label("MOOD")}
+              {sel("mood","",MOODS)}
+              {label("TEMPO")}
+              {sel("tempo","",TEMPOS)}
+              {label("INSTRUMENTS — pick all that apply")}
+              {multi("instruments",INSTRUMENTS)}
+              {label("MUSICAL KEY (optional)")}
+              <input value={config.key} onChange={e=>set("key",e.target.value)} placeholder="e.g. A minor, C major, F# minor..." style={{...inp,width:"50%"}}/>
+              {label("SONG STRUCTURE")}
+              {sel("structure","",STRUCTURES)}
+            </div>
+          )}
+
+          {/* STEP 2 — VOCALS & LYRICS */}
+          {step===2&&(
+            <div>
+              {label("VOCALS")}
+              {sel("vocals","",VOCALS)}
+              {label("VOCAL STYLE")}
+              {sel("vocalStyle","",VOCAL_STYLES)}
+              {label("LYRICS")}
+              <div style={{display:"flex",gap:8,marginBottom:10}}>
+                <button onClick={()=>set("lyricsMode","write")} style={{...G(config.lyricsMode==="write"?"gold":"out",true)}}>✍ WRITE MY OWN</button>
+                <button onClick={()=>set("lyricsMode","ai")} style={{...G(config.lyricsMode==="ai"?"gold":"out",true)}}>✦ AI WRITE FOR ME</button>
+              </div>
+              {config.lyricsMode==="write"&&(
+                <textarea value={config.lyrics} onChange={e=>set("lyrics",e.target.value)}
+                  placeholder="Paste or write your lyrics here...&#10;&#10;[Verse 1]&#10;...&#10;[Chorus]&#10;...&#10;[Bridge]&#10;..."
+                  style={{...inp,height:220,resize:"none",lineHeight:1.8}}/>
+              )}
+              {config.lyricsMode==="ai"&&(
+                <div style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:16,textAlign:"center"}}>
+                  <div style={{color:GOLD,fontSize:13,fontWeight:900,letterSpacing:2,marginBottom:8}}>✦ AI WILL WRITE YOUR LYRICS</div>
+                  <div style={{color:WHITE,fontSize:13}}>Based on your genre ({config.genre||"selected genre"}), mood ({config.mood||"selected mood"}) and style choices — Claude will generate full original lyrics when you hit Generate.</div>
+                  <div style={{marginTop:12}}>
+                    <div style={{color:GOLD,fontSize:11,letterSpacing:2,marginBottom:6}}>LYRIC THEME / TOPIC (optional)</div>
+                    <input value={config.lyrics} onChange={e=>set("lyrics",e.target.value)} placeholder="e.g. Lost love, empowerment, city nights, summer road trip..." style={inp}/>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* STEP 3 — VIDEO */}
+          {step===3&&(
+            <div>
+              {label("VIDEO STYLE")}
+              {sel("videoStyle","",VIDEO_STYLES)}
+              {label("COLOUR GRADE")}
+              {sel("colorGrade","",COLOR_GRADES)}
+              {label("VISUAL MOOD (optional override)")}
+              <input value={config.visualMood} onChange={e=>set("visualMood",e.target.value)} placeholder="e.g. Lonely city streets at night, sunlit fields, dark club energy..." style={inp}/>
+              {label("VISUAL EFFECTS — pick all that apply")}
+              {multi("effects",EFFECTS)}
+              {label("EDITING STYLE")}
+              {sel("cuts","",CUTS)}
+              {label("VIDEO DURATION")}
+              {sel("duration","",DURATIONS)}
+              {label("ASPECT RATIO")}
+              <div style={{display:"flex",gap:6}}>
+                {["16:9","9:16 (Vertical)","1:1 (Square)","4:3 (Classic)","2.39:1 (Cinematic)"].map(r=>(
+                  <button key={r} onClick={()=>set("aspectRatio",r)}
+                    style={{background:config.aspectRatio===r?GOLD:"#111",border:`1px solid ${config.aspectRatio===r?"#000":GOLDDIM}`,color:config.aspectRatio===r?"#000":WHITE,padding:"5px 12px",cursor:"pointer",fontSize:11,fontWeight:900}}>
+                    {r}
+                  </button>
+                ))}
+              </div>
+              {label("EXTRAS — pick all that apply")}
+              {multi("extras",EXTRAS)}
+            </div>
+          )}
+
+          {/* STEP 4 — GENERATE / RESULT */}
+          {step===4&&!result&&(
+            <div style={{textAlign:"center",padding:"40px 20px"}}>
+              <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:22,fontWeight:900,marginBottom:16,letterSpacing:3}}>READY TO CREATE</div>
+              <div style={{color:WHITE,fontSize:14,lineHeight:1.9,marginBottom:24,maxWidth:500,margin:"0 auto 24px"}}>
+                Your music video project is configured. Claude will generate your complete production package including full lyrics, music direction, scene-by-scene video treatment, shot list and post production notes.
+              </div>
+              <div style={{...Card(),display:"inline-grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:28,textAlign:"left",minWidth:380}}>
+                {[["Genre",config.genre],["Mood",config.mood],["Vocals",config.vocals],["Video Style",config.videoStyle],["Duration",config.duration],["Aspect Ratio",config.aspectRatio]].map(([k,v])=>v&&(
+                  <div key={k}>
+                    <div style={{color:GOLDDIM,fontSize:10,letterSpacing:2}}>{k}</div>
+                    <div style={{color:WHITE,fontSize:13,fontWeight:700}}>{v}</div>
+                  </div>
+                ))}
+              </div>
+              <div>
+                <button onClick={generateProject} disabled={generating}
+                  style={{...G("gold",false),fontSize:14,padding:"16px 48px",letterSpacing:3,opacity:generating?0.6:1}}>
+                  {generating?"⟳  GENERATING YOUR MUSIC VIDEO...":"✦  GENERATE MUSIC VIDEO PROJECT"}
+                </button>
+                {generating&&<div style={{color:GOLD,fontSize:12,letterSpacing:2,marginTop:12}}>Claude is writing your full production package...</div>}
+              </div>
+            </div>
+          )}
+
+          {step===4&&result&&(
+            <div>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,letterSpacing:3}}>✦ YOUR MUSIC VIDEO PRODUCTION PACKAGE</div>
+                <div style={{display:"flex",gap:8}}>
+                  <button onClick={()=>{
+                    if(onSave)onSave({id:Date.now()+Math.random(),name:`Music Video — ${config.title||"Untitled"} by ${config.artist||"Unknown"}`,type:"text/plain",url:"",content:result});
+                    alert("Saved to Media Library!");
+                  }} style={{...G("gold",true)}}>SAVE TO LIBRARY</button>
+                  <button onClick={()=>{setResult(null);setStep(1);setConfig({title:"",artist:"",genre:"",subgenre:"",mood:"",tempo:"",key:"",structure:"",vocals:"",instruments:[],vocalStyle:"",lyrics:"",lyricsMode:"write",videoStyle:"",colorGrade:"",visualMood:"",effects:[],cuts:"",aspectRatio:"16:9",duration:"",extras:[]});}} style={{...G("out",true)}}>NEW PROJECT</button>
+                </div>
+              </div>
+              <textarea value={result} onChange={e=>setResult(e.target.value)} readOnly
+                style={{...inp,height:420,resize:"none",lineHeight:1.8,fontSize:13}}/>
+              <div style={{marginTop:12,display:"flex",gap:8,flexWrap:"wrap"}}>
+                <button onClick={()=>{navigator.clipboard&&navigator.clipboard.writeText(result);}} style={{...G("out",true),fontSize:11}}>📋 COPY ALL</button>
+                <button onClick={()=>{
+                  const blob=new Blob([result],{type:"text/plain"});
+                  const url=URL.createObjectURL(blob);
+                  const a=document.createElement("a");
+                  a.href=url;a.download=`${config.title||"MusicVideo"}_Production.txt`;a.click();
+                }} style={{...G("out",true),fontSize:11}}>⬇ DOWNLOAD TXT</button>
+                <div style={{color:WHITE,fontSize:12,padding:"5px 0",letterSpacing:1}}>→ Take lyrics to Page 6 Voice Tools to record narration · Take video treatment to Page 8 Video Tools</div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* FOOTER NAV */}
+        {step<4&&(
+          <div style={{borderTop:`1px solid ${GOLDDIM}`,padding:"12px 24px",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
+            <button onClick={()=>setStep(s=>Math.max(1,s-1))} disabled={step===1} style={{...G("out",true),opacity:step===1?0.3:1}}>◀ BACK</button>
+            <div style={{display:"flex",gap:6}}>
+              {[1,2,3,4].map(n=>(
+                <div key={n} style={{width:8,height:8,borderRadius:"50%",background:step>=n?GOLD:GOLDDIM,cursor:"pointer"}} onClick={()=>setStep(n)}/>
+              ))}
+            </div>
+            <button onClick={()=>setStep(s=>Math.min(4,s+1))} style={{...G("gold",true)}}>NEXT ▶</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function P6Voice({ onSave }) {
   const [selVoice, setSelVoice] = useState("james");
   const [text, setText] = useState("");
@@ -390,10 +663,42 @@ function P6Voice({ onSave }) {
   const [saved, setSaved] = useState(false);
   const [playing, setPlaying] = useState(null);
   const [search, setSearch] = useState("");
+  const [showMVS, setShowMVS] = useState(false);
+  const [allDeviceVoices, setAllDeviceVoices] = useState([]);
+  const [voiceAssign, setVoiceAssign] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("ms_voice_assign")||"{}"); } catch { return {}; }
+  });
   const filtered = VOICE.filter(t=>t.toLowerCase().includes(search.toLowerCase()));
   const inp = {width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"9px 12px",color:WHITE,fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif"};
 
+  useEffect(()=>{
+    const load = () => {
+      const v = window.speechSynthesis.getVoices();
+      if (v.length>0) setAllDeviceVoices(v);
+    };
+    load();
+    window.speechSynthesis.onvoiceschanged = load;
+    setTimeout(load, 800);
+  },[]);
+
+  const assignVoice = (charId, voiceName) => {
+    const updated = {...voiceAssign, [charId]: voiceName};
+    setVoiceAssign(updated);
+    VOICE_ASSIGNMENTS = updated;
+    try { localStorage.setItem("ms_voice_assign", JSON.stringify(updated)); } catch{}
+  };
+
   const speak = (vid, txt) => speakText(vid, txt, ()=>setPlaying(vid), ()=>setPlaying(null));
+
+  const testVoice = (voiceName) => {
+    window.speechSynthesis.cancel();
+    const allVoices = window.speechSynthesis.getVoices();
+    const v = allVoices.find(x=>x.name===voiceName);
+    if (!v) return;
+    const utt = new SpeechSynthesisUtterance(`Hello, I am ${voiceName}. I am ready to narrate your film.`);
+    utt.voice = v; utt.pitch = 1.0; utt.rate = 0.9;
+    window.speechSynthesis.speak(utt);
+  };
 
   const generateNarration = async () => {
     if (!text.trim()) return;
@@ -423,18 +728,64 @@ function P6Voice({ onSave }) {
 
   return (
     <div style={{...Sp}}>
+      {showMVS&&<MusicVideoStudio onClose={()=>setShowMVS(false)} onSave={onSave}/>}
       <div style={{padding:"14px 18px 12px",borderBottom:`1px solid ${GOLDDIM}`,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
         <div>
           <div style={{fontSize:12,color:GOLD,letterSpacing:4,fontWeight:700}}>AI WORKSTATION 02 — VOICE</div>
           <h1 style={{...H1,fontSize:24,margin:0}}>VOICE TOOLS</h1>
         </div>
-        <div style={{position:"relative"}}>
-          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search voice tools..."
-            style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:"7px 12px 7px 28px",color:WHITE,fontSize:13,outline:"none",width:200}}/>
-          <span style={{position:"absolute",left:8,top:"50%",transform:"translateY(-50%)",color:GOLD}}>🔍</span>
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          <button onClick={()=>setShowMVS(true)}
+            style={{background:`linear-gradient(135deg,#1a0050,#4a0080)`,border:`1px solid #9933ff`,color:"#cc99ff",padding:"8px 16px",cursor:"pointer",fontSize:11,fontWeight:900,letterSpacing:2,whiteSpace:"nowrap"}}>
+            🎬 MUSIC VIDEO STUDIO
+          </button>
+          <div style={{position:"relative"}}>
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search voice tools..."
+              style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:"7px 12px 7px 28px",color:WHITE,fontSize:13,outline:"none",width:200}}/>
+            <span style={{position:"absolute",left:8,top:"50%",transform:"translateY(-50%)",color:GOLD}}>🔍</span>
+          </div>
         </div>
       </div>
       <div style={{padding:"16px 18px"}}>
+
+        {/* VOICE STUDIO — all device voices */}
+        <div style={{...Card(),marginBottom:20,border:`1px solid ${GOLD}`,background:"#050505"}}>
+          <div style={{color:GOLD,fontSize:13,letterSpacing:3,fontWeight:900,marginBottom:6}}>🎙 VOICE STUDIO — {allDeviceVoices.length} VOICES ON YOUR DEVICE</div>
+          <div style={{color:WHITE,fontSize:12,marginBottom:14}}>Preview any voice below then assign it to a character. Your choices are saved and work on every session.</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:6,marginBottom:14,maxHeight:260,overflowY:"auto"}}>
+            {allDeviceVoices.map(v=>(
+              <div key={v.name} style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:"8px 10px"}}>
+                <div style={{color:WHITE,fontSize:12,fontWeight:900,marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{v.name}</div>
+                <div style={{color:DIM,fontSize:10,marginBottom:6}}>{v.lang}</div>
+                <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                  <button onClick={()=>testVoice(v.name)} style={{...G("out",true),fontSize:9,padding:"2px 8px"}}>▶ TEST</button>
+                  {STOCK_VOICES.map(sv=>(
+                    <button key={sv.id} onClick={()=>assignVoice(sv.id, v.name)}
+                      style={{fontSize:9,padding:"2px 8px",background:voiceAssign[sv.id]===v.name?GOLD:"#111",border:`1px solid ${voiceAssign[sv.id]===v.name?"#000":GOLDDIM}`,color:voiceAssign[sv.id]===v.name?"#000":WHITE,cursor:"pointer",fontWeight:900,letterSpacing:1}}>
+                      {sv.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Current assignments */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>
+            {STOCK_VOICES.map(sv=>(
+              <div key={sv.id} style={{background:"#0a0a0a",border:`1px solid ${voiceAssign[sv.id]?GOLD:GOLDDIM}`,padding:"8px 10px"}}>
+                <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:3}}>{sv.name}</div>
+                <div style={{color:voiceAssign[sv.id]?WHITE:DIM,fontSize:10,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                  {voiceAssign[sv.id]||"auto"}
+                </div>
+                {voiceAssign[sv.id]&&(
+                  <button onClick={()=>assignVoice(sv.id,"")} style={{background:"none",border:"none",color:"#ef4444",cursor:"pointer",fontSize:9,padding:0,marginTop:2}}>✕ clear</button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 6 STOCK VOICE CARDS */}
         <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:12}}>SELECT VOICE</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:20}}>
           {STOCK_VOICES.map(v=>(
@@ -449,9 +800,12 @@ function P6Voice({ onSave }) {
               </div>
               <div style={{color:GOLD,fontSize:11,letterSpacing:1,marginBottom:3}}>{v.desc}</div>
               <div style={{color:WHITE,fontSize:10,letterSpacing:1}}>{v.style} · {v.accent}</div>
+              {voiceAssign[v.id]&&<div style={{color:GOLDDIM,fontSize:9,marginTop:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>🎙 {voiceAssign[v.id]}</div>}
             </div>
           ))}
         </div>
+
+        {/* TEXT TO NARRATION */}
         <div style={{...Card(),marginBottom:16}}>
           <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:10}}>TEXT TO NARRATION / VOICEOVER</div>
           <div style={{color:WHITE,fontSize:13,marginBottom:12}}>
@@ -471,6 +825,7 @@ function P6Voice({ onSave }) {
             </button>
           </div>
         </div>
+
         {result&&(
           <div style={{...Card(),marginBottom:16}}>
             <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:8}}>NARRATION OUTPUT</div>
@@ -478,15 +833,16 @@ function P6Voice({ onSave }) {
               style={{...inp,height:120,resize:"none",lineHeight:1.7,marginBottom:10}}/>
             <div style={{display:"flex",gap:10}}>
               <button onClick={()=>speak(selVoice,result)} style={{...G("out",false)}}>▶ PLAY</button>
-              <button onClick={()=>stopSpeaking()} style={{...G("out",false)}}>⏹ STOP</button>
+              <button onClick={stopSpeaking} style={{...G("out",false)}}>⏹ STOP</button>
               <button onClick={saveToLibrary} style={{...G("gold",false)}}>SAVE TO MEDIA LIBRARY</button>
             </div>
             {saved&&<div style={{marginTop:12,background:"#0a2a0a",border:"1px solid #22c55e",padding:"10px 14px",color:"#22c55e",fontWeight:900,fontSize:13,letterSpacing:2}}>✓ ASSET SAVED TO MEDIA LIBRARY</div>}
           </div>
         )}
+
         <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:10,marginTop:8}}>ALL VOICE TOOLS</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
-          {filtered.map(t=><ToolCard key={t} name={t} onOpen={n=>{}} />)}
+          {filtered.map(t=><ToolCard key={t} name={t} onOpen={()=>{}} />)}
         </div>
       </div>
     </div>
@@ -893,10 +1249,8 @@ function P16({ go, timeline, setRendered }) {
           </div>
           <input type="range" min={0} max={180} step={5} value={dur} onChange={e=>setDur(+e.target.value)} style={{width:"100%",accentColor:GOLD,marginBottom:6}}/>
           <div style={{display:"flex",justifyContent:"space-between"}}>
-            <span style={{color:DIM,fontSize:11}}>0</span>
-            <span style={{color:DIM,fontSize:11}}>60</span>
-            <span style={{color:DIM,fontSize:11}}>90</span>
-            <span style={{color:DIM,fontSize:11}}>120</span>
+            <span style={{color:DIM,fontSize:11}}>0</span><span style={{color:DIM,fontSize:11}}>60</span>
+            <span style={{color:DIM,fontSize:11}}>90</span><span style={{color:DIM,fontSize:11}}>120</span>
             <span style={{color:DIM,fontSize:11}}>180 MIN</span>
           </div>
         </div>
@@ -1168,7 +1522,6 @@ function P23({ go }) {
         </div>
         <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
           <button onClick={()=>window.open("https://MandaStrong1.Etsy.com","_blank")} style={{...G("out",false)}}>VISIT ETSY STORE</button>
-
           <button onClick={()=>window.close()} style={{...G("gold",false)}}>EXIT APP</button>
         </div>
       </div>
