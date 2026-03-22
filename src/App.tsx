@@ -42,12 +42,12 @@ const STOCK_VOICES = [
 // No third-party APIs needed — works with your existing Anthropic key
 
 const VOICE_PROFILES = {
-  aurora: { pitch:1.05, rate:0.88, detune:-50  },   // Warm British Female — slight lower
-  marcus: { pitch:0.75, rate:0.92, detune:-400 },   // Deep American Male — very low
-  sophia: { pitch:1.15, rate:1.05, detune:100  },   // Bright Australian Female — higher
-  james:  { pitch:0.70, rate:0.85, detune:-500 },   // Dry British Male — lowest, slowest
-  nova:   { pitch:1.08, rate:1.00, detune:0    },   // Neutral AI Female
-  river:  { pitch:0.80, rate:0.90, detune:-300 },   // Warm American Male
+  aurora: { pitch:1.0,  rate:0.88 },
+  marcus: { pitch:0.9,  rate:0.92 },
+  sophia: { pitch:1.1,  rate:1.05 },
+  james:  { pitch:0.85, rate:0.85 },
+  nova:   { pitch:1.0,  rate:1.00 },
+  river:  { pitch:0.9,  rate:0.90 },
 };
 
 let currentAudio = null;
