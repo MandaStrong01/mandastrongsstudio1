@@ -1316,12 +1316,7 @@ function P17({ go, mediaLib }) {
               onTimeUpdate={()=>setCurrentTime(videoRef.current?.currentTime||0)}
               onLoadedMetadata={()=>setDuration(videoRef.current?.duration||0)}
               onEnded={()=>setIsPlaying(false)}/>:
-            <div style={{textAlign:"center"}}>
-              <div style={{fontSize:36,marginBottom:10}}>🎬</div>
-              <div style={{fontSize:13,letterSpacing:3,color:WHITE,marginBottom:12}}>NO RENDER AVAILABLE</div>
-              <div style={{fontSize:12,color:DIM,marginBottom:16}}>Upload media on Page 11 then add to Timeline on Page 13</div>
-              <button onClick={()=>go(16)} style={{...G("out",true)}}>GO TO RENDER →</button>
-            </div>}
+            <div style={{textAlign:"center",color:GOLDDIM,fontSize:40}}>🎬</div>}
         </div>
         <div style={{...Card(),display:"flex",alignItems:"center",gap:8}}>
           <button onClick={()=>{if(videoRef.current)videoRef.current.currentTime=0;}} style={{...G("out",true)}}>⏮</button>
@@ -1358,11 +1353,22 @@ function P18({ mediaLib }) {
         </div>
         <div style={{color:GOLD,fontWeight:900,fontSize:11,letterSpacing:3,marginBottom:10}}>SHARE TO SOCIAL MEDIA</div>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-          {[["YouTube","#FF0000"],["Instagram","#E1306C"],["TikTok","#ffffff"],["X / Twitter","#ffffff"],["Facebook","#1877F2"],["LinkedIn","#0A66C2"],["Vimeo","#1AB7EA"],["Pinterest","#E60023"],["WhatsApp","#25D366"]].map(([s,c])=>(
-            <button key={s} style={{...Card(),padding:"8px 12px",cursor:"pointer"}}
-              onMouseEnter={e=>e.currentTarget.style.borderColor=c}
-              onMouseLeave={e=>e.currentTarget.style.borderColor=GOLDDIM}>
-              <div style={{color:WHITE,fontSize:12,fontWeight:700}}>{s}</div>
+          {[
+            ["YouTube","#FF0000","https://www.youtube.com/upload"],
+            ["Instagram","#E1306C","https://www.instagram.com"],
+            ["TikTok","#69C9D0","https://www.tiktok.com/upload"],
+            ["X / Twitter","#1DA1F2","https://twitter.com/intent/tweet?text=Check+out+my+film+made+with+MandaStrong+Studio"],
+            ["Facebook","#1877F2","https://www.facebook.com/sharer/sharer.php?u=https://mandastrong1.etsy.com"],
+            ["LinkedIn","#0A66C2","https://www.linkedin.com/sharing/share-offsite/?url=https://mandastrong1.etsy.com"],
+            ["Vimeo","#1AB7EA","https://vimeo.com/upload"],
+            ["Pinterest","#E60023","https://pinterest.com/pin/create/button"],
+            ["WhatsApp","#25D366","https://api.whatsapp.com/send?text=Check+out+my+film+made+with+MandaStrong+Studio"],
+          ].map(([s,c,link])=>(
+            <button key={s} onClick={()=>window.open(link,"_blank")}
+              style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:"10px 16px",cursor:"pointer",transition:"all .15s"}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor=c;e.currentTarget.style.background=c+"22";}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor=GOLDDIM;e.currentTarget.style.background="#000";}}>
+              <div style={{color:c,fontSize:12,fontWeight:900,letterSpacing:1}}>{s}</div>
             </button>
           ))}
         </div>
@@ -1508,6 +1514,7 @@ function P23({ go }) {
         <video autoPlay loop muted playsInline style={{width:"100%",aspectRatio:"16/9",background:"#000",border:`1px solid ${GOLDDIM}`,marginBottom:20,display:"block"}}>
           <source src="/background.mp4" type="video/mp4"/>
           <source src="/thatsallfolks.mp4" type="video/mp4"/>
+          <source src="/ocean.mp4" type="video/mp4"/>
         </video>
         <div onClick={()=>setGuideOpen(g=>!g)}
           style={{...Card(),marginBottom:guideOpen?0:16,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",border:`1px solid ${GOLD}`}}>
