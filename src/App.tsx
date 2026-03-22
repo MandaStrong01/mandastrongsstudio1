@@ -178,8 +178,10 @@ function ToolCard({ name, onOpen }) {
 
 function ToolPanel({ tool, onClose, onSave }) {
   const isVoice = VOICE_TOOLS.includes(tool);
-  const [mode, setMode] = useState(isVoice?"voice":"upload");
-  const [selVoice, setSelVoice] = useState("james");
+  const isVideoTool = ["Text to Video","Image to Video","Video to Video","AI Video Creator","AI Film Generator","Video Upscaler","AI Video Generator 4K","Set to Video","Video Colorizer","Film Restoration","Time Lapse Creator","Animation Creator","Quick Film Creator"].includes(tool);
+  const isImageTool = ["Text to Image","Prompt to Image","Image to Image","Image Generator","AI Art Generator","Photo to Painting","Sketch to Image","Background Generator","Face Generator","Character Design","Portrait Generator","Logo Generator","Avatar Creator"].includes(tool);
+  const isWritingTool = ["Script to Movie","Text to Script","Script to Screenplay","Prompt to Story","Feature Film Script","Short Film Script","Documentary Script","Plot Generator","Story Outline","Beat Sheet Builder","Character Bio Writer","Logline Generator","Synopsis Writer","Scene Writer","Dialogue Generator","Narration Writer","Voiceover Script"].includes(tool);
+  const [mode, setMode] = useState(isVoice?"voice":(isVideoTool||isImageTool||isWritingTool)?"ai":"upload");
   const [describe, setDescribe] = useState("");
   const [result, setResult] = useState("");
   const [url, setUrl] = useState("");
@@ -195,13 +197,23 @@ function ToolPanel({ tool, onClose, onSave }) {
     if (!describe.trim()) return;
     setLoading(true); setSaved(false); setResult("");
     try {
+      let prompt = "";
+      if (isVoice) {
+        prompt = `Format this as cinematic narration, voice style: ${STOCK_VOICES.find(x=>x.id===selVoice)?.style}. Mark pauses as [pause] and emphasis as *word*:\n\n${describe}`;
+      } else if (isVideoTool) {
+        prompt = `You are a professional film director at MandaStrong Studio. Tool: "${tool}".\n\nUser description: ${describe}\n\nGenerate a COMPLETE PRODUCTION-READY video prompt package:\n\n1. OPTIMISED VIDEO PROMPT (ready to paste into Sora, Runway, Pika, Kling)\n2. SCENE BREAKDOWN (5-8 shots minimum, each described in detail)\n3. CAMERA DIRECTIONS (angles, movement, lens type)\n4. LIGHTING & COLOUR GRADE\n5. AUDIO NOTES (music mood, sound effects, tempo)\n6. DURATION ESTIMATE\n7. DIRECTOR'S NOTES\n\nMake it specific, cinematic and immediately production-ready.`;
+      } else if (isImageTool) {
+        prompt = `You are a professional visual artist at MandaStrong Studio. Tool: "${tool}".\n\nUser description: ${describe}\n\nGenerate a COMPLETE IMAGE PROMPT PACKAGE:\n\n1. OPTIMISED PROMPT (ready for Midjourney, DALL-E, Stable Diffusion)\n2. STYLE (art style, medium, technique, era)\n3. LIGHTING & COLOUR PALETTE\n4. COMPOSITION & FRAMING\n5. NEGATIVE PROMPT (what to exclude)\n6. ASPECT RATIO & RESOLUTION\n7. STYLE REFERENCES\n\nMake it specific and production-ready.`;
+      } else if (isWritingTool) {
+        prompt = `You are a professional screenwriter at MandaStrong Studio. Tool: "${tool}".\n\nUser request: ${describe}\n\nGenerate complete, properly formatted, production-ready content. Include all structural elements, scene headings, character direction and cinematic detail. Make it ready to use immediately in a real production.`;
+      } else {
+        prompt = `You are a professional at MandaStrong Studio cinema AI platform. Tool: "${tool}".\n\nUser request: ${describe}\n\nGenerate complete, detailed, professional, production-ready content. Be specific, creative and immediately usable. Include all relevant technical details, creative direction and practical notes a real filmmaker would need.`;
+      }
       const res = await fetch("https://api.anthropic.com/v1/messages",{
         method:"POST",
         headers:{"Content-Type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
-        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,
-          messages:[{role:"user",content:isVoice
-            ? `Format this as cinematic narration, voice style: ${STOCK_VOICES.find(x=>x.id===selVoice)?.style}. Mark pauses as [pause]:\n\n${describe}`
-            : `MandaStrong Studio tool: "${tool}". User request: ${describe}. Generate professional cinematic content.`}]})
+        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,
+          messages:[{role:"user",content:prompt}]})
       });
       const d = await res.json();
       const txt = d.content&&d.content[0]?d.content[0].text:"Generated!";
@@ -299,10 +311,25 @@ function ToolPanel({ tool, onClose, onSave }) {
         )}
         {mode==="ai"&&(
           <div style={{marginBottom:14}}>
-            <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:6}}>DESCRIBE</div>
-            <textarea value={describe} onChange={e=>setDescribe(e.target.value)} placeholder={`Describe what you want from ${tool}...`} style={{...inp,height:80,resize:"none",lineHeight:1.6}}/>
-            <button onClick={runAI} disabled={loading||!describe.trim()} style={{...G("gold",false),marginTop:8,width:"100%",padding:"12px",opacity:loading||!describe.trim()?0.5:1}}>
-              {loading?"⟳ GENERATING...":"AI CREATE ✦"}
+            <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:4}}>
+              {isVideoTool?"DESCRIBE YOUR SCENE OR FILM IDEA":isImageTool?"DESCRIBE YOUR IMAGE":isWritingTool?"DESCRIBE YOUR STORY OR SCRIPT":"DESCRIBE WHAT YOU WANT"}
+            </div>
+            <div style={{color:WHITE,fontSize:12,marginBottom:8,lineHeight:1.6}}>
+              {isVideoTool&&"Just tell me what you want to see. I'll create the full production-ready video prompt, shot list, camera directions, lighting, audio notes and director's vision."}
+              {isImageTool&&"Describe your image in plain English. I'll create an optimised prompt ready for any AI image generator including style, lighting, composition and settings."}
+              {isWritingTool&&"Tell me your story idea, genre, characters or theme. I'll write the full script, screenplay or story with proper formatting and cinematic detail."}
+              {!isVideoTool&&!isImageTool&&!isWritingTool&&"Describe what you need. I'll generate complete, professional, production-ready content."}
+            </div>
+            <textarea value={describe} onChange={e=>setDescribe(e.target.value)}
+              placeholder={
+                isVideoTool?"e.g. A lone astronaut walks across a red planet at sunset, discovers a glowing alien structure, stops and stares in disbelief. Cinematic, emotional, epic scale."
+                :isImageTool?"e.g. Portrait of a powerful warrior queen standing on a cliff at golden hour, dramatic lighting, photorealistic, 8K detail."
+                :isWritingTool?"e.g. A documentary about a woman who walks across America alone to raise awareness for veterans mental health. Emotional, inspiring, real."
+                :`Describe what you want from ${tool}...`
+              }
+              style={{...inp,height:100,resize:"none",lineHeight:1.6}}/>
+            <button onClick={runAI} disabled={loading||!describe.trim()} style={{...G("gold",false),marginTop:8,width:"100%",padding:"14px",opacity:loading||!describe.trim()?0.5:1,fontSize:13,letterSpacing:2}}>
+              {loading?"⟳ CREATING YOUR CONTENT...":isVideoTool?"🎬 CREATE FULL VIDEO PRODUCTION PACKAGE ✦":isImageTool?"🎨 CREATE IMAGE PROMPT PACKAGE ✦":isWritingTool?"✍ WRITE COMPLETE SCRIPT ✦":"✦ AI CREATE"}
             </button>
             {result&&(
               <div style={{marginTop:14}}>
