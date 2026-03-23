@@ -42,12 +42,72 @@ const STOCK_VOICES = [
 ];
 
 const VOICE_TOOLS = [
-  "Text to Voice","Text to Speech","Text to Narration","Text to Audiobook","Text to Voiceover",
-  "AI Voice Actor","Neural Voice Generator","Emotion Voice Synth","Documentary Voice","Trailer Voice Generator",
-  "Commercial Voice","Character Voice Creator","Audiobook Creator","Podcast Voice"
+  "Upload Own Voice", "Record My Voice", "Clone My Voice", "Text to Voice", "Text to Speech", "Text to Narration",
+  "Text to Audiobook", "Text to Voiceover", "Voice Cloning", "Voice to Voice", "AI Voice Actor", "Neural Voice Generator",
+  "Emotion Voice Synth", "Trailer Voice Generator", "Documentary Voice", "Commercial Voice", "Character Voice Creator",
+  "Accent Generator", "Multi Language Voice", "Voice Translator", "Lip Sync AI", "Dialogue Synth", "Audiobook Creator",
+  "Podcast Voice", "Radio DJ Voice", "Sports Commentary Voice", "ASMR Creator", "Whisper Generator", "Meditation Voice",
+  "Alien Voice", "Deep Voice Generator", "Robot Voice", "Monster Voice", "Child Voice", "Elderly Voice",
+  "Male to Female Voice", "Female to Male Voice", "Speed Controller", "Tone Adjuster", "Pitch Controller",
+  "Volume Normalizer", "Clarity Booster", "Voice Denoiser", "Echo Remover", "Reverb Remover", "Background Noise Remover",
+  "Voice EQ Studio"
 ];
 
-// Global voice assignments
+const WRITING = [
+  "Script to Movie", "Text to Script", "Script to Screenplay", "Prompt to Story", "Story to Script", "Feature Film Script",
+  "Short Film Script", "TV Pilot Script", "Documentary Script", "Commercial Script", "YouTube Script", "Podcast Script",
+  "Social Media Script", "Explainer Script", "Plot Generator", "Story Outline", "Three Act Structure", "Five Act Structure",
+  "Beat Sheet Builder", "Character Bio Writer", "Character Arc Builder", "Subplot Generator", "Plot Twist Generator",
+  "Opening Hook Creator", "Climax Designer", "Logline Generator", "Synopsis Writer", "Treatment Writer", "Scene Writer",
+  "Text to Dialogue", "Dialogue Generator", "Narration Writer", "Voiceover Script", "Interview Script", "Action Line Writer",
+  "Scene Heading Tool", "Parenthetical Generator", "Script Formatter", "Dialogue Tightener", "Script Timer", "Word Counter",
+  "Page Counter", "Reading Time Estimator", "Format Checker", "Grammar Polish", "Spell Checker", "Continuity Checker",
+  "Plot Hole Detector", "Tone Checker", "Genre Classifier"
+];
+
+const IMAGE_T = [
+  "Text to Image", "Prompt to Image", "Image to Image", "Image Upscaler", "Image Generator", "AI Art Generator",
+  "Photo to Painting", "Sketch to Image", "Wireframe to Image", "Background Generator", "Background Remover",
+  "Sky Replacer", "Object Remover", "Face Generator", "Character Design", "Portrait Generator", "Avatar Creator",
+  "Product Image Generator", "Architecture Visualizer", "Interior Design Generator", "Landscape Generator",
+  "Abstract Art Generator", "Logo Generator", "Icon Creator", "Texture Generator", "Pattern Maker",
+  "Color Palette Generator", "Style Transfer", "Photo Enhancer", "Photo Restorer", "Old Photo Colorizer",
+  "Black & White to Color", "Image Denoiser", "Sharpness Enhancer", "Clarity Booster", "Detail Enhancer",
+  "HDR Image Creator", "Exposure Fixer", "White Balance AI", "Color Grading Studio", "LUT Creator", "Tone Mapper",
+  "Contrast Adjuster", "Brightness Tool", "Saturation Engine", "Hue Shift", "Temperature Control", "Vignette Tool"
+];
+
+const VIDEO_T = [
+  "Text to Video", "Image to Video", "Video to Video", "AI Video Creator", "AI Film Generator", "Video Upscaler",
+  "AI Video Generator 4K", "Set to Video", "Video Colorizer", "Color Grading Pro", "Fast Look Generator",
+  "Film Restoration", "Time Lapse Creator", "Video Trimmer", "Background Remover", "Digital Human Video",
+  "Rotoscope Video", "Animation Creator", "Puppet Animator", "Motion Capture", "Character Animator",
+  "Video Stabilizer", "Video Compressor", "Cinematic LUT", "Black & White Film", "Film Texture", "VHS Effect",
+  "Glitch Effect", "Quick Film Creator", "Opening Slate", "Time Freeze", "Bullet Time Effect", "Rain Simulation",
+  "Snow Simulation", "Smoke Generator", "Fire Simulation", "Particle System", "AI Progressive Video", "4K Upscaling"
+];
+
+const MOTION = [
+  "AI 8K Upscaling", "AI 4K Upscaling", "Video Super Resolution", "Frame Interpolation", "Video Denoiser",
+  "Noise Reduction", "Grain Remover", "Artifact Remover", "Scratch Remover", "Video Sharpener", "Clarity Booster",
+  "Detail Enhancer", "Edge Enhancement", "Texture Boost", "White Balance AI", "Color Correction", "Auto Color Balance",
+  "Color Match Pro", "Color Grading AI", "Cinematic Color Grade", "Film Stock Emulation", "LUT Generator",
+  "Tone Mapping Pro", "HDR Enhancement", "Deep HDR Boost", "Dynamic Range Expansion", "Shadow Recovery",
+  "Highlight Recovery", "Black Point Calibration", "Gamma Correction", "Contrast Enhancer", "Brightness Optimizer",
+  "Saturation Booster", "Smart Saturation", "Face Enhancement", "Face Retouch", "Eye Enhancer", "Teeth Whitener",
+  "Skin Tone Enhancer", "Background Enhancer", "Sky Enhancer", "Landscape Enhancer", "Night Video Enhancer",
+  "Low Light Clarity", "Motion Stabilization", "Shake Remover", "Rolling Shutter Fix"
+];
+
+const NAV = [
+  {p:1,l:"Home"},{p:2,l:"Platform"},{p:3,l:"Examples"},{p:4,l:"Login / Pricing"},{p:5,l:"Writing Tools"},
+  {p:6,l:"Voice Tools"},{p:7,l:"Image Tools"},{p:8,l:"Video Tools"},{p:9,l:"Motion & VFX"},{p:10,l:"Enhancement"},
+  {p:11,l:"Upload Media"},{p:12,l:"Editor Suite"},{p:13,l:"Timeline Editor"},{p:14,l:"Enhancement Studio"},
+  {p:15,l:"Audio Mixer"},{p:16,l:"Render Engine"},{p:17,l:"Film Preview"},{p:18,l:"Export & Distribute"},
+  {p:19,l:"Tutorials"},{p:20,l:"Terms & Disclaimer"},{p:21,l:"Agent Grok"},{p:22,l:"Community Hub"},
+  {p:23,l:"That's All Folks"}
+];
+
 let VOICE_ASSIGNMENTS = {};
 try { VOICE_ASSIGNMENTS = JSON.parse(localStorage.getItem("ms_voice_assign") || "{}"); } catch {}
 
@@ -65,19 +125,19 @@ function speakText(voiceId, txt, onStart, onEnd) {
     const assignedName = VOICE_ASSIGNMENTS[voiceId];
     let picked = assignedName ? allVoices.find(v => v.name === assignedName) : null;
     if (!picked) {
-      const isMale = ["james", "marcus", "river"].includes(voiceId);
+      const isMale = ["james","marcus","river"].includes(voiceId);
       const femalePat = /samantha|zira|victoria|moira|karen|susan|lisa|fiona|serena|tessa|heather|hazel|allison|ava|nora|siri|female/i;
       const malePat = /david|daniel|oliver|arthur|george|harry|lee|ryan|eric|reed|liam|aaron|rishi|wayne|brian|derek|steven|alan|albert|andy|tom|bruce|fred|mark|paul|peter|john|james|gordon|alex|eddy|bobby|ralph|male/i;
       if (isMale) {
-        picked = allVoices.find(x => malePat.test(x.name)) ||
-                allVoices.find(x => x.lang === "en-GB" && !femalePat.test(x.name)) ||
-                allVoices.find(x => x.lang.startsWith("en") && !femalePat.test(x.name)) ||
-                allVoices[0];
+        picked = allVoices.find(x=>malePat.test(x.name))
+              || allVoices.find(x=>x.lang==="en-GB"&&!femalePat.test(x.name))
+              || allVoices.find(x=>x.lang.startsWith("en")&&!femalePat.test(x.name))
+              || allVoices[0];
       } else {
-        picked = voiceId === "aurora" ? (allVoices.find(x => /kate|serena|emily/i.test(x.name)) || allVoices.find(x => x.lang === "en-GB")) :
-                voiceId === "sophia" ? (allVoices.find(x => /karen/i.test(x.name)) || allVoices.find(x => x.lang === "en-AU")) :
-                allVoices.find(x => /samantha|victoria|zira/i.test(x.name));
-        picked = picked || allVoices.find(x => x.lang.startsWith("en")) || allVoices[0];
+        picked = voiceId==="aurora" ? (allVoices.find(x=>/kate|serena|emily/i.test(x.name))||allVoices.find(x=>x.lang==="en-GB"))
+               : voiceId==="sophia" ? (allVoices.find(x=>/karen/i.test(x.name))||allVoices.find(x=>x.lang==="en-AU"))
+               : allVoices.find(x=>/samantha|victoria|zira/i.test(x.name));
+        picked = picked||allVoices.find(x=>x.lang.startsWith("en"))||allVoices[0];
       }
     }
     if (picked) utt.voice = picked;
@@ -96,23 +156,82 @@ function stopSpeaking() {
   currentUtterance = null;
 }
 
-// Your full arrays (WRITING, VOICE, IMAGE_T, VIDEO_T, MOTION, NAV) go here
-// ... (paste them from your previous version if needed)
-
 function QAMenu({ go, onClose, user }) {
-  // Your full QAMenu code here (unchanged)
+  return (
+    <div style={{position:"fixed",inset:0,zIndex:1000,display:"flex"}}>
+      <div style={{width:256,background:"#050505",borderRight:`1px solid ${GOLD}`,height:"100vh",overflowY:"auto",padding:18}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
+          <span style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:13,fontWeight:900,letterSpacing:3}}>QUICK ACCESS</span>
+          <button onClick={onClose} style={{background:"none",border:"none",color:GOLD,fontSize:20,cursor:"pointer"}}>✕</button>
+        </div>
+        <div style={{background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,padding:"9px 12px",marginBottom:10,textAlign:"center"}}>
+          <div style={{color:"#000",fontWeight:900,fontSize:10,letterSpacing:3,fontFamily:"'Cinzel',serif"}}>MANDA STRONG STUDIO</div>
+        </div>
+        {user&&user.plan&&<div style={{background:"#0a0a0a",border:`1px solid ${GOLDDIM}`,padding:"7px 10px",marginBottom:14,textAlign:"center"}}>
+          <div style={{color:DIM,fontSize:9,letterSpacing:2}}>PLAN</div>
+          <div style={{color:GOLD,fontWeight:900,fontSize:14,fontFamily:"'Cinzel',serif"}}>{user.plan}</div>
+        </div>}
+        {NAV.map(i=>(
+          <button key={i.p} onClick={()=>{go(i.p);onClose();}}
+            style={{width:"100%",textAlign:"left",background:"none",border:"none",color:WHITE,padding:"8px",cursor:"pointer",fontSize:13,fontWeight:700,display:"block",marginBottom:1,letterSpacing:1}}
+            onMouseEnter={e=>{e.currentTarget.style.background=BG4;e.currentTarget.style.color=GOLD;}}
+            onMouseLeave={e=>{e.currentTarget.style.background="none";e.currentTarget.style.color=WHITE;}}>
+            {String(i.p).padStart(2,"0")} &nbsp; {i.l.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      <div style={{flex:1,background:"rgba(0,0,0,0.75)"}} onClick={onClose}/>
+    </div>
+  );
 }
 
 function Header({ go, setMenu }) {
-  // Your full Header code here (unchanged)
+  return (
+    <header style={{position:"sticky",top:0,zIndex:500,background:"#000",borderBottom:`1px solid ${GOLD}`,padding:"0 16px",height:52,display:"flex",alignItems:"center",gap:12}}>
+      <button onClick={()=>setMenu(true)} style={{background:"none",border:`1px solid ${GOLD}`,color:GOLD,width:34,height:34,cursor:"pointer",fontSize:16,flexShrink:0}}>☰</button>
+      <div onClick={()=>go(1)} style={{cursor:"pointer",flexShrink:0}}>
+        <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:13,fontWeight:900,letterSpacing:3,lineHeight:1,textShadow:`0 0 16px ${GOLD}99`}}>MANDA STRONG</div>
+        <div style={{fontFamily:"'Cinzel',serif",color:GOLDDIM,fontSize:9,letterSpacing:4}}>STUDIO</div>
+      </div>
+      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <div style={{color:GOLD,fontSize:11,letterSpacing:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",fontWeight:700}}>
+          ✦ CINEMA INTELLIGENCE PLATFORM &nbsp;·&nbsp; 600+ AI TOOLS &nbsp;·&nbsp; 8K EXPORT &nbsp;·&nbsp; UP TO 3-HOUR FILMS
+        </div>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+        <div style={{color:"#22c55e",fontSize:11,letterSpacing:2,fontWeight:900}}>● SYSTEM ONLINE</div>
+        <div onClick={()=>go(21)} style={{width:36,height:36,background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontFamily:"'Cinzel',serif",fontSize:19,fontWeight:900,color:"#000",boxShadow:`0 0 18px ${GOLD}77`}}>G</div>
+      </div>
+    </header>
+  );
 }
 
 function Footer({ page, go, onSave }) {
-  // Your full Footer code here (unchanged)
+  return (
+    <footer style={{position:"fixed",bottom:0,left:0,right:0,zIndex:400,background:"#000",borderTop:`1px solid ${GOLD}`,padding:"6px 20px 8px",display:"flex",flexDirection:"column",gap:4}}>
+      <div style={{textAlign:"center"}}>
+        <span style={{color:GOLD,fontSize:11,letterSpacing:1,fontWeight:700}}>MANDASTRONG STUDIO 2026 · PROFESSIONAL CINEMA SYNTHESIS · MandaStrong1.Etsy.com</span>
+      </div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:14}}>
+        <button onClick={()=>go(Math.max(1,page-1))} disabled={page===1} style={{...G("out",true),opacity:page===1?0.3:1}}>◀ BACK</button>
+        <span style={{color:GOLD,fontSize:11,fontWeight:900,fontFamily:"'Cinzel',serif",letterSpacing:2}}>PAGE {page} / {TOTAL}</span>
+        <button onClick={()=>go(Math.min(TOTAL,page+1))} disabled={page===TOTAL} style={{...G("gold",true),opacity:page===TOTAL?0.3:1}}>NEXT ▶</button>
+        <button onClick={onSave} style={{...G("out",true),fontSize:11,letterSpacing:2}}>💾 SAVE PROJECT</button>
+        <span style={{color:"#22c55e",fontSize:11,fontWeight:700}}>● AUTOSAVE ON</span>
+      </div>
+    </footer>
+  );
 }
 
 function ToolCard({ name, onOpen }) {
-  // Your full ToolCard code here (unchanged)
+  return (
+    <div onClick={()=>onOpen(name)}
+      style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:"14px 12px",cursor:"pointer",transition:"all .15s",minHeight:56,display:"flex",alignItems:"center"}}
+      onMouseEnter={e=>{e.currentTarget.style.borderColor=GOLD;e.currentTarget.style.background=BG4;e.currentTarget.style.boxShadow=`0 0 10px ${GOLD}44`;}}
+      onMouseLeave={e=>{e.currentTarget.style.borderColor=GOLDDIM;e.currentTarget.style.background="#000";e.currentTarget.style.boxShadow="none";}}>
+      <div style={{color:WHITE,fontSize:13,fontWeight:800,lineHeight:1.3,letterSpacing:.5}}>{name}</div>
+    </div>
+  );
 }
 
 function ToolPanel({ tool, onClose, onSave }) {
@@ -127,214 +246,83 @@ function ToolPanel({ tool, onClose, onSave }) {
   const fileRef = useRef(null);
   const [selVoice, setSelVoice] = useState("james");
 
-  const inp = { width: "100%", background: "#000", border: `1px solid ${GOLDDIM}`, padding: "9px 12px", color: WHITE, fontSize: 14, outline: "none", boxSizing: "border-box", fontFamily: "'Rajdhani',sans-serif" };
+  const inp = {width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"9px 12px",color:WHITE,fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif"};
 
-  const speak = (vid, txt) => speakText(vid, txt, () => setPlaying(vid), () => setPlaying(null));
+  const speak = (vid, txt) => speakText(vid, txt, ()=>setPlaying(vid), ()=>setPlaying(null));
 
   const runAI = async () => {
     if (!describe.trim()) return;
     setLoading(true); setSaved(false); setResult("");
     try {
-      let prompt = ""; // ← your full prompt logic here (from previous version)
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "anthropic-dangerous-direct-browser-access": "true"
+      let prompt = "";
+      if (isVoice) {
+        prompt = `Format this as cinematic narration, voice style: ${STOCK_VOICES.find(x=>x.id===selVoice)?.style}. Mark pauses as [pause] and emphasis as *word*:\n\n${describe}`;
+      } else {
+        prompt = `You are a professional at MandaStrong Studio. Tool: "${tool}".\n\nUser request: ${describe}\n\nGenerate complete, detailed, professional content.`;
+      }
+      const res = await fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "anthropic-dangerous-direct-browser-access":"true"
         },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1500,
-          messages: [{ role: "user", content: prompt }]
-        })
+        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,
+          messages:[{role:"user",content:prompt}]})
       });
       const d = await res.json();
-      const txt = d.content?.[0]?.text || "Generated!";
+      const txt = d.content&&d.content[0]?d.content[0].text:"Generated!";
       setResult(txt);
       if (isVoice) speak(selVoice, txt);
-    } catch (e) {
-      setResult("Error — check API key in Bolt settings.");
-    }
+    } catch(e) { setResult("Error — check API key in Bolt settings."); }
     setLoading(false);
   };
 
   const saveAsset = () => {
-    const content = result || describe;
+    const content = result||describe;
     if (!content.trim()) return;
-    if (onSave) onSave({
-      id: Date.now() + Math.random(),
-      name: `${tool} — ${isVoice ? STOCK_VOICES.find(x => x.id === selVoice)?.name : "Result"}`,
-      type: isVoice ? "audio/narration" : "text/plain",
-      url: "",
-      content
-    });
+    if (onSave) onSave({id:Date.now()+Math.random(),name:`${tool} — ${isVoice?STOCK_VOICES.find(x=>x.id===selVoice)?.name:"Result"}`,type:isVoice?"audio/narration":"text/plain",url:"",content});
     setSaved(true);
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 900, background: "rgba(0,0,0,0.92)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ width: "min(600px,95vw)", background: "#050505", border: `1px solid ${GOLD}`, padding: 26, maxHeight: "92vh", overflowY: "auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-          <h2 style={{ ...H1, fontSize: 16, margin: 0, letterSpacing: 4 }}>{tool}</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: GOLD, fontSize: 20, cursor: "pointer" }}>✕</button>
+    <div style={{position:"fixed",inset:0,zIndex:900,background:"rgba(0,0,0,0.92)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{width:"min(600px,95vw)",background:"#050505",border:`1px solid ${GOLD}`,padding:26,maxHeight:"92vh",overflowY:"auto"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
+          <h2 style={{...H1,fontSize:16,margin:0,letterSpacing:4}}>{tool}</h2>
+          <button onClick={onClose} style={{background:"none",border:"none",color:GOLD,fontSize:20,cursor:"pointer"}}>✕</button>
         </div>
 
-        {/* 6-button row */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8, marginBottom: 20 }}>
-          <button onClick={() => setMode("upload")} style={{ ...G(mode === "upload" ? "gold" : "out", true), fontSize: 11 }}>UPLOAD</button>
-          <button onClick={() => setMode("paste")} style={{ ...G(mode === "paste" ? "gold" : "out", true), fontSize: 11 }}>PASTE</button>
-          <button onClick={() => setMode("ai")} style={{ ...G(mode === "ai" ? "gold" : "out", true), fontSize: 11 }}>PROMPT</button>
-          <button onClick={() => setMode("ai")} style={{ ...G(mode === "ai" ? "gold" : "out", true), fontSize: 11 }}>TIMELINE</button>
-          <button onClick={saveAsset} style={{ ...G("gold", true), fontSize: 11 }}>SAVE</button>
-          <button onClick={runAI} disabled={loading} style={{ ...G("gold", true), fontSize: 11, opacity: loading ? 0.6 : 1 }}>AI ✦</button>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:8,marginBottom:20}}>
+          <button onClick={()=>setMode("upload")} style={{...G(mode==="upload"?"gold":"out",true),fontSize:11}}>UPLOAD</button>
+          <button onClick={()=>setMode("paste")} style={{...G(mode==="paste"?"gold":"out",true),fontSize:11}}>PASTE</button>
+          <button onClick={()=>setMode("ai")} style={{...G(mode==="ai"?"gold":"out",true),fontSize:11}}>PROMPT</button>
+          <button onClick={()=>setMode("ai")} style={{...G(mode==="ai"?"gold":"out",true),fontSize:11}}>TIMELINE</button>
+          <button onClick={saveAsset} style={{...G("gold",true),fontSize:11}}>SAVE</button>
+          <button onClick={runAI} disabled={loading} style={{...G("gold",true),fontSize:11,opacity:loading?0.6:1}}>AI ✦</button>
         </div>
 
-        {/* Rest of your ToolPanel content (voice mode, upload, paste, ai, etc.) */}
-        {/* Paste the rest from your previous version here */}
-      </div>
-    </div>
-  );
-}
-
-function MusicVideoStudio({ onClose, onSave }) {
-  // Your full MusicVideoStudio code here, with added video at top:
-  // Add this right after the header div:
-  <video
-    autoPlay
-    loop
-    muted
-    playsInline
-    style={{
-      width: "100%",
-      maxHeight: "240px",
-      objectFit: "cover",
-      background: "#000",
-      border: `1px solid ${GOLD}`,
-      marginBottom: 16,
-    }}
-  >
-    <source src="/music-studio-preview.mp4" type="video/mp4" /> {/* ← your added video */}
-    <source src="/background.mp4" type="video/mp4" />
-    Your browser does not support video.
-  </video>
-
-  // ... rest of your MusicVideoStudio code
-}
-
-function P6Voice({ onSave }) {
-  // Your full P6Voice code here (unchanged except selVoice safety)
-}
-
-function P20() {
-  return (
-    <div style={{ ...Sp, padding: 40 }}>
-      <div style={{ maxWidth: 780, margin: "0 auto" }}>
-        <div style={{ fontSize: 11, color: GOLD, letterSpacing: 4, marginBottom: 4, fontWeight: 700 }}>LEGAL</div>
-        <h1 style={{ ...H1, fontSize: 28, marginBottom: 20 }}>TERMS OF SERVICE & DISCLAIMER</h1>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          <div style={{ ...Card(), flex: 1 }}>
-            <h2 style={{ color: GOLD, fontWeight: 900, fontSize: 18, marginBottom: 12, letterSpacing: 2 }}>TERMS OF SERVICE</h2>
-            <p style={{ color: WHITE, fontSize: 14, lineHeight: 1.8 }}>
-              By accessing or using MandaStrong Studio, you agree to be legally bound by these Terms of Service. Subscriptions bill monthly and auto-renew unless cancelled. All payments processed via Stripe. Studio Plan subscribers receive full commercial rights. You retain ownership of all media you upload. For support contact MandaStrong1.Etsy.com or Agent Grok on Page 21.
-            </p>
-          </div>
-
-          <div style={{ ...Card(), flex: 1 }}>
-            <h2 style={{ color: GOLD, fontWeight: 900, fontSize: 18, marginBottom: 12, letterSpacing: 2 }}>DISCLAIMER</h2>
-            <p style={{ color: WHITE, fontSize: 14, lineHeight: 1.8 }}>
-              MandaStrong Studio is provided as is without warranties. AI-generated content is produced algorithmically — users are solely responsible for reviewing all outputs. A significant portion of all proceeds supports veterans mental health and anti-bullying education.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function P23({ go }) {
-  return (
-    <div style={{ ...Sp, padding: "26px 40px 80px" }}>
-      <div style={{ maxWidth: 780, margin: "0 auto", textAlign: "center" }}>
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          style={{
-            width: "100%",
-            maxHeight: "50vh",
-            objectFit: "cover",
-            background: "#000",
-            border: `1px solid ${GOLDDIM}`,
-            marginBottom: 24,
-          }}
-        >
-          <source src="/background.mp4" type="video/mp4" />
-          <source src="/thatsallfolks.mp4" type="video/mp4" />
-          <source src="/ocean.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-
-        <h1 style={{ fontFamily: "'Cinzel',serif", color: GOLD, fontSize: "clamp(20px,3vw,28px)", fontWeight: 900, letterSpacing: 5, textShadow: `0 0 30px ${GOLD}99`, marginBottom: 14 }}>
-          THAT'S ALL FOLKS
-        </h1>
-
-        {/* Rest of page 23 content */}
-      </div>
-    </div>
-  );
-}
-
-// ... rest of your pages (P1 to P19, P21, P22) go here unchanged
-
-export default function App() {
-  const [page, setPage] = useState(() => { try { return JSON.parse(localStorage.getItem("ms_page") || "1"); } catch { return 1; } });
-  const [menu, setMenu] = useState(false);
-  const [user, setUser] = useState(() => { try { return JSON.parse(localStorage.getItem("ms_user") || '{"name":"Guest","plan":"Guest","isAdmin":false}'); } catch { return { name: "Guest", plan: "Guest", isAdmin: false }; } });
-  const [mediaLib, setMediaLib] = useState([]);
-  const [timeline, setTimeline] = useState(() => { try { return JSON.parse(localStorage.getItem("ms_timeline") || "{}"); } catch { return {}; } });
-  const [rendered, setRendered] = useState(null);
-  const [savedNotice, setSavedNotice] = useState(false);
-
-  const go = (p) => {
-    setPage(p);
-    window.scrollTo(0, 0);
-    try { localStorage.setItem("ms_page", JSON.stringify(p)); } catch {}
-  };
-
-  const saveAsset = (a) => setMediaLib(p => [...p, a]);
-
-  const saveProject = () => {
-    try {
-      localStorage.setItem("ms_page", JSON.stringify(page));
-      localStorage.setItem("ms_user", JSON.stringify(user));
-      localStorage.setItem("ms_timeline", JSON.stringify(timeline));
-      setSavedNotice(true);
-      setTimeout(() => setSavedNotice(false), 2000);
-    } catch (e) { alert("Project saved!"); }
-  };
-
-  const pages = {
-    1: <P1 go={go} />,
-    // ... all your page mappings here (5: ToolPage Writing, 6: P6Voice, etc.)
-    20: <P20 />,
-    23: <P23 go={go} />,
-    // etc.
-  };
-
-  return (
-    <div style={{ background: "#000", minHeight: "100vh", fontFamily: "'Rajdhani',sans-serif" }}>
-      <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
-      <Header go={go} setMenu={setMenu} />
-      {menu && <QAMenu go={go} onClose={() => setMenu(false)} user={user} />}
-      {savedNotice && (
-        <div style={{ position: "fixed", top: 60, left: "50%", transform: "translateX(-50%)", background: GOLDDIM, color: "#000", padding: "10px 24px", fontWeight: 900, fontSize: 13, letterSpacing: 2, zIndex: 999 }}>
-          ✓ PROJECT SAVED
-        </div>
-      )}
-      <div style={{ minHeight: "calc(100vh - 116px)" }}>{pages[page] || <P1 go={go} />}</div>
-      <Footer page={page} go={go} onSave={saveProject} />
-    </div>
-  );
-}
+        {mode==="voice"&&isVoice&&(
+          <div>
+            <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:10}}>SELECT VOICE</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:16}}>
+              {STOCK_VOICES.map(v=>(
+                <div key={v.id} onClick={()=>setSelVoice(v.id)}
+                  style={{background:"#000",border:`2px solid ${selVoice===v.id?GOLD:GOLDDIM}`,padding:"10px 12px",cursor:"pointer",boxShadow:selVoice===v.id?`0 0 12px ${GOLD}44`:"none"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                    <span style={{color:selVoice===v.id?GOLD:WHITE,fontSize:14,fontWeight:900}}>{v.name}</span>
+                    <button onClick={e=>{e.stopPropagation();speak(v.id,`Hi I am ${v.name}. ${v.desc}. Ready to narrate.`);}}
+                      style={{background:"none",border:`1px solid ${GOLDDIM}`,color:GOLD,padding:"2px 8px",cursor:"pointer",fontSize:10,fontWeight:900}}>
+                      {playing===v.id?"⏹":"▶"}
+                    </button>
+                  </div>
+                  <div style={{color:GOLD,fontSize:11}}>{v.desc}</div>
+                  <div style={{color:WHITE,fontSize:10,marginTop:2}}>{v.style} · {v.accent}</div>
+                </div>
+              ))}
+            </div>
+            <textarea value={describe} onChange={e=>setDescribe(e.target.value)} placeholder="Paste your narration text here..."
+              style={{...inp,height:110,resize:"none",lineHeight:1.7,marginBottom:10}}/>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:result?14:0}}>
+              <button onClick={runAI} disabled={loading||!describe.trim()} style={{...G("gold",false),padding:"12px",opacity:loading||!describe.trim()?0.5:1}}>
+                {loading?"⟳ GENERATING...":"AI FORMAT & SPEAK ✦"}
+              </button
