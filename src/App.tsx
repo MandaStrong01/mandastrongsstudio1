@@ -600,12 +600,23 @@ For each PAGE 8 PROMPT: write it in plain English as if describing the scene to 
             </div>
           )}
           {step===4&&!result&&(
-            <div style={{textAlign:"center",padding:"40px 20px"}}>
-              <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:22,fontWeight:900,marginBottom:16,letterSpacing:3}}>READY TO CREATE</div>
-              <button onClick={generateProject} disabled={generating}
-                style={{...G("gold",false),fontSize:14,padding:"16px 48px",letterSpacing:3,opacity:generating?0.6:1}}>
-                {generating?"⟳ GENERATING...":"✦ GENERATE MUSIC VIDEO PROJECT"}
-              </button>
+            <div style={{padding:"20px"}}>
+              <div style={{marginBottom:16}}>
+                <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:8}}>ENTER SCENE DESCRIPTION — DESCRIBE EXACTLY WHAT YOU WANT YOUR VIDEO TO LOOK LIKE</div>
+                <textarea
+                  value={config.visualDesc||""}
+                  onChange={e=>set("visualDesc",e.target.value)}
+                  placeholder="Describe your video scenes... e.g. A man sat on a windowsill fingerpicking acoustic guitar. You only see his back and top torso facing the ocean. Drums come in slowly. Fog rolls across the water. Golden light. Cinematic and emotional..."
+                  style={{width:"100%",background:"#000",border:`1px solid ${GOLD}`,padding:"14px",color:WHITE,fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box",height:160,resize:"vertical",lineHeight:1.8}}
+                />
+              </div>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:22,fontWeight:900,marginBottom:16,letterSpacing:3}}>READY TO CREATE</div>
+                <button onClick={generateProject} disabled={generating}
+                  style={{...G("gold",false),fontSize:14,padding:"16px 48px",letterSpacing:3,opacity:generating?0.6:1}}>
+                  {generating?"⟳ GENERATING...":"✦ GENERATE MUSIC VIDEO PROJECT"}
+                </button>
+              </div>
             </div>
           )}
           {step===4&&result&&(
