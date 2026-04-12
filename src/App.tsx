@@ -3,19 +3,8 @@ import { useState, useRef, useEffect } from "react";
 
 const GOLD = "#e8c96d";
 const SUPA_URL = "https://njqfexhltjwpgvctmyaw.supabase.co";
-const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0ZmZlb2lobHRqdm1qdWt6Y2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1Mzg3NTcsImV4cCI6MjA4ODExNDc1N30.ghZ7WoXxxY-hNzMfCgTAqLx5KoYBNC7TVTUMmfsyZ-A";
+const SUPA_KEY = "sb_publishable_wqRnYf5pnp68Qo6-McfwyA_JNYrh2VC";
 const EDGE_FN = SUPA_URL + "/functions/v1/claude-proxy";
-
-// Route all AI calls through Supabase Edge Function — key never exposed
-const callClaude = async (body, userToken) => {
-  const headers = {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer " + (userToken || SUPA_KEY),
-  };
-  const res = await fetch(EDGE_FN, { method: "POST", headers, body: JSON.stringify(body) });
-  if (!res.ok) throw new Error("API error: " + res.status);
-  return res.json();
-};
 const GOLDDIM = "#a07820";
 const BG = "#000000";
 const BLACK = "#000000";
@@ -228,7 +217,7 @@ function ToolPanel({ tool, onClose, onSave }) {
       }
       const res = await fetch(EDGE_FN,{
         method:"POST",
-        headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY},
+        headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY,"apikey":SUPA_KEY},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,
           messages:[{role:"user",content:prompt}]})
       });
@@ -404,32 +393,9 @@ function MusicVideoStudio({ onClose, onSave }) {
   const [step, setStep] = useState(1);
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState(null);
-  const [audioFile, setAudioFile] = useState(null);
-  const [audioUrl, setAudioUrl] = useState(null);
-  const [audioPlaying, setAudioPlaying] = useState(false);
-  const audioRef = useRef(null);
   const [config, setConfig] = useState({
     title:"",artist:"",genre:"",subgenre:"",mood:"",tempo:"",key:"",structure:"",vocals:"",instruments:[],vocalStyle:"",lyrics:"",lyricsMode:"write",videoStyle:"",colorGrade:"",visualMood:"",effects:[],cuts:"",aspectRatio:"16:9",duration:"",extras:[],
   });
-
-  const handleAudioUpload = (e) => {
-    const f = e.target.files[0];
-    if(!f) return;
-    setAudioFile(f);
-    const url = URL.createObjectURL(f);
-    setAudioUrl(url);
-    // auto-fill title from filename
-    if(!config.title) {
-      const name = f.name.replace(/\.[^.]+$/,"").replace(/[-_]/g," ");
-      setConfig(p=>({...p, title:name}));
-    }
-  };
-
-  const togglePlay = () => {
-    if(!audioRef.current) return;
-    if(audioPlaying){ audioRef.current.pause(); setAudioPlaying(false); }
-    else { audioRef.current.play(); setAudioPlaying(true); }
-  };
 
   const set = (k,v) => setConfig(p=>({...p,[k]:v}));
   const toggle = (k,v) => setConfig(p=>({...p,[k]:p[k].includes(v)?p[k].filter(x=>x!==v):[...p[k],v]}));
@@ -474,36 +440,49 @@ function MusicVideoStudio({ onClose, onSave }) {
     setGenerating(true);
     try {
       const dur = config.duration||"3 Minutes";
-      const durSecs = dur.includes("2")?120:dur.includes("3:30")||dur.includes("3.5")?210:dur.includes("3")?180:dur.includes("4")?240:dur.includes("5")?300:360;
+      const durSecs = dur.includes("2")?120:dur.includes("3:30")?210:dur.includes("3")?180:dur.includes("4")?240:dur.includes("5")?300:360;
       const numScenes = Math.max(3, Math.round(durSecs/30));
       const prompt = `You are a professional music video director. Create a complete music video production package for:
-TITLE: ${config.title||"Untitled"}, ARTIST: ${config.artist||"Unknown"}, GENRE: ${config.genre||"Pop"}, MOOD: ${config.mood||"Emotional"}, TEMPO: ${config.tempo||"Mid-Tempo"}, VOCALS: ${config.vocals||"Female Lead"}, VIDEO STYLE: ${config.videoStyle||"Cinematic Narrative"}, COLOUR GRADE: ${config.colorGrade||"Golden Hour Warm"}, DURATION: ${config.duration||"3 Minutes"}
+TITLE: ${config.title||"Untitled"}, ARTIST: ${config.artist||"Unknown"}, GENRE: ${config.genre||"Pop"}, MOOD: ${config.mood||"Emotional"}, TEMPO: ${config.tempo||"Mid-Tempo"}, VOCALS: ${config.vocals||"Female Lead"}, VIDEO STYLE: ${config.videoStyle||"Cinematic Narrative"}, DURATION: ${config.duration||"3 Minutes"}
+${config.visualDesc?`
+CREATOR SCENE DESCRIPTION — BUILD ALL SCENES AROUND THIS:
+${config.visualDesc}
+`:""}
 ${config.lyricsMode==="write"&&config.lyrics?`LYRICS:
 ${config.lyrics}`:`Generate original lyrics matching the genre and mood.`}
 
 Provide:
 1. SONG CONCEPT (2-3 sentences)
-2. COMPLETE LYRICS with verse/chorus structure
-3. MUSIC PRODUCTION NOTES (instrumentation, mix, key, BPM)
-4. VIDEO TREATMENT — exactly ${numScenes} scenes, each with:
-   - SCENE [N] — TIMECODE [start-end]
-   - VISUAL DESCRIPTION (2-3 sentences, cinematic detail)
-   - PAGE 8 PROMPT: [complete natural language prompt ready to paste into the video generator, describing: location, lighting, figures, atmosphere, colour grade, mood — written as a director briefing a cinematographer]
-5. SHOT LIST (min 10 shots with camera direction)
-6. POST PRODUCTION NOTES (colour grade, effects, sound design)
-7. SOCIAL MEDIA STRATEGY (TikTok cut, Instagram reel, YouTube thumbnail concept)
-
-For each PAGE 8 PROMPT: write it in plain English as if describing the scene to a camera operator. Include: what you see, the lighting quality, any people or figures, the atmosphere, the colour mood. Example: "A lone woman stands on a rooftop at golden hour. The city sprawls below her. Warm amber light floods everything from the west. She looks out not down. Fog rolls in from the river. The mood is hopeful but lonely."`;
+2. COMPLETE LYRICS
+3. MUSIC PRODUCTION NOTES
+4. VIDEO TREATMENT — exactly ${numScenes} scenes, each with SCENE [N], VISUAL DESCRIPTION, and PAGE 8 PROMPT: [ready to paste into video generator]
+5. SHOT LIST (10+ shots)
+6. POST PRODUCTION NOTES
+7. SOCIAL MEDIA STRATEGY`;
       const res = await fetch(EDGE_FN,{
         method:"POST",
-        headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY},
+        headers:{"Content-Type":"application/json","apikey":SUPA_KEY,"Authorization":"Bearer "+SUPA_KEY},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,messages:[{role:"user",content:prompt}]})
       });
+      if(!res.ok){
+        const errText = await res.text();
+        setResult("Server error "+res.status+": "+errText);
+        setStep(4);
+        setGenerating(false);
+        return;
+      }
       const d = await res.json();
-      const treatment = d.content&&d.content[0]?d.content[0].text:"Error generating — check API key.";
+      if(d.error){setResult("API error: "+JSON.stringify(d.error));setStep(4);setGenerating(false);return;}
+      const treatment = d.content&&d.content[0]?d.content[0].text:"No content returned — check Edge Function logs in Supabase.";
       setResult(treatment);
       setStep(4);
-    } catch(e) { setResult("Connection error — check your API key."); setStep(4); }
+      if(onSave&&d.content&&d.content[0]){
+        onSave({id:Date.now()+Math.random(),name:`Music Video — ${config.title||"Untitled"}`,type:"text/plain",url:"",content:treatment});
+      }
+    } catch(e) {
+      setResult("Connection error — "+( e.message||"unknown error"));
+      setStep(4);
+    }
     setGenerating(false);
   };
 
@@ -532,23 +511,6 @@ For each PAGE 8 PROMPT: write it in plain English as if describing the scene to 
         <div style={{padding:"20px 24px",flex:1}}>
           {step===1&&(
             <div>
-              {label("UPLOAD YOUR TRACK (OPTIONAL)")}
-              <div style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:14,marginBottom:12,display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
-                <label style={{background:"#111",border:`1px solid ${GOLD}`,color:GOLD,padding:"8px 18px",cursor:"pointer",fontSize:11,fontWeight:900,letterSpacing:2}}>
-                  🎵 CHOOSE AUDIO FILE
-                  <input type="file" accept="audio/*" onChange={handleAudioUpload} style={{display:"none"}}/>
-                </label>
-                {audioFile&&<span style={{color:WHITE,fontSize:12,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{audioFile.name}</span>}
-                {audioUrl&&(
-                  <>
-                    <audio ref={audioRef} src={audioUrl} onEnded={()=>setAudioPlaying(false)} style={{display:"none"}}/>
-                    <button onClick={togglePlay} style={{background:audioPlaying?"#500":"#050",border:`1px solid ${GOLD}`,color:GOLD,padding:"8px 18px",cursor:"pointer",fontSize:12,fontWeight:900,letterSpacing:2}}>
-                      {audioPlaying?"⏸ PAUSE":"▶ PLAY"}
-                    </button>
-                  </>
-                )}
-                {!audioFile&&<span style={{color:GOLDDIM,fontSize:11,letterSpacing:1}}>MP3, WAV, M4A — plays in studio for reference while you build your brief</span>}
-              </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:4}}>
                 <div>{label("SONG TITLE")}<input value={config.title} onChange={e=>set("title",e.target.value)} placeholder="My Song Title..." style={inp}/></div>
                 <div>{label("ARTIST / BAND NAME")}<input value={config.artist} onChange={e=>set("artist",e.target.value)} placeholder="Artist Name..." style={inp}/></div>
@@ -606,7 +568,7 @@ For each PAGE 8 PROMPT: write it in plain English as if describing the scene to 
                 <textarea
                   value={config.visualDesc||""}
                   onChange={e=>set("visualDesc",e.target.value)}
-                  placeholder="Describe your video scenes... e.g. A man sat on a windowsill fingerpicking acoustic guitar. You only see his back and top torso facing the ocean. Drums come in slowly. Fog rolls across the water. Golden light. Cinematic and emotional..."
+                  placeholder="Describe your video scenes... e.g. A man sits on a windowsill fingerpicking acoustic guitar. Only his back is visible. Facing the ocean. Full moon. Candle to his right. Dark shadows. Slow motion camera."
                   style={{width:"100%",background:"#000",border:`1px solid ${GOLD}`,padding:"14px",color:WHITE,fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box",height:160,resize:"vertical",lineHeight:1.8}}
                 />
               </div>
@@ -628,39 +590,10 @@ For each PAGE 8 PROMPT: write it in plain English as if describing the scene to 
                   <button onClick={()=>{setResult(null);setStep(1);}} style={{...G("out",true)}}>NEW PROJECT</button>
                 </div>
               </div>
-              <div style={{marginBottom:10,display:"flex",gap:8,flexWrap:"wrap"}}>
-                <button onClick={()=>{
-                  // extract all PAGE 8 PROMPT lines and copy them
-                  const prompts = result.split("\n").filter(l=>l.includes("PAGE 8 PROMPT:")).map(l=>l.replace(/.*PAGE 8 PROMPT:/,"").trim()).join("\n\n---\n\n");
-                  navigator.clipboard&&navigator.clipboard.writeText(prompts);
-                  alert("Page 8 prompts copied! Paste each one into Page 8 Video Generator.");
-                }} style={{...G("gold",true),fontSize:11,letterSpacing:1}}>🎬 COPY PAGE 8 PROMPTS</button>
+              <textarea value={result} readOnly style={{...inp,height:420,resize:"none",lineHeight:1.8,fontSize:13}}/>
+              <div style={{marginTop:12,display:"flex",gap:8}}>
                 <button onClick={()=>navigator.clipboard&&navigator.clipboard.writeText(result)} style={{...G("out",true),fontSize:11}}>📋 COPY ALL</button>
                 <button onClick={()=>{const blob=new Blob([result],{type:"text/plain"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`${config.title||"MusicVideo"}_Production.txt`;a.click();}} style={{...G("out",true),fontSize:11}}>⬇ DOWNLOAD</button>
-              </div>
-              <div style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:12,marginBottom:10,maxHeight:380,overflowY:"auto"}}>
-                {result.split("\n").map((line,i)=>{
-                  const isP8 = line.includes("PAGE 8 PROMPT:");
-                  const isScene = line.match(/^4\.|SCENE \[|VIDEO TREATMENT/i);
-                  const isHeader = line.match(/^[1-9]\.|^#+\s/);
-                  return <div key={i} style={{
-                    color: isP8?GOLD:isScene?"#ffcc44":isHeader?"#e0e0e0":WHITE,
-                    background: isP8?"rgba(232,201,109,0.08)":"transparent",
-                    fontSize: isP8?12:13,
-                    fontWeight: isP8?900:400,
-                    padding: isP8?"6px 10px":"0 2px",
-                    marginBottom: isP8?4:0,
-                    letterSpacing: isP8?0.5:0,
-                    fontFamily:"'Rajdhani',sans-serif",
-                    lineHeight:1.7,
-                    borderLeft: isP8?`2px solid ${GOLD}`:"none",
-                    cursor: isP8?"pointer":"default",
-                  }} onClick={isP8?()=>{
-                    const txt = line.replace(/.*PAGE 8 PROMPT:/,"").trim();
-                    navigator.clipboard&&navigator.clipboard.writeText(txt);
-                    alert("Scene prompt copied — paste into Page 8!");
-                  }:undefined} title={isP8?"Click to copy this scene prompt":""}>{line||" "}</div>;
-                })}
               </div>
             </div>
           )}
@@ -838,7 +771,7 @@ function P6Voice({ onSave }) {
     if(!text.trim())return;
     setLoading(true);setProcessed("");setSaved(false);
     try{
-      const res=await fetch(EDGE_FN,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY},
+      const res=await fetch(EDGE_FN,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY,"apikey":SUPA_KEY},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,messages:[{role:"user",content:`You are a speech coach preparing text for TTS. Speaker: ${selected.name} — ${selected.style}. Break into short sentences, add commas for natural pauses, spell out numbers. Output ONLY the reformatted text:\n\n${text}`}]})});
       const d=await res.json();
       const out=d.content&&d.content[0]?d.content[0].text.trim():text;
@@ -858,7 +791,7 @@ function P6Voice({ onSave }) {
           <div style={{fontSize:11,color:GOLD,letterSpacing:4,fontWeight:700}}>AI WORKSTATION 02 — CINEMA VOICE ENGINE</div>
           <h1 style={{...H1,fontSize:24,margin:0}}>TEXT TO LIFELIKE SPEECH</h1>
         </div>
-        <button onClick={()=>setShowMVS(true)} style={{background:"linear-gradient(135deg,#1a0050,#4a0080)",border:"1px solid #9933ff",color:"#cc99ff",padding:"10px 20px",cursor:"pointer",fontSize:12,fontWeight:900,letterSpacing:2}}>
+        <button onClick={()=>setShowMVS(true)} style={{...G("gold",true)}}>
           🎬 MUSIC VIDEO STUDIO
         </button>
       </div>
@@ -875,7 +808,7 @@ function P6Voice({ onSave }) {
             <div style={{marginBottom:5}}>
               <div style={{color:GOLDDIM,fontSize:9,letterSpacing:2,marginBottom:3}}>AGE</div>
               <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
-                {AGES.map(a=><button key={a} onClick={()=>setFilterAge(a)} style={{background:filterAge===a?"#4a0080":"#111",border:`1px solid ${filterAge===a?"#9933ff":GOLDDIM}`,color:filterAge===a?"#cc99ff":WHITE,padding:"2px 8px",cursor:"pointer",fontSize:9,fontWeight:900}}>{a}</button>)}
+                {AGES.map(a=><button key={a} onClick={()=>setFilterAge(a)} style={{background:filterAge===a?GOLD:"#111",border:`1px solid ${filterAge===a?"#000":GOLDDIM}`,color:filterAge===a?"#000":WHITE,padding:"2px 8px",cursor:"pointer",fontSize:9,fontWeight:900}}>{a}</button>)}
               </div>
             </div>
             <div style={{marginBottom:6}}>
@@ -1028,7 +961,7 @@ function P8VideoGenerator({ onSave }) {
     try{
       const res=await fetch(EDGE_FN,{
         method:"POST",
-        headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY},
+        headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY,"apikey":SUPA_KEY},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,
           messages:[{role:"user",content:`You are a cinematic title card writer for a documentary. Write 6 short dramatic lines of on-screen text for this scene: "${prompt}". Each line must be 3-7 words. Punchy. Cinematic. No punctuation. Return ONLY the 6 lines, one per line, nothing else.`}]})
       });
@@ -1115,323 +1048,165 @@ function P8VideoGenerator({ onSave }) {
     const [gndR,gndG,gndB]=parseHex(scene.groundColor||"#0a0500");
     const numParticles=scene.particleCount||60;
 
-    // === UNIVERSAL CINEMATIC RENDERER ===
-    // Reads any natural language prompt — no flags required
-
-    const stars=Array.from({length:300},(_,i)=>({
+    const stars=Array.from({length:200},(_,i)=>({
       x:(i*2791+i*i*37)%W,y:(i*1847+i*i*13)%H,
-      r:i%12===0?2.5:i%4===0?1.6:i%2===0?1.0:0.5,
-      tw:i*0.43,spd:0.3+i%5*0.15
-    }));
-    const bldgs=Array.from({length:42},(_,i)=>({
-      x:i*(W/41),w:12+i%6*16+i%4*10,
-      h:H*(0.07+i%9*0.065+i%4*0.03),
-      dep:i%3
-    })).sort((a,b)=>a.dep-b.dep);
-    const crowd=Array.from({length:28},(_,i)=>({
-      x:W*(0.02+i*0.035+Math.sin(i*1.3)*0.015),
-      spd:0.4+i%4*0.12,ph:i*0.71
+      r:i%7===0?1.8:i%3===0?1.2:0.7,twinkleOffset:i*0.7,
     }));
 
-    const fig=(cx,cy,fh,al,wb=0)=>{
-      const fw=fh*0.26;
-      ctx.save();ctx.globalAlpha=al;ctx.fillStyle="rgba(0,0,0,0.93)";
-      ctx.fillRect(cx-fw/2,cy-fh*0.55,fw,fh*0.5);
-      ctx.beginPath();ctx.arc(cx+Math.sin(wb)*fw*0.1,cy-fh*0.56,fw*0.44,0,Math.PI*2);ctx.fill();
-      ctx.fillRect(cx-fw/2,cy-fh*0.05,fw*0.4,fh*0.28);
-      ctx.fillRect(cx+fw*0.1,cy-fh*0.05,fw*0.4,fh*0.28);
-      ctx.restore();
-    };
-
-    const ease=x=>x<0.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+    const buildings=Array.from({length:28},(_,i)=>({
+      x:i*(W/27),w:18+i%5*22,h:H*0.08+i%9*H*0.07,
+    }));
 
     const drawFrame=(frame)=>{
       const t=frame/totalFrames;
       const sec=frame/fps;
-      const ft=((prompt||"")+" "+((aiScript)||"")).toLowerCase();
 
-      // detect scene from natural language
-      const isCosmic=ft.includes("space")||ft.includes("earth")||ft.includes("planet")||ft.includes("cosmos")||ft.includes("galaxy")||scene.sceneType==="cosmic";
-      const isCity=ft.includes("city")||ft.includes("street")||ft.includes("building")||ft.includes("skyline")||ft.includes("urban")||ft.includes("downtown")||scene.sceneType==="city";
-      const isDawn=ft.includes("dawn")||ft.includes("sunrise")||ft.includes("sun rise")||ft.includes("golden light")||ft.includes("morning")||scene.sceneType==="dawn";
-      const isInterior=ft.includes("darkness")||ft.includes("interior")||ft.includes("spotlight")||ft.includes("one light")||scene.sceneType==="interior";
-      const hasStars=ft.includes("star")||ft.includes("night sky")||isCosmic||scene.starField;
-      const hasEarth=ft.includes("earth")||ft.includes("planet")||ft.includes("globe")||scene.earthGlow;
-      const hasCrowd=ft.includes("crowd")||ft.includes("people")||ft.includes("figures")||ft.includes("human")||scene.humanFigure;
-      const hasPerson=ft.includes("single")||ft.includes("lone")||ft.includes("alone")||ft.includes("one figure")||ft.includes("one person")||(hasCrowd&&!ft.includes("crowd")&&!ft.includes("people")&&!isCity);
-      const hasFog=ft.includes("fog")||ft.includes("mist")||ft.includes("haze")||scene.fogLayer;
-      const hasBeams=ft.includes("beam")||ft.includes("rays")||ft.includes("spotlight")||ft.includes("light shaft")||scene.lightBeams||scene.rays;
-      const hasGround=ft.includes("ground")||ft.includes("street")||ft.includes("floor")||ft.includes("earth")||isCity||isDawn||scene.groundLayer;
-      const hasParticles=scene.particles!==false&&(ft.includes("particle")||ft.includes("ember")||ft.includes("spark")||ft.includes("floating")||ft.includes("dust")||!isCosmic);
-      const nParticles=scene.particleCount||50;
+      const bgGrad=ctx.createLinearGradient(0,0,0,H);
+      bgGrad.addColorStop(0,`rgb(${skyR},${skyG},${skyB})`);
+      bgGrad.addColorStop(1,`rgb(${gndR},${gndG},${gndB})`);
+      ctx.fillStyle=bgGrad;ctx.fillRect(0,0,W,H);
 
-      // ── SKY BACKGROUND ──
-      const bgG=ctx.createLinearGradient(0,0,0,H);
-      bgG.addColorStop(0,`rgb(${skyR},${skyG},${skyB})`);
-      bgG.addColorStop(0.55,`rgb(${Math.round(skyR*0.55+gndR*0.45)},${Math.round(skyG*0.55+gndG*0.45)},${Math.round(skyB*0.55+gndB*0.45)})`);
-      bgG.addColorStop(1,`rgb(${gndR},${gndG},${gndB})`);
-      ctx.fillStyle=bgG;ctx.fillRect(0,0,W,H);
-
-      // ── STARS ──
-      if(hasStars){
+      if(scene.starField){
         stars.forEach(s=>{
-          const a=Math.max(0,0.35+Math.sin(sec*s.spd+s.tw)*0.35);
-          const r=s.r*(0.8+Math.sin(sec*0.6+s.tw)*0.2);
-          ctx.fillStyle=`rgba(255,255,235,${a})`;
-          ctx.beginPath();ctx.arc(s.x,s.y,r,0,Math.PI*2);ctx.fill();
-          if(s.r>2){
-            ctx.strokeStyle=`rgba(255,255,200,${a*0.25})`;ctx.lineWidth=0.5;
-            ctx.beginPath();ctx.moveTo(s.x-r*3,s.y);ctx.lineTo(s.x+r*3,s.y);ctx.stroke();
-            ctx.beginPath();ctx.moveTo(s.x,s.y-r*3);ctx.lineTo(s.x,s.y+r*3);ctx.stroke();
-          }
+          const tw=0.3+Math.sin(sec*1.1+s.twinkleOffset)*0.25;
+          ctx.fillStyle=`rgba(255,255,240,${Math.max(0,tw)})`;
+          ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
         });
       }
 
-      // ── EARTH GLOBE ──
-      if(hasEarth){
-        const gy=H*0.84+Math.sin(sec*0.12)*H*0.008;
-        const gr=H*0.7;
-        const atmo=ctx.createRadialGradient(W*0.5,gy,gr*0.82,W*0.5,gy,gr*1.35);
-        atmo.addColorStop(0,"rgba(40,110,230,0.5)");
-        atmo.addColorStop(0.4,"rgba(20,60,170,0.18)");
-        atmo.addColorStop(1,"rgba(0,0,0,0)");
-        ctx.fillStyle=atmo;ctx.fillRect(0,0,W,H);
-        ctx.save();ctx.beginPath();ctx.arc(W*0.5,gy,gr,Math.PI,0);
-        const og=ctx.createLinearGradient(W*0.15,gy-gr,W*0.85,gy);
-        og.addColorStop(0,"rgba(18,55,175,0.75)");og.addColorStop(0.5,"rgba(8,35,130,0.85)");og.addColorStop(1,"rgba(4,18,70,0.95)");
-        ctx.fillStyle=og;ctx.fill();
-        ctx.globalAlpha=0.22;
-        for(let c=0;c<6;c++){
-          const cx=W*(0.15+c*0.14)+Math.sin(sec*0.08+c)*W*0.025;
-          const cy=gy-gr*0.25+Math.cos(sec*0.06+c)*gr*0.18;
-          ctx.fillStyle="rgba(210,225,255,1)";
-          ctx.beginPath();ctx.ellipse(cx,cy,gr*(0.1+c%3*0.05),gr*0.03,0,0,Math.PI*2);ctx.fill();
+      if(scene.earthGlow){
+        const eg=ctx.createRadialGradient(W*0.5,H*0.85,H*0.05,W*0.5,H*0.85,H*0.55);
+        eg.addColorStop(0,`rgba(30,80,180,0.55)`);eg.addColorStop(1,`rgba(0,0,0,0)`);
+        ctx.fillStyle=eg;ctx.fillRect(0,H*0.3,W,H*0.7);
+        ctx.save();ctx.beginPath();ctx.arc(W*0.5,H*1.15,H*0.72,Math.PI,0);
+        ctx.strokeStyle=`rgba(60,120,220,0.5)`;ctx.lineWidth=3;ctx.stroke();ctx.restore();
+      }
+
+      if(scene.sunRise){
+        const sp=Math.min(1,t*1.5);
+        const sunY=H*(0.75-sp*0.25);
+        const sunGlow=ctx.createRadialGradient(W*0.5,sunY,0,W*0.5,sunY,H*0.35);
+        sunGlow.addColorStop(0,`rgba(255,200,80,${0.7*sp})`);sunGlow.addColorStop(1,`rgba(0,0,0,0)`);
+        ctx.fillStyle=sunGlow;ctx.fillRect(0,0,W,H);
+      }
+
+      if(scene.rays||scene.lightBeams){
+        for(let i=0;i<6;i++){
+          const angle=-0.5+i*0.18+Math.sin(sec*0.2+i)*0.04;
+          ctx.save();ctx.translate(W*0.5,0);ctx.rotate(angle);
+          const ray=ctx.createLinearGradient(0,0,0,H*1.5);
+          ray.addColorStop(0,`rgba(${fgR},${fgG},${fgB},0.12)`);ray.addColorStop(1,`rgba(${fgR},${fgG},${fgB},0)`);
+          ctx.fillStyle=ray;ctx.fillRect(-60,0,120,H*1.5);ctx.restore();
         }
-        ctx.globalAlpha=1;
-        // city lights dark side
-        for(let cl=0;cl<22;cl++){
-          const ang=Math.PI+(cl*0.14)+Math.sin(sec*0.04+cl)*0.02;
-          const dist=gr*(0.55+cl%5*0.08);
-          const lx=W*0.5+Math.cos(ang)*dist;
-          const ly=gy+Math.sin(ang)*dist*0.28;
-          if(ly>gy-gr*0.08){
-            const pulse=0.35+Math.sin(sec*1.8+cl*0.9)*0.28;
-            ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},${pulse})`;
-            ctx.beginPath();ctx.arc(lx,ly,1.4+cl%3*0.8,0,Math.PI*2);ctx.fill();
+      }
+
+      if(scene.waves){
+        for(let w=0;w<3;w++){
+          ctx.strokeStyle=`rgba(${fgR},${fgG},${fgB},${0.07-w*0.02})`;
+          ctx.lineWidth=1+w;ctx.beginPath();
+          for(let x=0;x<W;x+=2){
+            const waveY=H*(0.62+w*0.08)+Math.sin(x*0.006+sec*(0.8+w*0.3)+w)*H*(0.025+w*0.01);
+            x===0?ctx.moveTo(x,waveY):ctx.lineTo(x,waveY);
           }
-        }
-        ctx.restore();
-      }
-
-      // ── SUNRISE / DAWN ──
-      if(isDawn){
-        const prog=Math.min(1,t*1.9);
-        const sunY=H*(0.82-prog*0.38);
-        const hg=ctx.createRadialGradient(W*0.5,H*0.73,0,W*0.5,H*0.73,W*0.72);
-        hg.addColorStop(0,`rgba(255,175,35,${0.65*prog})`);
-        hg.addColorStop(0.25,`rgba(255,90,15,${0.38*prog})`);
-        hg.addColorStop(0.55,`rgba(180,40,0,${0.18*prog})`);
-        hg.addColorStop(1,"rgba(0,0,0,0)");
-        ctx.fillStyle=hg;ctx.fillRect(0,0,W,H);
-        if(prog>0.12){
-          const sa=Math.min(1,(prog-0.12)*2.2);
-          const sg=ctx.createRadialGradient(W*0.5,sunY,0,W*0.5,sunY,H*0.13);
-          sg.addColorStop(0,`rgba(255,245,185,${sa})`);
-          sg.addColorStop(0.4,`rgba(255,185,45,${sa*0.75})`);
-          sg.addColorStop(1,"rgba(0,0,0,0)");
-          ctx.fillStyle=sg;ctx.fillRect(0,0,W,H);
-        }
-        for(let r=0;r<14;r++){
-          const ang=(r/14)*Math.PI*2+sec*0.04;
-          const len=H*(0.12+r%4*0.07)*prog;
-          ctx.save();ctx.translate(W*0.5,sunY);ctx.rotate(ang);
-          const rg=ctx.createLinearGradient(0,0,0,len);
-          rg.addColorStop(0,`rgba(255,200,80,${0.07*prog})`);
-          rg.addColorStop(1,"rgba(255,200,80,0)");
-          ctx.fillStyle=rg;ctx.fillRect(-2,0,4,len);ctx.restore();
+          ctx.stroke();
         }
       }
 
-      // ── LIGHT BEAMS ──
-      if(hasBeams){
-        const nr=isInterior?3:6;
-        const ox=W*0.5,oy=isInterior?-H*0.04:0;
-        for(let i=0;i<nr;i++){
-          const ang=-0.38+i*(0.76/nr)+Math.sin(sec*0.16+i*1.2)*0.025;
-          const rw=38+i%3*28;
-          const pulse=0.055+Math.sin(sec*0.38+i*0.95)*0.028;
-          ctx.save();ctx.translate(ox,oy);ctx.rotate(ang);
-          const rg=ctx.createLinearGradient(0,0,0,H*1.9);
-          rg.addColorStop(0,`rgba(${fgR},${fgG},${fgB},${pulse})`);
-          rg.addColorStop(0.45,`rgba(${fgR},${fgG},${fgB},${pulse*0.35})`);
-          rg.addColorStop(1,"rgba(0,0,0,0)");
-          ctx.fillStyle=rg;ctx.fillRect(-rw/2,0,rw,H*1.9);ctx.restore();
-        }
-      }
-
-      // ── GROUND ──
-      if(hasGround){
-        const gy=H*0.72;
-        const gg=ctx.createLinearGradient(0,gy,0,H);
-        gg.addColorStop(0,`rgba(${gndR},${gndG},${gndB},0.92)`);
-        gg.addColorStop(1,`rgba(${Math.round(gndR*0.45)},${Math.round(gndG*0.45)},${Math.round(gndB*0.45)},1)`);
-        ctx.fillStyle=gg;ctx.fillRect(0,gy,W,H-gy);
-        const hg=ctx.createLinearGradient(0,gy-2,0,gy+8);
-        hg.addColorStop(0,`rgba(${fgR},${fgG},${fgB},0.22)`);
-        hg.addColorStop(1,"rgba(0,0,0,0)");
-        ctx.fillStyle=hg;ctx.fillRect(0,gy-2,W,10);
-      }
-
-      // ── CITY SKYLINE ──
-      if(isCity){
-        [0,1,2].forEach(dep=>{
-          const sc_=dep===0?0.55:dep===1?0.78:1;
-          bldgs.filter(b=>b.dep===dep).forEach(b=>{
-            ctx.fillStyle=dep===0?"rgba(6,6,10,0.93)":dep===1?"rgba(3,3,7,0.97)":"rgba(2,2,5,1)";
-            ctx.fillRect(b.x,H-b.h*sc_,b.w*(0.75+dep*0.12),b.h*sc_);
-            if(dep===2&&b.w>28){
-              ctx.fillStyle="rgba(3,3,6,1)";
-              ctx.fillRect(b.x+b.w*0.44,H-b.h*sc_-b.h*0.07,b.w*0.09,b.h*0.07);
-            }
-            if(dep===2){
-              for(let wy=H-b.h*sc_+7;wy<H-5;wy+=13){
-                for(let wx=b.x+3;wx<b.x+b.w*0.88-3;wx+=9){
-                  if(Math.sin(wx*6.8+wy*4.3+frame*0.007+b.x*0.1)>0.08){
-                    const br=Math.max(0.08,0.3+Math.sin(wx*3.1+wy*5.2+sec*0.28)*0.2);
-                    ctx.fillStyle=`rgba(255,${Math.round(fgG*0.88)},${Math.round(fgB*0.35)},${br})`;
-                    ctx.fillRect(wx,wy,5,7);
-                  }
+      const sil=scene.silhouette||"none";
+      if(sil==="city"||scene.cityLights){
+        ctx.fillStyle="rgba(0,0,0,0.88)";
+        buildings.forEach(b=>{ctx.fillRect(b.x,H-b.h,b.w,b.h);});
+        if(scene.cityLights){
+          buildings.forEach(b=>{
+            for(let wy=H-b.h+10;wy<H-10;wy+=18){
+              for(let wx=b.x+4;wx<b.x+b.w-4;wx+=12){
+                if(Math.sin(wx*5+wy*3+frame*0.015)>0.15){
+                  const lit=0.3+Math.sin(wx*7+wy*11+sec*0.5)*0.25;
+                  ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},${Math.max(0,lit)})`;
+                  ctx.fillRect(wx,wy,7,9);
                 }
               }
             }
           });
-        });
-        // street glow
-        const sg=ctx.createLinearGradient(0,H*0.84,0,H);
-        sg.addColorStop(0,`rgba(${fgR},${Math.round(fgG*0.65)},10,0.14)`);
-        sg.addColorStop(1,"rgba(0,0,0,0)");
-        ctx.fillStyle=sg;ctx.fillRect(0,H*0.84,W,H*0.16);
-        // street lights
-        for(let sl=0;sl<8;sl++){
-          const slx=W*(0.055+sl*0.128);
-          const pl=0.55+Math.sin(sec*0.45+sl*1.1)*0.15;
-          const slg=ctx.createRadialGradient(slx,H*0.79,0,slx,H*0.79,55);
-          slg.addColorStop(0,`rgba(${fgR},${fgG},${Math.round(fgB*0.45)},${pl*0.38})`);
-          slg.addColorStop(1,"rgba(0,0,0,0)");
-          ctx.fillStyle=slg;ctx.fillRect(slx-55,H*0.69,110,110);
         }
       }
 
-      // ── HUMAN FIGURES ──
-      if(hasCrowd||hasPerson){
-        const gl=hasGround?H*0.72:H*0.78;
-        if(hasCrowd&&!hasPerson){
-          crowd.forEach((f,i)=>{
-            const px=((f.x+sec*f.spd*7)%(W+40))-20;
-            const fh=H*(0.05+i%4*0.009);
-            const wb=Math.sin(sec*2.1+f.ph)*0.28;
-            fig(px,gl,fh,0.78+Math.sin(sec*0.45+f.ph)*0.12,wb);
-            if(i%3===0){
-              const pg=0.28+Math.sin(sec*1.4+i)*0.18;
-              ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},${pg})`;
-              ctx.fillRect(px+fh*0.05,gl-fh*0.58,fh*0.09,fh*0.06);
-            }
-          });
-        } else {
-          const breath=Math.sin(sec*0.75)*0.004;
-          const fh=H*0.22;
-          fig(W*0.5,gl+H*breath,fh,0.93,Math.sin(sec*0.28)*0.08);
-          const ag=ctx.createRadialGradient(W*0.5,gl-fh*0.38,0,W*0.5,gl-fh*0.38,fh*2.2);
-          ag.addColorStop(0,`rgba(${fgR},${fgG},${fgB},0.055)`);
-          ag.addColorStop(1,"rgba(0,0,0,0)");
-          ctx.fillStyle=ag;ctx.fillRect(0,0,W,H);
+      if(sil==="mountain"){
+        ctx.fillStyle="rgba(0,0,0,0.8)";ctx.beginPath();ctx.moveTo(0,H);
+        for(let x=0;x<=W;x+=W/80){
+          const mh=H*0.72-Math.abs(Math.sin(x*0.003+0.5)*H*0.2)-Math.abs(Math.sin(x*0.009)*H*0.09);
+          x===0?ctx.moveTo(x,mh):ctx.lineTo(x,mh);
+        }
+        ctx.lineTo(W,H);ctx.closePath();ctx.fill();
+      }
+
+      if(sil==="person"||scene.humanFigure){
+        const fx=W*0.5,fh=H*0.28,fw=fh*0.22;
+        ctx.fillStyle="rgba(0,0,0,0.85)";
+        ctx.fillRect(fx-fw/2,H*0.72-fh,fw,fh*0.65);
+        ctx.beginPath();ctx.arc(fx,H*0.72-fh,fw*0.5,0,Math.PI*2);ctx.fill();
+        const figGlow=ctx.createRadialGradient(fx,H*0.72-fh*0.5,0,fx,H*0.72-fh*0.5,fw*4);
+        figGlow.addColorStop(0,`rgba(${fgR},${fgG},${fgB},0.08)`);figGlow.addColorStop(1,`rgba(${fgR},${fgG},${fgB},0)`);
+        ctx.fillStyle=figGlow;ctx.fillRect(fx-fw*5,H*0.5,fw*10,H*0.4);
+      }
+
+      if(scene.particles){
+        for(let i=0;i<numParticles;i++){
+          const px=(i*2791+frame*(0.15+i%3*0.05))%W;
+          const py=(i*1847+frame*(0.08+i%2*0.03))%H;
+          const tw=0.15+Math.sin(frame*0.06+i*1.3)*0.2;
+          ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},${Math.max(0,tw)})`;
+          ctx.beginPath();ctx.arc(px,py,i%7===0?2.2:i%3===0?1.4:0.8,0,Math.PI*2);ctx.fill();
         }
       }
 
-      // ── FOG ──
-      if(hasFog){
-        const fy=isInterior?H*0.28:H*0.58;
-        for(let f=0;f<5;f++){
-          const fx=((sec*18*(f%2===0?1:-1)*0.7+f*W*0.28)%(W*1.6))-W*0.3;
-          const fg_=ctx.createRadialGradient(fx,fy+f*H*0.045,0,fx,fy+f*H*0.045,W*0.48);
-          fg_.addColorStop(0,`rgba(${fgR},${fgG},${fgB},${0.035+f*0.008})`);
-          fg_.addColorStop(1,"rgba(0,0,0,0)");
-          ctx.fillStyle=fg_;ctx.fillRect(0,0,W,H);
-        }
+      if(scene.vignette){
+        const vig=ctx.createRadialGradient(W/2,H/2,W*0.18,W/2,H/2,W*0.75);
+        vig.addColorStop(0,"rgba(0,0,0,0)");vig.addColorStop(1,"rgba(0,0,0,0.9)");
+        ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
       }
 
-      // ── PARTICLES ──
-      if(hasParticles&&nParticles>0){
-        for(let i=0;i<nParticles;i++){
-          const sd=i*2791;
-          const rise=isInterior?-1.2:-(0.45+i%4*0.25);
-          const px=((sd*0.37+frame*(0.07+i%5*0.025))%W+W)%W;
-          const py=((sd*0.23+frame*(0.035+i%3*0.018)*rise)%H+H)%H;
-          const al=Math.max(0,0.1+Math.sin(frame*0.045+i*1.6)*0.17);
-          const sz=i%9===0?2.4:i%3===0?1.5:0.85;
-          ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},${al})`;
-          ctx.beginPath();ctx.arc(px,py,sz,0,Math.PI*2);ctx.fill();
-        }
+      for(let gi=0;gi<200;gi++){
+        const gx=Math.random()*W,gy=Math.random()*H;
+        ctx.fillStyle=`rgba(${Math.random()>0.5?255:0},${Math.random()>0.5?255:0},${Math.random()>0.5?255:0},${0.015+Math.random()*0.02})`;
+        ctx.fillRect(gx,gy,1,1);
       }
 
-      // ── FILM GRAIN ──
-      ctx.save();ctx.globalAlpha=0.016;
-      for(let gi=0;gi<280;gi++){
-        const gx=Math.random()*W,gy_=Math.random()*H;
-        const gc=Math.random()>0.5?255:0;
-        ctx.fillStyle=`rgb(${gc},${gc},${gc})`;
-        ctx.fillRect(gx,gy_,1,1);
-      }
-      ctx.restore();
-
-      // ── VIGNETTE ──
-      if(scene.vignette!==false){
-        const vg=ctx.createRadialGradient(W/2,H/2,W*0.18,W/2,H/2,W*0.82);
-        vg.addColorStop(0,"rgba(0,0,0,0)");
-        vg.addColorStop(0.65,"rgba(0,0,0,0.32)");
-        vg.addColorStop(1,"rgba(0,0,0,0.88)");
-        ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
-      }
-
-      // ── LETTERBOX ──
       if(scene.letterbox!==false){
         ctx.fillStyle="#000";
-        ctx.fillRect(0,0,W,H*0.075);
-        ctx.fillRect(0,H*0.925,W,H*0.075);
+        ctx.fillRect(0,0,W,H*0.07);
+        ctx.fillRect(0,H*0.93,W,H*0.07);
       }
 
-      // ── TEXT / TITLE CARD ──
       const lineCount=lines.length;
       if(showText&&t>0.86){
-        const al=ease((t-0.86)/0.14);
-        ctx.save();ctx.globalAlpha=al*0.9;
-        ctx.fillStyle=`rgba(0,0,0,${al*0.65})`;ctx.fillRect(0,0,W,H);
+        const alpha=(t-0.86)/0.14;
+        ctx.globalAlpha=alpha*0.95;
+        ctx.fillStyle=`rgba(0,0,0,${alpha})`;ctx.fillRect(0,0,W,H);
         ctx.fillStyle=grade.fg;
-        ctx.font=`900 ${Math.round(H*0.037)}px Arial Black,Arial`;
-        ctx.textAlign="center";ctx.shadowColor=grade.fg;ctx.shadowBlur=28;
+        ctx.font=`900 ${Math.round(H*0.036)}px Arial Black,Arial`;
+        ctx.textAlign="center";ctx.shadowColor=grade.fg;ctx.shadowBlur=25;
         ctx.fillText("MANDASTRONG STUDIO",W/2,H*0.47);
         ctx.shadowBlur=0;ctx.fillStyle=grade.accent;
-        ctx.font=`400 ${Math.round(H*0.018)}px Arial`;
+        ctx.font=`400 ${Math.round(H*0.019)}px Arial`;
         ctx.fillText("CINEMA INTELLIGENCE PLATFORM",W/2,H*0.555);
-        ctx.restore();
+        ctx.globalAlpha=1;
       }
+
       if(showText) lines.forEach((line,i)=>{
         const ls=(i+0.5)/(lineCount+1),le=ls+0.75/(lineCount+1);
         if(t>=ls-0.04&&t<=le+0.07){
-          const lt=ease(Math.min(1,(t-(ls-0.04))/0.08));
+          const lt=Math.min(1,(t-(ls-0.04))/0.06);
           const fo=t>le?Math.max(0,1-(t-le)/0.06):1;
-          ctx.save();ctx.globalAlpha=lt*fo;
+          ctx.globalAlpha=lt*fo;
           ctx.fillStyle=i===0?grade.fg:"#ffffff";
-          ctx.font=`${i===0?"900":"700"} ${Math.round(i===0?H*0.065:H*0.048)}px Arial Black,Arial`;
-          ctx.textAlign="center";
-          ctx.shadowColor=i===0?grade.fg:"rgba(0,0,0,0.8)";
-          ctx.shadowBlur=i===0?24:6;
-          ctx.fillText(line.toUpperCase(),W/2,H*0.5+(i-lineCount/2)*(H*0.092));
-          ctx.shadowBlur=0;ctx.restore();
+          ctx.font=`${i===0?"900":"700"} ${Math.round(i===0?H*0.068:H*0.05)}px Arial Black,Arial`;
+          ctx.textAlign="center";ctx.shadowColor=grade.fg;ctx.shadowBlur=i===0?20:0;
+          ctx.fillText(line.toUpperCase(),W/2,H*0.5+(i-lineCount/2)*(H*0.09));
+          ctx.shadowBlur=0;ctx.globalAlpha=1;
         }
       });
     };
-
 
     addLog("Generating frames...");
     const msPerFrame=1000/fps;
@@ -1698,48 +1473,11 @@ function P3() {
 function P4({ go, setUser }) {
   const [email,setEmail]=useState(""); const [pass,setPass]=useState("");
   const [name,setName]=useState(""); const [re,setRe]=useState("");
-  const [loading,setLoading]=useState(false);
-  const [err,setErr]=useState("");
-  const [tab,setTab]=useState("in");
   const inp={width:"100%",background:"#0a0a0a",border:`1px solid ${GOLDDIM}`,padding:"10px 12px",color:WHITE,fontSize:14,marginBottom:10,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif"};
-
-  const supaAuth = async (endpoint, body) => {
-    const res = await fetch(`${SUPA_URL}/auth/v1/${endpoint}`, {
-      method:"POST", headers:{"Content-Type":"application/json","apikey":SUPA_KEY},
-      body:JSON.stringify(body)
-    });
-    return res.json();
-  };
-
-  const login = async () => {
-    // Admin — always Studio, always works
-    if(email.toLowerCase().trim()==="woolleya129@gmail.com"&&pass==="Mangler1970!!"){
-      const u={name:"Amanda",plan:"Studio",isAdmin:true,token:SUPA_KEY,email:"woolleya129@gmail.com"};
-      setUser(u); if(typeof window!=="undefined")localStorage.setItem("ms_user",JSON.stringify(u)); go(5); return;
-    }
-    if(!email.includes("@")){setErr("Please enter a valid email address");return;}
-    setLoading(true); setErr("");
-    try {
-      const d = await supaAuth("token?grant_type=password",{email:email.trim(),password:pass});
-      if(d.access_token){
-        const plan=d.user?.user_metadata?.plan||"Creator";
-        const u={name:d.user?.user_metadata?.name||email.split("@")[0]||"Creator",plan,isAdmin:false,token:d.access_token,email:email.trim()};
-        setUser(u); if(typeof window!=="undefined")localStorage.setItem("ms_user",JSON.stringify(u)); go(5);
-      } else { setErr(d.error_description||d.msg||"Incorrect email or password"); }
-    } catch(e){ setErr("Connection error — please try again"); }
-    setLoading(false);
-  };
-
-  const register = async () => {
-    if(!name){setErr("Please enter your name");return;}
-    if(pass!==re){setErr("Passwords do not match");return;}
-    setLoading(true); setErr("");
-    try {
-      const d = await supaAuth("signup",{email,password:pass,data:{name}});
-      if(d.id||d.user?.id){ alert("Account created! Check your email to confirm, then sign in."); setTab("in"); }
-      else { setErr(d.error_description||d.msg||"Registration failed"); }
-    } catch(e){ setErr("Connection error — try again"); }
-    setLoading(false);
+  const login=()=>{
+    if(email==="woolleya129@gmail.com"&&pass==="Mangler1970!!"){setUser({name:"Amanda",plan:"Studio",isAdmin:true});go(5);}
+    else if(email.includes("@")){setUser({name:email.split("@")[0]||"Creator",plan:"Creator",isAdmin:false});go(5);}
+    else{alert("Please enter a valid email address.");}
   };
   return (
     <div style={{...Sp,padding:40}}>
@@ -2378,7 +2116,7 @@ function P21() {
     if(!inp.trim())return;const q=inp.trim();setInp("");setLoading(true);
     setMsgs(p=>[...p,{role:"user",content:q}]);
     try{
-      const r=await fetch(EDGE_FN,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,system:"You are Agent Grok, 24/7 assistant for MandaStrong Studio — professional cinema AI platform, 600+ tools, 8K export, films up to 3 hours, plans $20/$30/$50/mo with 7-day free trial. Be helpful and concise.",messages:[...msgs.filter(m=>m.role!=="system"),{role:"user",content:q}]})});
+      const r=await fetch(EDGE_FN,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY,"apikey":SUPA_KEY},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,system:"You are Agent Grok, 24/7 assistant for MandaStrong Studio — professional cinema AI platform, 600+ tools, 8K export, films up to 3 hours, plans $20/$30/$50/mo with 7-day free trial. Be helpful and concise.",messages:[...msgs.filter(m=>m.role!=="system"),{role:"user",content:q}]})});
       const d=await r.json();setMsgs(p=>[...p,{role:"assistant",content:d.content&&d.content[0]?d.content[0].text:"Let me help!"}]);
     }catch(e){setMsgs(p=>[...p,{role:"assistant",content:"Unable to connect — check API key in Bolt settings."}]);}
     setLoading(false);
