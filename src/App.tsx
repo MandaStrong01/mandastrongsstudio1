@@ -2,17 +2,21 @@
 import { useState, useRef, useEffect } from "react";
 
 const GOLD = "#e8c96d";
+const SUPA_URL = "https://njqfexhltjwpgvctmyaw.supabase.co";
+const SUPA_KEY = "sb_publishable_wqRnYf5pnp68Qo6-McfwyA_JNYrh2VC";
+const EDGE_FN = SUPA_URL + "/functions/v1/claude-proxy";
 const GOLDDIM = "#a07820";
 const BG = "#000000";
+const BLACK = "#000000";
 const BG4 = "#080808";
 const WHITE = "#d4c9a8";
 const DIM = "#aaaaaa";
 const TOTAL = 23;
 
 const STRIPE = {
-  basic:"https://buy.stripe.com/test_basic",
-  pro:"https://buy.stripe.com/test_pro",
-  studio:"https://buy.stripe.com/test_studio",
+  basic:"https://buy.stripe.com/4gM5kFaVYfjN7EX0vMafS00",
+  pro:"https://buy.stripe.com/14A00l8NQ0oTbVd3HYafS01",
+  studio:"https://buy.stripe.com/fZubJ35BE3B53oHdiyafS02",
 };
 
 const G = (v, sm) => ({
@@ -25,277 +29,70 @@ const G = (v, sm) => ({
   cursor:"pointer", letterSpacing:2, textTransform:"uppercase",
   fontFamily:"'Rajdhani',sans-serif",
 });
-const Sp = { minHeight:"100vh", background:BG, color:WHITE, fontFamily:"'Rajdhani',sans-serif", paddingBottom:100 };
+const Sp = { minHeight:"100vh", background:BG, color:WHITE, fontFamily:"'Rajdhani',sans-serif", paddingBottom:160 };
 const H1 = { fontFamily:"'Cinzel',serif", color:GOLD, letterSpacing:5, textTransform:"uppercase", margin:0 };
 const Card = (x) => ({ background:"#0a0a0a", border:`1px solid ${GOLDDIM}`, borderRadius:0, padding:18, ...(x||{}) });
 
 const STOCK_VOICES = [
-  // ── BRITISH ──────────────────────────────────────────────────────────────
-  { id:"james",     name:"James",     emoji:"🎩", sex:"Male",   age:"Adult",   accent:"British RP",        category:"British",    tone:"Sarcastic · Deadpan · Witty",          pitch:0.86, rate:0.62, desc:"Dry as dust. Delivers uncomfortable truth with a straight face and perfect timing. The comedy lives in the silence after the punchline. Built for satire and dark comedy." },
-  { id:"aurora",    name:"Aurora",    emoji:"🌅", sex:"Female", age:"Adult",   accent:"British RP",        category:"British",    tone:"Warm · Measured · Documentary",        pitch:1.08, rate:0.80, desc:"Calm, authoritative and quietly emotional. The voice you trust completely. Built for documentaries and anything that deserves to be taken seriously." },
-  { id:"edward",    name:"Edward",    emoji:"🎭", sex:"Male",   age:"Adult",   accent:"British RP",        category:"British",    tone:"Theatrical · Grand · Classical",        pitch:0.85, rate:0.75, desc:"Shakespearean gravitas. Every sentence sounds like it should be carved in stone. Perfect for historical epics and dramatic narration." },
-  { id:"cecily",    name:"Cecily",    emoji:"🫖", sex:"Female", age:"Adult",   accent:"British RP",        category:"British",    tone:"Crisp · Intelligent · Sardonic",        pitch:1.12, rate:0.85, desc:"Sharp as a tack. The voice of someone who has read everything and is mildly disappointed by most of it. Perfect for wit and sharp commentary." },
-  { id:"ewan",      name:"Ewan",      emoji:"🏴", sex:"Male",   age:"Adult",   accent:"Scottish",          category:"British",    tone:"Warm · Rugged · Sincere",              pitch:0.92, rate:0.82, desc:"Deep warm Scottish voice with natural sincerity. Feels trustworthy and grounded. Great for heritage content and honest earthy delivery." },
-  { id:"fiona",     name:"Fiona",     emoji:"🌿", sex:"Female", age:"Adult",   accent:"Scottish",          category:"British",    tone:"Lilting · Warm · Storyteller",         pitch:1.10, rate:0.84, desc:"Beautiful Scottish lilt with warmth and natural musicality. Perfect for folklore, family films and heartfelt narration." },
-  { id:"paddy",     name:"Paddy",     emoji:"☘️", sex:"Male",   age:"Adult",   accent:"Irish",             category:"British",    tone:"Charming · Witty · Warm",              pitch:0.95, rate:0.88, desc:"Easy Irish charm with natural wit. Nothing sounds forced. Perfect for storytelling and content that needs to feel effortlessly engaging." },
-  { id:"siobhan",   name:"Siobhan",   emoji:"🌸", sex:"Female", age:"Adult",   accent:"Irish",             category:"British",    tone:"Gentle · Musical · Emotional",         pitch:1.15, rate:0.82, desc:"Soft Irish voice with musical quality and real emotional depth. Perfect for personal stories and anything requiring tenderness." },
-  { id:"dafydd",    name:"Dafydd",    emoji:"🐉", sex:"Male",   age:"Adult",   accent:"Welsh",             category:"British",    tone:"Musical · Passionate · Rich",          pitch:0.90, rate:0.80, desc:"Rich Welsh voice with natural musicality. Built for epic storytelling and content that needs soul and depth." },
-  { id:"geordie",   name:"Geordie",   emoji:"⚓", sex:"Male",   age:"Adult",   accent:"Northeast English", category:"British",    tone:"Straight · Honest · Working Class",    pitch:0.93, rate:0.90, desc:"Straight-talking Northeast English voice. No pretension. Perfect for authentic working class stories." },
-  { id:"pippa",     name:"Pippa",     emoji:"🎀", sex:"Female", age:"Young",   accent:"British RP",        category:"British",    tone:"Bright · Cheerful · Young Adult",      pitch:1.25, rate:0.95, desc:"Young bright British female. Fresh, warm and engaging. Perfect for youth content, upbeat narration and anything needing young female energy." },
-  { id:"archie",    name:"Archie",    emoji:"⚽", sex:"Male",   age:"Young",   accent:"British",           category:"British",    tone:"Casual · Friendly · Teen",             pitch:1.05, rate:0.98, desc:"Natural teenage British male. Relaxed and genuine. Perfect for school dramas, youth content and authentic young male voice." },
-  { id:"nana",      name:"Nana",      emoji:"🧶", sex:"Female", age:"Elderly", accent:"British RP",        category:"British",    tone:"Gentle · Wise · Elderly",              pitch:1.02, rate:0.72, desc:"Warm elderly British female. Gentle, wise, full of life experience. Perfect for grandparent characters, memoir and stories that carry the weight of years." },
-  { id:"colonel",   name:"Colonel",   emoji:"🎖️", sex:"Male",   age:"Elderly", accent:"British RP",        category:"British",    tone:"Commanding · Dignified · Veteran",     pitch:0.80, rate:0.76, desc:"Distinguished elderly British male. Authority earned through experience. Perfect for military stories, historical content and gravitas." },
-
-  // ── AMERICAN ─────────────────────────────────────────────────────────────
-  { id:"marcus",    name:"Marcus",    emoji:"⚡", sex:"Male",   age:"Adult",   accent:"American",          category:"American",   tone:"Deep · Cinematic · Commanding",        pitch:0.72, rate:0.74, desc:"Big voice. Big presence. When Marcus speaks people pay attention. Built for trailers, action and anything where every word needs to land like a statement." },
-  { id:"river",     name:"River",     emoji:"🌊", sex:"Male",   age:"Adult",   accent:"American South",    category:"American",   tone:"Warm · Intimate · Storyteller",        pitch:0.98, rate:0.76, desc:"Unhurried Southern charm. Feels like someone telling you a story at dusk. Built for personal films and anything that needs to feel deeply human." },
-  { id:"dakota",    name:"Dakota",    emoji:"🏔️", sex:"Female", age:"Adult",   accent:"American",          category:"American",   tone:"Bold · Direct · Confident",            pitch:1.05, rate:0.92, desc:"Confident and direct. No filler, no hesitation. A voice that means business. Perfect for powerful female narration." },
-  { id:"wade",      name:"Wade",      emoji:"🤠", sex:"Male",   age:"Adult",   accent:"American South",    category:"American",   tone:"Laid Back · Humorous · Folksy",        pitch:0.94, rate:0.85, desc:"Easy going Southern humour with natural warmth. Perfect for comedy and content that wants to feel like a good conversation." },
-  { id:"brooklyn",  name:"Brooklyn",  emoji:"🗽", sex:"Female", age:"Adult",   accent:"New York",          category:"American",   tone:"Fast · Sharp · City Energy",           pitch:1.18, rate:1.10, desc:"Fast New York energy. Sharp, quick and completely at home in the chaos. Perfect for urban stories and comedy." },
-  { id:"tex",       name:"Tex",       emoji:"🐂", sex:"Male",   age:"Adult",   accent:"Texan",             category:"American",   tone:"Drawl · Dry · Unhurried",              pitch:0.88, rate:0.72, desc:"Classic Texas drawl with dry wit and complete unhurriedness. Perfect for western themes and slow-burn storytelling." },
-  { id:"savannah",  name:"Savannah",  emoji:"🌺", sex:"Female", age:"Adult",   accent:"American South",    category:"American",   tone:"Sweet · Gracious · Warm",              pitch:1.20, rate:0.84, desc:"Warm Southern grace with genuine sweetness. Perfect for gentle stories and family content." },
-  { id:"boston",    name:"Boston",    emoji:"🦞", sex:"Male",   age:"Adult",   accent:"Boston",            category:"American",   tone:"Blunt · Smart · No Nonsense",          pitch:0.90, rate:0.95, desc:"Boston bluntness with real intelligence. Says exactly what needs saying and stops. Perfect for documentary and sharp factual narration." },
-  { id:"madison",   name:"Madison",   emoji:"📱", sex:"Female", age:"Young",   accent:"American",          category:"American",   tone:"Upbeat · Teen · Social",               pitch:1.30, rate:1.08, desc:"Natural American teenage female. Energetic, real, social. Perfect for youth content, school drama and anything needing authentic young female voice." },
-  { id:"tyler",     name:"Tyler",     emoji:"🎮", sex:"Male",   age:"Young",   accent:"American",          category:"American",   tone:"Casual · Teen · Relatable",            pitch:1.08, rate:1.00, desc:"Relaxed American teenage male. Natural and unforced. Perfect for school stories, youth content and relatable young male delivery." },
-  { id:"rosie",     name:"Rosie",     emoji:"🌼", sex:"Female", age:"Child",   accent:"American",          category:"American",   tone:"Sweet · Child · Innocent",             pitch:1.45, rate:0.90, desc:"Young child female voice. Warm, sweet and innocent. Perfect for children's stories, family films and young character roles." },
-  { id:"cooper",    name:"Cooper",    emoji:"🚂", sex:"Male",   age:"Child",   accent:"American",          category:"American",   tone:"Bright · Child · Curious",             pitch:1.40, rate:0.92, desc:"Young child male voice. Bright and curious about everything. Perfect for children's content and young character roles." },
-  { id:"grandma",   name:"Grandma",   emoji:"🫶", sex:"Female", age:"Elderly", accent:"American",          category:"American",   tone:"Warm · Elderly · Loving",              pitch:1.00, rate:0.74, desc:"Warm American grandmother voice. Full of love and life experience. Perfect for family stories, memoir and elder female characters." },
-  { id:"frank",     name:"Frank",     emoji:"🪑", sex:"Male",   age:"Elderly", accent:"American",          category:"American",   tone:"Gruff · Elder · Honest",               pitch:0.78, rate:0.78, desc:"Gruff warm elderly American male. Says it straight, means it completely. Perfect for grandfather characters and veteran stories." },
-
-  // ── WORLD ACCENTS ─────────────────────────────────────────────────────────
-  { id:"sophia",    name:"Sophia",    emoji:"☀️", sex:"Female", age:"Adult",   accent:"Australian",        category:"World",      tone:"Upbeat · Bright · Energetic",          pitch:1.35, rate:1.12, desc:"Forward energy and natural warmth. Enthusiastic without being exhausting. Perfect for sport, travel and anything that needs momentum." },
-  { id:"finn",      name:"Finn",      emoji:"🏄", sex:"Male",   age:"Adult",   accent:"Australian",        category:"World",      tone:"Casual · Confident · Outdoorsy",       pitch:0.95, rate:0.95, desc:"Relaxed Australian confidence. Perfect for nature, sport and adventure content." },
-  { id:"aroha",     name:"Aroha",     emoji:"🌿", sex:"Female", age:"Adult",   accent:"New Zealand",       category:"World",      tone:"Warm · Grounded · Sincere",            pitch:1.10, rate:0.86, desc:"Warm New Zealand voice with natural sincerity. Perfect for conservation and heartfelt content." },
-  { id:"amara",     name:"Amara",     emoji:"🌍", sex:"Female", age:"Adult",   accent:"South African",     category:"World",      tone:"Rich · Warm · Powerful",               pitch:1.05, rate:0.84, desc:"Rich South African voice with warmth and quiet power. Perfect for African stories and inspiring content." },
-  { id:"kofi",      name:"Kofi",      emoji:"🥁", sex:"Male",   age:"Adult",   accent:"West African",      category:"World",      tone:"Deep · Rhythmic · Storyteller",        pitch:0.82, rate:0.78, desc:"Deep rhythmic West African voice with natural storytelling authority. Every sentence has music in it." },
-  { id:"priya",     name:"Priya",     emoji:"🪷", sex:"Female", age:"Adult",   accent:"Indian English",    category:"World",      tone:"Precise · Warm · Intelligent",         pitch:1.15, rate:0.90, desc:"Clear Indian English with warmth and intelligence. Perfect for educational content and thoughtful documentary." },
-  { id:"arjun",     name:"Arjun",     emoji:"🎯", sex:"Male",   age:"Adult",   accent:"Indian English",    category:"World",      tone:"Authoritative · Clear · Measured",     pitch:0.88, rate:0.85, desc:"Measured Indian English with natural authority. Perfect for corporate and documentary content." },
-  { id:"kenji",     name:"Kenji",     emoji:"🌸", sex:"Male",   age:"Adult",   accent:"Japanese English",  category:"World",      tone:"Precise · Calm · Thoughtful",          pitch:0.95, rate:0.82, desc:"Precise and calm Japanese English. Every word is considered. Perfect for mindfulness and technology content." },
-  { id:"valentina", name:"Valentina", emoji:"🌹", sex:"Female", age:"Adult",   accent:"Spanish",           category:"World",      tone:"Passionate · Warm · Expressive",       pitch:1.18, rate:0.92, desc:"Warm Spanish English with expressive passion. Everything sounds felt rather than said. Perfect for romance and culture." },
-  { id:"pierre",    name:"Pierre",    emoji:"🥐", sex:"Male",   age:"Adult",   accent:"French",            category:"World",      tone:"Suave · Dry · Cultured",               pitch:0.90, rate:0.84, desc:"Suave French English with dry wit. Says things in a way that makes them sound more interesting than they are." },
-  { id:"ingrid",    name:"Ingrid",    emoji:"❄️", sex:"Female", age:"Adult",   accent:"Scandinavian",      category:"World",      tone:"Clean · Cool · Direct",                pitch:1.08, rate:0.88, desc:"Cool Scandinavian clarity. Direct and unfussy. Perfect for minimalist content and design." },
-  { id:"yemi",      name:"Yemi",      emoji:"🌟", sex:"Female", age:"Adult",   accent:"Nigerian English",  category:"World",      tone:"Bold · Joyful · Energetic",            pitch:1.25, rate:1.00, desc:"Bold joyful Nigerian English with real energy. Life-affirming. Impossible not to engage with." },
-  { id:"carlos",    name:"Carlos",    emoji:"🎺", sex:"Male",   age:"Adult",   accent:"Caribbean",         category:"World",      tone:"Warm · Rhythmic · Joyful",             pitch:0.95, rate:0.88, desc:"Warm Caribbean voice with natural rhythm. Sounds like good weather. Perfect for travel and music content." },
-  { id:"mei",       name:"Mei",       emoji:"🏮", sex:"Female", age:"Young",   accent:"Chinese English",   category:"World",      tone:"Clear · Bright · Precise",             pitch:1.22, rate:0.92, desc:"Clear bright Chinese English with warmth and precision. Perfect for education and international content." },
-  { id:"rafael",    name:"Rafael",    emoji:"⚽", sex:"Male",   age:"Adult",   accent:"Brazilian",         category:"World",      tone:"Warm · Vibrant · Expressive",          pitch:0.95, rate:0.98, desc:"Warm vibrant Brazilian English full of life. Perfect for sport, lifestyle and any content that needs Latin warmth." },
-  { id:"anya",      name:"Anya",      emoji:"🪆", sex:"Female", age:"Adult",   accent:"Russian English",   category:"World",      tone:"Direct · Strong · Intense",            pitch:1.05, rate:0.86, desc:"Strong direct Russian English with quiet intensity. Commands attention without trying. Perfect for drama and documentary." },
-
-  // ── CHARACTER VOICES ──────────────────────────────────────────────────────
-  { id:"magnus",    name:"Magnus",    emoji:"🧙", sex:"Male",   age:"Elderly", accent:"Neutral",           category:"Character",  tone:"Ancient · Wise · Epic",                pitch:0.75, rate:0.70, desc:"Ancient wisdom with epic weight. Sounds like someone who has seen civilisations rise and fall. Perfect for fantasy and mythology." },
-  { id:"violet",    name:"Violet",    emoji:"👵", sex:"Female", age:"Elderly", accent:"British",           category:"Character",  tone:"Elderly · Warm · Witty",               pitch:1.05, rate:0.74, desc:"Elderly British warmth with sharp wit. Nothing shocks her. Most things amuse her. Perfect for memoir and wisdom." },
-  { id:"charlie",   name:"Charlie",   emoji:"🧒", sex:"Male",   age:"Child",   accent:"American",          category:"Character",  tone:"Young · Curious · Bright",             pitch:1.30, rate:1.05, desc:"Young, bright and endlessly curious. Everything is interesting. Perfect for children's content and educational films." },
-  { id:"rex",       name:"Rex",       emoji:"🦁", sex:"Male",   age:"Adult",   accent:"American",          category:"Character",  tone:"Villain · Menacing · Smooth",          pitch:0.78, rate:0.76, desc:"Smooth menace. Says terrible things in a very pleasant tone. The voice of someone very confident and slightly dangerous." },
-  { id:"grace",     name:"Grace",     emoji:"🦋", sex:"Female", age:"Adult",   accent:"American",          category:"Character",  tone:"Hero · Inspiring · Determined",        pitch:1.10, rate:0.88, desc:"Determined and inspiring. The voice of someone who has decided something and intends to do it. Perfect for heroes." },
-  { id:"otto",      name:"Otto",      emoji:"🔬", sex:"Male",   age:"Adult",   accent:"German English",    category:"Character",  tone:"Precise · Authoritative · Serious",    pitch:0.85, rate:0.82, desc:"Precise German English with complete authority. Perfect for science, engineering and historical documentary." },
-  { id:"sunny",     name:"Sunny",     emoji:"🌻", sex:"Female", age:"Child",   accent:"American",          category:"Character",  tone:"Cheerful · Child · Warm",              pitch:1.48, rate:0.95, desc:"Bright warm child female voice bursting with positivity. Perfect for children's books, animation and family content." },
-  { id:"bear",      name:"Bear",      emoji:"🐻", sex:"Male",   age:"Adult",   accent:"American",          category:"Character",  tone:"Gentle Giant · Deep · Kind",           pitch:0.68, rate:0.80, desc:"Deep gentle voice that belongs to someone very large and very kind. Perfect for gentle giants, protector characters and warm authority." },
-  { id:"duchess",   name:"Duchess",   emoji:"👑", sex:"Female", age:"Adult",   accent:"British RP",        category:"Character",  tone:"Imperious · Elegant · Commanding",     pitch:1.08, rate:0.78, desc:"Aristocratic authority with effortless command. Every word an edict. Perfect for royalty, villains with class and commanding female characters." },
-  { id:"scout",     name:"Scout",     emoji:"🏕️", sex:"Male",   age:"Young",   accent:"American",          category:"Character",  tone:"Adventurous · Young · Brave",          pitch:1.15, rate:1.02, desc:"Young adventurous male voice full of courage and forward motion. Perfect for adventure stories and young heroes." },
-
-  // ── SPECIALIST ────────────────────────────────────────────────────────────
-  { id:"nova",      name:"Nova",      emoji:"🤖", sex:"Female", age:"Adult",   accent:"Neutral",           category:"Specialist", tone:"Clean · Professional · Neutral",       pitch:1.12, rate:0.95, desc:"No accent, no emotion, no opinion by design. Pure information delivered with clinical clarity. Perfect for tech and corporate narration." },
-  { id:"walter",    name:"Walter",    emoji:"📰", sex:"Male",   age:"Adult",   accent:"American",          category:"Specialist", tone:"Newsreader · Authoritative · Clear",   pitch:0.88, rate:0.92, desc:"Classic American newsreader. Clear, measured and completely trustworthy. Everything sounds verified." },
-  { id:"eleanor",   name:"Eleanor",   emoji:"📚", sex:"Female", age:"Adult",   accent:"British RP",        category:"Specialist", tone:"Audiobook · Rich · Immersive",         pitch:1.06, rate:0.80, desc:"Rich audiobook voice with full emotional range. Every character sounds different. Built for long-form audio storytelling." },
-  { id:"miles",     name:"Miles",     emoji:"🎙️", sex:"Male",   age:"Adult",   accent:"American",          category:"Specialist", tone:"Podcast · Conversational · Engaging",  pitch:0.95, rate:0.96, desc:"Natural podcast energy. Sounds like a real conversation with someone genuinely interesting. Never performed." },
-  { id:"luna",      name:"Luna",      emoji:"🌙", sex:"Female", age:"Adult",   accent:"Neutral",           category:"Specialist", tone:"ASMR · Whisper · Intimate",            pitch:1.20, rate:0.65, desc:"Soft intimate whisper with complete calm. Every syllable is gentle. Perfect for ASMR and meditation content." },
-  { id:"hunter",    name:"Hunter",    emoji:"🎬", sex:"Male",   age:"Adult",   accent:"American",          category:"Specialist", tone:"Trailer · Epic · Explosive",           pitch:0.70, rate:0.80, desc:"Full movie trailer energy. Deep, explosive and completely committed to the drama. Built for trailers and epic content." },
-  { id:"professor", name:"Professor", emoji:"🎓", sex:"Male",   age:"Elderly", accent:"British RP",        category:"Specialist", tone:"Academic · Thoughtful · Measured",     pitch:0.88, rate:0.78, desc:"Distinguished academic voice. Thoughtful, precise and deeply knowledgeable. Perfect for educational content and documentaries." },
-  { id:"anchor",    name:"Anchor",    emoji:"📡", sex:"Female", age:"Adult",   accent:"American",          category:"Specialist", tone:"News Anchor · Confident · Clear",      pitch:1.05, rate:0.94, desc:"Professional female news anchor. Confident, clear and completely authoritative. Perfect for news style and current affairs content." },
-  { id:"guide",     name:"Guide",     emoji:"🗺️", sex:"Female", age:"Adult",   accent:"Neutral",           category:"Specialist", tone:"Tour Guide · Friendly · Informative",  pitch:1.12, rate:0.90, desc:"Warm, informative guide voice. Friendly and clear. Perfect for travel content, explainers and educational tours." },
-
-  // ── EMOTIONAL RANGE ───────────────────────────────────────────────────────
-  { id:"hope",      name:"Hope",      emoji:"🌤️", sex:"Female", age:"Adult",   accent:"American",          category:"Emotional",  tone:"Tender · Gentle · Loving",             pitch:1.15, rate:0.78, desc:"Pure tenderness. Warm and gentle with genuine love. Nothing is performed. Perfect for tributes and love stories." },
-  { id:"storm",     name:"Storm",     emoji:"⛈️", sex:"Male",   age:"Adult",   accent:"American",          category:"Emotional",  tone:"Intense · Angry · Powerful",           pitch:0.82, rate:1.00, desc:"Raw intensity and real anger focused into powerful delivery. Perfect for protest, injustice and passionate advocacy." },
-  { id:"joy",       name:"Joy",       emoji:"🎉", sex:"Female", age:"Adult",   accent:"American",          category:"Emotional",  tone:"Excited · Joyful · Celebratory",       pitch:1.40, rate:1.15, desc:"Pure infectious joy. Impossible not to smile. Everything is wonderful and she means it completely." },
-  { id:"elegy",     name:"Elegy",     emoji:"🕯️", sex:"Female", age:"Adult",   accent:"British",           category:"Emotional",  tone:"Grief · Solemn · Beautiful",           pitch:1.00, rate:0.70, desc:"Profound and beautiful grief. Not melodrama — real quiet sorrow with dignity. Perfect for memorial and tragedy." },
-  { id:"sage",      name:"Sage",      emoji:"🌿", sex:"Male",   age:"Adult",   accent:"Neutral",           category:"Emotional",  tone:"Peaceful · Mindful · Grounded",        pitch:0.95, rate:0.72, desc:"Deep calm that comes from somewhere real. Nothing rushes. Perfect for meditation and mindfulness content." },
-  { id:"blaze",     name:"Blaze",     emoji:"🔥", sex:"Male",   age:"Adult",   accent:"American",          category:"Emotional",  tone:"Comic · Energetic · Ridiculous",       pitch:1.05, rate:1.18, desc:"Full commitment to comedy. Absolutely ridiculous energy. No dignity whatsoever and fine with that. Built for comedy and parody." },
-  { id:"faith",     name:"Faith",     emoji:"✨", sex:"Female", age:"Adult",   accent:"American South",    category:"Emotional",  tone:"Inspirational · Gospel · Uplifting",   pitch:1.18, rate:0.88, desc:"Warm inspirational voice with gospel soul. Uplifting and genuinely moving. Perfect for motivational content and inspiring stories." },
-  { id:"rebel",     name:"Rebel",     emoji:"✊", sex:"Female", age:"Young",   accent:"American",          category:"Emotional",  tone:"Fierce · Defiant · Young",             pitch:1.22, rate:1.05, desc:"Young fierce female voice full of defiance and conviction. Will not back down. Perfect for protest, activism and strong young female characters." },
-  { id:"echo",      name:"Echo",      emoji:"🌌", sex:"Female", age:"Adult",   accent:"Neutral",           category:"Emotional",  tone:"Haunting · Ethereal · Mysterious",     pitch:1.15, rate:0.68, desc:"Otherworldly and haunting. Somewhere between a whisper and a presence. Perfect for horror, mystery and supernatural content." },
-  { id:"lionheart", name:"Lionheart", emoji:"🦁", sex:"Male",   age:"Adult",   accent:"British",           category:"Emotional",  tone:"Courageous · Noble · Inspiring",       pitch:0.85, rate:0.82, desc:"Noble courage in every syllable. The voice of someone who has faced the worst and chosen to keep going. Perfect for heroic and inspiring content." },
+  { id:"aurora", name:"Aurora", desc:"Warm British Female", style:"Documentary · Narrator", accent:"British RP" },
+  { id:"marcus", name:"Marcus", desc:"Deep American Male", style:"Cinematic · Authoritative", accent:"American" },
+  { id:"sophia", name:"Sophia", desc:"Bright Australian Female", style:"Upbeat · Engaging", accent:"Australian" },
+  { id:"james",  name:"James",  desc:"Dry British Male", style:"Sarcastic · Witty", accent:"British" },
+  { id:"nova",   name:"Nova",   desc:"Neutral AI Female", style:"Clean · Professional", accent:"Neutral" },
+  { id:"river",  name:"River",  desc:"Warm American Male", style:"Friendly · Intimate", accent:"American South" },
 ];
 
 const VOICE_TOOLS = ["Text to Voice","Text to Speech","Text to Narration","Text to Audiobook","Text to Voiceover","AI Voice Actor","Neural Voice Generator","Emotion Voice Synth","Documentary Voice","Trailer Voice Generator","Commercial Voice","Character Voice Creator","Audiobook Creator","Podcast Voice"];
 
-// Global voice assignments — users pick their own voices from their device
 let VOICE_ASSIGNMENTS = {};
-try { VOICE_ASSIGNMENTS = JSON.parse(localStorage.getItem("ms_voice_assign")||"{}"); } catch{}
+const loadVoiceAssignments = () => {
+  try { VOICE_ASSIGNMENTS = JSON.parse(localStorage.getItem("ms_voice_assign")||"{}"); } catch{}
+};
+if (typeof window !== "undefined") loadVoiceAssignments();
 
 let currentUtterance = null;
-
-// Per-voice pitch/rate/style settings — each voice has its own character
-// Voice params — pitch and rate pulled directly from STOCK_VOICES definitions
-// Built dynamically so adding new voices automatically gets their params
-const VOICE_PARAMS = Object.fromEntries(
-  (typeof STOCK_VOICES !== "undefined" ? STOCK_VOICES : []).map(v => [
-    v.id, { pitch: v.pitch || 1.0, rate: v.rate || 0.9, volume: 1.0 }
-  ])
-);
-
-// Emotion-specific pause patterns per voice — makes them sound human
-const VOICE_PAUSES = {
-  aurora: { sentence: 600, comma: 300, emphasis: 400 },
-  marcus: { sentence: 900, comma: 450, emphasis: 600 },
-  sophia: { sentence: 200, comma: 100, emphasis: 150 },
-  james:  { sentence: 1600, comma: 900, emphasis: 1400 }, // James — the punchline lives in the silence after it
-  nova:   { sentence: 300, comma: 150, emphasis: 200 },
-  river:  { sentence: 800, comma: 400, emphasis: 500 },
-};
-
-// Picks the best matching system voice for each character
-function pickVoice(voiceId, allVoices) {
-  const assignedName = VOICE_ASSIGNMENTS[voiceId];
-  if (assignedName) return allVoices.find(v=>v.name===assignedName)||null;
-  const femalePat = /samantha|zira|victoria|moira|karen|susan|lisa|fiona|serena|tessa|heather|hazel|allison|ava|nora|siri|female/i;
-  const malePat   = /david|daniel|oliver|arthur|george|harry|lee|ryan|eric|reed|liam|aaron|rishi|wayne|brian|derek|steven|alan|albert|andy|tom|bruce|fred|mark|paul|peter|john|james|gordon|alex|eddy|bobby|ralph|male/i;
-  let picked = null;
-  if (voiceId==="aurora") {
-    picked = allVoices.find(x=>/kate|serena|emily/i.test(x.name))
-          || allVoices.find(x=>x.lang==="en-GB"&&femalePat.test(x.name))
-          || allVoices.find(x=>x.lang==="en-GB");
-  } else if (voiceId==="marcus") {
-    picked = allVoices.find(x=>/daniel|david/i.test(x.name)&&x.lang.startsWith("en-US"))
-          || allVoices.find(x=>x.lang==="en-US"&&malePat.test(x.name));
-  } else if (voiceId==="sophia") {
-    picked = allVoices.find(x=>/karen/i.test(x.name))
-          || allVoices.find(x=>x.lang==="en-AU");
-  } else if (voiceId==="james") {
-    picked = allVoices.find(x=>/daniel|oliver|arthur/i.test(x.name)&&x.lang==="en-GB")
-          || allVoices.find(x=>x.lang==="en-GB"&&malePat.test(x.name))
-          || allVoices.find(x=>x.lang==="en-GB"&&!femalePat.test(x.name));
-  } else if (voiceId==="nova") {
-    picked = allVoices.find(x=>/samantha|victoria|zira/i.test(x.name))
-          || allVoices.find(x=>x.lang==="en-US"&&femalePat.test(x.name));
-  } else if (voiceId==="river") {
-    picked = allVoices.find(x=>/ryan|eric|reed|liam/i.test(x.name))
-          || allVoices.find(x=>x.lang==="en-US"&&malePat.test(x.name));
-  }
-  return picked || allVoices.find(x=>x.lang.startsWith("en")) || allVoices[0];
-}
-
-// Splits text into natural speech chunks with emotional pauses built in
-// Handles unlimited length — full scripts, entire books, anything
-// Inserts silence utterances between chunks to mimic human breathing and emphasis
-function chunkText(txt, voiceId) {
-  const pauses = VOICE_PAUSES[voiceId] || { sentence:500, comma:250, emphasis:350 };
-  // Clean up markers
-  const clean = txt
-    .replace(/\[pause\]/g, " ... ")
-    .replace(/\*/g, "")
-    .replace(/\//g, " ")
-    .trim();
-
-  // Split into natural breath units — sentences first, then by commas if too long
-  const raw = clean.match(/[^.!?]+[.!?]+|\s*\.\.\.\s*|[^.!?]+$/g) || [clean];
-  const chunks = [];
-
-  for (const s of raw) {
-    const trimmed = s.trim();
-    if (!trimmed) continue;
-
-    // If it contains a pause marker, split there
-    if (trimmed.includes("...")) {
-      const parts = trimmed.split("...");
-      for (let i = 0; i < parts.length; i++) {
-        if (parts[i].trim()) chunks.push({ text: parts[i].trim(), pauseAfter: pauses.emphasis });
-      }
-      continue;
-    }
-
-    // Split long sentences on commas for natural breathing
-    if (trimmed.length > 150) {
-      const commaParts = trimmed.split(/,\s*/);
-      for (let i = 0; i < commaParts.length; i++) {
-        if (commaParts[i].trim()) {
-          chunks.push({
-            text: commaParts[i].trim() + (i < commaParts.length-1 ? "," : ""),
-            pauseAfter: i < commaParts.length-1 ? pauses.comma : pauses.sentence
-          });
-        }
-      }
-    } else {
-      chunks.push({ text: trimmed, pauseAfter: pauses.sentence });
-    }
-  }
-
-  return chunks.length > 0 ? chunks : [{ text: clean, pauseAfter: 400 }];
-}
 
 function speakText(voiceId, txt, onStart, onEnd) {
   if (!txt||!txt.trim()) return;
   window.speechSynthesis.cancel();
   currentUtterance = null;
-
+  const clean = txt.replace(/\[pause\]/g,". ").replace(/[*\/]/g," ").slice(0,5000);
   const doSpeak = () => {
     const allVoices = window.speechSynthesis.getVoices();
-    const voice = pickVoice(voiceId, allVoices);
-    const params = VOICE_PARAMS[voiceId] || { pitch:1.0, rate:0.9, volume:1.0 };
-    const chunks = chunkText(txt, voiceId);
-    let idx = 0;
-
-    if (onStart) onStart();
-
-    const speakNext = () => {
-      if (idx >= chunks.length) {
-        currentUtterance = null;
-        if (onEnd) onEnd();
-        return;
+    const utt = new SpeechSynthesisUtterance(clean);
+    utt.pitch = 1.0; utt.rate = 0.9;
+    const assignedName = VOICE_ASSIGNMENTS[voiceId];
+    let picked = assignedName ? allVoices.find(v=>v.name===assignedName) : null;
+    if (!picked) {
+      const isMale = ["james","marcus","river"].includes(voiceId);
+      const femalePat = /samantha|zira|victoria|moira|karen|susan|lisa|fiona|serena|tessa|heather|hazel|allison|ava|nora|siri|female/i;
+      const malePat = /david|daniel|oliver|arthur|george|harry|lee|ryan|eric|reed|liam|aaron|rishi|wayne|brian|derek|steven|alan|albert|andy|tom|bruce|fred|mark|paul|peter|john|james|gordon|alex|eddy|bobby|ralph|male/i;
+      if (isMale) {
+        picked = allVoices.find(x=>malePat.test(x.name))
+              || allVoices.find(x=>x.lang==="en-GB"&&!femalePat.test(x.name))
+              || allVoices.find(x=>x.lang.startsWith("en")&&!femalePat.test(x.name))
+              || allVoices[0];
+      } else {
+        picked = voiceId==="aurora" ? (allVoices.find(x=>/kate|serena|emily/i.test(x.name))||allVoices.find(x=>x.lang==="en-GB"))
+               : voiceId==="sophia" ? (allVoices.find(x=>/karen/i.test(x.name))||allVoices.find(x=>x.lang==="en-AU"))
+               : allVoices.find(x=>/samantha|victoria|zira/i.test(x.name));
+        picked = picked||allVoices.find(x=>x.lang.startsWith("en"))||allVoices[0];
       }
-      const chunk = chunks[idx];
-      const utt = new SpeechSynthesisUtterance(chunk.text);
-      utt.pitch  = params.pitch;
-      utt.rate   = params.rate;
-      utt.volume = params.volume || 1.0;
-      if (voice) utt.voice = voice;
-      currentUtterance = utt;
-      utt.onend  = () => { idx++; setTimeout(speakNext, chunk.pauseAfter || 400); };
-      utt.onerror = () => { idx++; speakNext(); };
-      window.speechSynthesis.speak(utt);
-    };
-
-    speakNext();
+    }
+    if (picked) utt.voice = picked;
+    currentUtterance = utt;
+    if (onStart) onStart();
+    utt.onend=()=>{ currentUtterance=null; if(onEnd)onEnd(); };
+    utt.onerror=()=>{ currentUtterance=null; if(onEnd)onEnd(); };
+    window.speechSynthesis.speak(utt);
   };
-
-  if (window.speechSynthesis.getVoices().length>0) { doSpeak(); }
-  else { window.speechSynthesis.onvoiceschanged = () => { doSpeak(); }; }
+  if (window.speechSynthesis.getVoices().length>0){doSpeak();}
+  else{window.speechSynthesis.onvoiceschanged=()=>{doSpeak();};}
 }
 
 function stopSpeaking() {
   window.speechSynthesis.cancel();
   currentUtterance = null;
-}
-
-// Pro version of speakText — accepts optional pitch/rate param overrides
-function speakTextPro(voiceId, txt, onStart, onEnd, overrideParams) {
-  if (!txt||!txt.trim()) return;
-  window.speechSynthesis.cancel();
-  currentUtterance = null;
-  const doSpeak = () => {
-    const allVoices = window.speechSynthesis.getVoices();
-    const voice = pickVoice(voiceId, allVoices);
-    const baseParams = VOICE_PARAMS[voiceId] || { pitch:1.0, rate:0.9, volume:1.0 };
-    const params = overrideParams || baseParams;
-    const chunks = chunkText(txt, voiceId);
-    let idx = 0;
-    if (onStart) onStart();
-    const speakNext = () => {
-      if (idx >= chunks.length) { currentUtterance=null; if(onEnd)onEnd(); return; }
-      const chunk = chunks[idx];
-      const utt = new SpeechSynthesisUtterance(chunk.text);
-      utt.pitch  = Math.max(0.1, Math.min(2.0, params.pitch));
-      utt.rate   = Math.max(0.1, Math.min(2.0, params.rate));
-      utt.volume = params.volume || 1.0;
-      if (voice) utt.voice = voice;
-      currentUtterance = utt;
-      utt.onend  = () => { idx++; setTimeout(speakNext, chunk.pauseAfter || 400); };
-      utt.onerror = () => { idx++; speakNext(); };
-      window.speechSynthesis.speak(utt);
-    };
-    speakNext();
-  };
-  if (window.speechSynthesis.getVoices().length>0){doSpeak();}
-  else{window.speechSynthesis.onvoiceschanged=()=>{doSpeak();};}
 }
 
 const WRITING = ["Script to Movie","Text to Script","Script to Screenplay","Prompt to Story","Story to Script","Feature Film Script","Short Film Script","TV Pilot Script","Documentary Script","Commercial Script","YouTube Script","Podcast Script","Social Media Script","Explainer Script","Plot Generator","Story Outline","Three Act Structure","Five Act Structure","Beat Sheet Builder","Character Bio Writer","Character Arc Builder","Subplot Generator","Plot Twist Generator","Opening Hook Creator","Climax Designer","Logline Generator","Synopsis Writer","Treatment Writer","Scene Writer","Text to Dialogue","Dialogue Generator","Narration Writer","Voiceover Script","Interview Script","Action Line Writer","Scene Heading Tool","Parenthetical Generator","Script Formatter","Dialogue Tightener","Script Timer","Word Counter","Page Counter","Reading Time Estimator","Format Checker","Grammar Polish","Spell Checker","Continuity Checker","Plot Hole Detector","Tone Checker","Genre Classifier"];
@@ -317,10 +114,10 @@ function QAMenu({ go, onClose, user }) {
         <div style={{background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,padding:"9px 12px",marginBottom:10,textAlign:"center"}}>
           <div style={{color:"#000",fontWeight:900,fontSize:10,letterSpacing:3,fontFamily:"'Cinzel',serif"}}>MANDA STRONG STUDIO</div>
         </div>
-        {user&&user.plan&&<div style={{background:"#0a0a0a",border:`1px solid ${GOLDDIM}`,padding:"7px 10px",marginBottom:14,textAlign:"center"}}>
+        <div style={{background:"#0a0a0a",border:`1px solid ${GOLD}`,padding:"7px 10px",marginBottom:14,textAlign:"center"}}>
           <div style={{color:DIM,fontSize:9,letterSpacing:2}}>PLAN</div>
-          <div style={{color:GOLD,fontWeight:900,fontSize:14,fontFamily:"'Cinzel',serif"}}>{user.plan}</div>
-        </div>}
+          <div style={{color:GOLD,fontWeight:900,fontSize:14,fontFamily:"'Cinzel',serif"}}>STUDIO</div>
+        </div>
         {NAV.map(i=>(
           <button key={i.p} onClick={()=>{go(i.p);onClose();}}
             style={{width:"100%",textAlign:"left",background:"none",border:"none",color:WHITE,padding:"8px",cursor:"pointer",fontSize:13,fontWeight:700,display:"block",marginBottom:1,letterSpacing:1}}
@@ -410,17 +207,17 @@ function ToolPanel({ tool, onClose, onSave }) {
       if (isVoice) {
         prompt = `Format this as cinematic narration, voice style: ${STOCK_VOICES.find(x=>x.id===selVoice)?.style}. Mark pauses as [pause] and emphasis as *word*:\n\n${describe}`;
       } else if (isVideoTool) {
-        prompt = `You are a professional film director at MandaStrong Studio. Tool: "${tool}".\n\nUser description: ${describe}\n\nGenerate a COMPLETE PRODUCTION-READY video package for MandaStrong Studio:\n\n1. SCENE DESCRIPTION — full cinematic description of the clip, what happens, who is in it, the emotional tone\n2. CAMERA DIRECTIONS — opening shot type, movement through the scene (pan, push in, pull back, handheld, static), closing shot, lens type (wide, close-up, medium, aerial)\n3. LIGHTING — time of day, light source, mood, colour temperature\n4. COLOUR GRADE — the look and feel (warm gold, cold blue, high contrast, desaturated, cinematic teal and orange etc)\n5. AUDIO NOTES — music mood, sound effects, tempo, whether narration plays over or under\n6. DURATION — estimated clip length in seconds or minutes\n7. DIRECTOR'S NOTES — tone, pacing, what the audience should feel\n\nMake it specific, cinematic and immediately usable in MandaStrong Studio.`;
+        prompt = `You are a professional film director at MandaStrong Studio. Tool: "${tool}".\n\nUser description: ${describe}\n\nGenerate a COMPLETE PRODUCTION-READY video prompt package:\n\n1. OPTIMISED VIDEO PROMPT\n2. SCENE BREAKDOWN (5-8 shots)\n3. CAMERA DIRECTIONS\n4. LIGHTING & COLOUR GRADE\n5. AUDIO NOTES\n6. DURATION ESTIMATE\n7. DIRECTOR'S NOTES\n\nMake it specific, cinematic and immediately production-ready.`;
       } else if (isImageTool) {
-        prompt = `You are a professional visual artist at MandaStrong Studio. Tool: "${tool}".\n\nUser description: ${describe}\n\nGenerate a COMPLETE IMAGE PROMPT PACKAGE:\n\n1. OPTIMISED PROMPT (ready for Midjourney, DALL-E, Stable Diffusion)\n2. STYLE (art style, medium, technique, era)\n3. LIGHTING & COLOUR PALETTE\n4. COMPOSITION & FRAMING\n5. NEGATIVE PROMPT (what to exclude)\n6. ASPECT RATIO & RESOLUTION\n7. STYLE REFERENCES\n\nMake it specific and production-ready.`;
+        prompt = `You are a professional visual artist at MandaStrong Studio. Tool: "${tool}".\n\nUser description: ${describe}\n\nGenerate a COMPLETE IMAGE PROMPT PACKAGE:\n\n1. OPTIMISED PROMPT\n2. STYLE\n3. LIGHTING & COLOUR PALETTE\n4. COMPOSITION & FRAMING\n5. NEGATIVE PROMPT\n6. ASPECT RATIO & RESOLUTION\n7. STYLE REFERENCES`;
       } else if (isWritingTool) {
-        prompt = `You are a professional screenwriter at MandaStrong Studio. Tool: "${tool}".\n\nUser request: ${describe}\n\nGenerate complete, properly formatted, production-ready content. Include all structural elements, scene headings, character direction and cinematic detail. Make it ready to use immediately in a real production.`;
+        prompt = `You are a professional screenwriter at MandaStrong Studio. Tool: "${tool}".\n\nUser request: ${describe}\n\nGenerate complete, properly formatted, production-ready content.`;
       } else {
-        prompt = `You are a professional at MandaStrong Studio cinema AI platform. Tool: "${tool}".\n\nUser request: ${describe}\n\nGenerate complete, detailed, professional, production-ready content. Be specific, creative and immediately usable. Include all relevant technical details, creative direction and practical notes a real filmmaker would need.`;
+        prompt = `You are a professional at MandaStrong Studio cinema AI platform. Tool: "${tool}".\n\nUser request: ${describe}\n\nGenerate complete, detailed, professional, production-ready content.`;
       }
-      const res = await fetch("https://api.anthropic.com/v1/messages",{
+      const res = await fetch(EDGE_FN,{
         method:"POST",
-        headers:{"Content-Type":"application/json","anthropic-dangerous-direct-browser-access":"true","x-api-key":import.meta.env.VITE_ANTHROPIC_API_KEY||""},
+        headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY,"apikey":SUPA_KEY},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,
           messages:[{role:"user",content:prompt}]})
       });
@@ -461,7 +258,7 @@ function ToolPanel({ tool, onClose, onSave }) {
                   style={{background:"#000",border:`2px solid ${selVoice===v.id?GOLD:GOLDDIM}`,padding:"10px 12px",cursor:"pointer",boxShadow:selVoice===v.id?`0 0 12px ${GOLD}44`:"none"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
                     <span style={{color:selVoice===v.id?GOLD:WHITE,fontSize:14,fontWeight:900}}>{v.name}</span>
-                    <button onClick={e=>{e.stopPropagation();speak(v.id, `Hello. I am ${v.name}. ${v.desc.split(".")[0]}.`);}}
+                    <button onClick={e=>{e.stopPropagation();speak(v.id,`Hi I am ${v.name}. ${v.desc}. Ready to narrate.`);}}
                       style={{background:"none",border:`1px solid ${GOLDDIM}`,color:GOLD,padding:"2px 8px",cursor:"pointer",fontSize:10,fontWeight:900}}>
                       {playing===v.id?"⏹":"▶"}
                     </button>
@@ -523,22 +320,11 @@ function ToolPanel({ tool, onClose, onSave }) {
             <div style={{color:GOLD,fontSize:12,letterSpacing:3,fontWeight:900,marginBottom:4}}>
               {isVideoTool?"DESCRIBE YOUR SCENE OR FILM IDEA":isImageTool?"DESCRIBE YOUR IMAGE":isWritingTool?"DESCRIBE YOUR STORY OR SCRIPT":"DESCRIBE WHAT YOU WANT"}
             </div>
-            <div style={{color:WHITE,fontSize:12,marginBottom:8,lineHeight:1.6}}>
-              {isVideoTool&&"Just tell me what you want to see. I'll create the full production-ready video prompt, shot list, camera directions, lighting, audio notes and director's vision."}
-              {isImageTool&&"Describe your image in plain English. I'll create an optimised prompt ready for any AI image generator including style, lighting, composition and settings."}
-              {isWritingTool&&"Tell me your story idea, genre, characters or theme. I'll write the full script, screenplay or story with proper formatting and cinematic detail."}
-              {!isVideoTool&&!isImageTool&&!isWritingTool&&"Describe what you need. I'll generate complete, professional, production-ready content."}
-            </div>
             <textarea value={describe} onChange={e=>setDescribe(e.target.value)}
-              placeholder={
-                isVideoTool?"e.g. A lone astronaut walks across a red planet at sunset, discovers a glowing alien structure, stops and stares in disbelief. Cinematic, emotional, epic scale."
-                :isImageTool?"e.g. Portrait of a powerful warrior queen standing on a cliff at golden hour, dramatic lighting, photorealistic, 8K detail."
-                :isWritingTool?"e.g. A documentary about a woman who walks across America alone to raise awareness for veterans mental health. Emotional, inspiring, real."
-                :`Describe what you want from ${tool}...`
-              }
+              placeholder={isVideoTool?"e.g. A lone astronaut walks across a red planet at sunset...":isImageTool?"e.g. Portrait of a warrior queen at golden hour...":isWritingTool?"e.g. A documentary about veterans mental health...":`Describe what you want from ${tool}...`}
               style={{...inp,height:100,resize:"none",lineHeight:1.6}}/>
             <button onClick={runAI} disabled={loading||!describe.trim()} style={{...G("gold",false),marginTop:8,width:"100%",padding:"14px",opacity:loading||!describe.trim()?0.5:1,fontSize:13,letterSpacing:2}}>
-              {loading?"⟳ CREATING YOUR CONTENT...":isVideoTool?"🎬 CREATE FULL VIDEO PRODUCTION PACKAGE ✦":isImageTool?"🎨 CREATE IMAGE PROMPT PACKAGE ✦":isWritingTool?"✍ WRITE COMPLETE SCRIPT ✦":"✦ AI CREATE"}
+              {loading?"⟳ CREATING...":isVideoTool?"🎬 CREATE VIDEO PACKAGE ✦":isImageTool?"🎨 CREATE IMAGE PROMPT ✦":isWritingTool?"✍ WRITE SCRIPT ✦":"✦ AI CREATE"}
             </button>
             {result&&(
               <div style={{marginTop:14}}>
@@ -583,6 +369,22 @@ function ToolPage({ title, subtitle, tools, onSave }) {
         {filtered.map(t=><ToolCard key={t} name={t} onOpen={setOpen}/>)}
       </div>
       {open&&<ToolPanel tool={open} onClose={()=>setOpen(null)} onSave={onSave}/>}
+      {title==="WRITING TOOLS"&&(
+        <div style={{padding:"0 12px 12px"}}>
+          <div style={{background:"#050500",border:`2px solid ${GOLD}`,padding:"16px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
+            <div>
+              <div style={{color:GOLD,fontWeight:900,fontSize:13,letterSpacing:3}}>📂 YOUR PROJECTS</div>
+              <div style={{color:WHITE,fontSize:12,marginTop:3}}>Save and reload your work at any time</div>
+            </div>
+            <div style={{display:"flex",gap:10}}>
+              <button onClick={()=>{ try{ const m=JSON.parse(localStorage.getItem("ms_medialib")||"[]"); const t=JSON.parse(localStorage.getItem("ms_timeline")||"{}"); if(m.length>0||Object.keys(t).length>0){ alert("Project loaded! "+m.length+" assets restored."); }else{ alert("No saved project found."); } }catch(e){alert("Could not load project.");} }}
+                style={{background:`linear-gradient(135deg,#a07820,#e8c96d)`,border:"none",color:"#000",padding:"12px 24px",cursor:"pointer",fontSize:12,fontWeight:900,letterSpacing:2}}>
+                📂 OPEN PROJECT
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -592,27 +394,7 @@ function MusicVideoStudio({ onClose, onSave }) {
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState(null);
   const [config, setConfig] = useState({
-    title:"",
-    artist:"",
-    genre:"",
-    subgenre:"",
-    mood:"",
-    tempo:"",
-    key:"",
-    structure:"",
-    vocals:"",
-    instruments:[],
-    vocalStyle:"",
-    lyrics:"",
-    lyricsMode:"write",
-    videoStyle:"",
-    colorGrade:"",
-    visualMood:"",
-    effects:[],
-    cuts:"",
-    aspectRatio:"16:9",
-    duration:"",
-    extras:[],
+    title:"",artist:"",genre:"",subgenre:"",mood:"",tempo:"",key:"",structure:"",vocals:"",instruments:[],vocalStyle:"",lyrics:"",lyricsMode:"write",videoStyle:"",colorGrade:"",visualMood:"",effects:[],cuts:"",aspectRatio:"16:9",duration:"",extras:[],
   });
 
   const set = (k,v) => setConfig(p=>({...p,[k]:v}));
@@ -632,7 +414,7 @@ function MusicVideoStudio({ onClose, onSave }) {
   const DURATIONS = ["2 Minutes","3 Minutes","3:30 Minutes","4 Minutes","5 Minutes","6+ Minutes (Extended)"];
   const EXTRAS = ["Behind the Scenes Footage","Making Of Segment","Lyrics on Screen","Social Media Teaser Cut","Album Art Slide","Director Commentary","Fan Cam Version","360° Video"];
 
-  const sel = (k,v,arr) => (
+  const sel = (k,arr) => (
     <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:4}}>
       {arr.map(item=>(
         <button key={item} onClick={()=>set(k,item)}
@@ -657,72 +439,67 @@ function MusicVideoStudio({ onClose, onSave }) {
   const generateProject = async () => {
     setGenerating(true);
     try {
-      const prompt = `You are a professional music video director and music producer. Create a complete, detailed music video production brief and creative treatment for the following project:
+      const dur = config.duration||"3 Minutes";
+      const durSecs = dur.includes("2")?120:dur.includes("3:30")?210:dur.includes("3")?180:dur.includes("4")?240:dur.includes("5")?300:360;
+      const numScenes = Math.max(3, Math.round(durSecs/30));
+      const prompt = `You are a professional music video director. Create a complete music video production package for:
+TITLE: ${config.title||"Untitled"}, ARTIST: ${config.artist||"Unknown"}, GENRE: ${config.genre||"Pop"}, MOOD: ${config.mood||"Emotional"}, TEMPO: ${config.tempo||"Mid-Tempo"}, VOCALS: ${config.vocals||"Female Lead"}, VIDEO STYLE: ${config.videoStyle||"Cinematic Narrative"}, DURATION: ${config.duration||"3 Minutes"}
+${config.visualDesc?`
+CREATOR SCENE DESCRIPTION — BUILD ALL SCENES AROUND THIS:
+${config.visualDesc}
+`:""}
+${config.lyricsMode==="write"&&config.lyrics?`LYRICS:
+${config.lyrics}`:`Generate original lyrics matching the genre and mood.`}
 
-TITLE: ${config.title||"Untitled"}
-ARTIST: ${config.artist||"Unknown Artist"}
-GENRE: ${config.genre} ${config.subgenre?`/ ${config.subgenre}`:""}
-MOOD: ${config.mood}
-TEMPO: ${config.tempo}
-MUSICAL KEY: ${config.key||"Artist's choice"}
-SONG STRUCTURE: ${config.structure}
-VOCALS: ${config.vocals} — Style: ${config.vocalStyle}
-INSTRUMENTS: ${config.instruments.join(", ")||"Standard band"}
-VIDEO STYLE: ${config.videoStyle}
-COLOUR GRADE: ${config.colorGrade}
-VISUAL MOOD: ${config.visualMood||config.mood}
-VIDEO EFFECTS: ${config.effects.join(", ")||"None specified"}
-EDITING STYLE: ${config.cuts}
-ASPECT RATIO: ${config.aspectRatio}
-DURATION: ${config.duration}
-EXTRAS: ${config.extras.join(", ")||"None"}
-
-${config.lyricsMode==="write"&&config.lyrics?`LYRICS PROVIDED:\n${config.lyrics}`:`LYRICS: Please generate original lyrics that match the genre, mood and style.`}
-
-Please provide:
-1. SONG TITLE & ARTIST CONCEPT (2-3 sentences)
-2. COMPLETE LYRICS (verses, chorus, bridge, outro — full song)
-3. MUSIC PRODUCTION NOTES (key, chord progression, instrumentation breakdown, production style)
-4. VIDEO TREATMENT (scene by scene description, shot list, locations, props, wardrobe, cast direction)
-5. DIRECTOR'S VISION (the emotional arc of the video, how it connects to the lyrics)
-6. SHOT LIST (at least 10 specific shots with camera angles, movement and description)
-7. POST PRODUCTION NOTES (colour grade instructions, effects, editing rhythm, transitions)
-8. SOCIAL MEDIA STRATEGY (teaser clips, promotional angles, hashtag suggestions)
-
-Make it professional, creative, and production-ready. This is for a real music video shoot.`;
-
-      const res = await fetch("https://api.anthropic.com/v1/messages",{
+Provide:
+1. SONG CONCEPT (2-3 sentences)
+2. COMPLETE LYRICS
+3. MUSIC PRODUCTION NOTES
+4. VIDEO TREATMENT — exactly ${numScenes} scenes, each with SCENE [N], VISUAL DESCRIPTION, and PAGE 8 PROMPT: [ready to paste into video generator]
+5. SHOT LIST (10+ shots)
+6. POST PRODUCTION NOTES
+7. SOCIAL MEDIA STRATEGY`;
+      const res = await fetch(EDGE_FN,{
         method:"POST",
-        headers:{"Content-Type":"application/json","anthropic-dangerous-direct-browser-access":"true","x-api-key":import.meta.env.VITE_ANTHROPIC_API_KEY||""},
+        headers:{"Content-Type":"application/json","apikey":SUPA_KEY,"Authorization":"Bearer "+SUPA_KEY},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,messages:[{role:"user",content:prompt}]})
       });
+      if(!res.ok){
+        const errText = await res.text();
+        setResult("Server error "+res.status+": "+errText);
+        setStep(4);
+        setGenerating(false);
+        return;
+      }
       const d = await res.json();
-      const treatment = d.content&&d.content[0]?d.content[0].text:"Error generating — check API key.";
+      if(d.error){setResult("API error: "+JSON.stringify(d.error));setStep(4);setGenerating(false);return;}
+      const treatment = d.content&&d.content[0]?d.content[0].text:"No content returned — check Edge Function logs in Supabase.";
       setResult(treatment);
       setStep(4);
-    } catch(e) { setResult("Connection error — check your API key in Bolt settings."); setStep(4); }
+      if(onSave&&d.content&&d.content[0]){
+        onSave({id:Date.now()+Math.random(),name:`Music Video — ${config.title||"Untitled"}`,type:"text/plain",url:"",content:treatment});
+      }
+    } catch(e) {
+      setResult("Connection error — "+( e.message||"unknown error"));
+      setStep(4);
+    }
     setGenerating(false);
   };
 
   const inp = {width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"9px 12px",color:WHITE,fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"};
   const label = (txt) => <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:8,marginTop:14}}>{txt}</div>;
-
   const steps = ["🎵 MUSIC","🎤 VOCALS","🎬 VIDEO","✦ GENERATE"];
 
   return (
     <div style={{position:"fixed",inset:0,zIndex:1100,background:"rgba(0,0,0,0.97)",display:"flex",alignItems:"center",justifyContent:"center"}}>
       <div style={{width:"min(820px,98vw)",background:"#050505",border:`2px solid ${GOLD}`,maxHeight:"95vh",overflowY:"auto",display:"flex",flexDirection:"column"}}>
-
-        {/* HEADER */}
         <div style={{background:`linear-gradient(135deg,#1a0a00,#0a0500)`,borderBottom:`1px solid ${GOLD}`,padding:"16px 24px",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
           <div>
-            <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:20,fontWeight:900,letterSpacing:4,textShadow:`0 0 20px ${GOLD}88`}}>🎬 MUSIC VIDEO STUDIO</div>
+            <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:20,fontWeight:900,letterSpacing:4}}>🎬 MUSIC VIDEO STUDIO</div>
             <div style={{color:WHITE,fontSize:11,letterSpacing:3,marginTop:2}}>PROFESSIONAL MUSIC VIDEO PRODUCTION · AI POWERED</div>
           </div>
           <button onClick={onClose} style={{background:"none",border:`1px solid ${GOLD}`,color:GOLD,width:32,height:32,cursor:"pointer",fontSize:16}}>✕</button>
         </div>
-
-        {/* STEP TABS */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",borderBottom:`1px solid ${GOLDDIM}`,flexShrink:0}}>
           {steps.map((s,i)=>(
             <button key={i} onClick={()=>setStep(i+1)}
@@ -731,82 +508,47 @@ Make it professional, creative, and production-ready. This is for a real music v
             </button>
           ))}
         </div>
-
         <div style={{padding:"20px 24px",flex:1}}>
-
-          {/* STEP 1 — MUSIC */}
           {step===1&&(
             <div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:4}}>
-                <div>
-                  {label("SONG TITLE")}
-                  <input value={config.title} onChange={e=>set("title",e.target.value)} placeholder="My Song Title..." style={inp}/>
-                </div>
-                <div>
-                  {label("ARTIST / BAND NAME")}
-                  <input value={config.artist} onChange={e=>set("artist",e.target.value)} placeholder="Artist Name..." style={inp}/>
-                </div>
+                <div>{label("SONG TITLE")}<input value={config.title} onChange={e=>set("title",e.target.value)} placeholder="My Song Title..." style={inp}/></div>
+                <div>{label("ARTIST / BAND NAME")}<input value={config.artist} onChange={e=>set("artist",e.target.value)} placeholder="Artist Name..." style={inp}/></div>
               </div>
-              {label("GENRE")}
-              {sel("genre","",GENRES)}
-              {label("MOOD")}
-              {sel("mood","",MOODS)}
-              {label("TEMPO")}
-              {sel("tempo","",TEMPOS)}
-              {label("INSTRUMENTS — pick all that apply")}
-              {multi("instruments",INSTRUMENTS)}
-              {label("MUSICAL KEY (optional)")}
-              <input value={config.key} onChange={e=>set("key",e.target.value)} placeholder="e.g. A minor, C major, F# minor..." style={{...inp,width:"50%"}}/>
-              {label("SONG STRUCTURE")}
-              {sel("structure","",STRUCTURES)}
+              {label("GENRE")}{sel("genre",GENRES)}
+              {label("MOOD")}{sel("mood",MOODS)}
+              {label("TEMPO")}{sel("tempo",TEMPOS)}
+              {label("INSTRUMENTS")}{multi("instruments",INSTRUMENTS)}
+              {label("SONG STRUCTURE")}{sel("structure",STRUCTURES)}
             </div>
           )}
-
-          {/* STEP 2 — VOCALS & LYRICS */}
           {step===2&&(
             <div>
-              {label("VOCALS")}
-              {sel("vocals","",VOCALS)}
-              {label("VOCAL STYLE")}
-              {sel("vocalStyle","",VOCAL_STYLES)}
+              {label("VOCALS")}{sel("vocals",VOCALS)}
+              {label("VOCAL STYLE")}{sel("vocalStyle",VOCAL_STYLES)}
               {label("LYRICS")}
               <div style={{display:"flex",gap:8,marginBottom:10}}>
                 <button onClick={()=>set("lyricsMode","write")} style={{...G(config.lyricsMode==="write"?"gold":"out",true)}}>✍ WRITE MY OWN</button>
                 <button onClick={()=>set("lyricsMode","ai")} style={{...G(config.lyricsMode==="ai"?"gold":"out",true)}}>✦ AI WRITE FOR ME</button>
               </div>
               {config.lyricsMode==="write"&&(
-                <textarea value={config.lyrics} onChange={e=>set("lyrics",e.target.value)}
-                  placeholder="Paste or write your lyrics here...&#10;&#10;[Verse 1]&#10;...&#10;[Chorus]&#10;...&#10;[Bridge]&#10;..."
-                  style={{...inp,height:220,resize:"none",lineHeight:1.8}}/>
+                <textarea value={config.lyrics} onChange={e=>set("lyrics",e.target.value)} placeholder="Paste or write your lyrics here..." style={{...inp,height:220,resize:"none",lineHeight:1.8}}/>
               )}
               {config.lyricsMode==="ai"&&(
                 <div style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:16,textAlign:"center"}}>
                   <div style={{color:GOLD,fontSize:13,fontWeight:900,letterSpacing:2,marginBottom:8}}>✦ AI WILL WRITE YOUR LYRICS</div>
-                  <div style={{color:WHITE,fontSize:13}}>Based on your genre ({config.genre||"selected genre"}), mood ({config.mood||"selected mood"}) and style choices — Claude will generate full original lyrics when you hit Generate.</div>
-                  <div style={{marginTop:12}}>
-                    <div style={{color:GOLD,fontSize:11,letterSpacing:2,marginBottom:6}}>LYRIC THEME / TOPIC (optional)</div>
-                    <input value={config.lyrics} onChange={e=>set("lyrics",e.target.value)} placeholder="e.g. Lost love, empowerment, city nights, summer road trip..." style={inp}/>
-                  </div>
+                  <input value={config.lyrics} onChange={e=>set("lyrics",e.target.value)} placeholder="Optional theme or topic..." style={inp}/>
                 </div>
               )}
             </div>
           )}
-
-          {/* STEP 3 — VIDEO */}
           {step===3&&(
             <div>
-              {label("VIDEO STYLE")}
-              {sel("videoStyle","",VIDEO_STYLES)}
-              {label("COLOUR GRADE")}
-              {sel("colorGrade","",COLOR_GRADES)}
-              {label("VISUAL MOOD (optional override)")}
-              <input value={config.visualMood} onChange={e=>set("visualMood",e.target.value)} placeholder="e.g. Lonely city streets at night, sunlit fields, dark club energy..." style={inp}/>
-              {label("VISUAL EFFECTS — pick all that apply")}
-              {multi("effects",EFFECTS)}
-              {label("EDITING STYLE")}
-              {sel("cuts","",CUTS)}
-              {label("VIDEO DURATION")}
-              {sel("duration","",DURATIONS)}
+              {label("VIDEO STYLE")}{sel("videoStyle",VIDEO_STYLES)}
+              {label("COLOUR GRADE")}{sel("colorGrade",COLOR_GRADES)}
+              {label("VISUAL EFFECTS")}{multi("effects",EFFECTS)}
+              {label("EDITING STYLE")}{sel("cuts",CUTS)}
+              {label("VIDEO DURATION")}{sel("duration",DURATIONS)}
               {label("ASPECT RATIO")}
               <div style={{display:"flex",gap:6}}>
                 {["16:9","9:16 (Vertical)","1:1 (Square)","4:3 (Classic)","2.39:1 (Cinematic)"].map(r=>(
@@ -816,73 +558,49 @@ Make it professional, creative, and production-ready. This is for a real music v
                   </button>
                 ))}
               </div>
-              {label("EXTRAS — pick all that apply")}
-              {multi("extras",EXTRAS)}
+              {label("EXTRAS")}{multi("extras",EXTRAS)}
             </div>
           )}
-
-          {/* STEP 4 — GENERATE / RESULT */}
           {step===4&&!result&&(
-            <div style={{textAlign:"center",padding:"40px 20px"}}>
-              <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:22,fontWeight:900,marginBottom:16,letterSpacing:3}}>READY TO CREATE</div>
-              <div style={{color:WHITE,fontSize:14,lineHeight:1.9,marginBottom:24,maxWidth:500,margin:"0 auto 24px"}}>
-                Your music video project is configured. Claude will generate your complete production package including full lyrics, music direction, scene-by-scene video treatment, shot list and post production notes.
+            <div style={{padding:"20px"}}>
+              <div style={{marginBottom:16}}>
+                <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:8}}>ENTER SCENE DESCRIPTION — DESCRIBE EXACTLY WHAT YOU WANT YOUR VIDEO TO LOOK LIKE</div>
+                <textarea
+                  value={config.visualDesc||""}
+                  onChange={e=>set("visualDesc",e.target.value)}
+                  placeholder="Describe your video scenes... e.g. A man sits on a windowsill fingerpicking acoustic guitar. Only his back is visible. Facing the ocean. Full moon. Candle to his right. Dark shadows. Slow motion camera."
+                  style={{width:"100%",background:"#000",border:`1px solid ${GOLD}`,padding:"14px",color:WHITE,fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box",height:160,resize:"vertical",lineHeight:1.8}}
+                />
               </div>
-              <div style={{...Card(),display:"inline-grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:28,textAlign:"left",minWidth:380}}>
-                {[["Genre",config.genre],["Mood",config.mood],["Vocals",config.vocals],["Video Style",config.videoStyle],["Duration",config.duration],["Aspect Ratio",config.aspectRatio]].map(([k,v])=>v&&(
-                  <div key={k}>
-                    <div style={{color:GOLDDIM,fontSize:10,letterSpacing:2}}>{k}</div>
-                    <div style={{color:WHITE,fontSize:13,fontWeight:700}}>{v}</div>
-                  </div>
-                ))}
-              </div>
-              <div>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:22,fontWeight:900,marginBottom:16,letterSpacing:3}}>READY TO CREATE</div>
                 <button onClick={generateProject} disabled={generating}
                   style={{...G("gold",false),fontSize:14,padding:"16px 48px",letterSpacing:3,opacity:generating?0.6:1}}>
-                  {generating?"⟳  GENERATING YOUR MUSIC VIDEO...":"✦  GENERATE MUSIC VIDEO PROJECT"}
+                  {generating?"⟳ GENERATING...":"✦ GENERATE MUSIC VIDEO PROJECT"}
                 </button>
-                {generating&&<div style={{color:GOLD,fontSize:12,letterSpacing:2,marginTop:12}}>Claude is writing your full production package...</div>}
               </div>
             </div>
           )}
-
           {step===4&&result&&(
             <div>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
                 <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,letterSpacing:3}}>✦ YOUR MUSIC VIDEO PRODUCTION PACKAGE</div>
                 <div style={{display:"flex",gap:8}}>
-                  <button onClick={()=>{
-                    if(onSave)onSave({id:Date.now()+Math.random(),name:`Music Video — ${config.title||"Untitled"} by ${config.artist||"Unknown"}`,type:"text/plain",url:"",content:result});
-                    alert("Saved to Media Library!");
-                  }} style={{...G("gold",true)}}>SAVE TO LIBRARY</button>
-                  <button onClick={()=>{setResult(null);setStep(1);setConfig({title:"",artist:"",genre:"",subgenre:"",mood:"",tempo:"",key:"",structure:"",vocals:"",instruments:[],vocalStyle:"",lyrics:"",lyricsMode:"write",videoStyle:"",colorGrade:"",visualMood:"",effects:[],cuts:"",aspectRatio:"16:9",duration:"",extras:[]});}} style={{...G("out",true)}}>NEW PROJECT</button>
+                  <button onClick={()=>{if(onSave)onSave({id:Date.now()+Math.random(),name:`Music Video — ${config.title||"Untitled"}`,type:"text/plain",url:"",content:result});alert("Saved!");}} style={{...G("gold",true)}}>SAVE TO LIBRARY</button>
+                  <button onClick={()=>{setResult(null);setStep(1);}} style={{...G("out",true)}}>NEW PROJECT</button>
                 </div>
               </div>
-              <textarea value={result} onChange={e=>setResult(e.target.value)} readOnly
-                style={{...inp,height:420,resize:"none",lineHeight:1.8,fontSize:13}}/>
-              <div style={{marginTop:12,display:"flex",gap:8,flexWrap:"wrap"}}>
-                <button onClick={()=>{navigator.clipboard&&navigator.clipboard.writeText(result);}} style={{...G("out",true),fontSize:11}}>📋 COPY ALL</button>
-                <button onClick={()=>{
-                  const blob=new Blob([result],{type:"text/plain"});
-                  const url=URL.createObjectURL(blob);
-                  const a=document.createElement("a");
-                  a.href=url;a.download=`${config.title||"MusicVideo"}_Production.txt`;a.click();
-                }} style={{...G("out",true),fontSize:11}}>⬇ DOWNLOAD TXT</button>
-                <div style={{color:WHITE,fontSize:12,padding:"5px 0",letterSpacing:1}}>→ Take lyrics to Page 6 Voice Tools to record narration · Take video treatment to Page 8 Video Tools</div>
+              <textarea value={result} readOnly style={{...inp,height:420,resize:"none",lineHeight:1.8,fontSize:13}}/>
+              <div style={{marginTop:12,display:"flex",gap:8}}>
+                <button onClick={()=>navigator.clipboard&&navigator.clipboard.writeText(result)} style={{...G("out",true),fontSize:11}}>📋 COPY ALL</button>
+                <button onClick={()=>{const blob=new Blob([result],{type:"text/plain"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`${config.title||"MusicVideo"}_Production.txt`;a.click();}} style={{...G("out",true),fontSize:11}}>⬇ DOWNLOAD</button>
               </div>
             </div>
           )}
         </div>
-
-        {/* FOOTER NAV */}
         {step<4&&(
           <div style={{borderTop:`1px solid ${GOLDDIM}`,padding:"12px 24px",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
             <button onClick={()=>setStep(s=>Math.max(1,s-1))} disabled={step===1} style={{...G("out",true),opacity:step===1?0.3:1}}>◀ BACK</button>
-            <div style={{display:"flex",gap:6}}>
-              {[1,2,3,4].map(n=>(
-                <div key={n} style={{width:8,height:8,borderRadius:"50%",background:step>=n?GOLD:GOLDDIM,cursor:"pointer"}} onClick={()=>setStep(n)}/>
-              ))}
-            </div>
             <button onClick={()=>setStep(s=>Math.min(4,s+1))} style={{...G("gold",true)}}>NEXT ▶</button>
           </div>
         )}
@@ -891,387 +609,968 @@ Make it professional, creative, and production-ready. This is for a real music v
   );
 }
 
+const VOICE_CHARACTERS = [
+  {id:"james",name:"James",emoji:"🎩",gender:"Male",age:"Adult",origin:"British",region:"London",style:"Sarcastic · Deadpan · Witty",pitch:0.86,rate:0.62,desc:"Dry British wit. Devastating things said with complete calm."},
+  {id:"aurora",name:"Aurora",emoji:"🌅",gender:"Female",age:"Adult",origin:"British",region:"London",style:"Warm · Documentary · Authoritative",pitch:1.08,rate:0.80,desc:"Calm authority. The voice you trust completely."},
+  {id:"edward",name:"Edward",emoji:"🎭",gender:"Male",age:"Adult",origin:"British",region:"London",style:"Theatrical · Grand · Classical",pitch:0.85,rate:0.75,desc:"Shakespearean gravitas. Every sentence carved in stone."},
+  {id:"cecily",name:"Cecily",emoji:"🫖",gender:"Female",age:"Adult",origin:"British",region:"London",style:"Crisp · Intelligent · Sardonic",pitch:1.12,rate:0.85,desc:"Sharp as a tack. Mildly disappointed by most things."},
+  {id:"nana",name:"Nana",emoji:"🧶",gender:"Female",age:"Elderly",origin:"British",region:"Yorkshire",style:"Gentle · Wise · Warm",pitch:1.02,rate:0.70,desc:"Warm elderly wisdom. Has seen everything twice."},
+  {id:"colonel",name:"Colonel",emoji:"🎖️",gender:"Male",age:"Elderly",origin:"British",region:"London",style:"Commanding · Dignified · Veteran",pitch:0.80,rate:0.74,desc:"Authority earned through decades of experience."},
+  {id:"pippa",name:"Pippa",emoji:"🎀",gender:"Female",age:"Teen",origin:"British",region:"London",style:"Bright · Cheerful · Young",pitch:1.25,rate:0.95,desc:"Fresh and warm. Natural young British energy."},
+  {id:"archie",name:"Archie",emoji:"⚽",gender:"Male",age:"Teen",origin:"British",region:"Manchester",style:"Casual · Friendly · Teen",pitch:1.05,rate:0.98,desc:"Relaxed and genuine. Sounds like a real teenager."},
+  {id:"ewan",name:"Ewan",emoji:"🏴",gender:"Male",age:"Adult",origin:"Scottish",region:"Edinburgh",style:"Warm · Rugged · Sincere",pitch:0.92,rate:0.82,desc:"Deep warm Scottish sincerity."},
+  {id:"fiona",name:"Fiona",emoji:"🌿",gender:"Female",age:"Adult",origin:"Scottish",region:"Glasgow",style:"Lilting · Warm · Storyteller",pitch:1.10,rate:0.84,desc:"Beautiful Scottish lilt."},
+  {id:"paddy",name:"Paddy",emoji:"☘️",gender:"Male",age:"Adult",origin:"Irish",region:"Dublin",style:"Charming · Witty · Warm",pitch:0.95,rate:0.88,desc:"Easy Irish charm."},
+  {id:"siobhan",name:"Siobhan",emoji:"🌸",gender:"Female",age:"Adult",origin:"Irish",region:"Cork",style:"Gentle · Musical · Emotional",pitch:1.15,rate:0.82,desc:"Soft Irish voice with real emotional depth."},
+  {id:"dafydd",name:"Dafydd",emoji:"🐉",gender:"Male",age:"Adult",origin:"Welsh",region:"Cardiff",style:"Musical · Passionate · Rich",pitch:0.90,rate:0.80,desc:"Rich Welsh musicality."},
+  {id:"marcus",name:"Marcus",emoji:"⚡",gender:"Male",age:"Adult",origin:"American",region:"New York",style:"Deep · Cinematic · Commanding",pitch:0.72,rate:0.74,desc:"Big voice. When Marcus speaks people stop."},
+  {id:"river",name:"River",emoji:"🌊",gender:"Male",age:"Adult",origin:"American",region:"Tennessee",style:"Warm · Intimate · Storyteller",pitch:0.98,rate:0.76,desc:"Unhurried Southern charm."},
+  {id:"dakota",name:"Dakota",emoji:"🏔️",gender:"Female",age:"Adult",origin:"American",region:"Chicago",style:"Bold · Direct · Confident",pitch:1.05,rate:0.92,desc:"No filler. No hesitation."},
+  {id:"wade",name:"Wade",emoji:"🤠",gender:"Male",age:"Adult",origin:"American",region:"Texas",style:"Laid Back · Humorous · Folksy",pitch:0.94,rate:0.85,desc:"Easy going Southern humour."},
+  {id:"brooklyn",name:"Brooklyn",emoji:"🗽",gender:"Female",age:"Adult",origin:"American",region:"New York",style:"Fast · Sharp · City Energy",pitch:1.18,rate:1.10,desc:"Fast New York energy."},
+  {id:"savannah",name:"Savannah",emoji:"🌺",gender:"Female",age:"Adult",origin:"American",region:"Georgia",style:"Sweet · Gracious · Warm",pitch:1.20,rate:0.84,desc:"Warm Southern grace."},
+  {id:"madison",name:"Madison",emoji:"📱",gender:"Female",age:"Teen",origin:"American",region:"California",style:"Upbeat · Social · Natural",pitch:1.30,rate:1.08,desc:"Real American teenage energy."},
+  {id:"tyler",name:"Tyler",emoji:"🎮",gender:"Male",age:"Teen",origin:"American",region:"Ohio",style:"Casual · Relatable · Teen",pitch:1.08,rate:1.00,desc:"Natural and unforced."},
+  {id:"rosie",name:"Rosie",emoji:"🌼",gender:"Female",age:"Child",origin:"American",region:"Florida",style:"Sweet · Innocent · Child",pitch:1.45,rate:0.88,desc:"Young warm and sweet."},
+  {id:"cooper",name:"Cooper",emoji:"🚂",gender:"Male",age:"Child",origin:"American",region:"Colorado",style:"Bright · Curious · Child",pitch:1.40,rate:0.90,desc:"Curious about everything."},
+  {id:"grandma",name:"Grandma",emoji:"🫶",gender:"Female",age:"Elderly",origin:"American",region:"Virginia",style:"Warm · Loving · Elderly",pitch:1.00,rate:0.72,desc:"Full of love and life experience."},
+  {id:"frank",name:"Frank",emoji:"🪑",gender:"Male",age:"Elderly",origin:"American",region:"New Jersey",style:"Gruff · Honest · Elder",pitch:0.78,rate:0.76,desc:"Says it straight."},
+  {id:"sophia",name:"Sophia",emoji:"☀️",gender:"Female",age:"Adult",origin:"Australian",region:"Sydney",style:"Upbeat · Bright · Energetic",pitch:1.35,rate:1.12,desc:"Forward energy."},
+  {id:"finn",name:"Finn",emoji:"🏄",gender:"Male",age:"Adult",origin:"Australian",region:"Melbourne",style:"Casual · Confident · Outdoorsy",pitch:0.95,rate:0.95,desc:"Relaxed Australian confidence."},
+  {id:"aroha",name:"Aroha",emoji:"🌿",gender:"Female",age:"Adult",origin:"New Zealand",region:"Auckland",style:"Warm · Grounded · Sincere",pitch:1.10,rate:0.86,desc:"Natural sincerity."},
+  {id:"amara",name:"Amara",emoji:"🌍",gender:"Female",age:"Adult",origin:"South African",region:"Cape Town",style:"Rich · Warm · Powerful",pitch:1.05,rate:0.84,desc:"Quiet power."},
+  {id:"kofi",name:"Kofi",emoji:"🥁",gender:"Male",age:"Adult",origin:"West African",region:"Ghana",style:"Deep · Rhythmic · Storyteller",pitch:0.82,rate:0.78,desc:"Every sentence has music in it."},
+  {id:"priya",name:"Priya",emoji:"🪷",gender:"Female",age:"Adult",origin:"Indian",region:"Mumbai",style:"Precise · Warm · Intelligent",pitch:1.15,rate:0.90,desc:"Warm and intelligent."},
+  {id:"arjun",name:"Arjun",emoji:"🎯",gender:"Male",age:"Adult",origin:"Indian",region:"Delhi",style:"Authoritative · Clear · Measured",pitch:0.88,rate:0.85,desc:"Sounds like someone who knows exactly what they are talking about."},
+  {id:"valentina",name:"Valentina",emoji:"🌹",gender:"Female",age:"Adult",origin:"Spanish",region:"Madrid",style:"Passionate · Warm · Expressive",pitch:1.18,rate:0.92,desc:"Everything sounds felt."},
+  {id:"pierre",name:"Pierre",emoji:"🥐",gender:"Male",age:"Adult",origin:"French",region:"Paris",style:"Suave · Dry · Cultured",pitch:0.90,rate:0.84,desc:"Makes things sound interesting."},
+  {id:"ingrid",name:"Ingrid",emoji:"❄️",gender:"Female",age:"Adult",origin:"Scandinavian",region:"Stockholm",style:"Clean · Cool · Direct",pitch:1.08,rate:0.88,desc:"No excess words."},
+  {id:"yemi",name:"Yemi",emoji:"🌟",gender:"Female",age:"Adult",origin:"Nigerian",region:"Lagos",style:"Bold · Joyful · Energetic",pitch:1.25,rate:1.00,desc:"Life-affirming."},
+  {id:"magnus",name:"Magnus",emoji:"🧙",gender:"Male",age:"Elderly",origin:"Fantasy",region:"Ancient",style:"Ancient · Wise · Epic",pitch:0.75,rate:0.70,desc:"Seen civilisations rise and fall."},
+  {id:"nova",name:"Nova",emoji:"🤖",gender:"Female",age:"Adult",origin:"Neutral",region:"AI",style:"Clean · Precise · Neutral",pitch:1.12,rate:0.95,desc:"No accent. No emotion. No opinion."},
+  {id:"hunter",name:"Hunter",emoji:"🎬",gender:"Male",age:"Adult",origin:"American",region:"Hollywood",style:"Trailer · Epic · Explosive",pitch:0.70,rate:0.80,desc:"Full movie trailer energy."},
+  {id:"luna",name:"Luna",emoji:"🌙",gender:"Female",age:"Adult",origin:"Neutral",region:"ASMR",style:"Whisper · ASMR · Intimate",pitch:1.20,rate:0.65,desc:"Soft whisper. Complete calm."},
+  {id:"professor",name:"Professor",emoji:"🎓",gender:"Male",age:"Elderly",origin:"British",region:"Oxford",style:"Academic · Thoughtful · Measured",pitch:0.88,rate:0.78,desc:"Distinguished. Precise."},
+  {id:"hope",name:"Hope",emoji:"🌤️",gender:"Female",age:"Adult",origin:"American",region:"Heartfelt",style:"Tender · Gentle · Loving",pitch:1.15,rate:0.78,desc:"Pure tenderness."},
+  {id:"storm",name:"Storm",emoji:"⛈️",gender:"Male",age:"Adult",origin:"American",region:"Intense",style:"Intense · Angry · Powerful",pitch:0.82,rate:1.00,desc:"Raw intensity."},
+  {id:"joy",name:"Joy",emoji:"🎉",gender:"Female",age:"Adult",origin:"American",region:"Uplifting",style:"Excited · Joyful · Celebratory",pitch:1.40,rate:1.15,desc:"Pure infectious joy."},
+  {id:"sage",name:"Sage",emoji:"🌿",gender:"Male",age:"Adult",origin:"Neutral",region:"Mindful",style:"Peaceful · Mindful · Grounded",pitch:0.95,rate:0.72,desc:"Deep calm."},
+  {id:"faith",name:"Faith",emoji:"✨",gender:"Female",age:"Adult",origin:"American",region:"Gospel",style:"Inspirational · Gospel · Uplifting",pitch:1.18,rate:0.88,desc:"Gospel soul."},
+  {id:"rebel",name:"Rebel",emoji:"✊",gender:"Female",age:"Teen",origin:"American",region:"Activist",style:"Fierce · Defiant · Young",pitch:1.22,rate:1.05,desc:"Will not back down."},
+  {id:"blaze",name:"Blaze",emoji:"🔥",gender:"Male",age:"Adult",origin:"American",region:"Comedy",style:"Comic · Ridiculous · Energetic",pitch:1.05,rate:1.18,desc:"No dignity whatsoever."},
+];
+
 function P6Voice({ onSave }) {
-  const [text, setText] = useState("");
-  const [processed, setProcessed] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [speaking, setSpeaking] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [showMVS, setShowMVS] = useState(false);
-  const [stage, setStage] = useState("idle"); // idle | processing | ready | speaking
-  const [voices, setVoices] = useState([]);
-  const [selVoiceIdx, setSelVoiceIdx] = useState(0);
-  const [speed, setSpeed] = useState(0.82);
-  const [pitchV, setPitchV] = useState(1.0);
-  const [volume, setVolume] = useState(1.0);
-  const [pauseLen, setPauseLen] = useState(700);
-  const [activeTab, setActiveTab] = useState("speak");
-  const chunksRef = useRef([]);
-  const idxRef = useRef(0);
-  const timerRef = useRef(null);
+  const [text,setText]=useState("");
+  const [processed,setProcessed]=useState("");
+  const [loading,setLoading]=useState(false);
+  const [speaking,setSpeaking]=useState(false);
+  const [saved,setSaved]=useState(false);
+  const [copied,setCopied]=useState(false);
+  const [showMVS,setShowMVS]=useState(false);
+  const [selVoice,setSelVoice]=useState("james");
+  const [search,setSearch]=useState("");
+  const [filterGender,setFilterGender]=useState("All");
+  const [filterAge,setFilterAge]=useState("All");
+  const [filterOrigin,setFilterOrigin]=useState("All");
+  const [speed,setSpeed]=useState(0.82);
+  const [pitchV,setPitchV]=useState(1.0);
+  const [pauseLen,setPauseLen]=useState(700);
+  const [volume,setVolume]=useState(1.0);
+  const [activeTab,setActiveTab]=useState("speak");
+  const [sysVoices,setSysVoices]=useState([]);
+  const [audioUrl,setAudioUrl]=useState("");
+  const [audioSaved,setAudioSaved]=useState(false);
+  const chunksRef=useRef([]);
+  const idxRef=useRef(0);
+  const timerRef=useRef(null);
 
-  useEffect(() => {
-    const load = () => {
-      const all = window.speechSynthesis.getVoices();
-      // Score voices — prefer Google/Apple/Microsoft neural voices
-      const scored = all
-        .filter(v => v.lang.startsWith("en"))
-        .map(v => {
-          let score = 0;
-          const n = v.name.toLowerCase();
-          // Highest quality voices
-          if (/google uk english female|google uk english male/i.test(v.name)) score += 100;
-          if (/google us english/i.test(v.name)) score += 90;
-          if (/samantha|daniel|karen|moira|tessa/i.test(v.name)) score += 85;
-          if (/microsoft.*natural|microsoft.*neural/i.test(v.name)) score += 95;
-          if (/google/i.test(v.name)) score += 70;
-          if (v.lang === "en-GB") score += 20;
-          if (v.lang === "en-US") score += 15;
-          if (v.localService) score += 10;
-          return { voice: v, score, label: v.name };
-        })
-        .sort((a,b) => b.score - a.score);
-      setVoices(scored);
-      if (scored.length > 0) setSelVoiceIdx(0);
-    };
-    load();
-    window.speechSynthesis.onvoiceschanged = load;
-    return () => { window.speechSynthesis.cancel(); if(timerRef.current) clearTimeout(timerRef.current); };
-  }, []);
+  useEffect(()=>{
+    const load=()=>setSysVoices(window.speechSynthesis.getVoices().filter(v=>v.lang.startsWith("en")));
+    load(); window.speechSynthesis.onvoiceschanged=load;
+    return()=>{window.speechSynthesis.cancel();if(timerRef.current)clearTimeout(timerRef.current);};
+  },[]);
 
-  // Build smart chunks from processed text
-  const buildChunks = (txt) => {
-    const clean = txt
-      .replace(/\[BREATH\]/g, "|||BREATH|||")
-      .replace(/\[PAUSE\]/g, "|||PAUSE|||")
-      .replace(/\[LONG\]/g, "|||LONG|||")
-      .replace(/\.\.\./g, "|||PAUSE|||");
+  const ORIGINS=["All","British","Scottish","Irish","Welsh","American","Australian","New Zealand","South African","West African","Indian","Spanish","French","Scandinavian","Nigerian","Fantasy","Neutral"];
+  const AGES=["All","Child","Teen","Adult","Elderly"];
+  const GENDERS=["All","Male","Female"];
 
-    const parts = clean.split("|||");
-    const chunks = [];
-    let buf = "";
+  const filtered=VOICE_CHARACTERS.filter(v=>{
+    const mg=filterGender==="All"||v.gender===filterGender;
+    const ma=filterAge==="All"||v.age===filterAge;
+    const mo=filterOrigin==="All"||v.origin===filterOrigin;
+    const ms=search===""||v.name.toLowerCase().includes(search.toLowerCase())||v.style.toLowerCase().includes(search.toLowerCase());
+    return mg&&ma&&mo&&ms;
+  });
+  const selected=VOICE_CHARACTERS.find(v=>v.id===selVoice)||VOICE_CHARACTERS[0];
 
-    for (const part of parts) {
-      if (part === "BREATH") {
-        if (buf.trim()) { chunks.push({ text: buf.trim(), pause: pauseLen }); buf = ""; }
-        else if (chunks.length) chunks[chunks.length-1].pause = pauseLen;
-      } else if (part === "PAUSE") {
-        if (buf.trim()) { chunks.push({ text: buf.trim(), pause: pauseLen * 1.5 }); buf = ""; }
-        else if (chunks.length) chunks[chunks.length-1].pause = pauseLen * 1.5;
-      } else if (part === "LONG") {
-        if (buf.trim()) { chunks.push({ text: buf.trim(), pause: pauseLen * 2.5 }); buf = ""; }
-        else if (chunks.length) chunks[chunks.length-1].pause = pauseLen * 2.5;
-      } else {
-        // Split on sentence endings
-        const sents = part.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [part];
-        for (const s of sents) {
-          const trimmed = s.trim();
-          if (!trimmed) continue;
-          if ((buf + " " + trimmed).length > 180) {
-            if (buf.trim()) chunks.push({ text: buf.trim(), pause: pauseLen });
-            buf = trimmed;
-          } else {
-            buf = buf ? buf + " " + trimmed : trimmed;
-          }
-        }
-      }
+  const pickSysVoice=(vc)=>{
+    if(!sysVoices.length)return null;
+    if(["British","Scottish","Irish","Welsh"].includes(vc.origin)){
+      if(vc.gender==="Male")return sysVoices.find(v=>/daniel|oliver|arthur/i.test(v.name)&&v.lang==="en-GB")||sysVoices.find(v=>v.lang==="en-GB"&&!/female|samantha|karen/i.test(v.name));
+      return sysVoices.find(v=>/kate|serena|moira/i.test(v.name))||sysVoices.find(v=>v.lang==="en-GB");
     }
-    if (buf.trim()) chunks.push({ text: buf.trim(), pause: pauseLen });
-    return chunks.filter(c => c.text.length > 0);
+    if(["Australian","New Zealand"].includes(vc.origin))return sysVoices.find(v=>v.lang==="en-AU")||sysVoices.find(v=>/karen/i.test(v.name));
+    if(vc.gender==="Female")return sysVoices.find(v=>/samantha|victoria|zira/i.test(v.name))||sysVoices[0];
+    return sysVoices.find(v=>/david|alex|fred/i.test(v.name))||sysVoices.find(v=>v.lang==="en-US")||sysVoices[0];
   };
 
-  const processWithClaude = async () => {
-    if (!text.trim()) return;
-    setLoading(true); setStage("processing"); setProcessed(""); setSaved(false);
-    try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type":"application/json","anthropic-dangerous-direct-browser-access":"true","x-api-key":import.meta.env.VITE_ANTHROPIC_API_KEY||"" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 3000,
-          messages: [{ role:"user", content:`You are an expert speech coach and audio director. Your job is to take text and prepare it for lifelike text-to-speech rendering. You must make it sound like a real human speaking — natural rhythm, proper breathing, emotional pacing.
-
-WHAT TO DO:
-1. Keep all the original words — do NOT rewrite the content
-2. Add breathing and pause markers ONLY — these are your tools:
-   [BREATH] = short natural breath pause (between phrases)
-   [PAUSE] = meaningful pause (after key statements, for emphasis)
-   [LONG] = long dramatic pause (after the most important lines)
-3. Break very long sentences into shorter breath-friendly phrases with [BREATH] markers
-4. Add [PAUSE] after punchlines, revelations, or emotionally heavy lines
-5. Add [LONG] after the single most important line in each paragraph
-6. Never add markers inside words or mid-phrase — only between complete phrases
-7. Output ONLY the marked-up text — no explanations, no preamble
-
-EXAMPLE INPUT:
-We invented civilisation. We also invented cancel culture. These are both technically achievements.
-
-EXAMPLE OUTPUT:
-We invented civilisation. [BREATH] We also invented cancel culture. [PAUSE] These are both, technically, achievements. [LONG]
-
-Now process this text:
-${text}` }]
-        })
-      });
-      const d = await res.json();
-      const out = d.content && d.content[0] ? d.content[0].text.trim() : text;
-      setProcessed(out);
-      setStage("ready");
-      setActiveTab("speak");
-    } catch(e) {
-      setProcessed(text);
-      setStage("ready");
+  const buildChunks=(txt)=>{
+    let expanded=txt
+      .replace(/\bMr\./g,"Mister").replace(/\bMrs\./g,"Missus").replace(/\bDr\./g,"Doctor")
+      .replace(/—/g," [breath] ").replace(/-{2,}/g," [breath] ").replace(/\.\.\./g," [ellipsis] ")
+      .replace(/\*\*(.+?)\*\*/g,"$1").replace(/\*(.+?)\*/g,"$1")
+      .replace(/\s+/g," ").trim();
+    const raw=expanded.match(/[^.!?;,\n\[\]]+[.!?;,\n]+|\[breath\]|\[ellipsis\]|[^.!?;,\n\[\]]+$/g)||[expanded];
+    const chunks=[];
+    for(const s of raw){
+      const t=s.trim();
+      if(!t)continue;
+      if(t==="[breath]"){chunks.push({text:"",pause:0,type:"breath"});continue;}
+      if(t==="[ellipsis]"){chunks.push({text:"",pause:0,type:"ellipsis"});continue;}
+      const endsQuestion=/\?/.test(t),endsExclaim=/!/.test(t),endsStrong=/[.!?]$/.test(t),endsComma=/[,;]$/.test(t);
+      chunks.push({text:t,pause:0,type:endsQuestion?"question":endsExclaim?"exclaim":endsStrong?"sentence":endsComma?"clause":"fragment"});
     }
+    return chunks.length?chunks:[{text:expanded,pause:0,type:"sentence"}];
+  };
+
+  const speakNow=(txt)=>{
+    window.speechSynthesis.cancel();if(timerRef.current)clearTimeout(timerRef.current);
+    const chunks=buildChunks(txt);chunksRef.current=chunks;idxRef.current=0;setSpeaking(true);
+    const baseRate=speed*(selected.rate||0.9);
+    const basePitch=pitchV*(selected.pitch||1.0);
+    const totalChunks=chunks.length;
+    const next=()=>{
+      const idx=idxRef.current;
+      if(idx>=chunksRef.current.length){setSpeaking(false);return;}
+      const chunk=chunksRef.current[idx];
+      if(chunk.type==="breath"||chunk.type==="ellipsis"||!chunk.text){
+        idxRef.current=idx+1;timerRef.current=setTimeout(next,pauseLen*0.6);return;
+      }
+      const liveVoices=window.speechSynthesis.getVoices().filter(v=>v.lang.startsWith("en"));
+      const liveV=liveVoices.length>0?pickSysVoice(selected):null;
+      const utt=new SpeechSynthesisUtterance(chunk.text);
+      if(liveV)utt.voice=liveV;
+      utt.volume=volume;
+      const rVar=[0,0.025,-0.025,0.015,-0.015];
+      const pVar=[0,0.02,-0.015,0.03,-0.02];
+      let pitchMod=chunk.type==="question"?0.12:chunk.type==="exclaim"?0.08:chunk.type==="sentence"&&idx===totalChunks-1?-0.06:0;
+      utt.rate=Math.max(0.1,Math.min(2.0,baseRate+rVar[idx%rVar.length]));
+      utt.pitch=Math.max(0.1,Math.min(2.0,basePitch+pVar[idx%pVar.length]+pitchMod));
+      const afterPause=chunk.type==="question"?Math.round(pauseLen*1.1):chunk.type==="sentence"?pauseLen:chunk.type==="clause"?Math.round(pauseLen*0.4):Math.round(pauseLen*0.15);
+      utt.onend=()=>{idxRef.current=idx+1;timerRef.current=setTimeout(next,afterPause);};
+      utt.onerror=()=>{idxRef.current=idx+1;next();};
+      window.speechSynthesis.speak(utt);
+    };
+    const voices=window.speechSynthesis.getVoices();
+    if(voices.length>0){setTimeout(()=>next(),50);}
+    else{window.speechSynthesis.onvoiceschanged=()=>{window.speechSynthesis.onvoiceschanged=null;setTimeout(()=>next(),50);};}
+  };
+
+  const processAndSpeak=async()=>{
+    if(!text.trim())return;
+    setLoading(true);setProcessed("");setSaved(false);
+    try{
+      const res=await fetch(EDGE_FN,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY,"apikey":SUPA_KEY},
+        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,messages:[{role:"user",content:`You are a speech coach preparing text for TTS. Speaker: ${selected.name} — ${selected.style}. Break into short sentences, add commas for natural pauses, spell out numbers. Output ONLY the reformatted text:\n\n${text}`}]})});
+      const d=await res.json();
+      const out=d.content&&d.content[0]?d.content[0].text.trim():text;
+      setProcessed(out);setActiveTab("result");speakNow(out);
+    }catch(e){setProcessed(text);speakNow(text);}
     setLoading(false);
   };
 
-  const speakNow = (txt) => {
-    window.speechSynthesis.cancel();
-    if (timerRef.current) clearTimeout(timerRef.current);
-    const chunks = buildChunks(txt || processed || text);
-    chunksRef.current = chunks;
-    idxRef.current = 0;
-    setSpeaking(true); setStage("speaking");
-    speakNext();
-  };
-
-  const speakNext = () => {
-    const chunks = chunksRef.current;
-    const idx = idxRef.current;
-    if (idx >= chunks.length) { setSpeaking(false); setStage("ready"); return; }
-    const chunk = chunks[idx];
-    const utt = new SpeechSynthesisUtterance(chunk.text);
-    const v = voices[selVoiceIdx];
-    if (v) utt.voice = v.voice;
-    utt.rate = speed;
-    utt.pitch = pitchV;
-    utt.volume = volume;
-    utt.onend = () => {
-      idxRef.current = idx + 1;
-      timerRef.current = setTimeout(speakNext, chunk.pause || pauseLen);
-    };
-    utt.onerror = () => { idxRef.current = idx + 1; speakNext(); };
-    window.speechSynthesis.speak(utt);
-  };
-
-  const stopSpeech = () => {
-    window.speechSynthesis.cancel();
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setSpeaking(false);
-    setStage(processed ? "ready" : "idle");
-  };
-
-  const inp = { width:"100%", background:"#000", border:`1px solid ${GOLDDIM}`, padding:"12px 14px", color:WHITE, fontSize:14, outline:"none", boxSizing:"border-box", fontFamily:"'Rajdhani',sans-serif", lineHeight:1.9 };
-
-  const currentVoice = voices[selVoiceIdx];
+  const stop=()=>{window.speechSynthesis.cancel();if(timerRef.current)clearTimeout(timerRef.current);setSpeaking(false);};
+  const inp={width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"12px 14px",color:WHITE,fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.9};
 
   return (
     <div style={{...Sp}}>
-      {showMVS && <MusicVideoStudio onClose={()=>setShowMVS(false)} onSave={onSave}/>}
-
-      {/* HEADER */}
-      <div style={{padding:"12px 20px", borderBottom:`1px solid ${GOLDDIM}`, display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10}}>
+      {showMVS&&<MusicVideoStudio onClose={()=>setShowMVS(false)} onSave={onSave}/>}
+      <div style={{padding:"12px 18px",borderBottom:`1px solid ${GOLDDIM}`,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
         <div>
-          <div style={{fontSize:11, color:GOLD, letterSpacing:4, fontWeight:700}}>AI WORKSTATION 02 — CINEMA VOICE ENGINE</div>
-          <h1 style={{...H1, fontSize:24, margin:0}}>TEXT TO LIFELIKE SPEECH</h1>
+          <div style={{fontSize:11,color:GOLD,letterSpacing:4,fontWeight:700}}>AI WORKSTATION 02 — CINEMA VOICE ENGINE</div>
+          <h1 style={{...H1,fontSize:24,margin:0}}>TEXT TO LIFELIKE SPEECH</h1>
         </div>
-        <button onClick={()=>setShowMVS(true)} style={{background:`linear-gradient(135deg,#1a0050,#4a0080)`, border:`1px solid #9933ff`, color:"#cc99ff", padding:"10px 20px", cursor:"pointer", fontSize:12, fontWeight:900, letterSpacing:2}}>
+        <button onClick={()=>setShowMVS(true)} style={{...G("gold",true)}}>
           🎬 MUSIC VIDEO STUDIO
         </button>
       </div>
+      <div style={{display:"grid",gridTemplateColumns:"290px 1fr",minHeight:"calc(100vh - 120px)"}}>
+        <div style={{borderRight:`1px solid ${GOLDDIM}`,background:"#030303",display:"flex",flexDirection:"column"}}>
+          <div style={{padding:"10px 10px 6px"}}>
+            <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:8}}>VOICE LIBRARY — {filtered.length} / {VOICE_CHARACTERS.length}</div>
+            <div style={{marginBottom:5}}>
+              <div style={{color:GOLDDIM,fontSize:9,letterSpacing:2,marginBottom:3}}>GENDER</div>
+              <div style={{display:"flex",gap:4}}>
+                {GENDERS.map(g=><button key={g} onClick={()=>setFilterGender(g)} style={{flex:1,background:filterGender===g?GOLD:"#111",border:`1px solid ${filterGender===g?"#000":GOLDDIM}`,color:filterGender===g?"#000":WHITE,padding:"3px 0",cursor:"pointer",fontSize:10,fontWeight:900}}>{g}</button>)}
+              </div>
+            </div>
+            <div style={{marginBottom:5}}>
+              <div style={{color:GOLDDIM,fontSize:9,letterSpacing:2,marginBottom:3}}>AGE</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
+                {AGES.map(a=><button key={a} onClick={()=>setFilterAge(a)} style={{background:filterAge===a?GOLD:"#111",border:`1px solid ${filterAge===a?"#000":GOLDDIM}`,color:filterAge===a?"#000":WHITE,padding:"2px 8px",cursor:"pointer",fontSize:9,fontWeight:900}}>{a}</button>)}
+              </div>
+            </div>
+            <div style={{marginBottom:6}}>
+              <div style={{color:GOLDDIM,fontSize:9,letterSpacing:2,marginBottom:3}}>ORIGIN</div>
+              <select value={filterOrigin} onChange={e=>setFilterOrigin(e.target.value)} style={{width:"100%",background:"#111",border:`1px solid ${GOLDDIM}`,color:WHITE,padding:"4px 8px",fontSize:11,outline:"none"}}>
+                {ORIGINS.map(o=><option key={o} value={o}>{o}</option>)}
+              </select>
+            </div>
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search voices..." style={{...inp,padding:"6px 10px",fontSize:11,height:30,marginBottom:0}}/>
+          </div>
+          <div style={{flex:1,overflowY:"auto",padding:"6px 6px 80px"}}>
+            {filtered.map(v=>(
+              <div key={v.id} onClick={()=>setSelVoice(v.id)}
+                style={{padding:"8px 10px",marginBottom:3,background:selVoice===v.id?"#0a0800":"#000",border:`1px solid ${selVoice===v.id?GOLD:GOLDDIM}`,cursor:"pointer"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:2}}>
+                  <div style={{display:"flex",alignItems:"center",gap:5}}>
+                    <span style={{fontSize:14}}>{v.emoji}</span>
+                    <span style={{color:selVoice===v.id?GOLD:WHITE,fontSize:12,fontWeight:900}}>{v.name}</span>
+                  </div>
+                  <button onClick={e=>{e.stopPropagation();const utt=new SpeechSynthesisUtterance("Hi I am "+v.name+". "+v.desc);const sv=pickSysVoice(v);if(sv)utt.voice=sv;utt.pitch=v.pitch||1.0;utt.rate=v.rate||0.9;window.speechSynthesis.cancel();window.speechSynthesis.speak(utt);}} style={{background:"none",border:`1px solid ${GOLDDIM}`,color:GOLD,padding:"1px 6px",cursor:"pointer",fontSize:9,fontWeight:900}}>▶</button>
+                </div>
+                <div style={{color:GOLD,fontSize:8,letterSpacing:1}}>{v.style}</div>
+                <div style={{color:DIM,fontSize:9}}>{v.age} · {v.gender} · {v.origin}</div>
+                {selVoice===v.id&&<div style={{color:"#22c55e",fontSize:8,fontWeight:900,letterSpacing:2,marginTop:2}}>✓ SELECTED</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{display:"flex",flexDirection:"column"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:`1px solid ${GOLDDIM}`}}>
+            {[["speak","🎙 SPEAK"],["result","✦ RESULT"],["settings","🎚 SLIDERS"]].map(([t,l])=>(
+              <button key={t} onClick={()=>setActiveTab(t)} style={{background:activeTab===t?"#0a0800":"none",border:"none",borderBottom:activeTab===t?`2px solid ${GOLD}`:"2px solid transparent",color:activeTab===t?GOLD:WHITE,padding:"12px",cursor:"pointer",fontSize:11,fontWeight:900,letterSpacing:2}}>{l}</button>
+            ))}
+          </div>
+          <div style={{flex:1,padding:"16px 20px",overflowY:"auto"}}>
+            {activeTab==="speak"&&(
+              <div>
+                <div style={{...Card(),marginBottom:14,background:"#050500",border:`1px solid ${GOLD}`}}>
+                  <div style={{display:"flex",alignItems:"center",gap:12}}>
+                    <span style={{fontSize:28}}>{selected.emoji}</span>
+                    <div style={{flex:1}}>
+                      <div style={{color:GOLD,fontSize:14,fontWeight:900,letterSpacing:2}}>{selected.name} <span style={{color:DIM,fontSize:11,fontWeight:400}}>— {selected.region}, {selected.origin}</span></div>
+                      <div style={{color:WHITE,fontSize:11,marginTop:2}}>{selected.style}</div>
+                    </div>
+                  </div>
+                </div>
+                <textarea value={text} onChange={e=>{setText(e.target.value);setProcessed("");}} placeholder={"Paste your narration here..."} style={{...inp,height:"calc(100vh - 440px)",resize:"none",marginBottom:12}}/>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                  <button onClick={processAndSpeak} disabled={loading||speaking||!text.trim()} style={{...G("gold",false),padding:"16px",fontSize:12,letterSpacing:2,opacity:loading||speaking||!text.trim()?0.5:1}}>{loading?"⟳ AI PREPARING...":"✦ PREPARE & SPEAK"}</button>
+                  <button onClick={speaking?stop:()=>speakNow(text)} disabled={!text.trim()} style={{...G("out",false),padding:"16px",fontSize:12,opacity:!text.trim()?0.5:1,borderColor:speaking?"#ef4444":undefined,color:speaking?"#ef4444":undefined}}>{speaking?"⏹ STOP":"▶ SPEAK NOW"}</button>
+                </div>
+              </div>
+            )}
+            {activeTab==="result"&&(
+              <div>
+                <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:8}}>AI PREPARED — {selected.emoji} {selected.name}</div>
+                {processed?(
+                  <div>
+                    <textarea value={processed} onChange={e=>setProcessed(e.target.value)} style={{...inp,height:"calc(100vh - 460px)",resize:"none",marginBottom:12,borderColor:GOLD,fontSize:12}}/>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:8}}>
+                      <button onClick={()=>speakNow(processed)} disabled={speaking} style={{...G("gold",false),padding:"12px",opacity:speaking?0.5:1}}>{speaking?"● SPEAKING":"▶ PLAY"}</button>
+                      <button onClick={stop} style={{...G("out",false),padding:"12px"}}>⏹ STOP</button>
+                      <button onClick={()=>{if(onSave)onSave({id:Date.now()+Math.random(),name:"Narration — "+selected.name,type:"audio/narration",url:audioUrl||"",content:processed});setSaved(true);}} style={{...G("gold",false),padding:"12px"}}>💾 SAVE</button>
+                    </div>
+                    <button onClick={()=>{navigator.clipboard&&navigator.clipboard.writeText(processed);setCopied(true);setTimeout(()=>setCopied(false),2000);}} style={{...G("out",true),width:"100%",fontSize:11}}>{copied?"✓ COPIED":"📋 COPY TEXT"}</button>
+                    {saved&&<div style={{marginTop:8,background:"#0a2a0a",border:"1px solid #22c55e",padding:"10px",color:"#22c55e",fontWeight:900,fontSize:11,letterSpacing:2,textAlign:"center"}}>✓ SAVED TO MEDIA LIBRARY</div>}
+                  </div>
+                ):(
+                  <div style={{textAlign:"center",padding:"80px 20px",color:GOLDDIM}}>
+                    <div style={{fontSize:40,marginBottom:12}}>🎙</div>
+                    <div style={{fontSize:13,letterSpacing:2}}>Paste text on the SPEAK tab then hit PREPARE & SPEAK</div>
+                  </div>
+                )}
+              </div>
+            )}
+            {activeTab==="settings"&&(
+              <div>
+                <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:16}}>{selected.emoji} {selected.name} — VOICE SLIDERS</div>
+                {[
+                  ["SPEED",speed,setSpeed,0.30,1.40,0.01,speed<0.55?"Very Slow":speed<0.75?"Slow":speed<0.90?"Natural":"Fast","0.3x","1.4x"],
+                  ["PITCH",pitchV,setPitchV,0.50,2.00,0.01,pitchV<0.75?"Very Deep":pitchV<0.90?"Deep":pitchV<1.05?"Natural":"High","0.5","2.0"],
+                  ["VOLUME",volume,setVolume,0.1,1.0,0.01,Math.round(volume*100)+"%","Quiet","Full"],
+                  ["PAUSE (ms)",pauseLen,setPauseLen,0,2500,50,pauseLen<300?"Urgent":pauseLen<600?"Natural":pauseLen<1500?"Dramatic":"Deadpan","0ms","2500ms"],
+                ].map(([label,val,setter,min,max,step,desc,lo,hi])=>(
+                  <div key={label} style={{...Card(),marginBottom:12}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                      <span style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2}}>{label}</span>
+                      <span style={{color:WHITE,fontSize:11}}>{desc}</span>
+                    </div>
+                    <input type="range" min={min} max={max} step={step} value={val} onChange={e=>setter(+e.target.value)} style={{width:"100%",accentColor:GOLD}}/>
+                    <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
+                      <span style={{color:DIM,fontSize:10}}>{lo}</span>
+                      <span style={{color:DIM,fontSize:10}}>{hi}</span>
+                    </div>
+                  </div>
+                ))}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                  <button onClick={()=>{const utt=new SpeechSynthesisUtterance("Hello I am "+selected.name+". Testing your current settings.");const sv=pickSysVoice(selected);if(sv)utt.voice=sv;utt.rate=Math.max(0.1,Math.min(2.0,speed*(selected.rate||0.9)));utt.pitch=Math.max(0.1,Math.min(2.0,pitchV*(selected.pitch||1.0)));utt.volume=volume;window.speechSynthesis.cancel();window.speechSynthesis.speak(utt);}} style={{...G("gold",false),padding:"14px",fontSize:12}}>▶ TEST</button>
+                  <button onClick={()=>{setSpeed(0.82);setPitchV(1.0);setVolume(1.0);setPauseLen(700);}} style={{...G("out",false),padding:"14px",fontSize:12}}>RESET</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-      {/* TABS */}
-      <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", borderBottom:`1px solid ${GOLDDIM}`}}>
-        {[["speak","🎙 SPEAK"],["voice","⚙ VOICE & SPEED"]].map(([t,l])=>(
-          <button key={t} onClick={()=>setActiveTab(t)}
-            style={{background:activeTab===t?"#0a0800":"none", border:"none", borderBottom:activeTab===t?`2px solid ${GOLD}`:"2px solid transparent", color:activeTab===t?GOLD:WHITE, padding:"12px", cursor:"pointer", fontSize:12, fontWeight:900, letterSpacing:2}}>
-            {l}
-          </button>
-        ))}
+function P8VideoGenerator({ onSave, mediaLib }) {
+  const canvasRef=useRef(null);
+  const [prompt,setPrompt]=useState("");
+  const [title,setTitle]=useState("");
+  const [duration,setDuration]=useState(30);
+  const [style,setStyle]=useState("cinematic");
+  const [colorGrade,setColorGrade]=useState("gold");
+  const [generating,setGenerating]=useState(false);
+  const [progress,setProgress]=useState(0);
+  const [log,setLog]=useState([]);
+  const [videoUrl,setVideoUrl]=useState("");
+  const [aiScript,setAiScript]=useState("");
+  const [aiLoading,setAiLoading]=useState(false);
+  const [saved,setSaved]=useState(false);
+  const [showText,setShowText]=useState(false);
+  const [refImage,setRefImage]=useState(null);
+  const [refImageUrl,setRefImageUrl]=useState("");
+  const [showLibrary,setShowLibrary]=useState(false);
+  const [activeTab,setActiveTab]=useState("describe");
+  const [fps,setFps]=useState(30);
+  const [resolution,setResolution]=useState("1080p");
+  const [overlayAsset,setOverlayAsset]=useState(null);
+  const refImgRef=useRef(null);
+  const videoRef=useRef(null);
+  const addLog=(msg)=>setLog(p=>[...p,msg]);
+
+  const STYLES=[
+    {id:"cinematic",label:"Cinematic",desc:"Dark dramatic gold titles"},
+    {id:"documentary",label:"Documentary",desc:"Clean authoritative"},
+    {id:"epic",label:"Epic",desc:"Grand sweeping motion"},
+    {id:"intimate",label:"Intimate",desc:"Soft warm personal"},
+    {id:"abstract",label:"Abstract",desc:"Flowing colour art"},
+    {id:"title_sequence",label:"Title Sequence",desc:"Broadcast titles"},
+  ];
+  const GRADES=[
+    {id:"gold",label:"Gold & Black",bg:"#000000",fg:"#e8c96d",accent:"#a07820"},
+    {id:"teal",label:"Teal & Dark",bg:"#0a1a1a",fg:"#4dd9c0",accent:"#1a5a52"},
+    {id:"crimson",label:"Crimson",bg:"#0a0000",fg:"#ff4444",accent:"#880000"},
+    {id:"silver",label:"Silver Screen",bg:"#111",fg:"#ccc",accent:"#888"},
+    {id:"amber",label:"Warm Amber",bg:"#0a0800",fg:"#ffaa33",accent:"#885500"},
+    {id:"arctic",label:"Arctic Blue",bg:"#000a1a",fg:"#88ccff",accent:"#003366"},
+  ];
+  const grade=GRADES.find(g=>g.id===colorGrade)||GRADES[0];
+
+  const getAIScene=async()=>{
+    if(!prompt.trim())return;
+    setAiLoading(true);
+    setAiScript("");
+    try{
+      const res=await fetch(EDGE_FN,{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY,"apikey":SUPA_KEY},
+        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,
+          messages:[{role:"user",content:`You are a cinematic title card writer for a documentary. Write 6 short dramatic lines of on-screen text for this scene: "${prompt}". Each line must be 3-7 words. Punchy. Cinematic. No punctuation. Return ONLY the 6 lines, one per line, nothing else.`}]})
+      });
+      const d=await res.json();
+      if(d.content&&d.content[0]){setAiScript(d.content[0].text.trim());}
+      else if(d.error){setAiScript("API error: "+d.error.message);}
+    }catch(e){setAiScript("Connection error — check internet connection.");}
+    setAiLoading(false);
+  };
+
+  const generateVideo=async()=>{
+    if(!prompt.trim()&&!aiScript.trim()){alert("Describe your scene first");return;}
+    setGenerating(true);setProgress(0);setLog([]);setVideoUrl("");setSaved(false);
+
+    const canvas=canvasRef.current;
+    const W=1920,H=1080;
+    canvas.width=W;canvas.height=H;
+    const ctx=canvas.getContext("2d");
+    const lines=aiScript.trim()?aiScript.split("\n").filter(l=>l.trim()):[title||"MandaStrong Studio",prompt.slice(0,60)];
+    const fps=30,totalFrames=duration*fps;
+
+    addLog("Analysing scene flags...");
+
+    // Parse flags directly from prompt
+    const fullText=(prompt+" "+(aiScript||"")).toLowerCase();
+    let scene={
+      bgColors:["#000000","#0a0800"],accentColor:"#a07820",particles:true,particleCount:80,
+      waves:false,rays:false,silhouette:"none",mood:"dark",vignette:true,scanlines:false,letterbox:true,
+      horizon:false,cityLights:false,starField:false,earthGlow:false,sunRise:false,fogLayer:false,
+      lightBeams:false,groundLayer:false,humanFigure:false,sceneType:"abstract",
+      primaryColor:"#e8c96d",skyColor:"#000000",groundColor:"#0a0500",
+    };
+    // Match sceneType with or without space, any case
+    const ft=fullText.replace(/\s+/g," ");
+    if(ft.includes("scenetype city")||ft.includes("scene type city")||ft.includes("city street")||ft.includes("city at night")||ft.includes("city lights"))scene.sceneType="city";
+    else if(ft.includes("scenetype cosmic")||ft.includes("scene type cosmic")||ft.includes("deep space")||ft.includes("from space")||ft.includes("earth glow")||ft.includes("earthglow"))scene.sceneType="cosmic";
+    else if(ft.includes("scenetype dawn")||ft.includes("scene type dawn")||ft.includes("golden dawn")||ft.includes("sun rise")||ft.includes("sunrise"))scene.sceneType="dawn";
+    else if(ft.includes("scenetype landscape")||ft.includes("scene type landscape")||ft.includes("open ground")||ft.includes("open landscape"))scene.sceneType="landscape";
+    else if(ft.includes("scenetype interior")||ft.includes("scene type interior")||ft.includes("total darkness")||ft.includes("interior scene"))scene.sceneType="interior";
+    if(ft.includes("citylights true")||ft.includes("city lights true")||ft.includes("lit windows")||ft.includes("every window"))scene.cityLights=true;
+    if(ft.includes("starfield true")||ft.includes("star field true")||ft.includes("stars everywhere")||ft.includes("stars filling")||ft.includes("full of stars"))scene.starField=true;
+    if(ft.includes("earthglow true")||ft.includes("earth glow true")||ft.includes("earth glowing")||ft.includes("planet glowing")||ft.includes("from deep space"))scene.earthGlow=true;
+    if(ft.includes("sunrise true")||ft.includes("sun rise true")||ft.includes("sun rising")||ft.includes("golden dawn"))scene.sunRise=true;
+    if(ft.includes("humanfigure true")||ft.includes("human figure true")||ft.includes("human figures")||ft.includes("crowd of human")||ft.includes("single human"))scene.humanFigure=true;
+    if(ft.includes("foglayer true")||ft.includes("fog layer true")||ft.includes("fog rolling")||ft.includes("heavy fog")||ft.includes("deep fog"))scene.fogLayer=true;
+    if(ft.includes("lightbeams true")||ft.includes("light beams true")||ft.includes("light beam")||ft.includes("light beams"))scene.lightBeams=true;
+    if(ft.includes("rays true")||ft.includes("rays of light")||ft.includes("light rays"))scene.rays=true;
+    if(ft.includes("groundlayer true")||ft.includes("ground layer true")||ft.includes("ground level")||ft.includes("ground visible"))scene.groundLayer=true;
+    if(ft.includes("horizon true")||ft.includes("flat horizon")||ft.includes("horizon line")||ft.includes("horizon of buildings")||ft.includes("horizon behind"))scene.horizon=true;
+    if(ft.includes("silhouette crowd")||ft.includes("crowd silhouetted")||ft.includes("crowd of human"))scene.silhouette="city";
+    if(ft.includes("silhouette person")||ft.includes("single human figure")||ft.includes("single figure"))scene.silhouette="person";
+    if(ft.includes("silhouette city"))scene.silhouette="city";
+    if(ft.includes("particles false")||ft.includes("particlecount 0"))scene.particles=false;
+    const pcMatch=fullText.match(/particlecount\s+(\d+)/);
+    if(pcMatch)scene.particleCount=parseInt(pcMatch[1]);
+    const skyMatch=fullText.match(/skycolor\s+(#[0-9a-f]{6})/i);
+    if(skyMatch)scene.skyColor=skyMatch[1];
+    const gndMatch=fullText.match(/groundcolor\s+(#[0-9a-f]{6})/i);
+    if(gndMatch)scene.groundColor=gndMatch[1];
+    const priMatch=fullText.match(/primarycolor\s+(#[0-9a-f]{6})/i);
+    if(priMatch)scene.primaryColor=priMatch[1];
+    const accMatch=fullText.match(/accentcolor\s+(#[0-9a-f]{6})/i);
+    if(accMatch)scene.accentColor=accMatch[1];
+    addLog("Scene: "+scene.sceneType+" city:"+scene.cityLights+" human:"+scene.humanFigure+" earth:"+scene.earthGlow+" stars:"+scene.starField+" dawn:"+scene.sunRise);
+
+    addLog("Building cinematic scene...");
+    addLog(`Resolution: ${W}x${H} · ${fps}fps · ${duration}s`);
+
+    const mimeType=MediaRecorder.isTypeSupported("video/webm;codecs=vp9")?"video/webm;codecs=vp9":"video/webm";
+    const stream=canvas.captureStream(30);
+    const recorder=new MediaRecorder(stream,{mimeType,videoBitsPerSecond:25000000});
+    const chunks=[];
+    recorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
+    recorder.start(100);
+    addLog("Recording started...");
+
+    const parseHex=(hex,fallback)=>{
+      const h=(hex||fallback||"#888888").replace("#","");
+      return[parseInt(h.slice(0,2),16)||0,parseInt(h.slice(2,4),16)||0,parseInt(h.slice(4,6),16)||0];
+    };
+    const [fgR,fgG,fgB]=parseHex(scene.primaryColor||grade.fg);
+    const [acR,acG,acB]=parseHex(scene.accentColor||grade.accent);
+    const [skyR,skyG,skyB]=parseHex(scene.skyColor||scene.bgColors?.[0]||grade.bg);
+    const [gndR,gndG,gndB]=parseHex(scene.groundColor||"#0a0500");
+    const numParticles=scene.particleCount||60;
+
+    const stars=Array.from({length:200},(_,i)=>({
+      x:(i*2791+i*i*37)%W,y:(i*1847+i*i*13)%H,
+      r:i%7===0?1.8:i%3===0?1.2:0.7,twinkleOffset:i*0.7,
+    }));
+
+    const buildings=Array.from({length:28},(_,i)=>({
+      x:i*(W/27),w:18+i%5*22,h:H*0.08+i%9*H*0.07,
+    }));
+
+    const drawFrame=(frame)=>{
+      const t=frame/totalFrames;
+      const sec=frame/fps;
+
+      const bgGrad=ctx.createLinearGradient(0,0,0,H);
+      bgGrad.addColorStop(0,`rgb(${skyR},${skyG},${skyB})`);
+      bgGrad.addColorStop(1,`rgb(${gndR},${gndG},${gndB})`);
+      ctx.fillStyle=bgGrad;ctx.fillRect(0,0,W,H);
+
+      if(scene.starField){
+        stars.forEach(s=>{
+          const tw=0.3+Math.sin(sec*1.1+s.twinkleOffset)*0.25;
+          ctx.fillStyle=`rgba(255,255,240,${Math.max(0,tw)})`;
+          ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+        });
+      }
+
+      if(scene.earthGlow){
+        const eg=ctx.createRadialGradient(W*0.5,H*0.85,H*0.05,W*0.5,H*0.85,H*0.55);
+        eg.addColorStop(0,`rgba(30,80,180,0.55)`);eg.addColorStop(1,`rgba(0,0,0,0)`);
+        ctx.fillStyle=eg;ctx.fillRect(0,H*0.3,W,H*0.7);
+        ctx.save();ctx.beginPath();ctx.arc(W*0.5,H*1.15,H*0.72,Math.PI,0);
+        ctx.strokeStyle=`rgba(60,120,220,0.5)`;ctx.lineWidth=3;ctx.stroke();ctx.restore();
+      }
+
+      if(scene.sunRise){
+        const sp=Math.min(1,t*1.5);
+        const sunY=H*(0.75-sp*0.25);
+        const sunGlow=ctx.createRadialGradient(W*0.5,sunY,0,W*0.5,sunY,H*0.35);
+        sunGlow.addColorStop(0,`rgba(255,200,80,${0.7*sp})`);sunGlow.addColorStop(1,`rgba(0,0,0,0)`);
+        ctx.fillStyle=sunGlow;ctx.fillRect(0,0,W,H);
+      }
+
+      if(scene.rays||scene.lightBeams){
+        for(let i=0;i<6;i++){
+          const angle=-0.5+i*0.18+Math.sin(sec*0.2+i)*0.04;
+          ctx.save();ctx.translate(W*0.5,0);ctx.rotate(angle);
+          const ray=ctx.createLinearGradient(0,0,0,H*1.5);
+          ray.addColorStop(0,`rgba(${fgR},${fgG},${fgB},0.12)`);ray.addColorStop(1,`rgba(${fgR},${fgG},${fgB},0)`);
+          ctx.fillStyle=ray;ctx.fillRect(-60,0,120,H*1.5);ctx.restore();
+        }
+      }
+
+      if(scene.waves){
+        for(let w=0;w<3;w++){
+          ctx.strokeStyle=`rgba(${fgR},${fgG},${fgB},${0.07-w*0.02})`;
+          ctx.lineWidth=1+w;ctx.beginPath();
+          for(let x=0;x<W;x+=2){
+            const waveY=H*(0.62+w*0.08)+Math.sin(x*0.006+sec*(0.8+w*0.3)+w)*H*(0.025+w*0.01);
+            x===0?ctx.moveTo(x,waveY):ctx.lineTo(x,waveY);
+          }
+          ctx.stroke();
+        }
+      }
+
+      const sil=scene.silhouette||"none";
+      if(sil==="city"||scene.cityLights){
+        ctx.fillStyle="rgba(0,0,0,0.88)";
+        buildings.forEach(b=>{ctx.fillRect(b.x,H-b.h,b.w,b.h);});
+        if(scene.cityLights){
+          buildings.forEach(b=>{
+            for(let wy=H-b.h+10;wy<H-10;wy+=18){
+              for(let wx=b.x+4;wx<b.x+b.w-4;wx+=12){
+                if(Math.sin(wx*5+wy*3+frame*0.015)>0.15){
+                  const lit=0.3+Math.sin(wx*7+wy*11+sec*0.5)*0.25;
+                  ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},${Math.max(0,lit)})`;
+                  ctx.fillRect(wx,wy,7,9);
+                }
+              }
+            }
+          });
+        }
+      }
+
+      if(sil==="mountain"){
+        ctx.fillStyle="rgba(0,0,0,0.8)";ctx.beginPath();ctx.moveTo(0,H);
+        for(let x=0;x<=W;x+=W/80){
+          const mh=H*0.72-Math.abs(Math.sin(x*0.003+0.5)*H*0.2)-Math.abs(Math.sin(x*0.009)*H*0.09);
+          x===0?ctx.moveTo(x,mh):ctx.lineTo(x,mh);
+        }
+        ctx.lineTo(W,H);ctx.closePath();ctx.fill();
+      }
+
+      if(sil==="person"||scene.humanFigure){
+        const fx=W*0.5,fh=H*0.28,fw=fh*0.22;
+        ctx.fillStyle="rgba(0,0,0,0.85)";
+        ctx.fillRect(fx-fw/2,H*0.72-fh,fw,fh*0.65);
+        ctx.beginPath();ctx.arc(fx,H*0.72-fh,fw*0.5,0,Math.PI*2);ctx.fill();
+        const figGlow=ctx.createRadialGradient(fx,H*0.72-fh*0.5,0,fx,H*0.72-fh*0.5,fw*4);
+        figGlow.addColorStop(0,`rgba(${fgR},${fgG},${fgB},0.08)`);figGlow.addColorStop(1,`rgba(${fgR},${fgG},${fgB},0)`);
+        ctx.fillStyle=figGlow;ctx.fillRect(fx-fw*5,H*0.5,fw*10,H*0.4);
+      }
+
+      if(scene.particles){
+        for(let i=0;i<numParticles;i++){
+          const px=(i*2791+frame*(0.15+i%3*0.05))%W;
+          const py=(i*1847+frame*(0.08+i%2*0.03))%H;
+          const tw=0.15+Math.sin(frame*0.06+i*1.3)*0.2;
+          ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},${Math.max(0,tw)})`;
+          ctx.beginPath();ctx.arc(px,py,i%7===0?2.2:i%3===0?1.4:0.8,0,Math.PI*2);ctx.fill();
+        }
+      }
+
+      if(scene.vignette){
+        const vig=ctx.createRadialGradient(W/2,H/2,W*0.18,W/2,H/2,W*0.75);
+        vig.addColorStop(0,"rgba(0,0,0,0)");vig.addColorStop(1,"rgba(0,0,0,0.9)");
+        ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
+      }
+
+      for(let gi=0;gi<200;gi++){
+        const gx=Math.random()*W,gy=Math.random()*H;
+        ctx.fillStyle=`rgba(${Math.random()>0.5?255:0},${Math.random()>0.5?255:0},${Math.random()>0.5?255:0},${0.015+Math.random()*0.02})`;
+        ctx.fillRect(gx,gy,1,1);
+      }
+
+      if(scene.letterbox!==false){
+        ctx.fillStyle="#000";
+        ctx.fillRect(0,0,W,H*0.07);
+        ctx.fillRect(0,H*0.93,W,H*0.07);
+      }
+
+      const lineCount=lines.length;
+      if(showText&&t>0.86){
+        const alpha=(t-0.86)/0.14;
+        ctx.globalAlpha=alpha*0.95;
+        ctx.fillStyle=`rgba(0,0,0,${alpha})`;ctx.fillRect(0,0,W,H);
+        ctx.fillStyle=grade.fg;
+        ctx.font=`900 ${Math.round(H*0.036)}px Arial Black,Arial`;
+        ctx.textAlign="center";ctx.shadowColor=grade.fg;ctx.shadowBlur=25;
+        ctx.fillText("MANDASTRONG STUDIO",W/2,H*0.47);
+        ctx.shadowBlur=0;ctx.fillStyle=grade.accent;
+        ctx.font=`400 ${Math.round(H*0.019)}px Arial`;
+        ctx.fillText("CINEMA INTELLIGENCE PLATFORM",W/2,H*0.555);
+        ctx.globalAlpha=1;
+      }
+
+      if(showText) lines.forEach((line,i)=>{
+        const ls=(i+0.5)/(lineCount+1),le=ls+0.75/(lineCount+1);
+        if(t>=ls-0.04&&t<=le+0.07){
+          const lt=Math.min(1,(t-(ls-0.04))/0.06);
+          const fo=t>le?Math.max(0,1-(t-le)/0.06):1;
+          ctx.globalAlpha=lt*fo;
+          ctx.fillStyle=i===0?grade.fg:"#ffffff";
+          ctx.font=`${i===0?"900":"700"} ${Math.round(i===0?H*0.068:H*0.05)}px Arial Black,Arial`;
+          ctx.textAlign="center";ctx.shadowColor=grade.fg;ctx.shadowBlur=i===0?20:0;
+          ctx.fillText(line.toUpperCase(),W/2,H*0.5+(i-lineCount/2)*(H*0.09));
+          ctx.shadowBlur=0;ctx.globalAlpha=1;
+        }
+      });
+    };
+
+    addLog("Generating frames...");
+    const msPerFrame=1000/fps;
+
+    await new Promise(resolve=>{
+      let frame=0;
+      const renderNext=()=>{
+        if(frame>=totalFrames){resolve(null);return;}
+        drawFrame(frame);
+        setProgress(Math.round((frame/totalFrames)*88));
+        if(frame%(fps*2)===0)addLog(`  ${Math.round(frame/fps)}s / ${duration}s rendered...`);
+        frame++;
+        setTimeout(renderNext,msPerFrame);
+      };
+      renderNext();
+    });
+
+    addLog("Finalising...");setProgress(92);
+    await new Promise(r=>setTimeout(r,800));
+    recorder.stop();
+    await new Promise(r=>{recorder.onstop=r;});
+
+    const blob=new Blob(chunks,{type:mimeType});
+    const url=URL.createObjectURL(blob);
+    setVideoUrl(url);setProgress(100);
+    addLog(`Complete! ${(blob.size/1024/1024).toFixed(1)}MB · ${duration}s`);
+    setTimeout(()=>{if(videoRef.current){videoRef.current.load();videoRef.current.play().catch(()=>{});}},200);
+    setGenerating(false);
+  };
+
+  const saveToLibrary=async()=>{
+    if(!videoUrl)return;
+    try{
+      const response=await fetch(videoUrl);const blob=await response.blob();
+      const fileName=(title||"Scene")+" — "+style+" "+duration+"s.webm";
+      const file=new File([blob],fileName,{type:"video/webm"});
+      const newUrl=URL.createObjectURL(file);
+      if(onSave)onSave({id:Date.now()+Math.random(),name:fileName,type:"video/webm",url:newUrl,file});
+    }catch(e){
+      if(onSave)onSave({id:Date.now()+Math.random(),name:(title||"Scene")+" — "+style+" "+duration+"s.webm",type:"video/webm",url:videoUrl});
+    }
+    setSaved(true);
+  };
+
+  const libVideos=(mediaLib||[]).filter(a=>a.type&&a.type.startsWith("video"));
+  const libImages=(mediaLib||[]).filter(a=>a.type&&a.type.startsWith("image"));
+
+  return (
+    <div style={{...Sp}}>
+      <canvas ref={canvasRef} style={{display:"none"}}/>
+      <input ref={refImgRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>{
+        const f=e.target.files&&e.target.files[0];
+        if(f){setRefImage(f);setRefImageUrl(URL.createObjectURL(f));}
+      }}/>
+
+      {/* STUDIO HEADER */}
+      <div style={{padding:"10px 20px",borderBottom:`2px solid ${GOLD}`,background:"#020200",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
+        <div>
+          <div style={{fontSize:10,color:GOLD,letterSpacing:5,fontWeight:700}}>AI WORKSTATION 04 · CINEMA ENGINE · 1920×1080 · 4K READY</div>
+          <h1 style={{...H1,fontSize:22,margin:0}}>🎬 VIDEO GENERATOR — PROFESSIONAL CINEMA STUDIO</h1>
+        </div>
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          <div style={{color:"#22c55e",fontSize:11,fontWeight:900,letterSpacing:2}}>● ENGINE READY</div>
+          <div style={{color:GOLD,fontSize:11,letterSpacing:2,fontWeight:700}}>CANVAS · {resolution} · {fps}FPS</div>
+        </div>
       </div>
 
-      <div style={{padding:"20px 24px", maxWidth:900, margin:"0 auto"}}>
+      {/* MAIN LAYOUT */}
+      <div style={{display:"grid",gridTemplateColumns:"320px 1fr 340px",minHeight:"calc(100vh - 116px)"}}>
 
-        {activeTab==="speak" && (
-          <div>
-            {/* STATUS */}
-            <div style={{display:"flex", alignItems:"center", gap:10, marginBottom:16}}>
-              <div style={{width:8, height:8, borderRadius:"50%", background:stage==="speaking"?"#22c55e":stage==="ready"?"#e8c96d":stage==="processing"?"#f59e0b":"#555", boxShadow:stage==="speaking"?`0 0 8px #22c55e`:stage==="ready"?`0 0 8px ${GOLD}`:"none"}}/>
-              <span style={{color:WHITE, fontSize:12, fontWeight:700, letterSpacing:2}}>
-                {stage==="idle"?"PASTE YOUR TEXT BELOW":stage==="processing"?"CLAUDE IS PREPARING YOUR NARRATION...":stage==="ready"?"READY TO SPEAK":stage==="speaking"?"SPEAKING NOW...":"READY"}
-              </span>
-              {currentVoice && <span style={{color:DIM, fontSize:11, marginLeft:"auto"}}>Voice: {currentVoice.voice.name}</span>}
-            </div>
+        {/* LEFT — CONTROLS */}
+        <div style={{borderRight:`1px solid ${GOLDDIM}`,background:"#030300",overflowY:"auto",display:"flex",flexDirection:"column"}}>
+          {/* TABS */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:`1px solid ${GOLDDIM}`,flexShrink:0}}>
+            {[["describe","📝 SCENE"],["style","🎨 STYLE"],["settings","⚙ SETTINGS"]].map(([t,l])=>(
+              <button key={t} onClick={()=>setActiveTab(t)} style={{background:activeTab===t?"#0a0800":"none",border:"none",borderBottom:activeTab===t?`2px solid ${GOLD}`:"2px solid transparent",color:activeTab===t?GOLD:WHITE,padding:"10px 4px",cursor:"pointer",fontSize:10,fontWeight:900,letterSpacing:1}}>{l}</button>
+            ))}
+          </div>
 
-            {/* TEXT INPUT */}
-            <div style={{marginBottom:14}}>
-              <div style={{display:"flex", justifyContent:"space-between", marginBottom:6}}>
-                <div style={{color:GOLD, fontSize:11, letterSpacing:3, fontWeight:900}}>YOUR TEXT</div>
-                <div style={{color:DIM, fontSize:11}}>{text.split(/\s+/).filter(Boolean).length} words</div>
-              </div>
-              <textarea
-                value={text}
-                onChange={e=>{setText(e.target.value); setStage("idle"); setProcessed("");}}
-                placeholder={`Paste any text here — script, narration, book chapter, documentary, anything.
+          <div style={{padding:12,flex:1,overflowY:"auto"}}>
+            {activeTab==="describe"&&(
+              <div>
+                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:6}}>SCENE TITLE</div>
+                <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. Chapter 1 — The Beginning"
+                  style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"8px 10px",color:WHITE,fontSize:13,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
 
-The AI will prepare it for lifelike speech before speaking — natural breathing, proper pauses, human rhythm.`}
-                style={{...inp, height:200, resize:"none"}}
-              />
-            </div>
+                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:6}}>SCENE DESCRIPTION</div>
+                <textarea value={prompt} onChange={e=>setPrompt(e.target.value)}
+                  placeholder="Describe exactly what you want. Plain English. City at night, crowd of people, fog rolling, gold light from above..."
+                  style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"10px",color:WHITE,fontSize:12,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.8,height:130,resize:"none",marginBottom:8}}/>
+                <button onClick={getAIScene} disabled={aiLoading||!prompt.trim()}
+                  style={{...G("out",true),width:"100%",marginBottom:10,fontSize:10,opacity:aiLoading||!prompt.trim()?0.5:1}}>
+                  {aiLoading?"⟳ GENERATING...":"✦ WRITE SCENE TEXT WITH AI"}
+                </button>
 
-            {/* MAIN BUTTONS */}
-            <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:14}}>
-              <button onClick={processWithClaude} disabled={loading || !text.trim()}
-                style={{...G("gold",false), padding:"18px", fontSize:13, letterSpacing:2, opacity:loading||!text.trim()?0.5:1}}>
-                {loading ? "⟳  AI IS PREPARING YOUR VOICE..." : "✦  PREPARE & SPEAK"}
-              </button>
-              <button onClick={()=>speakNow(text)} disabled={speaking || !text.trim()}
-                style={{...G("out",false), padding:"18px", fontSize:13, opacity:speaking||!text.trim()?0.5:1}}>
-                ▶  SPEAK INSTANTLY
-              </button>
-            </div>
+                {aiScript&&(
+                  <div style={{marginBottom:10}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                      <div style={{color:GOLD,fontSize:10,letterSpacing:2,fontWeight:900}}>SCENE TEXT</div>
+                      <div style={{display:"flex",alignItems:"center",gap:6}}>
+                        <span style={{color:DIM,fontSize:9}}>{showText?"ON SCREEN":"HIDDEN"}</span>
+                        <div onClick={()=>setShowText(p=>!p)} style={{width:36,height:20,background:showText?GOLD:"#333",borderRadius:10,cursor:"pointer",position:"relative"}}>
+                          <div style={{position:"absolute",top:2,left:showText?18:2,width:16,height:16,background:showText?"#000":WHITE,borderRadius:"50%",transition:"left .15s"}}/>
+                        </div>
+                      </div>
+                    </div>
+                    <textarea value={aiScript} onChange={e=>setAiScript(e.target.value)}
+                      style={{width:"100%",background:"#000",border:`1px solid ${GOLD}`,padding:"8px",color:WHITE,fontSize:11,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.8,height:90,resize:"none"}}/>
+                  </div>
+                )}
 
-            {/* PROCESSED PREVIEW */}
-            {processed && (
-              <div style={{marginBottom:14}}>
-                <div style={{color:GOLD, fontSize:11, letterSpacing:3, fontWeight:900, marginBottom:6}}>✦ AI-PREPARED VERSION — WITH BREATHING & PAUSES</div>
-                <textarea value={processed} onChange={e=>setProcessed(e.target.value)}
-                  style={{...inp, height:180, resize:"none", borderColor:GOLD, fontSize:12}}/>
-                <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginTop:10}}>
-                  <button onClick={()=>speakNow(processed)} disabled={speaking}
-                    style={{...G("gold",false), padding:"13px", fontSize:12, opacity:speaking?0.5:1}}>
-                    {speaking ? "● SPEAKING..." : "▶  SPEAK THIS"}
-                  </button>
-                  <button onClick={stopSpeech} disabled={!speaking}
-                    style={{...G("out",false), padding:"13px", fontSize:12, opacity:!speaking?0.5:1}}>
-                    ⏹  STOP
-                  </button>
-                  <button onClick={()=>{if(onSave)onSave({id:Date.now()+Math.random(),name:"Voice Narration",type:"audio/narration",url:"",content:processed});setSaved(true);}}
-                    style={{...G("gold",false), padding:"13px", fontSize:12}}>
-                    💾  SAVE
-                  </button>
-                </div>
-                <button onClick={()=>{navigator.clipboard&&navigator.clipboard.writeText(processed);setCopied(true);setTimeout(()=>setCopied(false),2000);}}
-                  style={{...G("out",true), width:"100%", fontSize:11, marginTop:8}}>{copied?"✓ COPIED":"📋  COPY PREPARED TEXT"}</button>
-                {saved && <div style={{marginTop:8, background:"#0a2a0a", border:"1px solid #22c55e", padding:"10px", color:"#22c55e", fontWeight:900, fontSize:11, letterSpacing:2, textAlign:"center"}}>✓ SAVED TO MEDIA LIBRARY</div>}
+                {/* REFERENCE IMAGE */}
+                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:6}}>REFERENCE IMAGE</div>
+                {refImageUrl?(
+                  <div style={{position:"relative",marginBottom:10}}>
+                    <img src={refImageUrl} alt="reference" style={{width:"100%",height:100,objectFit:"cover",border:`1px solid ${GOLD}`}}/>
+                    <button onClick={()=>{setRefImage(null);setRefImageUrl("");}} style={{position:"absolute",top:4,right:4,background:"#000",border:`1px solid ${GOLD}`,color:GOLD,padding:"2px 6px",cursor:"pointer",fontSize:10}}>✕</button>
+                    <div style={{color:GOLD,fontSize:9,marginTop:3,letterSpacing:1}}>✓ Reference image loaded — mood and palette applied</div>
+                  </div>
+                ):(
+                  <div onClick={()=>refImgRef.current&&refImgRef.current.click()}
+                    style={{border:`1px dashed ${GOLDDIM}`,padding:"14px",textAlign:"center",cursor:"pointer",marginBottom:10}}
+                    onMouseEnter={e=>e.currentTarget.style.borderColor=GOLD}
+                    onMouseLeave={e=>e.currentTarget.style.borderColor=GOLDDIM}>
+                    <div style={{fontSize:20,marginBottom:4}}>🖼</div>
+                    <div style={{color:WHITE,fontSize:11,fontWeight:700}}>UPLOAD REFERENCE IMAGE</div>
+                    <div style={{color:DIM,fontSize:10,marginTop:2}}>Mood · Colour · Composition</div>
+                  </div>
+                )}
+
+                {/* MEDIA LIBRARY ASSETS */}
+                {libImages.length>0&&(
+                  <div style={{marginBottom:10}}>
+                    <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:6}}>FROM YOUR LIBRARY</div>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4}}>
+                      {libImages.slice(0,6).map(a=>(
+                        <div key={a.id} onClick={()=>{setRefImageUrl(a.url);setRefImage(null);}}
+                          style={{cursor:"pointer",border:`1px solid ${refImageUrl===a.url?GOLD:GOLDDIM}`,overflow:"hidden"}}>
+                          <img src={a.url} alt={a.name} style={{width:"100%",height:44,objectFit:"cover"}}/>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* HOW IT WORKS */}
-            <div style={{...Card(), background:"#050500", borderColor:GOLDDIM}}>
-              <div style={{color:GOLD, fontSize:11, fontWeight:900, letterSpacing:2, marginBottom:8}}>HOW IT WORKS</div>
-              <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12}}>
-                {[
-                  ["✦ PREPARE & SPEAK","Claude reads your text and adds natural breathing points, pacing markers and emphasis structure — then speaks it with human rhythm"],
-                  ["▶ SPEAK INSTANTLY","Speaks your text as-is using the best available voice on your device — no AI processing"],
-                  ["⚙ VOICE & SPEED","Go to the Voice tab to choose your best available voice, adjust speed and pitch, and hear a test"]
-                ].map(([t,d])=>(
-                  <div key={t} style={{borderLeft:`2px solid ${GOLD}`, paddingLeft:10}}>
-                    <div style={{color:GOLD, fontSize:10, fontWeight:900, letterSpacing:1, marginBottom:4}}>{t}</div>
-                    <div style={{color:WHITE, fontSize:11, lineHeight:1.6}}>{d}</div>
-                  </div>
-                ))}
+            {activeTab==="style"&&(
+              <div>
+                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:8}}>VISUAL STYLE</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:5,marginBottom:12}}>
+                  {STYLES.map(s=>(
+                    <div key={s.id} onClick={()=>setStyle(s.id)}
+                      style={{padding:"8px 10px",background:style===s.id?"#0a0800":"#000",border:`1px solid ${style===s.id?GOLD:GOLDDIM}`,cursor:"pointer"}}>
+                      <div style={{color:style===s.id?GOLD:WHITE,fontSize:11,fontWeight:900}}>{s.label}</div>
+                      <div style={{color:DIM,fontSize:9,marginTop:2}}>{s.desc}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:8}}>COLOUR GRADE</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:12}}>
+                  {GRADES.map(g=>(
+                    <button key={g.id} onClick={()=>setColorGrade(g.id)}
+                      style={{background:colorGrade===g.id?g.fg:"#111",border:`2px solid ${colorGrade===g.id?g.fg:GOLDDIM}`,color:colorGrade===g.id?"#000":WHITE,padding:"4px 10px",cursor:"pointer",fontSize:10,fontWeight:900}}>
+                      {g.label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{display:"flex",gap:6,marginBottom:12}}>
+                  <button onClick={()=>setShowText(false)} style={{...G(showText===false?"gold":"out",true),flex:1,fontSize:10}}>🎬 VISUALS ONLY</button>
+                  <button onClick={()=>setShowText(true)} style={{...G(showText===true?"gold":"out",true),flex:1,fontSize:10}}>📝 WITH TEXT</button>
+                </div>
+              </div>
+            )}
+
+            {activeTab==="settings"&&(
+              <div>
+                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:8}}>RESOLUTION</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:5,marginBottom:12}}>
+                  {[["720p","1280×720"],["1080p","1920×1080"],["4K","3840×2160"]].map(([r,sub])=>(
+                    <button key={r} onClick={()=>setResolution(r)} style={{background:resolution===r?"#0a0800":"#000",border:`1px solid ${resolution===r?GOLD:GOLDDIM}`,padding:"8px",cursor:"pointer",textAlign:"center"}}>
+                      <div style={{color:resolution===r?GOLD:WHITE,fontSize:12,fontWeight:900,fontFamily:"'Rajdhani',sans-serif"}}>{r}</div>
+                      <div style={{color:DIM,fontSize:9}}>{sub}</div>
+                    </button>
+                  ))}
+                </div>
+                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:8}}>FRAME RATE</div>
+                <div style={{display:"flex",gap:5,marginBottom:12}}>
+                  {[24,30,60].map(f=><button key={f} onClick={()=>setFps(f)} style={{...G(fps===f?"gold":"out",true),flex:1,fontSize:10}}>{f}fps</button>)}
+                </div>
+                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:6}}>DURATION — {duration}s</div>
+                <input type="range" min={3} max={120} value={duration} onChange={e=>setDuration(+e.target.value)} style={{width:"100%",accentColor:GOLD,marginBottom:4}}/>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:12}}>
+                  <span style={{color:DIM,fontSize:9}}>3s</span>
+                  <span style={{color:GOLD,fontSize:10,fontWeight:900}}>{duration}s</span>
+                  <span style={{color:DIM,fontSize:9}}>120s</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* GENERATE BUTTON */}
+          <div style={{padding:12,borderTop:`1px solid ${GOLDDIM}`,flexShrink:0}}>
+            <button onClick={generateVideo} disabled={generating||(!prompt.trim()&&!aiScript.trim())}
+              style={{...G("gold",false),width:"100%",padding:"14px",fontSize:13,letterSpacing:3,opacity:generating||(!prompt.trim()&&!aiScript.trim())?0.5:1}}>
+              {generating?"⟳ RENDERING... "+progress+"%":"🎬 GENERATE VIDEO CLIP"}
+            </button>
+          </div>
+        </div>
+
+        {/* CENTRE — CANVAS PREVIEW */}
+        <div style={{background:"#000",display:"flex",flexDirection:"column"}}>
+          {/* PREVIEW SCREEN */}
+          <div style={{background:"#000",aspectRatio:"16/9",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",borderBottom:`1px solid ${GOLDDIM}`,position:"relative"}}>
+            {videoUrl?(
+              <video key={videoUrl} ref={videoRef} src={videoUrl} controls autoPlay loop muted playsInline style={{width:"100%",height:"100%",objectFit:"contain"}}/>
+            ):(
+              <div style={{textAlign:"center",padding:20}}>
+                {refImageUrl&&<img src={refImageUrl} alt="ref" style={{width:"100%",height:"100%",objectFit:"cover",position:"absolute",inset:0,opacity:0.15}}/>}
+                <div style={{position:"relative",zIndex:1}}>
+                  <div style={{fontSize:42,marginBottom:10}}>🎬</div>
+                  <div style={{color:grade.fg,fontSize:14,letterSpacing:3,fontWeight:900}}>{title||"YOUR SCENE"}</div>
+                  <div style={{color:DIM,fontSize:11,marginTop:6}}>{style} · {grade.label} · {duration}s · {resolution}</div>
+                </div>
+              </div>
+            )}
+            {generating&&(
+              <div style={{position:"absolute",bottom:0,left:0,right:0,height:4,background:"#000"}}>
+                <div style={{width:progress+"%",height:"100%",background:`linear-gradient(90deg,${GOLDDIM},${GOLD})`,transition:"width .2s"}}/>
+              </div>
+            )}
+          </div>
+
+          {/* PROGRESS BAR */}
+          {generating&&(
+            <div style={{padding:"8px 16px",borderBottom:`1px solid ${GOLDDIM}`,background:"#020200"}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                <span style={{color:GOLD,fontSize:10,fontWeight:900,letterSpacing:2}}>RENDERING</span>
+                <span style={{color:GOLD,fontSize:12,fontWeight:900}}>{progress}%</span>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {activeTab==="voice" && (
-          <div>
-            <div style={{color:GOLD, fontSize:11, letterSpacing:3, fontWeight:900, marginBottom:16}}>VOICE SELECTION & SETTINGS</div>
-
-            {/* VOICE PICKER */}
-            <div style={{...Card(), marginBottom:14}}>
-              <div style={{color:GOLD, fontSize:11, fontWeight:900, letterSpacing:2, marginBottom:10}}>
-                AVAILABLE VOICES ON THIS DEVICE — {voices.length} FOUND
+          {/* EXPORT BUTTONS */}
+          {videoUrl&&!generating&&(
+            <div style={{padding:"10px 16px",borderBottom:`1px solid ${GOLDDIM}`,background:"#020200"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
+                <a href={videoUrl} download={(title||"scene").replace(/\s+/g,"_")+"_"+resolution+"_"+duration+"s.webm"}
+                  style={{...G("out",false),padding:"8px",fontSize:10,textDecoration:"none",textAlign:"center",display:"block",letterSpacing:1}}>⬇ DOWNLOAD</a>
+                <button onClick={saveToLibrary} style={{...G(saved?"out":"gold",false),padding:"8px",fontSize:10,letterSpacing:1}}>{saved?"✓ IN LIBRARY":"💾 SAVE TO LIBRARY"}</button>
+                <button onClick={()=>{setVideoUrl("");setLog([]);setSaved(false);}} style={{...G("out",false),padding:"8px",fontSize:10}}>🔄 NEW CLIP</button>
               </div>
-              {voices.length === 0 ? (
-                <div style={{color:DIM, fontSize:13}}>Loading voices... try refreshing</div>
-              ) : (
-                <div style={{maxHeight:260, overflowY:"auto", display:"flex", flexDirection:"column", gap:4}}>
-                  {voices.slice(0,20).map((v,i)=>(
-                    <div key={i} onClick={()=>setSelVoiceIdx(i)}
-                      style={{padding:"8px 12px", background:selVoiceIdx===i?"#0a0800":"#000", border:`1px solid ${selVoiceIdx===i?GOLD:GOLDDIM}`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"space-between"}}
-                      onMouseEnter={e=>{if(selVoiceIdx!==i)e.currentTarget.style.borderColor=GOLD;}}
-                      onMouseLeave={e=>{if(selVoiceIdx!==i)e.currentTarget.style.borderColor=GOLDDIM;}}>
-                      <div>
-                        <span style={{color:selVoiceIdx===i?GOLD:WHITE, fontSize:13, fontWeight:900}}>{v.voice.name}</span>
-                        <span style={{color:DIM, fontSize:11, marginLeft:8}}>{v.voice.lang}</span>
-                        {v.score >= 90 && <span style={{background:"#0a2a0a", border:"1px solid #22c55e", color:"#22c55e", fontSize:9, padding:"1px 6px", marginLeft:6, fontWeight:900}}>BEST</span>}
-                        {v.score >= 70 && v.score < 90 && <span style={{background:"#0a0a00", border:`1px solid ${GOLDDIM}`, color:GOLD, fontSize:9, padding:"1px 6px", marginLeft:6, fontWeight:900}}>GOOD</span>}
-                      </div>
-                      {selVoiceIdx===i && <span style={{color:"#22c55e", fontSize:10, fontWeight:900}}>✓ SELECTED</span>}
+            </div>
+          )}
+
+          {/* MEDIA LIBRARY STRIP */}
+          {libVideos.length>0&&(
+            <div style={{borderBottom:`1px solid ${GOLDDIM}`,background:"#020200"}}>
+              <div style={{padding:"6px 16px 4px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <span style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900}}>YOUR VIDEO CLIPS — {libVideos.length}</span>
+                <button onClick={()=>setShowLibrary(p=>!p)} style={{background:"none",border:"none",color:GOLD,cursor:"pointer",fontSize:10}}>{showLibrary?"▲":"▼"}</button>
+              </div>
+              {showLibrary&&(
+                <div style={{display:"flex",gap:6,padding:"0 10px 8px",overflowX:"auto"}}>
+                  {libVideos.map(a=>(
+                    <div key={a.id} style={{flexShrink:0,width:100,border:`1px solid ${GOLDDIM}`,cursor:"pointer"}}
+                      onClick={()=>{setVideoUrl(a.url);setSaved(true);}}>
+                      <video src={a.url} style={{width:"100%",height:56,objectFit:"cover"}} muted/>
+                      <div style={{color:WHITE,fontSize:8,padding:"2px 4px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.name.slice(0,14)}</div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
+          )}
 
-            {/* SPEED */}
-            <div style={{...Card(), marginBottom:10}}>
-              <div style={{display:"flex", justifyContent:"space-between", marginBottom:6}}>
-                <span style={{color:GOLD, fontSize:11, fontWeight:900, letterSpacing:2}}>SPEED</span>
-                <span style={{color:WHITE, fontSize:11}}>{speed < 0.65?"Very Slow — comedy timing":speed < 0.80?"Slow — dramatic":speed < 0.95?"Natural":speed < 1.10?"Brisk":"Fast"} ({speed.toFixed(2)}x)</span>
+          {/* RENDER LOG */}
+          <div style={{flex:1,overflowY:"auto",padding:14,background:"#010100"}}>
+            {log.length>0?(
+              <div>
+                <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:8}}>● RENDER LOG</div>
+                {log.map((l,i)=>(
+                  <div key={i} style={{color:i===log.length-1?"#22c55e":"#555",fontSize:10,lineHeight:1.8,fontFamily:"monospace"}}>› {l}</div>
+                ))}
               </div>
-              <input type="range" min={0.40} max={1.40} step={0.01} value={speed} onChange={e=>setSpeed(+e.target.value)} style={{width:"100%", accentColor:GOLD}}/>
-              <div style={{display:"flex", justifyContent:"space-between", marginTop:3}}>
-                <span style={{color:DIM, fontSize:10}}>0.4x Slow · Comedy</span>
-                <span style={{color:DIM, fontSize:10}}>1.4x Fast</span>
+            ):(
+              <div style={{textAlign:"center",padding:"20px 16px",color:GOLDDIM}}>
+                <div style={{fontSize:28,marginBottom:8}}>🎬</div>
+                <div style={{fontSize:10,lineHeight:1.9,letterSpacing:1}}>PROFESSIONAL CINEMA ENGINE<br/>Describe your scene · Hit Generate<br/>Canvas renders at {resolution} · {fps}fps</div>
               </div>
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT — SCENE INTELLIGENCE PANEL */}
+        <div style={{borderLeft:`1px solid ${GOLDDIM}`,background:"#020200",display:"flex",flexDirection:"column",overflowY:"auto"}}>
+          <div style={{padding:"10px 14px",borderBottom:`1px solid ${GOLDDIM}`}}>
+            <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900}}>✦ SCENE INTELLIGENCE</div>
+            <div style={{color:DIM,fontSize:9,marginTop:2}}>Auto-parsed from your description</div>
+          </div>
+          <div style={{padding:14,flex:1}}>
+            {/* SCENE TYPE INDICATOR */}
+            <div style={{...Card(),marginBottom:10,padding:10}}>
+              <div style={{color:GOLD,fontSize:9,letterSpacing:2,marginBottom:6}}>SCENE TYPE DETECTED</div>
+              {["city","cosmic","dawn","landscape","interior","abstract"].map(t=>(
+                <div key={t} style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
+                  <div style={{width:8,height:8,borderRadius:"50%",background:prompt.toLowerCase().includes(t)||prompt.toLowerCase().includes(t==="cosmic"?"space":t==="dawn"?"sunrise":t)?"#22c55e":"#333"}}/>
+                  <span style={{color:WHITE,fontSize:10,textTransform:"uppercase",letterSpacing:1}}>{t}</span>
+                </div>
+              ))}
             </div>
 
-            {/* PITCH */}
-            <div style={{...Card(), marginBottom:10}}>
-              <div style={{display:"flex", justifyContent:"space-between", marginBottom:6}}>
-                <span style={{color:GOLD, fontSize:11, fontWeight:900, letterSpacing:2}}>PITCH</span>
-                <span style={{color:WHITE, fontSize:11}}>{pitchV < 0.8?"Deep":pitchV < 0.95?"Low":pitchV < 1.08?"Natural":pitchV < 1.25?"Bright":"High"} ({pitchV.toFixed(2)})</span>
-              </div>
-              <input type="range" min={0.5} max={1.8} step={0.01} value={pitchV} onChange={e=>setPitchV(+e.target.value)} style={{width:"100%", accentColor:GOLD}}/>
+            {/* ELEMENTS DETECTED */}
+            <div style={{...Card(),marginBottom:10,padding:10}}>
+              <div style={{color:GOLD,fontSize:9,letterSpacing:2,marginBottom:6}}>ELEMENTS</div>
+              {[["City Lights",["city","window","building","lit"]],["Star Field",["star","space","night sky","galaxy"]],["Human Figure",["person","figure","human","crowd","silhouette"]],["Fog Layer",["fog","mist","haze"]],["Light Beams",["beam","ray","shaft","light from"]],["Sun Rise",["sunrise","dawn","sun rising","golden hour"]]].map(([label,keys])=>{
+                const active=keys.some(k=>prompt.toLowerCase().includes(k));
+                return(
+                  <div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}>
+                    <span style={{color:active?WHITE:DIM,fontSize:10}}>{label}</span>
+                    <span style={{color:active?"#22c55e":"#333",fontSize:9,fontWeight:900}}>{active?"✓ ON":"—"}</span>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* PAUSE LENGTH */}
-            <div style={{...Card(), marginBottom:14}}>
-              <div style={{display:"flex", justifyContent:"space-between", marginBottom:6}}>
-                <span style={{color:GOLD, fontSize:11, fontWeight:900, letterSpacing:2}}>PAUSE BETWEEN SENTENCES</span>
-                <span style={{color:WHITE, fontSize:11}}>{pauseLen}ms {pauseLen < 400?"· Fast, urgent":pauseLen < 700?"· Natural":pauseLen < 1000?"· Measured":pauseLen < 1400?"· Dramatic":"· Comedy deadpan"}</span>
-              </div>
-              <input type="range" min={100} max={2000} step={50} value={pauseLen} onChange={e=>setPauseLen(+e.target.value)} style={{width:"100%", accentColor:GOLD}}/>
-              <div style={{display:"flex", justifyContent:"space-between", marginTop:3}}>
-                <span style={{color:DIM, fontSize:10}}>100ms · Urgent</span>
-                <span style={{color:DIM, fontSize:10}}>2000ms · Deadpan comedy</span>
-              </div>
-            </div>
-
-            {/* TEST */}
-            <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:10}}>
-              <button onClick={()=>{
-                const utt = new SpeechSynthesisUtterance("Hello. This is a test of your current voice settings. How does this sound to you?");
-                if (voices[selVoiceIdx]) utt.voice = voices[selVoiceIdx].voice;
-                utt.rate = speed; utt.pitch = pitchV; utt.volume = volume;
-                window.speechSynthesis.cancel();
-                window.speechSynthesis.speak(utt);
-              }} style={{...G("gold",false), padding:"14px", fontSize:12, letterSpacing:2}}>
-                ▶  TEST VOICE
+            {/* QUICK SCENE PRESETS */}
+            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:8}}>QUICK PRESETS</div>
+            {[
+              ["🌌 Deep Space","Earth from deep space. Planet glowing blue. City lights on the dark side. Stars everywhere. Atmosphere burning gold at edges."],
+              ["🌆 City Night","City street at night. Tall buildings with every window lit. Crowd of people moving through heavy fog. Ground level."],
+              ["🌅 Golden Dawn","Single human figure standing on flat open ground at dawn. Sun rising from below. Gold light flooding everything. Wide horizon."],
+              ["👤 Lone Figure","Single human figure standing completely alone in total darkness. One beam of light straight down from above. Deep fog at the edges."],
+              ["🏙 Epic Skyline","Dense city skyline at night seen from above. Every window blazing gold. Fog at street level. Particles rising like embers."],
+              ["🌊 Ocean Moon","Dark ocean at night. Full moon reflection on the water. Thin horizon line. Stars above. Slow rolling waves. Deep silence."],
+            ].map(([label,p])=>(
+              <button key={label} onClick={()=>setPrompt(p)}
+                style={{width:"100%",textAlign:"left",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"7px 10px",cursor:"pointer",marginBottom:4,display:"block"}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor=GOLD;}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor=GOLDDIM;}}>
+                <div style={{color:WHITE,fontSize:11,fontWeight:700}}>{label}</div>
               </button>
-              <button onClick={()=>{setSpeed(0.82); setPitchV(1.0); setVolume(1.0); setPauseLen(700);}}
-                style={{...G("out",false), padding:"14px", fontSize:12, letterSpacing:2}}>
-                RESET DEFAULTS
-              </button>
-            </div>
+            ))}
 
-            <div style={{...Card(), marginTop:14, background:"#050500"}}>
-              <div style={{color:GOLD, fontSize:11, fontWeight:900, letterSpacing:2, marginBottom:6}}>💡 FOR THE BEST QUALITY</div>
-              <div style={{color:WHITE, fontSize:12, lineHeight:1.8}}>
-                On <strong style={{color:GOLD}}>Chrome</strong> — Google UK English Female or Male sounds the most natural.<br/>
-                On <strong style={{color:GOLD}}>Safari / Apple devices</strong> — Daniel (UK), Samantha (US) or Karen (AU) are excellent.<br/>
-                On <strong style={{color:GOLD}}>Edge</strong> — Microsoft Neural voices are near-human quality.<br/>
-                The <strong style={{color:GOLD}}>BEST</strong> badge marks the highest quality voice found on your device.
+            {/* COLOUR GRADE PREVIEW */}
+            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:8,marginTop:12}}>ACTIVE GRADE</div>
+            <div style={{background:grade.bg,border:`1px solid ${grade.fg}`,padding:"10px 12px",marginBottom:10}}>
+              <div style={{color:grade.fg,fontSize:12,fontWeight:900}}>{GRADES.find(g=>g.id===colorGrade)?.label}</div>
+              <div style={{display:"flex",gap:6,marginTop:6}}>
+                {[grade.bg,grade.fg,grade.accent].map((c,i)=>(
+                  <div key={i} style={{width:24,height:24,background:c,border:"1px solid #333"}}/>
+                ))}
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
@@ -1301,16 +1600,14 @@ function P1({ go }) {
       <div style={{borderTop:`1px solid ${GOLD}`,display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,padding:"16px 24px",maxWidth:800,margin:"0 auto"}}>
         {[["600+","AI TOOLS"],["8K","EXPORT"],["3 HRS","DURATION"],["1TB","STORAGE"]].map(([v,l])=>(
           <div key={v} style={{...Card(),textAlign:"center",padding:12}}>
-            <div style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:22,fontWeight:900,textShadow:`0 0 16px ${GOLD}77`}}>{v}</div>
+            <div style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:22,fontWeight:900}}>{v}</div>
             <div style={{color:WHITE,fontSize:11,marginTop:3,fontWeight:700,letterSpacing:2}}>{l}</div>
           </div>
         ))}
       </div>
       <div style={{textAlign:"center",paddingBottom:24,paddingTop:16}}>
         <div onClick={()=>alert("Mobile: Share then Add to Home Screen\nDesktop: Click install icon in address bar")}
-          style={{display:"inline-flex",flexDirection:"column",alignItems:"center",justifyContent:"center",width:110,height:110,background:"#000",border:`2px solid ${GOLD}`,cursor:"pointer",gap:4}}
-          onMouseEnter={e=>{e.currentTarget.style.background=GOLDDIM;}}
-          onMouseLeave={e=>{e.currentTarget.style.background="#000";}}>
+          style={{display:"inline-flex",flexDirection:"column",alignItems:"center",justifyContent:"center",width:110,height:110,background:"#000",border:`2px solid ${GOLD}`,cursor:"pointer",gap:4}}>
           <div style={{fontSize:26,lineHeight:1}}>⬇</div>
           <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:1,textAlign:"center",lineHeight:1.4}}>DOWNLOAD<br/>AS APP</div>
         </div>
@@ -1325,7 +1622,7 @@ function P2({ go }) {
       <div style={{maxWidth:880,margin:"0 auto"}}>
         <div style={{fontSize:12,color:GOLD,letterSpacing:4,marginBottom:8,fontWeight:700}}>AI CREATOR PLATFORM</div>
         <h1 style={{...H1,fontSize:30,marginBottom:14}}>MAKE AWESOME FAMILY MOVIES OR TURN YOUR DREAMS INTO REALITY</h1>
-        <p style={{color:WHITE,fontSize:15,lineHeight:1.9,maxWidth:720,marginBottom:28}}>MandaStrong Studio combines the power of 600+ professional AI tools with an intuitive cinematic workspace — so anyone can create stunning short films, family videos, or feature-length productions up to 3 hours long. No film school required.</p>
+        <p style={{color:WHITE,fontSize:15,lineHeight:1.9,maxWidth:720,marginBottom:28}}>MandaStrong Studio combines 600+ professional AI tools with an intuitive cinematic workspace — so anyone can create stunning short films, family videos, or feature-length productions up to 3 hours long.</p>
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:28}}>
           {[["600+","AI Tools"],["8K","Export Quality"],["3 HOURS","Max Duration"],["1TB","Cloud Storage"]].map(([v,l])=>(
             <div key={v} style={{...Card(),textAlign:"center",padding:14}}>
@@ -1342,7 +1639,6 @@ function P2({ go }) {
 
 function P3() {
   const [playing, setPlaying] = useState([false,false,false]);
-  const toggle = i => setPlaying(p=>p.map((v,j)=>j===i?!v:v));
   return (
     <div style={{...Sp,padding:40}}>
       <div style={{maxWidth:980,margin:"0 auto"}}>
@@ -1351,11 +1647,10 @@ function P3() {
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
           {[1,2,3].map(s=>(
             <div key={s} style={{...Card()}}>
-              <div style={{background:"#000",height:160,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:12,border:`1px solid ${GOLDDIM}`,position:"relative",cursor:"pointer"}} onClick={()=>toggle(s-1)}>
+              <div style={{background:"#000",height:160,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:12,border:`1px solid ${GOLDDIM}`,cursor:"pointer"}} onClick={()=>setPlaying(p=>p.map((v,j)=>j===s-1?!v:v))}>
                 <div style={{width:52,height:52,border:`2px solid ${GOLD}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
                   <div style={{color:GOLD,fontSize:22,marginLeft:4}}>{playing[s-1]?"⏸":"▶"}</div>
                 </div>
-                <div style={{position:"absolute",bottom:8,left:10,color:GOLD,fontSize:11,fontWeight:700,letterSpacing:2}}>VIEWER 0{s}</div>
               </div>
               <button style={{...G("out",true),width:"100%"}}>⬆ UPLOAD FILM</button>
             </div>
@@ -1372,7 +1667,8 @@ function P4({ go, setUser }) {
   const inp={width:"100%",background:"#0a0a0a",border:`1px solid ${GOLDDIM}`,padding:"10px 12px",color:WHITE,fontSize:14,marginBottom:10,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif"};
   const login=()=>{
     if(email==="woolleya129@gmail.com"&&pass==="Mangler1970!!"){setUser({name:"Amanda",plan:"Studio",isAdmin:true});go(5);}
-    else{setUser({name:email.split("@")[0]||"Creator",plan:"Creator",isAdmin:false});go(5);}
+    else if(email.includes("@")){setUser({name:email.split("@")[0]||"Creator",plan:"Creator",isAdmin:false});go(5);}
+    else{alert("Please enter a valid email address.");}
   };
   return (
     <div style={{...Sp,padding:40}}>
@@ -1384,17 +1680,15 @@ function P4({ go, setUser }) {
             <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email address" style={inp}/>
             <input value={pass} onChange={e=>setPass(e.target.value)} type="password" placeholder="Password" style={{...inp,marginBottom:16}}/>
             <button onClick={login} style={{...G("gold",false),width:"100%",padding:"12px"}}>SIGN IN TO STUDIO</button>
-            <div style={{textAlign:"center",marginTop:8,color:DIM,fontSize:11,letterSpacing:1}}>Secured with 256-bit encryption</div>
           </div>
           <div style={{...Card(),border:"2px solid #22c55e",position:"relative"}}>
-            <div style={{position:"absolute",top:-11,left:"50%",transform:"translateX(-50%)",background:"#22c55e",color:"#000",padding:"3px 14px",fontSize:11,fontWeight:900,whiteSpace:"nowrap",letterSpacing:1}}>🎉 7-DAY FREE TRIAL</div>
+            <div style={{position:"absolute",top:-11,left:"50%",transform:"translateX(-50%)",background:"#22c55e",color:"#000",padding:"3px 14px",fontSize:11,fontWeight:900,whiteSpace:"nowrap"}}>🎉 7-DAY FREE TRIAL</div>
             <div style={{fontSize:11,color:GOLD,letterSpacing:3,marginBottom:8,marginTop:10,fontWeight:700}}>NEW CREATOR</div>
             <h2 style={{...H1,fontSize:18,marginBottom:18}}>CREATE ACCOUNT</h2>
             <input value={name} onChange={e=>setName(e.target.value)} placeholder="Your Name" style={inp}/>
             <input value={re} onChange={e=>setRe(e.target.value)} placeholder="Email address" style={{...inp,marginBottom:16}}/>
             <button onClick={()=>{setUser({name:name||"Creator",plan:"Studio Trial",isAdmin:false});window.open(STRIPE.studio,"_blank");go(5);}}
               style={{width:"100%",padding:"12px",background:"#22c55e",border:"none",color:"#000",fontWeight:900,fontSize:13,cursor:"pointer",letterSpacing:2}}>START FREE TRIAL — $0</button>
-            <div style={{textAlign:"center",marginTop:8,color:DIM,fontSize:11,letterSpacing:1}}>Studio Plan Free for 7 Days · No Credit Card</div>
           </div>
           <div style={{...Card(),textAlign:"center"}}>
             <div style={{fontSize:36,marginBottom:10}}>👁</div>
@@ -1403,24 +1697,26 @@ function P4({ go, setUser }) {
             <button onClick={()=>{setUser({name:"Guest",plan:"Guest",isAdmin:false});go(5);}} style={{...G("out",false),width:"100%"}}>BROWSE AS GUEST</button>
           </div>
         </div>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <button onClick={()=>{try{const m=JSON.parse(localStorage.getItem("ms_medialib")||"[]");if(m.length>0){alert("Project loaded! "+m.length+" assets restored.");}else{alert("No saved project found.");}}catch(e){alert("Could not load project.");}}} style={{...G("gold",false),padding:"12px 32px"}}>📂 OPEN PROJECT</button>
+        </div>
         <h2 style={{...H1,fontSize:22,textAlign:"center",marginBottom:22}}>SUBSCRIPTION PLANS</h2>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
           {[
-            {t:"CREATOR PLAN",p:"20",link:STRIPE.basic,f:["HD Export 1080p","100 AI Tools","10GB Storage","Email Support","Basic Timeline"],pop:false,trial:false},
-            {t:"PRO PLAN",p:"30",link:STRIPE.pro,f:["4K Export","300 AI Tools","100GB Storage","Priority Support","Full Timeline","Commercial License"],pop:true,trial:false},
+            {t:"CREATOR PLAN",p:"20",link:STRIPE.basic,f:["HD Export 1080p","100 AI Tools","10GB Storage","Email Support"],pop:false,trial:false},
+            {t:"PRO PLAN",p:"30",link:STRIPE.pro,f:["4K Export","300 AI Tools","100GB Storage","Priority Support","Commercial License"],pop:true,trial:false},
             {t:"STUDIO PLAN",p:"50",link:STRIPE.studio,f:["8K Export","600+ AI Tools","1TB Storage","24/7 Support","Full Rights","API Access","7-Day Free Trial"],pop:false,trial:true},
           ].map(plan=>(
             <div key={plan.t} style={{...Card(),border:plan.pop?`2px solid ${GOLD}`:`1px solid ${GOLDDIM}`,position:"relative"}}>
-              {plan.pop&&<div style={{position:"absolute",top:-11,left:"50%",transform:"translateX(-50%)",background:GOLD,color:"#000",padding:"2px 12px",fontSize:11,fontWeight:900,whiteSpace:"nowrap",letterSpacing:1}}>MOST POPULAR</div>}
-              {plan.trial&&<div style={{position:"absolute",top:-11,right:12,background:"#22c55e",color:"#000",padding:"2px 10px",fontSize:11,fontWeight:900,whiteSpace:"nowrap"}}>🎉 FREE TRIAL</div>}
+              {plan.pop&&<div style={{position:"absolute",top:-11,left:"50%",transform:"translateX(-50%)",background:GOLD,color:"#000",padding:"2px 12px",fontSize:11,fontWeight:900,whiteSpace:"nowrap"}}>MOST POPULAR</div>}
+              {plan.trial&&<div style={{position:"absolute",top:-11,right:12,background:"#22c55e",color:"#000",padding:"2px 10px",fontSize:11,fontWeight:900}}>🎉 FREE TRIAL</div>}
               <div style={{color:WHITE,fontSize:11,letterSpacing:3,fontWeight:700}}>{plan.t}</div>
-              <div style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:34,fontWeight:900,margin:"8px 0",textShadow:`0 0 20px ${GOLD}66`}}>${plan.p}<span style={{fontSize:12,color:WHITE}}>/mo</span></div>
+              <div style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:34,fontWeight:900,margin:"8px 0"}}>${plan.p}<span style={{fontSize:12,color:WHITE}}>/mo</span></div>
               <div style={{margin:"12px 0"}}>{plan.f.map(f=><div key={f} style={{color:WHITE,fontSize:13,padding:"3px 0",borderBottom:"1px solid #0a0a0a"}}>✓ {f}</div>)}</div>
               <button onClick={()=>window.open(plan.link,"_blank")} style={{...G(plan.trial?"out":"gold",false),width:"100%"}}>{plan.trial?"START FREE TRIAL":"SUBSCRIBE NOW"}</button>
             </div>
           ))}
         </div>
-        <div style={{textAlign:"center",color:WHITE,fontSize:12,marginTop:14,letterSpacing:1}}>30-day money-back guarantee · Secure checkout via Stripe</div>
       </div>
     </div>
   );
@@ -1443,19 +1739,10 @@ function P11({ mediaLib, setMediaLib }) {
           onDragLeave={e=>{e.currentTarget.style.borderColor=GOLDDIM;}}
           onDrop={e=>{e.preventDefault();onFiles(e.dataTransfer.files);e.currentTarget.style.borderColor=GOLDDIM;}}
           onClick={()=>fileRef.current&&fileRef.current.click()}
-          style={{border:`2px dashed ${GOLDDIM}`,padding:"50px 40px",textAlign:"center",cursor:"pointer",marginBottom:16,transition:"border-color .2s"}}>
+          style={{border:`2px dashed ${GOLDDIM}`,padding:"50px 40px",textAlign:"center",cursor:"pointer",marginBottom:16}}>
           <div style={{fontSize:36,marginBottom:10}}>🎬</div>
           <div style={{color:WHITE,fontWeight:900,fontSize:16,letterSpacing:3}}>DRAG & DROP YOUR MEDIA HERE</div>
           <div style={{color:WHITE,fontSize:13,marginTop:8,letterSpacing:1}}>Or click to browse · Video · Audio · Images</div>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:18}}>
-          {[["📁","BROWSE FILES"],["🖥","RECORD SCREEN"],["🔗","IMPORT FROM URL"]].map(([ic,lb])=>(
-            <button key={lb} onClick={()=>fileRef.current&&fileRef.current.click()}
-              style={{...Card(),textAlign:"center",padding:16,cursor:"pointer",display:"block",border:`1px solid ${GOLDDIM}`}}>
-              <div style={{fontSize:22,marginBottom:6}}>{ic}</div>
-              <div style={{color:WHITE,fontSize:11,fontWeight:800,letterSpacing:2}}>{lb}</div>
-            </button>
-          ))}
         </div>
         {mediaLib.length>0&&(
           <div>
@@ -1481,30 +1768,23 @@ function P11({ mediaLib, setMediaLib }) {
 }
 
 function P12({ go, mediaLib }) {
-  const [dur,setDur]=useState(90);
   return (
     <div style={{...Sp,padding:40}}>
       <div style={{maxWidth:880,margin:"0 auto"}}>
         <div style={{fontSize:12,color:GOLD,letterSpacing:4,marginBottom:4,fontWeight:700}}>PRODUCTION HUB</div>
         <h1 style={{...H1,fontSize:28,marginBottom:4}}>EDITOR SUITE</h1>
-        <div style={{color:WHITE,fontSize:14,marginBottom:20,fontWeight:600,letterSpacing:1}}>Your complete post-production workspace.</div>
+        <div style={{color:WHITE,fontSize:14,marginBottom:20,fontWeight:600}}>Your complete post-production workspace.</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:18}}>
           {[{ic:"🗂",t:"MEDIA LIBRARY",d:`${mediaLib.length} assets`,p:11},{ic:"⏱",t:"TIMELINE EDITOR",d:"Multi-track editing",p:13},{ic:"✨",t:"ENHANCEMENT STUDIO",d:"90+ AI tools",p:14},{ic:"🎵",t:"AUDIO MIXER",d:"4-channel mixing",p:15},{ic:"⚡",t:"RENDER ENGINE",d:"Up to 8K output",p:16},{ic:"▶",t:"PREVIEW PLAYER",d:"Full-screen playback",p:17}].map(c=>(
             <button key={c.t} onClick={()=>go(c.p)}
-              style={{...Card(),textAlign:"left",cursor:"pointer",transition:"all .15s"}}
-              onMouseEnter={e=>{e.currentTarget.style.borderColor=GOLD;e.currentTarget.style.boxShadow=`0 0 14px ${GOLD}33`;}}
-              onMouseLeave={e=>{e.currentTarget.style.borderColor=GOLDDIM;e.currentTarget.style.boxShadow="none";}}>
+              style={{...Card(),textAlign:"left",cursor:"pointer"}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor=GOLD;}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor=GOLDDIM;}}>
               <div style={{fontSize:28,marginBottom:8}}>{c.ic}</div>
               <div style={{color:GOLD,fontWeight:900,fontSize:13,letterSpacing:2}}>{c.t}</div>
-              <div style={{color:WHITE,fontSize:12,marginTop:4,fontWeight:600}}>{c.d}</div>
+              <div style={{color:WHITE,fontSize:12,marginTop:4}}>{c.d}</div>
             </button>
           ))}
-        </div>
-        <div style={{...Card()}}>
-          <div style={{color:GOLD,fontWeight:900,fontSize:11,letterSpacing:3,marginBottom:10}}>MOVIE DURATION</div>
-          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-            {[30,60,90,120,180].map(m=><button key={m} onClick={()=>setDur(m)} style={{...G(dur===m?"gold":"out",true)}}>{m} MIN</button>)}
-          </div>
         </div>
       </div>
     </div>
@@ -1567,8 +1847,8 @@ function P13({ go, mediaLib, timeline, setTimeline }) {
       )}
       <div style={{...Card(),marginTop:12,display:"flex",alignItems:"center",gap:8}}>
         {["⏮","⏪","▶","⏩","⏭"].map(c=><button key={c} style={{...G("out",true)}}>{c}</button>)}
-        <div style={{flex:1,height:3,background:"#000"}}><div style={{width:"0%",height:"100%",background:GOLD}}/></div>
-        <span style={{color:WHITE,fontSize:12,fontWeight:700,letterSpacing:1}}>00:00 / 90:00</span>
+        <div style={{flex:1,height:3,background:"#000"}}/>
+        <span style={{color:WHITE,fontSize:12,fontWeight:700}}>00:00 / 90:00</span>
       </div>
     </div>
   );
@@ -1591,11 +1871,10 @@ function P14() {
       <div style={{flex:1,padding:28}}>
         <div style={{fontSize:11,color:GOLD,letterSpacing:4,marginBottom:4,fontWeight:700}}>ENHANCEMENT STUDIO</div>
         <h2 style={{...H1,fontSize:22,marginBottom:6}}>{active.toUpperCase()}</h2>
-        <div style={{color:WHITE,fontSize:14,marginBottom:20,fontWeight:600}}>Apply AI powered <strong style={{color:GOLD}}>{active}</strong> to your footage.</div>
         {Object.entries(vals).map(([k,v])=>(
           <div key={k} style={{marginBottom:16}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
-              <span style={{color:WHITE,fontSize:13,fontWeight:700,letterSpacing:1}}>{k}</span>
+              <span style={{color:WHITE,fontSize:13,fontWeight:700}}>{k}</span>
               <span style={{color:GOLD,fontSize:13,fontWeight:900}}>{v}%</span>
             </div>
             <input type="range" min={0} max={100} value={v} onChange={e=>setVals(p=>({...p,[k]:+e.target.value}))} style={{width:"100%",accentColor:GOLD}}/>
@@ -1611,7 +1890,7 @@ function P14() {
 }
 
 function P15() {
-  const [lvl,setLvl]=useState({MUSIC:75,VOICE:60,EFX:50,MASTER:85});
+  const [lvl,setLvl]=useState({VOICE:85,MUSIC:40,EFX:50,MASTER:85});
   return (
     <div style={{...Sp,padding:40}}>
       <div style={{maxWidth:680,margin:"0 auto"}}>
@@ -1621,7 +1900,7 @@ function P15() {
           {Object.entries(lvl).map(([ch,val])=>(
             <div key={ch} style={{...Card(),textAlign:"center",padding:18}}>
               <div style={{color:GOLD,fontSize:11,letterSpacing:3,marginBottom:8,fontWeight:900}}>{ch}</div>
-              <div style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:30,fontWeight:900,marginBottom:12,textShadow:`0 0 16px ${GOLD}88`}}>{val}</div>
+              <div style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:30,fontWeight:900,marginBottom:12}}>{val}</div>
               <input type="range" min={0} max={100} value={val} onChange={e=>setLvl(p=>({...p,[ch]:+e.target.value}))} style={{width:"100%",height:100,accentColor:GOLD}}/>
               <div style={{height:3,background:"#000",marginTop:10}}>
                 <div style={{width:`${val}%`,height:"100%",background:`linear-gradient(90deg,${GOLDDIM},${GOLD})`}}/>
@@ -1630,7 +1909,7 @@ function P15() {
           ))}
         </div>
         <div style={{display:"flex",gap:10}}>
-          <button onClick={()=>setLvl({MUSIC:75,VOICE:60,EFX:50,MASTER:85})} style={{...G("out",false)}}>RESET LEVELS</button>
+          <button onClick={()=>setLvl({VOICE:85,MUSIC:40,EFX:50,MASTER:85})} style={{...G("out",false)}}>RESET LEVELS</button>
           <button style={{...G("gold",false)}}>SAVE PRESET</button>
         </div>
       </div>
@@ -1638,73 +1917,277 @@ function P15() {
   );
 }
 
-function P16({ go, timeline, setRendered }) {
-  const [quality,setQuality]=useState("8K - 4320p");
-  const [format,setFormat]=useState("MP4");
-  const [dur,setDur]=useState(90);
+function P16({ go, timeline, setRendered, mediaLib }) {
+  const [quality,setQuality]=useState("1080p");
   const [progress,setProgress]=useState(0);
   const [rendering,setRendering]=useState(false);
   const [done,setDone]=useState(false);
-  const clips=Object.values(timeline||{}).flat().length;
-  const startRender=()=>{
-    if(clips===0){alert("Add clips to the timeline first!");return;}
-    setRendering(true);setDone(false);setProgress(0);
-    let p=0;const iv=setInterval(()=>{p+=Math.random()*7+2;if(p>=100){clearInterval(iv);setProgress(100);setRendering(false);setDone(true);setRendered({url:"",quality,format,timestamp:new Date().toLocaleString()});}else setProgress(Math.round(p));},200);
+  const [renderUrl,setRenderUrl]=useState("");
+  const [renderLog,setRenderLog]=useState([]);
+  const [fps,setFps]=useState(30);
+  const [codec,setCodec]=useState("vp9");
+  const [currentClipIdx,setCurrentClipIdx]=useState(-1);
+  const canvasRef=useRef(null);
+
+  const log=(msg)=>setRenderLog(p=>[...p,msg]);
+
+  const getVideoClips=()=>{
+    const tClips=Object.values(timeline||{}).flat().filter(a=>a&&a.type&&a.type.startsWith("video"));
+    if(tClips.length>0)return tClips;
+    return (mediaLib||[]).filter(a=>a.type&&a.type.startsWith("video"));
   };
+
+  const getAudioTrack=()=>{
+    const tAudio=Object.values(timeline||{}).flat().filter(a=>a&&a.type&&(a.type.startsWith("audio")||a.type==="audio/narration"||a.type==="audio/webm"));
+    if(tAudio.length>0)return tAudio[0];
+    return (mediaLib||[]).find(a=>a.type&&(a.type.startsWith("audio")||a.type==="audio/narration"||a.type==="audio/webm"));
+  };
+
+  const startRender=async()=>{
+    const clips=getVideoClips();
+    const audioAsset=getAudioTrack();
+    if(clips.length===0){alert("No video clips found. Generate clips on Page 8 first.");return;}
+    setRendering(true);setDone(false);setProgress(0);setRenderLog([]);setRenderUrl("");setCurrentClipIdx(-1);
+    try{
+      log("MandaStrong Render Engine v2 initialising...");
+      log("Clips: "+clips.length+" | Quality: "+quality+" | FPS: "+fps);
+      const canvas=canvasRef.current;
+      const dims=quality==="4K"?{w:3840,h:2160}:quality==="1080p"?{w:1920,h:1080}:quality==="720p"?{w:1280,h:720}:{w:854,h:480};
+      canvas.width=dims.w;canvas.height=dims.h;
+      const ctx=canvas.getContext("2d");
+      log("Canvas: "+dims.w+"x"+dims.h);
+      const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      const audioDest=audioCtx.createMediaStreamDestination();
+      let audioSource=null,audioBuffer=null;
+      if(audioAsset&&audioAsset.url){
+        try{
+          const resp=await fetch(audioAsset.url);
+          const arrayBuf=await resp.arrayBuffer();
+          audioBuffer=await audioCtx.decodeAudioData(arrayBuf);
+          log("Audio loaded: "+(audioBuffer.duration).toFixed(1)+"s");
+        }catch(e){log("Audio load failed — video only");}
+      }
+      if(audioBuffer){audioSource=audioCtx.createBufferSource();audioSource.buffer=audioBuffer;audioSource.connect(audioDest);audioSource.connect(audioCtx.destination);}
+      const videoStream=canvas.captureStream(fps);
+      const tracks=[...videoStream.getTracks(),...audioDest.stream.getTracks()];
+      const combinedStream=new MediaStream(tracks);
+      const vCodec=codec==="vp9"?"vp9":"vp8";
+      const mimeType=MediaRecorder.isTypeSupported(`video/webm;codecs=${vCodec},opus`)?`video/webm;codecs=${vCodec},opus`:"video/webm";
+      const bitrate=quality==="4K"?40000000:quality==="1080p"?8000000:4000000;
+      const recorder=new MediaRecorder(combinedStream,{mimeType,videoBitsPerSecond:bitrate,audioBitsPerSecond:192000});
+      const chunks=[];
+      recorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
+      recorder.start(100);
+      if(audioSource)audioSource.start(0);
+      log("Recording started...");
+      setProgress(5);
+      for(let ci=0;ci<clips.length;ci++){
+        const clip=clips[ci];setCurrentClipIdx(ci);
+        log("Clip "+(ci+1)+"/"+clips.length+": "+clip.name.slice(0,45));
+        setProgress(5+Math.round((ci/clips.length)*80));
+        await new Promise(resolve=>{
+          const vid=document.createElement("video");
+          vid.muted=true;vid.playsInline=true;
+          vid.src=clip.file instanceof File?URL.createObjectURL(clip.file):clip.url;
+          let done2=false;
+          const finish=()=>{if(!done2){done2=true;resolve(null);}};
+          vid.onloadeddata=async()=>{
+            const clipDur=Math.min(vid.duration||5,65);
+            vid.currentTime=0;
+            try{await vid.play();}catch(e){}
+            const startTime=Date.now();
+            const drawVidFrame=()=>{
+              if(done2)return;
+              const elapsed=(Date.now()-startTime)/1000;
+              if(vid.ended||elapsed>=clipDur){vid.pause();finish();return;}
+              try{ctx.fillStyle="#000";ctx.fillRect(0,0,dims.w,dims.h);ctx.drawImage(vid,0,0,dims.w,dims.h);
+                ctx.fillStyle="#000";ctx.fillRect(0,0,dims.w,dims.h*0.05);ctx.fillRect(0,dims.h*0.95,dims.w,dims.h*0.05);
+              }catch(e){finish();return;}
+              requestAnimationFrame(drawVidFrame);
+            };
+            requestAnimationFrame(drawVidFrame);
+          };
+          vid.onerror=()=>{
+            log("  Title card: "+clip.name.slice(0,30));
+            const startT=Date.now();
+            const drawCard=()=>{
+              if(done2)return;
+              const el=(Date.now()-startT)/1000;
+              if(el>=5){finish();return;}
+              const alpha=el<0.4?el/0.4:el>4?Math.max(0,(5-el)):1;
+              ctx.fillStyle="#000";ctx.fillRect(0,0,dims.w,dims.h);
+              ctx.fillStyle="#a07820";ctx.fillRect(dims.w*0.1,dims.h*0.46,dims.w*0.8,1);ctx.fillRect(dims.w*0.1,dims.h*0.54,dims.w*0.8,1);
+              ctx.globalAlpha=alpha;ctx.fillStyle="#e8c96d";
+              ctx.font="900 "+Math.round(dims.w/24)+"px Arial";ctx.textAlign="center";
+              ctx.fillText(clip.name.replace(/\.[^.]+$/,"").slice(0,40).toUpperCase(),dims.w/2,dims.h/2);
+              ctx.globalAlpha=1;requestAnimationFrame(drawCard);
+            };
+            drawCard();
+          };
+          setTimeout(finish,70000);
+        });
+      }
+      setCurrentClipIdx(-1);
+      for(let f=0;f<fps*2;f++){
+        ctx.fillStyle="#000";ctx.fillRect(0,0,dims.w,dims.h);
+        const alpha=f<fps*0.3?f/(fps*0.3):f>fps*1.6?Math.max(0,1-(f-fps*1.6)/(fps*0.4)):1;
+        ctx.globalAlpha=alpha;ctx.fillStyle="#e8c96d";
+        ctx.font="900 "+Math.round(dims.w/26)+"px Arial";ctx.textAlign="center";
+        ctx.fillText("MANDASTRONG STUDIO",dims.w/2,dims.h*0.46);
+        ctx.fillStyle="#a07820";ctx.font="400 "+Math.round(dims.w/60)+"px Arial";
+        ctx.fillText("CINEMA INTELLIGENCE PLATFORM",dims.w/2,dims.h*0.545);
+        ctx.globalAlpha=1;
+        await new Promise(r=>setTimeout(r,1000/fps));
+      }
+      setProgress(92);log("Finalising...");
+      if(audioSource){try{audioSource.stop();}catch(e){}}
+      recorder.stop();
+      await new Promise(r=>{recorder.onstop=r;});
+      const blob=new Blob(chunks,{type:mimeType});
+      const url=URL.createObjectURL(blob);
+      setRenderUrl(url);
+      if(setRendered)setRendered({url,quality,format:"WebM",timestamp:new Date().toLocaleString()});
+      setProgress(100);setDone(true);
+      log("RENDER COMPLETE — "+(blob.size/1024/1024).toFixed(1)+"MB");
+      audioCtx.close();
+    }catch(e){log("Render error: "+e.message);}
+    setRendering(false);
+  };
+
+  const clips=getVideoClips();
+  const audio=getAudioTrack();
+  const QUALITIES=[{id:"480p",label:"480p",sub:"854×480"},{id:"720p",label:"720p",sub:"1280×720"},{id:"1080p",label:"1080p",sub:"1920×1080"},{id:"4K",label:"4K",sub:"3840×2160"}];
+
   return (
-    <div style={{...Sp,padding:40}}>
-      <div style={{maxWidth:780,margin:"0 auto"}}>
-        <div style={{fontSize:11,color:GOLD,letterSpacing:4,marginBottom:4,fontWeight:700}}>FINAL OUTPUT</div>
-        <h1 style={{...H1,fontSize:28,marginBottom:20}}>RENDER FILM</h1>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
-          <div style={{...Card()}}>
-            <div style={{color:GOLD,fontWeight:900,fontSize:11,letterSpacing:3,marginBottom:10}}>EXPORT QUALITY</div>
-            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-              {["8K - 4320p","4K - 2160p","HD - 1080p","SD - 720p"].map(q=><button key={q} onClick={()=>setQuality(q)} style={{...G(quality===q?"gold":"out",true)}}>{q}</button>)}
+    <div style={{...Sp,padding:0}}>
+      <canvas ref={canvasRef} style={{display:"none"}}/>
+      <div style={{padding:"12px 24px",borderBottom:`1px solid ${GOLDDIM}`,background:"#020200",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
+        <div>
+          <div style={{fontSize:10,color:GOLD,letterSpacing:4,fontWeight:700}}>PRODUCTION ENGINE — STAGE 6</div>
+          <h1 style={{...H1,fontSize:22,margin:0}}>RENDER FILM</h1>
+        </div>
+        {done&&!rendering&&<div style={{color:"#22c55e",fontSize:11,fontWeight:900,letterSpacing:2}}>RENDER COMPLETE</div>}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 320px",minHeight:"calc(100vh - 120px)"}}>
+        <div style={{padding:20,overflowY:"auto"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
+            <div style={{background:clips.length>0?"#061406":"#0a0a0a",border:`1px solid ${clips.length>0?"#22c55e":GOLDDIM}`,padding:"14px 16px"}}>
+              <div style={{color:GOLD,fontSize:10,fontWeight:900,letterSpacing:3,marginBottom:6}}>VIDEO CLIPS</div>
+              <div style={{color:clips.length>0?"#22c55e":WHITE,fontSize:14,fontWeight:900}}>{clips.length>0?"✓ "+clips.length+" clip"+(clips.length>1?"s":"")+" ready":"No clips — generate on page 8"}</div>
+            </div>
+            <div style={{background:audio?"#061406":"#0a0a0a",border:`1px solid ${audio?"#22c55e":GOLDDIM}`,padding:"14px 16px"}}>
+              <div style={{color:GOLD,fontSize:10,fontWeight:900,letterSpacing:3,marginBottom:6}}>AUDIO TRACK</div>
+              <div style={{color:audio?"#22c55e":"#f59e0b",fontSize:14,fontWeight:900}}>{audio?"✓ Audio ready":"No audio — record on page 6"}</div>
             </div>
           </div>
-          <div style={{...Card()}}>
-            <div style={{color:GOLD,fontWeight:900,fontSize:11,letterSpacing:3,marginBottom:10}}>FORMAT</div>
-            <div style={{display:"flex",gap:6}}>
-              {["MP4","MOV","AVI","WebM"].map(f=><button key={f} onClick={()=>setFormat(f)} style={{...G(format===f?"gold":"out",true)}}>{f}</button>)}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
+            <div style={{background:"#0a0a0a",border:`1px solid ${GOLDDIM}`,padding:"14px 16px"}}>
+              <div style={{color:GOLD,fontSize:10,fontWeight:900,letterSpacing:3,marginBottom:10}}>OUTPUT QUALITY</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:5}}>
+                {QUALITIES.map(q=>(
+                  <button key={q.id} onClick={()=>setQuality(q.id)} style={{background:quality===q.id?"#0a0800":"#000",border:`1px solid ${quality===q.id?GOLD:GOLDDIM}`,padding:"8px 6px",cursor:"pointer",textAlign:"center"}}>
+                    <div style={{color:quality===q.id?GOLD:WHITE,fontSize:12,fontWeight:900,fontFamily:"'Rajdhani',sans-serif"}}>{q.label}</div>
+                    <div style={{color:DIM,fontSize:9}}>{q.sub}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div style={{background:"#0a0a0a",border:`1px solid ${GOLDDIM}`,padding:"14px 16px"}}>
+              <div style={{color:GOLD,fontSize:10,fontWeight:900,letterSpacing:3,marginBottom:10}}>SETTINGS</div>
+              <div style={{marginBottom:10}}>
+                <div style={{color:DIM,fontSize:10,marginBottom:5}}>FRAME RATE</div>
+                <div style={{display:"flex",gap:5}}>
+                  {[24,30,60].map(f=><button key={f} onClick={()=>setFps(f)} style={{...G(fps===f?"gold":"out",true),flex:1,padding:"5px 4px",fontSize:10}}>{f}fps</button>)}
+                </div>
+              </div>
+              <div>
+                <div style={{color:DIM,fontSize:10,marginBottom:5}}>CODEC</div>
+                <div style={{display:"flex",gap:5}}>
+                  {["vp9","vp8"].map(c=><button key={c} onClick={()=>setCodec(c)} style={{...G(codec===c?"gold":"out",true),flex:1,padding:"5px 4px",fontSize:10}}>{c.toUpperCase()}</button>)}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div style={{...Card(),marginBottom:16}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-            <div style={{color:GOLD,fontWeight:900,fontSize:11,letterSpacing:3}}>FILM DURATION</div>
-            <div style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:18,fontWeight:900}}>{dur} MIN</div>
+          {rendering&&(
+            <div style={{background:"#000",border:`1px solid ${GOLD}`,padding:"14px 16px",marginBottom:16}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
+                <div style={{color:GOLD,fontSize:11,fontWeight:900}}>RENDERING</div>
+                <div style={{color:GOLD,fontSize:13,fontWeight:900}}>{progress}%</div>
+              </div>
+              <div style={{height:8,background:"#111",overflow:"hidden"}}>
+                <div style={{width:progress+"%",height:"100%",background:`linear-gradient(90deg,${GOLDDIM},${GOLD})`,transition:"width .3s"}}/>
+              </div>
+            </div>
+          )}
+          {renderLog.length>0&&(
+            <div style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:"14px 16px",marginBottom:16,maxHeight:180,overflowY:"auto"}}>
+              <div style={{color:GOLD,fontSize:10,fontWeight:900,letterSpacing:3,marginBottom:8}}>RENDER LOG</div>
+              {renderLog.map((l,i)=>(
+                <div key={i} style={{color:i===renderLog.length-1?"#22c55e":"#666",fontSize:10,lineHeight:1.7,fontFamily:"monospace"}}>{i===renderLog.length-1?"► ":"  "}{l}</div>
+              ))}
+            </div>
+          )}
+          {done&&renderUrl&&(
+            <div style={{background:"#061406",border:"1px solid #22c55e",padding:"16px 20px",marginBottom:16}}>
+              <div style={{color:"#22c55e",fontWeight:900,fontSize:13,letterSpacing:2,marginBottom:12}}>RENDER COMPLETE</div>
+              <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+                <a href={renderUrl} download="MandaStrong_Film.webm" style={{...G("gold",false),padding:"12px 24px",textDecoration:"none",display:"inline-block",fontSize:12,letterSpacing:2}}>DOWNLOAD FILM</a>
+                <button onClick={()=>go(17)} style={{...G("out",false),padding:"12px 24px",fontSize:12}}>PREVIEW</button>
+                <button onClick={()=>go(18)} style={{...G("out",false),padding:"12px 24px",fontSize:12}}>EXPORT</button>
+              </div>
+            </div>
+          )}
+          <div style={{background:"#050500",border:`2px solid ${GOLD}`,padding:"18px 20px",marginBottom:16}}>
+            <button onClick={startRender} disabled={rendering||clips.length===0}
+              style={{...G("gold",false),width:"100%",padding:"18px",fontSize:14,letterSpacing:3,opacity:rendering||clips.length===0?0.5:1,marginBottom:10}}>
+              {rendering?"RENDERING... "+progress+"%":"START RENDER — "+quality+" · "+fps+"fps · "+clips.length+" CLIP"+(clips.length!==1?"S":"")}
+            </button>
           </div>
-          <input type="range" min={0} max={180} step={5} value={dur} onChange={e=>setDur(+e.target.value)} style={{width:"100%",accentColor:GOLD,marginBottom:6}}/>
-          <div style={{display:"flex",justifyContent:"space-between"}}>
-            <span style={{color:DIM,fontSize:11}}>0</span><span style={{color:DIM,fontSize:11}}>60</span>
-            <span style={{color:DIM,fontSize:11}}>90</span><span style={{color:DIM,fontSize:11}}>120</span>
-            <span style={{color:DIM,fontSize:11}}>180 MIN</span>
+          <div style={{display:"flex",gap:8}}>
+            <button onClick={()=>go(13)} style={{...G("out",false),flex:1,padding:"10px",fontSize:11}}>TIMELINE</button>
+            <button onClick={()=>go(15)} style={{...G("out",false),flex:1,padding:"10px",fontSize:11}}>AUDIO MIX</button>
+            <button onClick={()=>go(8)} style={{...G("out",false),flex:1,padding:"10px",fontSize:11}}>GENERATOR</button>
+            <button onClick={()=>go(17)} style={{...G("out",false),flex:1,padding:"10px",fontSize:11}}>PREVIEW</button>
           </div>
         </div>
-        {rendering&&<div style={{...Card(),marginBottom:12,textAlign:"center"}}>
-          <div style={{color:GOLD,fontWeight:900,fontSize:13,marginBottom:8,letterSpacing:2}}>RENDERING... {progress}%</div>
-          <div style={{height:6,background:"#000"}}><div style={{width:`${progress}%`,height:"100%",background:`linear-gradient(90deg,${GOLDDIM},${GOLD})`,transition:"width .3s"}}/></div>
-        </div>}
-        {done&&<div style={{background:"#0a2a0a",border:"1px solid #22c55e",padding:14,marginBottom:12,textAlign:"center"}}>
-          <div style={{color:"#22c55e",fontWeight:900,fontSize:13,letterSpacing:2}}>RENDER COMPLETE — {quality} · {format}</div>
-          <button onClick={()=>go(17)} style={{...G("out",true),marginTop:10,color:"#22c55e",borderColor:"#22c55e"}}>PREVIEW FILM</button>
-        </div>}
-        <button onClick={startRender} disabled={rendering}
-          style={{...G("gold",false),width:"100%",padding:"14px",fontSize:13,letterSpacing:3,opacity:rendering?0.6:1}}>
-          {rendering?`RENDERING... ${progress}%`:`START RENDER — ${quality} · ${format}`}
-        </button>
+        <div style={{borderLeft:`1px solid ${GOLDDIM}`,display:"flex",flexDirection:"column",background:"#020200"}}>
+          <div style={{background:"#000",aspectRatio:"16/9",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+            {renderUrl?(
+              <video src={renderUrl} controls loop muted playsInline style={{width:"100%",height:"100%",objectFit:"contain"}}/>
+            ):(
+              <div style={{textAlign:"center",padding:20}}>
+                <div style={{color:GOLD,fontSize:28,marginBottom:8}}>RENDER</div>
+                <div style={{color:DIM,fontSize:10,lineHeight:1.8}}>{quality} · {fps}fps<br/>{clips.length} clip{clips.length!==1?"s":""} queued</div>
+              </div>
+            )}
+          </div>
+          <div style={{flex:1,overflowY:"auto",padding:14}}>
+            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:10}}>RENDER QUEUE</div>
+            {clips.length===0?(
+              <div style={{color:GOLDDIM,fontSize:10,textAlign:"center",padding:"20px 0",lineHeight:1.8}}>No clips.<br/>Generate on page 8.</div>
+            ):clips.map((clip,i)=>(
+              <div key={clip.id||i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",marginBottom:4,background:currentClipIdx===i?"#0a0800":"#0a0a0a",border:`1px solid ${currentClipIdx===i?GOLD:GOLDDIM}`}}>
+                <div style={{width:22,height:22,background:currentClipIdx===i?GOLD:"#222",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                  <span style={{color:currentClipIdx===i?"#000":DIM,fontSize:9,fontWeight:900}}>{i+1}</span>
+                </div>
+                <div style={{flex:1,overflow:"hidden"}}>
+                  <div style={{color:currentClipIdx===i?GOLD:WHITE,fontSize:10,fontWeight:900,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{clip.name.replace(/\.[^.]+$/,"").slice(0,28)}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-function P17({ go, mediaLib }) {
+function P17({ go, rendered, mediaLib }) {
   const videoRef = useRef(null);
   const [isPlaying,setIsPlaying]=useState(false);
   const [currentTime,setCurrentTime]=useState(0);
   const [duration,setDuration]=useState(0);
-  const vs = mediaLib.find(a=>a.type&&a.type.startsWith("video"))?mediaLib.find(a=>a.type&&a.type.startsWith("video")).url:"";
+  const vs=rendered?.url||(mediaLib.find(a=>a.type&&a.type.startsWith("video"))?mediaLib.find(a=>a.type&&a.type.startsWith("video")).url:"");
   const fmt=s=>{const m=Math.floor(s/60);const sc=Math.floor(s%60);return `${String(m).padStart(2,"0")}:${String(sc).padStart(2,"0")}`;};
   const togglePlay=()=>{if(!videoRef.current)return;if(isPlaying){videoRef.current.pause();setIsPlaying(false);}else{videoRef.current.play();setIsPlaying(true);}};
   return (
@@ -1712,11 +2195,10 @@ function P17({ go, mediaLib }) {
       <div style={{maxWidth:880,margin:"0 auto"}}>
         <h1 style={{...H1,fontSize:28,marginBottom:14}}>FILM PREVIEW</h1>
         <div style={{background:"#000",overflow:"hidden",marginBottom:14,aspectRatio:"16/9",display:"flex",alignItems:"center",justifyContent:"center",border:`1px solid ${GOLDDIM}`}}>
-          {vs?
-            <video ref={videoRef} src={vs} style={{width:"100%",height:"100%"}}
-              onTimeUpdate={()=>setCurrentTime(videoRef.current?.currentTime||0)}
-              onLoadedMetadata={()=>setDuration(videoRef.current?.duration||0)}
-              onEnded={()=>setIsPlaying(false)}/>:
+          {vs?<video ref={videoRef} src={vs} style={{width:"100%",height:"100%"}}
+            onTimeUpdate={()=>setCurrentTime(videoRef.current?.currentTime||0)}
+            onLoadedMetadata={()=>setDuration(videoRef.current?.duration||0)}
+            onEnded={()=>setIsPlaying(false)}/>:
             <div style={{textAlign:"center",color:GOLDDIM,fontSize:40}}>🎬</div>}
         </div>
         <div style={{...Card(),display:"flex",alignItems:"center",gap:8}}>
@@ -1724,28 +2206,27 @@ function P17({ go, mediaLib }) {
           <button onClick={()=>{if(videoRef.current)videoRef.current.currentTime-=10;}} style={{...G("out",true)}}>⏪</button>
           <button onClick={togglePlay} style={{...G("gold",true),minWidth:44}}>{isPlaying?"⏸":"▶"}</button>
           <button onClick={()=>{if(videoRef.current)videoRef.current.currentTime+=10;}} style={{...G("out",true)}}>⏩</button>
-          <button onClick={()=>{if(videoRef.current&&duration)videoRef.current.currentTime=duration;}} style={{...G("out",true)}}>⏭</button>
           <div style={{flex:1,height:4,background:"#111",cursor:"pointer"}}
             onClick={e=>{if(!videoRef.current||!duration)return;const r=e.currentTarget.getBoundingClientRect();videoRef.current.currentTime=((e.clientX-r.left)/r.width)*duration;}}>
-            <div style={{width:`${duration?(currentTime/duration*100):0}%`,height:"100%",background:GOLD,transition:"width .1s"}}/>
+            <div style={{width:`${duration?(currentTime/duration*100):0}%`,height:"100%",background:GOLD}}/>
           </div>
-          <span style={{color:WHITE,fontSize:12,fontWeight:700,letterSpacing:1,whiteSpace:"nowrap"}}>{fmt(currentTime)} / {fmt(duration||5400)}</span>
+          <span style={{color:WHITE,fontSize:12,fontWeight:700,whiteSpace:"nowrap"}}>{fmt(currentTime)} / {fmt(duration||0)}</span>
         </div>
       </div>
     </div>
   );
 }
 
-function P18({ mediaLib }) {
-  const vs=mediaLib.find(a=>a.type&&a.type.startsWith("video"))?mediaLib.find(a=>a.type&&a.type.startsWith("video")).url:"";
-  const dl=()=>{if(!vs){alert("No film yet — render first!");return;}const a=document.createElement("a");a.href=vs;a.download="MandaStrong_Film.mp4";a.click();};
+function P18({ rendered, mediaLib }) {
+  const vs=rendered?.url||(mediaLib.find(a=>a.type&&a.type.startsWith("video"))?mediaLib.find(a=>a.type&&a.type.startsWith("video")).url:"");
+  const dl=()=>{if(!vs){alert("No film yet — render first!");return;}const a=document.createElement("a");a.href=vs;a.download="MandaStrong_Film.webm";a.click();};
   return (
     <div style={{...Sp,padding:40}}>
       <div style={{maxWidth:780,margin:"0 auto"}}>
         <div style={{fontSize:11,color:GOLD,letterSpacing:4,marginBottom:4,fontWeight:700}}>DISTRIBUTION</div>
         <h1 style={{...H1,fontSize:28,marginBottom:14}}>EXPORT & DISTRIBUTE</h1>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:20}}>
-          {[["💾","DOWNLOAD TO DEVICE",dl],["💿","SAVE PROJECT FILE",()=>{}],["🌐","SHARE TO COMMUNITY HUB",()=>{}]].map(([ic,lb,fn])=>(
+          {[["💾","DOWNLOAD TO DEVICE",dl],["💿","SAVE PROJECT FILE",()=>{}],["🌐","SHARE TO COMMUNITY",()=>{}]].map(([ic,lb,fn])=>(
             <button key={lb} onClick={fn} style={{...Card(),cursor:"pointer",textAlign:"center",padding:16,display:"block"}}>
               <div style={{fontSize:24,marginBottom:6}}>{ic}</div>
               <div style={{color:WHITE,fontSize:11,fontWeight:900,letterSpacing:2}}>{lb}</div>
@@ -1754,19 +2235,9 @@ function P18({ mediaLib }) {
         </div>
         <div style={{color:GOLD,fontWeight:900,fontSize:11,letterSpacing:3,marginBottom:10}}>SHARE TO SOCIAL MEDIA</div>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-          {[
-            ["YouTube","#FF0000","https://www.youtube.com/upload"],
-            ["Instagram","#E1306C","https://www.instagram.com"],
-            ["TikTok","#69C9D0","https://www.tiktok.com/upload"],
-            ["X / Twitter","#1DA1F2","https://twitter.com/intent/tweet?text=Check+out+my+film+made+with+MandaStrong+Studio"],
-            ["Facebook","#1877F2","https://www.facebook.com/sharer/sharer.php?u=https://mandastrong1.etsy.com"],
-            ["LinkedIn","#0A66C2","https://www.linkedin.com/sharing/share-offsite/?url=https://mandastrong1.etsy.com"],
-            ["Vimeo","#1AB7EA","https://vimeo.com/upload"],
-            ["Pinterest","#E60023","https://pinterest.com/pin/create/button"],
-            ["WhatsApp","#25D366","https://api.whatsapp.com/send?text=Check+out+my+film+made+with+MandaStrong+Studio"],
-          ].map(([s,c,link])=>(
+          {[["YouTube","#FF0000","https://www.youtube.com/upload"],["Instagram","#E1306C","https://www.instagram.com"],["TikTok","#69C9D0","https://www.tiktok.com/upload"],["X / Twitter","#1DA1F2","https://twitter.com/intent/tweet?text=Check+out+my+film+made+with+MandaStrong+Studio"],["Facebook","#1877F2","https://www.facebook.com/sharer/sharer.php?u=https://mandastrong1.etsy.com"],["LinkedIn","#0A66C2","https://www.linkedin.com/sharing/share-offsite/?url=https://mandastrong1.etsy.com"],["Vimeo","#1AB7EA","https://vimeo.com/upload"],["WhatsApp","#25D366","https://api.whatsapp.com/send?text=Check+out+my+film+from+MandaStrong+Studio"]].map(([s,c,link])=>(
             <button key={s} onClick={()=>window.open(link,"_blank")}
-              style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:"10px 16px",cursor:"pointer",transition:"all .15s"}}
+              style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:"10px 16px",cursor:"pointer"}}
               onMouseEnter={e=>{e.currentTarget.style.borderColor=c;e.currentTarget.style.background=c+"22";}}
               onMouseLeave={e=>{e.currentTarget.style.borderColor=GOLDDIM;e.currentTarget.style.background="#000";}}>
               <div style={{color:c,fontSize:12,fontWeight:900,letterSpacing:1}}>{s}</div>
@@ -1788,17 +2259,17 @@ function P19() {
         <h1 style={{...H1,fontSize:28,marginBottom:20}}>TUTORIALS</h1>
         {tuts.map(t=>(
           <div key={t.n} onClick={()=>window.open("https://youtube.com","_blank")}
-            style={{...Card(),marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",transition:"border-color .15s"}}
+            style={{...Card(),marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}
             onMouseEnter={e=>e.currentTarget.style.borderColor=GOLD}
             onMouseLeave={e=>e.currentTarget.style.borderColor=GOLDDIM}>
             <div style={{display:"flex",alignItems:"center",gap:14}}>
               <span style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,minWidth:28}}>{t.n}</span>
               <div>
                 <div style={{color:WHITE,fontWeight:800,fontSize:14}}>{t.t}</div>
-                <div style={{color:WHITE,fontSize:12,marginTop:2,fontWeight:600,letterSpacing:1}}>{t.d} · OPENS ON YOUTUBE</div>
+                <div style={{color:WHITE,fontSize:12,marginTop:2,letterSpacing:1}}>{t.d} · YOUTUBE</div>
               </div>
             </div>
-            <span style={{background:lc[t.l]+"22",border:`1px solid ${lc[t.l]}`,color:lc[t.l],padding:"3px 10px",fontSize:11,fontWeight:900,flexShrink:0,letterSpacing:2}}>{t.l.toUpperCase()}</span>
+            <span style={{background:lc[t.l]+"22",border:`1px solid ${lc[t.l]}`,color:lc[t.l],padding:"3px 10px",fontSize:11,fontWeight:900,letterSpacing:2}}>{t.l.toUpperCase()}</span>
           </div>
         ))}
       </div>
@@ -1819,7 +2290,7 @@ function P20() {
         </div>
         <div style={{...Card()}}>
           <h2 style={{color:GOLD,fontWeight:900,fontSize:16,marginBottom:12,letterSpacing:2}}>DISCLAIMER</h2>
-          <p style={{color:WHITE,fontSize:14,lineHeight:1.9,margin:0}}>MandaStrong Studio is provided as is without warranties. AI-generated content is produced algorithmically — users are solely responsible for reviewing all outputs. A significant portion of all proceeds supports veterans mental health and anti-bullying education.</p>
+          <p style={{color:WHITE,fontSize:14,lineHeight:1.9,margin:0}}>MandaStrong Studio is provided as-is without warranties. AI-generated content is produced algorithmically — users are solely responsible for reviewing all outputs. A significant portion of all proceeds supports veterans mental health and anti-bullying education.</p>
         </div>
       </div>
     </div>
@@ -1829,14 +2300,14 @@ function P20() {
 function P21() {
   const [msgs,setMsgs]=useState([{role:"assistant",content:"Ask me anything about your production."}]);
   const [inp,setInp]=useState("");const [loading,setLoading]=useState(false);
-  const bot=useRef<HTMLDivElement>(null);
+  const bot=useRef(null);
   const qs=["How do I export in 8K?","What AI tools do you have?","How does the timeline work?","Tell me about pricing"];
   useEffect(()=>{bot.current&&bot.current.scrollIntoView({behavior:"smooth"});},[msgs]);
   const send=async()=>{
     if(!inp.trim())return;const q=inp.trim();setInp("");setLoading(true);
     setMsgs(p=>[...p,{role:"user",content:q}]);
     try{
-      const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","anthropic-dangerous-direct-browser-access":"true","x-api-key":import.meta.env.VITE_ANTHROPIC_API_KEY||""},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,system:"You are Agent Grok, 24/7 assistant for MandaStrong Studio — professional cinema AI platform, 600+ tools, 8K export, films up to 3 hours, plans $20/$30/$50/mo with 7-day free trial. Be helpful and concise.",messages:[...msgs.filter(m=>m.role!=="system"),{role:"user",content:q}]})});
+      const r=await fetch(EDGE_FN,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY,"apikey":SUPA_KEY},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,system:"You are Agent Grok, 24/7 assistant for MandaStrong Studio — professional cinema AI platform, 600+ tools, 8K export, films up to 3 hours, plans $20/$30/$50/mo with 7-day free trial. Be helpful and concise.",messages:[...msgs.filter(m=>m.role!=="system"),{role:"user",content:q}]})});
       const d=await r.json();setMsgs(p=>[...p,{role:"assistant",content:d.content&&d.content[0]?d.content[0].text:"Let me help!"}]);
     }catch(e){setMsgs(p=>[...p,{role:"assistant",content:"Unable to connect — check API key in Bolt settings."}]);}
     setLoading(false);
@@ -1845,9 +2316,8 @@ function P21() {
     <div style={{...Sp,padding:40}}>
       <div style={{maxWidth:680,margin:"0 auto"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
-          <div style={{width:52,height:52,background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 12px",fontFamily:"'Cinzel',serif",fontSize:26,fontWeight:900,color:"#000",boxShadow:`0 0 24px ${GOLD}88`}}>G</div>
+          <div style={{width:52,height:52,background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 12px",fontFamily:"'Cinzel',serif",fontSize:26,fontWeight:900,color:"#000"}}>G</div>
           <h1 style={{...H1,fontSize:24}}>AGENT GROK</h1>
-          <div style={{color:WHITE,fontSize:11,letterSpacing:4,fontWeight:700}}>24/7 PRODUCTION SUPPORT</div>
           <div style={{color:"#22c55e",fontSize:11,letterSpacing:3,marginTop:4,fontWeight:900}}>● ONLINE</div>
         </div>
         <div style={{...Card(),height:290,overflowY:"auto",marginBottom:10,display:"flex",flexDirection:"column",gap:8,padding:12}}>
@@ -1857,7 +2327,7 @@ function P21() {
               <span style={{color:WHITE,fontSize:14,lineHeight:1.7}}>{m.content}</span>
             </div>
           ))}
-          {loading&&<div style={{padding:"10px 14px",background:"rgba(26,82,118,0.2)",borderLeft:"2px solid #2980b9",color:WHITE,fontSize:13}}>Agent Grok is thinking...</div>}
+          {loading&&<div style={{padding:"10px 14px",background:"rgba(26,82,118,0.2)",borderLeft:"2px solid #2980b9",color:WHITE,fontSize:13}}>Thinking...</div>}
           <div ref={bot}/>
         </div>
         <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>
@@ -1865,9 +2335,9 @@ function P21() {
         </div>
         <div style={{display:"flex",gap:8}}>
           <textarea value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}}
-            placeholder="Ask Agent Grok anything about your production..."
+            placeholder="Ask Agent Grok anything..."
             style={{flex:1,height:50,resize:"none",padding:"10px 12px",fontSize:14,background:"#0a0a0a",border:`1px solid ${GOLDDIM}`,color:WHITE,outline:"none",lineHeight:1.5,fontFamily:"'Rajdhani',sans-serif"}}/>
-          <button onClick={send} disabled={loading||!inp.trim()} style={{...G("gold",false),height:50,padding:"0 22px",opacity:loading||!inp.trim()?0.5:1,letterSpacing:2}}>SEND</button>
+          <button onClick={send} disabled={loading||!inp.trim()} style={{...G("gold",false),height:50,padding:"0 22px",opacity:loading||!inp.trim()?0.5:1}}>SEND</button>
         </div>
       </div>
     </div>
@@ -1889,14 +2359,14 @@ function P22() {
             <div style={{display:"flex",alignItems:"center",gap:12}}>
               <span style={{fontSize:24}}>{p.icon}</span>
               <div>
-                <div style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:1}}>{p.title}</div>
-                <div style={{color:WHITE,fontSize:12,fontWeight:600,letterSpacing:1}}>by {p.user}</div>
+                <div style={{color:GOLD,fontWeight:900,fontSize:14}}>{p.title}</div>
+                <div style={{color:WHITE,fontSize:12}}>by {p.user}</div>
               </div>
             </div>
             <div style={{display:"flex",alignItems:"center",gap:12}}>
-              <span style={{color:WHITE,fontSize:12,fontWeight:700}}>👁 {p.views.toLocaleString()}</span>
-              <span style={{color:WHITE,fontSize:12,fontWeight:700}}>❤️ {p.likes.toLocaleString()}</span>
-              <button onClick={()=>setPosts(ps=>ps.map(x=>x.id===p.id?{...x,likes:x.likes+1}:x))} style={{...G("out",true)}}>POST</button>
+              <span style={{color:WHITE,fontSize:12}}>👁 {p.views.toLocaleString()}</span>
+              <span style={{color:WHITE,fontSize:12}}>❤️ {p.likes.toLocaleString()}</span>
+              <button onClick={()=>setPosts(ps=>ps.map(x=>x.id===p.id?{...x,likes:x.likes+1}:x))} style={{...G("out",true)}}>LIKE</button>
             </div>
           </div>
         ))}
@@ -1905,7 +2375,7 @@ function P22() {
   );
 }
 
-function P23({ go }: { go: (n: number) => void }) {
+function P23({ go }) {
   const [guideOpen,setGuideOpen]=useState(false);
   return (
     <div style={{...Sp,padding:"26px 40px 80px"}}>
@@ -1914,17 +2384,15 @@ function P23({ go }: { go: (n: number) => void }) {
         <div style={{height:1,background:`linear-gradient(90deg,transparent,${GOLD},transparent)`,marginBottom:18}}/>
         <video autoPlay loop muted playsInline style={{width:"100%",aspectRatio:"16/9",background:"#000",border:`1px solid ${GOLDDIM}`,marginBottom:20,display:"block"}}>
           <source src="/background.mp4" type="video/mp4"/>
-          <source src="/thatsallfolks.mp4" type="video/mp4"/>
-          <source src="/ocean.mp4" type="video/mp4"/>
         </video>
         <div onClick={()=>setGuideOpen(g=>!g)}
           style={{...Card(),marginBottom:guideOpen?0:16,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",border:`1px solid ${GOLD}`}}>
-          <span style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:3}}>📖 MANDASTRONG STUDIO — HOW TO USE GUIDE</span>
+          <span style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:3}}>📖 HOW TO USE GUIDE</span>
           <span style={{color:GOLD,fontSize:18}}>{guideOpen?"▲":"▼"}</span>
         </div>
         {guideOpen&&(
           <div style={{...Card(),textAlign:"left",marginBottom:16,borderTop:"none"}}>
-            {[["NAVIGATION","Use the ☰ Quick Access menu top left or the BACK and NEXT buttons at the bottom to move between all 23 pages. The G button top right takes you straight to Agent Grok for help at any time."],["PAGE 1 — HOME","Your launch pad. Hit START CREATING to begin or LOGIN / REGISTER to access your plan. Download the app to your home screen using the button at the bottom."],["PAGE 4 — LOGIN","Sign in, start your 7-Day Free Studio Trial, or browse as Guest. Studio Plan gives you full access to all 600+ tools, 8K export and commercial rights."],["PAGES 5-10 — AI TOOLS","600+ professional AI tools across 6 workstations: Writing, Voice, Image, Video, Motion and Enhancement. Click any tool, describe what you want, hit AI CREATE and Claude generates your complete production-ready content."],["PAGE 5 — SCRIPT TO MOVIE","Paste your entire film script here with a direction at the top. Claude will generate a complete production package for your whole film in one go — scene by scene video directions, camera angles, lighting, colour grade and narration cues."],["PAGE 6 — VOICE TOOLS","Choose from 6 character voices — each with their own personality, tone and delivery style. Search by accent, sex or tone. Paste any length of script and hit SPEAK NOW — the engine automatically splits long scripts into chunks so there is no length limit. Hit AI FORMAT AND SPEAK to let Claude style your narration for that voice first. Use FIND MY VOICE MATCH to describe a custom voice and get matched to the closest character."],["PAGE 8 — VIDEO TOOLS","Use Text to Video to generate complete video clip packages with auto camera directions, lighting, colour grade and audio notes — all optimised for MandaStrong Studio. No external tools needed."],["PAGE 11 — UPLOAD MEDIA","Drag and drop your video, audio and image files or click Browse. All uploaded files go straight to your Media Library ready for the timeline."],["PAGE 13 — TIMELINE EDITOR","Drag your media clips onto the tracks. VIDEO TRACK for your video clips, AUDIO TRACK for narration, add extra tracks with the + ADD TRACK button. Playback controls at the bottom. Hit RENDER when ready."],["PAGE 15 — AUDIO MIXER","Set your levels before rendering. Recommended for documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85."],["PAGE 16 — RENDER ENGINE","Set your film duration using the slider up to 180 minutes, choose quality up to 8K, choose format MP4 or MOV, then hit START RENDER. The progress bar tracks your render in real time."],["PAGE 17 — FILM PREVIEW","Watch your rendered film back with full playback controls — play, pause, skip forward, skip back and a clickable progress bar."],["PAGE 18 — EXPORT","Download your film to your device or share directly to YouTube, TikTok, Instagram, Facebook, X, Vimeo, LinkedIn, Pinterest and WhatsApp."],["PAGE 21 — AGENT GROK","Your 24/7 AI production assistant. Ask anything about the platform, your project, tools or workflow. Always online."],["PAGE 22 — COMMUNITY HUB","Share your finished films with the MandaStrong creator community. Like and engage with other creators films."]].map(([t,d])=>(
+            {[["NAVIGATION","Use ☰ Quick Access menu or BACK / NEXT buttons to move between all 23 pages."],["PAGE 4","Login, register, or browse as guest."],["PAGES 5-10","600+ AI Tools. Click any tool, describe what you want, hit AI CREATE."],["PAGE 6","Voice Tools — 55 voices, paste your script, hit PREPARE & SPEAK."],["PAGE 8","Video Generator — describe your scene, Claude builds it automatically."],["PAGE 13","Timeline Editor — drag your media onto tracks."],["PAGE 15","Audio Mixer — VOICE 85, MUSIC 40, EFX 50, MASTER 85 for documentary."],["PAGE 16","Render Engine — choose quality up to 8K, hit START RENDER."],["PAGE 17","Film Preview — watch your film."],["PAGE 18","Export & Distribute."],["PAGE 21","Agent Grok — your 24/7 AI assistant."]].map(([t,d])=>(
               <div key={t} style={{borderBottom:`1px solid ${GOLDDIM}33`,paddingBottom:10,marginBottom:10}}>
                 <div style={{color:GOLD,fontWeight:900,fontSize:11,letterSpacing:2,marginBottom:4}}>{t}</div>
                 <div style={{color:WHITE,fontSize:13,lineHeight:1.7}}>{d}</div>
@@ -1934,26 +2402,10 @@ function P23({ go }: { go: (n: number) => void }) {
         )}
         <div style={{...Card(),textAlign:"left",marginBottom:16}}>
           <h2 style={{color:GOLD,fontWeight:900,fontSize:15,textAlign:"center",marginBottom:14,letterSpacing:3}}>✦ A SPECIAL THANK YOU ✦</h2>
-          <p style={{color:WHITE,fontSize:14,lineHeight:1.9}}>Dear Creator,</p>
-          <p style={{color:WHITE,fontSize:14,lineHeight:1.9}}>From the bottom of my heart — <strong style={{color:GOLD}}>thank you.</strong> Whether you are here to capture precious family memories, tell a story that has lived rent-free in your head for years, or simply explore what is possible when creativity meets technology, you chose to do it with MandaStrong Studio. That means everything.</p>
-          <p style={{color:WHITE,fontSize:14,lineHeight:1.9}}>I built this platform because I believe that <strong style={{color:GOLD}}>storytelling should have no gatekeepers.</strong> You do not need a film school degree or a Hollywood budget. You just need a story worth telling — and now you have 600+ professional tools to help you tell it.</p>
-          <p style={{color:WHITE,fontSize:14,lineHeight:1.9}}>Every subscription supports <strong style={{color:GOLD}}>veterans mental health initiatives</strong> and <strong style={{color:GOLD}}>school anti-bullying programs</strong> — causes deeply personal to me as the author of <em>Doxy the School Bully.</em> When you create here, you are helping build a kinder world.</p>
-          <p style={{color:WHITE,fontSize:14,lineHeight:1.9}}>Together we are building a community of creators who use their talents to spread kindness, understanding, and hope.</p>
-          <p style={{color:WHITE,fontSize:14,lineHeight:1.9}}>With gratitude and cinematic love,</p>
+          <p style={{color:WHITE,fontSize:14,lineHeight:1.9}}>From the bottom of my heart — <strong style={{color:GOLD}}>thank you.</strong> Whether you are here to capture precious family memories, tell a story that has lived in your head for years, or simply explore what is possible when creativity meets technology — you chose to do it with MandaStrong Studio.</p>
+          <p style={{color:WHITE,fontSize:14,lineHeight:1.9}}>Every subscription supports <strong style={{color:GOLD}}>veterans mental health initiatives</strong> and <strong style={{color:GOLD}}>school anti-bullying programs</strong> — causes deeply personal to me as the author of <em>Doxy the School Bully.</em></p>
           <p style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:2}}>— AMANDA STRONG</p>
-          <p style={{color:WHITE,fontSize:12,letterSpacing:1}}>Founder, MandaStrong Studio · Author of Doxy the School Bully<br/>MandaStrong1.Etsy.com</p>
-        </div>
-        <div style={{...Card(),textAlign:"left",marginBottom:16}}>
-          <h2 style={{color:GOLD,fontWeight:900,fontSize:12,letterSpacing:3,marginBottom:14}}>OUR MISSION</h2>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            {[{ic:"🎬",t:"EMPOWER CREATORS",d:"600+ AI tools making professional filmmaking accessible to everyone."},{ic:"🛡",t:"PROTECT THE YOUNG",d:"Most proceeds fund school anti-bullying programs, inspired by Doxy the School Bully."},{ic:"🏅",t:"SUPPORT VETERANS",d:"A major portion funds mental health services for veterans."},{ic:"🌐",t:"BUILD COMMUNITY",d:"The Creator Network connects filmmakers worldwide to share and grow."}].map(m=>(
-              <div key={m.t} style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:12}}>
-                <div style={{fontSize:18,marginBottom:5}}>{m.ic}</div>
-                <div style={{color:GOLD,fontWeight:900,fontSize:11,letterSpacing:2,marginBottom:4}}>{m.t}</div>
-                <div style={{color:WHITE,fontSize:12,lineHeight:1.7}}>{m.d}</div>
-              </div>
-            ))}
-          </div>
+          <p style={{color:WHITE,fontSize:12,letterSpacing:1}}>Founder, MandaStrong Studio · MandaStrong1.Etsy.com</p>
         </div>
         <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
           <button onClick={()=>window.open("https://MandaStrong1.Etsy.com","_blank")} style={{...G("out",false)}}>VISIT ETSY STORE</button>
@@ -1965,15 +2417,24 @@ function P23({ go }: { go: (n: number) => void }) {
 }
 
 export default function App() {
-  const [page,setPage]=useState(()=>{try{return JSON.parse(localStorage.getItem("ms_page")||"1");}catch{return 1;}});
+  const [page,setPage]=useState(1);
   const [menu,setMenu]=useState(false);
+
+  useEffect(()=>{
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@400;600;700;800;900&display=swap";
+    document.head.appendChild(link);
+    return()=>{try{document.head.removeChild(link);}catch{}};
+  },[]);
   const [user,setUser]=useState(()=>{try{return JSON.parse(localStorage.getItem("ms_user")||'{"name":"Guest","plan":"Guest","isAdmin":false}');}catch{return {name:"Guest",plan:"Guest",isAdmin:false};}});
-  const [mediaLib,setMediaLib]=useState<any[]>([]);
-  const [timeline,setTimeline]=useState<any>(()=>{try{return JSON.parse(localStorage.getItem("ms_timeline")||"{}");}catch{return {};}});
+  const [mediaLib,setMediaLib]=useState([]);
+  const [timeline,setTimeline]=useState(()=>{try{return JSON.parse(localStorage.getItem("ms_timeline")||"{}");}catch{return {};}});
   const [rendered,setRendered]=useState(null);
   const [savedNotice,setSavedNotice]=useState(false);
-  const go=(p:number)=>{setPage(p);window.scrollTo(0,0);try{localStorage.setItem("ms_page",JSON.stringify(p));}catch{}};
-  const saveAsset=(a:any)=>setMediaLib((p:any[])=>[...p,a]);
+
+  const go=p=>{setPage(p);window.scrollTo(0,0);try{localStorage.setItem("ms_page",JSON.stringify(p));}catch{}};
+  const saveAsset=a=>setMediaLib(p=>[...p,a]);
   const saveProject=()=>{
     try{
       localStorage.setItem("ms_page",JSON.stringify(page));
@@ -1983,30 +2444,39 @@ export default function App() {
       setTimeout(()=>setSavedNotice(false),2000);
     }catch(e){alert("Project saved!");}
   };
+
   const pages={
-    1:<P1 go={go}/>,2:<P2 go={go}/>,3:<P3/>,4:<P4 go={go} setUser={setUser}/>,
+    1:<P1 go={go}/>,
+    2:<P2 go={go}/>,
+    3:<P3/>,
+    4:<P4 go={go} setUser={setUser}/>,
     5:<ToolPage title="WRITING TOOLS" subtitle="AI WORKSTATION 01 — WRITING" tools={WRITING} onSave={saveAsset}/>,
     6:<P6Voice onSave={saveAsset}/>,
     7:<ToolPage title="IMAGE TOOLS" subtitle="AI WORKSTATION 03 — IMAGE" tools={IMAGE_T} onSave={saveAsset}/>,
-    8:<ToolPage title="VIDEO TOOLS" subtitle="AI WORKSTATION 04 — VIDEO" tools={VIDEO_T} onSave={saveAsset}/>,
+    8:<P8VideoGenerator onSave={saveAsset} mediaLib={mediaLib}/>,
     9:<ToolPage title="MOTION & VFX" subtitle="AI WORKSTATION 05 — MOTION" tools={MOTION} onSave={saveAsset}/>,
     10:<ToolPage title="ENHANCEMENT STUDIO" subtitle="AI WORKSTATION 06 — ENHANCE" tools={MOTION} onSave={saveAsset}/>,
     11:<P11 mediaLib={mediaLib} setMediaLib={setMediaLib}/>,
     12:<P12 go={go} mediaLib={mediaLib}/>,
     13:<P13 go={go} mediaLib={mediaLib} timeline={timeline} setTimeline={setTimeline}/>,
-    14:<P14/>,15:<P15/>,
-    16:<P16 go={go} timeline={timeline} setRendered={setRendered}/>,
-    17:<P17 go={go} mediaLib={mediaLib} rendered={rendered}/>,
+    14:<P14/>,
+    15:<P15/>,
+    16:<P16 go={go} timeline={timeline} setRendered={setRendered} mediaLib={mediaLib}/>,
+    17:<P17 go={go} rendered={rendered} mediaLib={mediaLib}/>,
     18:<P18 rendered={rendered} mediaLib={mediaLib}/>,
-    19:<P19/>,20:<P20/>,21:<P21/>,22:<P22/>,23:<P23 go={go}/>,
+    19:<P19/>,
+    20:<P20/>,
+    21:<P21/>,
+    22:<P22/>,
+    23:<P23 go={go}/>,
   };
+
   return (
     <div style={{background:"#000",minHeight:"100vh",fontFamily:"'Rajdhani',sans-serif"}}>
-      <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
       <Header go={go} setMenu={setMenu}/>
       {menu&&<QAMenu go={go} onClose={()=>setMenu(false)} user={user}/>}
       {savedNotice&&<div style={{position:"fixed",top:60,left:"50%",transform:"translateX(-50%)",background:GOLDDIM,color:"#000",padding:"10px 24px",fontWeight:900,fontSize:13,letterSpacing:2,zIndex:999}}>✓ PROJECT SAVED</div>}
-      <div style={{minHeight:"calc(100vh - 116px)"}}>{(pages as Record<number,any>)[page]||<P1 go={go}/>}</div>
+      <div style={{minHeight:"calc(100vh - 116px)"}}>{pages[page]||<P1 go={go}/>}</div>
       <Footer page={page} go={go} onSave={saveProject}/>
     </div>
   );
