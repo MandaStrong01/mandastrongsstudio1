@@ -2377,22 +2377,70 @@ function P22() {
 
 function P23({ go }) {
   const [guideOpen,setGuideOpen]=useState(false);
+  const [missionOpen,setMissionOpen]=useState(false);
   return (
     <div style={{...Sp,padding:"26px 40px 80px"}}>
-      <div style={{maxWidth:780,margin:"0 auto",textAlign:"center"}}>
-        <h1 style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:"clamp(20px,3vw,28px)",fontWeight:900,letterSpacing:5,textShadow:`0 0 30px ${GOLD}99`,marginBottom:14}}>THAT'S ALL FOLKS</h1>
-        <div style={{height:1,background:`linear-gradient(90deg,transparent,${GOLD},transparent)`,marginBottom:18}}/>
-        <video autoPlay loop muted playsInline style={{width:"100%",aspectRatio:"16/9",background:"#000",border:`1px solid ${GOLDDIM}`,marginBottom:20,display:"block"}}>
+      <div style={{maxWidth:820,margin:"0 auto",textAlign:"center"}}>
+        <div style={{fontSize:10,color:GOLD,letterSpacing:6,marginBottom:10,fontWeight:700}}>MANDASTRONG STUDIO · CINEMA INTELLIGENCE PLATFORM · 2026</div>
+        <h1 style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:"clamp(22px,3vw,32px)",fontWeight:900,letterSpacing:5,textShadow:`0 0 30px ${GOLD}99`,marginBottom:6}}>THAT'S ALL FOLKS</h1>
+        <div style={{color:WHITE,fontSize:13,letterSpacing:3,marginBottom:14}}>THANK YOU FOR CREATING WITH US</div>
+        <div style={{height:1,background:`linear-gradient(90deg,transparent,${GOLD},transparent)`,marginBottom:20}}/>
+
+        {/* VIDEO */}
+        <video autoPlay loop muted playsInline style={{width:"100%",aspectRatio:"16/9",background:"#000",border:`1px solid ${GOLD}`,marginBottom:20,display:"block"}}>
           <source src="/background.mp4" type="video/mp4"/>
         </video>
+
+        {/* MISSION STATEMENT */}
+        <div onClick={()=>setMissionOpen(g=>!g)}
+          style={{...Card(),marginBottom:missionOpen?0:14,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",border:`2px solid ${GOLD}`,background:"#050500"}}>
+          <span style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:3}}>✦ OUR MISSION</span>
+          <span style={{color:GOLD,fontSize:18}}>{missionOpen?"▲":"▼"}</span>
+        </div>
+        {missionOpen&&(
+          <div style={{...Card(),textAlign:"left",marginBottom:14,borderTop:"none",background:"#050500",border:`1px solid ${GOLD}`}}>
+            <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:0}}>
+              MandaStrong Studio was built with one belief — <strong style={{color:GOLD}}>that every person deserves the tools to tell their story.</strong> Not just the wealthy. Not just the technically gifted. Everyone.
+            </p>
+            <p style={{color:WHITE,fontSize:14,lineHeight:2,marginTop:12}}>
+              We are a professional cinema intelligence platform giving creators access to <strong style={{color:GOLD}}>600+ AI filmmaking tools</strong>, a full production pipeline from script to screen, and the ability to produce films up to 3 hours long — all from a single platform.
+            </p>
+            <p style={{color:WHITE,fontSize:14,lineHeight:2,marginTop:12}}>
+              Every subscription directly funds two causes close to our heart: <strong style={{color:GOLD}}>veterans mental health support</strong> and <strong style={{color:GOLD}}>school anti-bullying programmes</strong>. These are not marketing lines. They are the reason this platform exists.
+            </p>
+            <p style={{color:WHITE,fontSize:14,lineHeight:2,marginTop:12}}>
+              I am Amanda Woolley — author, creative producer, and founder of MandaStrong Studio. I built this because I believe technology should serve humanity, and art should serve truth.
+            </p>
+            <p style={{color:GOLD,fontWeight:900,fontSize:13,letterSpacing:2,marginTop:12}}>— AMANDA WOOLLEY · FOUNDER · MANDASTRONG STUDIO</p>
+            <p style={{color:WHITE,fontSize:11,letterSpacing:1}}>MandaStrong1.Etsy.com · mandastrongstudio2026.bolt.host</p>
+          </div>
+        )}
+
+        {/* HOW TO USE GUIDE */}
         <div onClick={()=>setGuideOpen(g=>!g)}
-          style={{...Card(),marginBottom:guideOpen?0:16,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",border:`1px solid ${GOLD}`}}>
-          <span style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:3}}>📖 HOW TO USE GUIDE</span>
+          style={{...Card(),marginBottom:guideOpen?0:14,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",border:`1px solid ${GOLD}`}}>
+          <span style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:3}}>📖 MANDASTRONG HOW TO USE APP GUIDE</span>
           <span style={{color:GOLD,fontSize:18}}>{guideOpen?"▲":"▼"}</span>
         </div>
         {guideOpen&&(
-          <div style={{...Card(),textAlign:"left",marginBottom:16,borderTop:"none"}}>
-            {[["NAVIGATION","Use ☰ Quick Access menu or BACK / NEXT buttons to move between all 23 pages."],["PAGE 4","Login, register, or browse as guest."],["PAGES 5-10","600+ AI Tools. Click any tool, describe what you want, hit AI CREATE."],["PAGE 6","Voice Tools — 55 voices, paste your script, hit PREPARE & SPEAK."],["PAGE 8","Video Generator — describe your scene, Claude builds it automatically."],["PAGE 13","Timeline Editor — drag your media onto tracks."],["PAGE 15","Audio Mixer — VOICE 85, MUSIC 40, EFX 50, MASTER 85 for documentary."],["PAGE 16","Render Engine — choose quality up to 8K, hit START RENDER."],["PAGE 17","Film Preview — watch your film."],["PAGE 18","Export & Distribute."],["PAGE 21","Agent Grok — your 24/7 AI assistant."]].map(([t,d])=>(
+          <div style={{...Card(),textAlign:"left",marginBottom:14,borderTop:"none"}}>
+            <div style={{color:GOLD,fontWeight:900,fontSize:13,letterSpacing:3,marginBottom:12,textAlign:"center"}}>MANDASTRONG STUDIO — COMPLETE USER GUIDE</div>
+            {[
+              ["GETTING STARTED","Open the app. Use the ☰ Quick Access menu top left to jump to any of the 23 pages instantly, or use BACK / NEXT buttons in the footer bar."],
+              ["PAGE 4 — LOGIN & PRICING","Sign in, create a free account, or browse as guest. Choose your plan: Creator $20/mo, Pro $30/mo, Studio $50/mo with 7-day free trial."],
+              ["PAGES 5–10 — AI TOOLS","Over 600 professional AI tools across Writing, Voice, Image, Video, Motion and Enhancement. Click any tool card, describe what you want, hit AI CREATE."],
+              ["PAGE 6 — VOICE ENGINE","55 cinematic voice characters. Select your voice, paste your script, set your sliders — Speed, Pitch, Pause — then hit PREPARE & SPEAK. James is your primary documentary narrator."],
+              ["PAGE 8 — VIDEO GENERATOR","The heart of your studio. Describe your scene in plain English. Hit GENERATE VIDEO CLIP. The canvas engine builds your cinematic environment automatically. Upload a reference image for mood and colour. Use QUICK PRESETS for instant scenes."],
+              ["PAGE 11 — UPLOAD MEDIA","Upload your own video, audio and image files. Drag and drop or click to browse. Everything lands in your Media Library."],
+              ["PAGE 13 — TIMELINE EDITOR","Drag your media clips onto the video, audio and title tracks. Build your film sequence. Hit RENDER when ready."],
+              ["PAGE 15 — AUDIO MIXER","Set your mix levels. Recommended documentary settings: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85."],
+              ["PAGE 16 — RENDER ENGINE","Choose your output quality up to 4K. Select frame rate and codec. Hit START RENDER. Your film renders directly in your browser."],
+              ["PAGE 17 — FILM PREVIEW","Watch your completed film in full. Full playback controls."],
+              ["PAGE 18 — EXPORT & DISTRIBUTE","Download your film to device. Share directly to YouTube, Instagram, TikTok, Facebook, LinkedIn, Vimeo and WhatsApp."],
+              ["PAGE 21 — AGENT GROK","Your 24/7 AI studio assistant. Ask anything about production, tools, pricing or workflow."],
+              ["MUSIC VIDEO STUDIO","Access from Page 6. Four-step wizard: Music → Vocals → Video → Generate. Enter your scene description on Step 4. Produces a complete music video production package."],
+              ["PRODUCTION WORKFLOW","Recommended order: Page 8 → Page 6 → Page 13 → Page 15 → Page 16 → Page 17 → Page 18."],
+            ].map(([t,d])=>(
               <div key={t} style={{borderBottom:`1px solid ${GOLDDIM}33`,paddingBottom:10,marginBottom:10}}>
                 <div style={{color:GOLD,fontWeight:900,fontSize:11,letterSpacing:2,marginBottom:4}}>{t}</div>
                 <div style={{color:WHITE,fontSize:13,lineHeight:1.7}}>{d}</div>
@@ -2400,16 +2448,21 @@ function P23({ go }) {
             ))}
           </div>
         )}
-        <div style={{...Card(),textAlign:"left",marginBottom:16}}>
+
+        {/* THANK YOU */}
+        <div style={{...Card(),textAlign:"left",marginBottom:16,border:`1px solid ${GOLDDIM}`}}>
           <h2 style={{color:GOLD,fontWeight:900,fontSize:15,textAlign:"center",marginBottom:14,letterSpacing:3}}>✦ A SPECIAL THANK YOU ✦</h2>
           <p style={{color:WHITE,fontSize:14,lineHeight:1.9}}>From the bottom of my heart — <strong style={{color:GOLD}}>thank you.</strong> Whether you are here to capture precious family memories, tell a story that has lived in your head for years, or simply explore what is possible when creativity meets technology — you chose to do it with MandaStrong Studio.</p>
           <p style={{color:WHITE,fontSize:14,lineHeight:1.9}}>Every subscription supports <strong style={{color:GOLD}}>veterans mental health initiatives</strong> and <strong style={{color:GOLD}}>school anti-bullying programs</strong> — causes deeply personal to me as the author of <em>Doxy the School Bully.</em></p>
-          <p style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:2}}>— AMANDA STRONG</p>
-          <p style={{color:WHITE,fontSize:12,letterSpacing:1}}>Founder, MandaStrong Studio · MandaStrong1.Etsy.com</p>
+          <p style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:2,marginBottom:4}}>— AMANDA WOOLLEY</p>
+          <p style={{color:WHITE,fontSize:12,letterSpacing:1}}>Founder · MandaStrong Studio · MandaStrong1.Etsy.com</p>
         </div>
+
+        {/* BUTTONS */}
         <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
+          <button onClick={()=>go(1)} style={{...G("out",false)}}>⬅ BACK TO HOME</button>
           <button onClick={()=>window.open("https://MandaStrong1.Etsy.com","_blank")} style={{...G("out",false)}}>VISIT ETSY STORE</button>
-          <button onClick={()=>window.close()} style={{...G("gold",false)}}>EXIT APP</button>
+          <button onClick={()=>go(4)} style={{...G("gold",false)}}>START CREATING ✦</button>
         </div>
       </div>
     </div>
