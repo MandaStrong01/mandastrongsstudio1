@@ -394,8 +394,10 @@ function MusicVideoStudio({ onClose, onSave }) {
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState(null);
   const [config, setConfig] = useState({
-    title:"",artist:"",genre:"",subgenre:"",mood:"",tempo:"",key:"",structure:"",vocals:"",instruments:[],vocalStyle:"",lyrics:"",lyricsMode:"write",videoStyle:"",colorGrade:"",visualMood:"",effects:[],cuts:"",aspectRatio:"16:9",duration:"",extras:[],
+    title:"",artist:"",genre:"",subgenre:"",mood:"",tempo:"",key:"",structure:"",vocals:"",instruments:[],vocalStyle:"",lyrics:"",lyricsMode:"write",videoStyle:"",colorGrade:"",visualMood:"",effects:[],cuts:"",aspectRatio:"16:9",duration:"",extras:[],audioUrl:"",audioName:"",
   });
+  const audioRef = useRef(null);
+  const [audioPlaying, setAudioPlaying] = useState(false);
 
   const set = (k,v) => setConfig(p=>({...p,[k]:v}));
   const toggle = (k,v) => setConfig(p=>({...p,[k]:p[k].includes(v)?p[k].filter(x=>x!==v):[...p[k],v]}));
@@ -515,6 +517,35 @@ Provide:
                 <div>{label("SONG TITLE")}<input value={config.title} onChange={e=>set("title",e.target.value)} placeholder="My Song Title..." style={inp}/></div>
                 <div>{label("ARTIST / BAND NAME")}<input value={config.artist} onChange={e=>set("artist",e.target.value)} placeholder="Artist Name..." style={inp}/></div>
               </div>
+              {label("UPLOAD YOUR AUDIO TRACK")}
+              <input ref={audioRef} type="file" accept="audio/*" style={{display:"none"}} onChange={e=>{
+                const f=e.target.files&&e.target.files[0];
+                if(f){set("audioUrl",URL.createObjectURL(f));set("audioName",f.name);}
+              }}/>
+              {config.audioUrl?(
+                <div style={{background:"#000",border:`1px solid ${GOLD}`,padding:"12px 14px",marginBottom:10,display:"flex",alignItems:"center",gap:10}}>
+                  <span style={{fontSize:18}}>🎵</span>
+                  <div style={{flex:1}}>
+                    <div style={{color:GOLD,fontSize:12,fontWeight:900}}>{config.audioName||"Audio Track"}</div>
+                    <div style={{color:DIM,fontSize:10}}>Ready to use in your music video</div>
+                  </div>
+                  <button onClick={()=>{
+                    const a=new Audio(config.audioUrl);
+                    if(audioPlaying){a.pause();setAudioPlaying(false);}
+                    else{a.play();setAudioPlaying(true);a.onended=()=>setAudioPlaying(false);}
+                  }} style={{...G("out",true),fontSize:10}}>{audioPlaying?"⏹ STOP":"▶ PLAY"}</button>
+                  <button onClick={()=>{set("audioUrl","");set("audioName","");}} style={{background:"none",border:`1px solid ${GOLDDIM}`,color:GOLD,padding:"4px 8px",cursor:"pointer",fontSize:10}}>✕</button>
+                </div>
+              ):(
+                <div onClick={()=>audioRef.current&&audioRef.current.click()}
+                  style={{border:`2px dashed ${GOLDDIM}`,padding:"16px",textAlign:"center",cursor:"pointer",marginBottom:10}}
+                  onMouseEnter={e=>e.currentTarget.style.borderColor=GOLD}
+                  onMouseLeave={e=>e.currentTarget.style.borderColor=GOLDDIM}>
+                  <div style={{fontSize:24,marginBottom:6}}>🎵</div>
+                  <div style={{color:WHITE,fontSize:12,fontWeight:700,letterSpacing:1}}>CLICK TO UPLOAD YOUR SONG</div>
+                  <div style={{color:DIM,fontSize:10,marginTop:3}}>MP3 · WAV · AAC · M4A</div>
+                </div>
+              )}
               {label("GENRE")}{sel("genre",GENRES)}
               {label("MOOD")}{sel("mood",MOODS)}
               {label("TEMPO")}{sel("tempo",TEMPOS)}
@@ -923,300 +954,484 @@ function P8VideoGenerator({ onSave, mediaLib }) {
   const [prompt,setPrompt]=useState("");
   const [title,setTitle]=useState("");
   const [duration,setDuration]=useState(30);
-  const [style,setStyle]=useState("cinematic");
   const [colorGrade,setColorGrade]=useState("gold");
   const [generating,setGenerating]=useState(false);
   const [progress,setProgress]=useState(0);
   const [log,setLog]=useState([]);
   const [videoUrl,setVideoUrl]=useState("");
-  const [aiScript,setAiScript]=useState("");
-  const [aiLoading,setAiLoading]=useState(false);
   const [saved,setSaved]=useState(false);
   const [showText,setShowText]=useState(false);
-  const [refImage,setRefImage]=useState(null);
   const [refImageUrl,setRefImageUrl]=useState("");
   const [showLibrary,setShowLibrary]=useState(false);
-  const [activeTab,setActiveTab]=useState("describe");
   const [fps,setFps]=useState(30);
   const [resolution,setResolution]=useState("1080p");
-  const [overlayAsset,setOverlayAsset]=useState(null);
+  const [genre,setGenre]=useState("cinematic");
+  const [aiScene,setAiScene]=useState(null);
+  const [aiLoading,setAiLoading]=useState(false);
   const refImgRef=useRef(null);
   const videoRef=useRef(null);
   const addLog=(msg)=>setLog(p=>[...p,msg]);
 
-  const STYLES=[
-    {id:"cinematic",label:"Cinematic",desc:"Dark dramatic gold titles"},
-    {id:"documentary",label:"Documentary",desc:"Clean authoritative"},
-    {id:"epic",label:"Epic",desc:"Grand sweeping motion"},
-    {id:"intimate",label:"Intimate",desc:"Soft warm personal"},
-    {id:"abstract",label:"Abstract",desc:"Flowing colour art"},
-    {id:"title_sequence",label:"Title Sequence",desc:"Broadcast titles"},
-  ];
   const GRADES=[
     {id:"gold",label:"Gold & Black",bg:"#000000",fg:"#e8c96d",accent:"#a07820"},
     {id:"teal",label:"Teal & Dark",bg:"#0a1a1a",fg:"#4dd9c0",accent:"#1a5a52"},
     {id:"crimson",label:"Crimson",bg:"#0a0000",fg:"#ff4444",accent:"#880000"},
-    {id:"silver",label:"Silver Screen",bg:"#111",fg:"#ccc",accent:"#888"},
+    {id:"silver",label:"Silver Screen",bg:"#111",fg:"#cccccc",accent:"#888888"},
     {id:"amber",label:"Warm Amber",bg:"#0a0800",fg:"#ffaa33",accent:"#885500"},
     {id:"arctic",label:"Arctic Blue",bg:"#000a1a",fg:"#88ccff",accent:"#003366"},
+    {id:"neon",label:"Neon Night",bg:"#000000",fg:"#ff00ff",accent:"#00ffff"},
+    {id:"forest",label:"Forest Green",bg:"#000a00",fg:"#44ff88",accent:"#004420"},
   ];
+
+  const GENRES=[
+    {id:"cinematic",label:"🎬 Cinematic",desc:"Dark dramatic"},
+    {id:"documentary",label:"📽 Documentary",desc:"Clean authoritative"},
+    {id:"horror",label:"👁 Horror",desc:"Dark disturbing"},
+    {id:"romance",label:"💛 Romance",desc:"Warm intimate"},
+    {id:"scifi",label:"🚀 Sci-Fi",desc:"Futuristic epic"},
+    {id:"comedy",label:"😄 Comedy",desc:"Bright energetic"},
+    {id:"action",label:"⚡ Action",desc:"Fast intense"},
+    {id:"animation",label:"✨ Animation",desc:"Vivid stylised"},
+    {id:"musical",label:"🎵 Musical",desc:"Rhythmic vibrant"},
+    {id:"thriller",label:"🔪 Thriller",desc:"Tense atmospheric"},
+    {id:"nature",label:"🌿 Nature",desc:"Organic flowing"},
+    {id:"historical",label:"🏛 Historical",desc:"Epic period"},
+  ];
+
   const grade=GRADES.find(g=>g.id===colorGrade)||GRADES[0];
 
-  const getAIScene=async()=>{
+  const analyseWithClaude=async()=>{
     if(!prompt.trim())return;
-    setAiLoading(true);
-    setAiScript("");
+    setAiLoading(true);setAiScene(null);
     try{
-      const res=await fetch(EDGE_FN,{
-        method:"POST",
+      const res=await fetch(EDGE_FN,{method:"POST",
         headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPA_KEY,"apikey":SUPA_KEY},
-        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,
-          messages:[{role:"user",content:`You are a cinematic title card writer for a documentary. Write 6 short dramatic lines of on-screen text for this scene: "${prompt}". Each line must be 3-7 words. Punchy. Cinematic. No punctuation. Return ONLY the 6 lines, one per line, nothing else.`}]})
-      });
+        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,
+          messages:[{role:"user",content:`You are a professional cinema director analysing a scene prompt to build a canvas-rendered film clip.
+
+PROMPT: "${prompt}"
+GENRE: ${genre}
+COLOUR GRADE: ${colorGrade}
+
+Return ONLY valid JSON, no markdown, no explanation:
+{
+  "sceneType": "cosmic|city|dawn|landscape|interior|abstract",
+  "skyColor": "#hex",
+  "groundColor": "#hex", 
+  "primaryColor": "#hex",
+  "accentColor": "#hex",
+  "starField": true|false,
+  "earthGlow": true|false,
+  "cityLights": true|false,
+  "humanFigure": true|false,
+  "silhouette": "none|person|city",
+  "fogLayer": true|false,
+  "lightBeams": true|false,
+  "rays": true|false,
+  "sunRise": true|false,
+  "groundLayer": true|false,
+  "horizon": true|false,
+  "particles": true|false,
+  "particleCount": 60,
+  "waves": false,
+  "titleLines": ["line 1","line 2","line 3"],
+  "mood": "description of mood",
+  "cinematicNote": "one sentence director note"
+}`}]})});
       const d=await res.json();
-      if(d.content&&d.content[0]){setAiScript(d.content[0].text.trim());}
-      else if(d.error){setAiScript("API error: "+d.error.message);}
-    }catch(e){setAiScript("Connection error — check internet connection.");}
+      if(d.content&&d.content[0]){
+        try{
+          const txt=d.content[0].text.trim().replace(/```json|```/g,"").trim();
+          const parsed=JSON.parse(txt);
+          setAiScene(parsed);
+          addLog("✦ Claude analysed: "+parsed.sceneType+" · "+parsed.mood);
+          addLog("  "+parsed.cinematicNote);
+        }catch(e){addLog("Scene analysed — using smart defaults");}
+      }
+    }catch(e){addLog("Analysing from prompt directly...");}
     setAiLoading(false);
   };
 
   const generateVideo=async()=>{
-    if(!prompt.trim()&&!aiScript.trim()){alert("Describe your scene first");return;}
+    if(!prompt.trim()){alert("Describe your scene first");return;}
     setGenerating(true);setProgress(0);setLog([]);setVideoUrl("");setSaved(false);
 
     const canvas=canvasRef.current;
-    const W=1920,H=1080;
-    canvas.width=W;canvas.height=H;
+    const dims=resolution==="4K"?{w:3840,h:2160}:resolution==="720p"?{w:1280,h:720}:{w:1920,h:1080};
+    canvas.width=dims.w;canvas.height=dims.h;
+    const W=dims.w,H=dims.h;
     const ctx=canvas.getContext("2d");
-    const lines=aiScript.trim()?aiScript.split("\n").filter(l=>l.trim()):[title||"MandaStrong Studio",prompt.slice(0,60)];
-    const fps=30,totalFrames=duration*fps;
+    const totalFrames=duration*fps;
 
-    addLog("Analysing scene flags...");
+    addLog("🎬 MandaStrong Cinema Engine initialising...");
+    addLog("📐 "+W+"×"+H+" · "+fps+"fps · "+duration+"s · "+genre);
 
-    // Parse flags directly from prompt
-    const fullText=(prompt+" "+(aiScript||"")).toLowerCase();
-    let scene={
-      bgColors:["#000000","#0a0800"],accentColor:"#a07820",particles:true,particleCount:80,
-      waves:false,rays:false,silhouette:"none",mood:"dark",vignette:true,scanlines:false,letterbox:true,
-      horizon:false,cityLights:false,starField:false,earthGlow:false,sunRise:false,fogLayer:false,
-      lightBeams:false,groundLayer:false,humanFigure:false,sceneType:"abstract",
-      primaryColor:"#e8c96d",skyColor:"#000000",groundColor:"#0a0500",
-    };
-    // Match sceneType with or without space, any case
-    const ft=fullText.replace(/\s+/g," ");
-    if(ft.includes("scenetype city")||ft.includes("scene type city")||ft.includes("city street")||ft.includes("city at night")||ft.includes("city lights"))scene.sceneType="city";
-    else if(ft.includes("scenetype cosmic")||ft.includes("scene type cosmic")||ft.includes("deep space")||ft.includes("from space")||ft.includes("earth glow")||ft.includes("earthglow"))scene.sceneType="cosmic";
-    else if(ft.includes("scenetype dawn")||ft.includes("scene type dawn")||ft.includes("golden dawn")||ft.includes("sun rise")||ft.includes("sunrise"))scene.sceneType="dawn";
-    else if(ft.includes("scenetype landscape")||ft.includes("scene type landscape")||ft.includes("open ground")||ft.includes("open landscape"))scene.sceneType="landscape";
-    else if(ft.includes("scenetype interior")||ft.includes("scene type interior")||ft.includes("total darkness")||ft.includes("interior scene"))scene.sceneType="interior";
-    if(ft.includes("citylights true")||ft.includes("city lights true")||ft.includes("lit windows")||ft.includes("every window"))scene.cityLights=true;
-    if(ft.includes("starfield true")||ft.includes("star field true")||ft.includes("stars everywhere")||ft.includes("stars filling")||ft.includes("full of stars"))scene.starField=true;
-    if(ft.includes("earthglow true")||ft.includes("earth glow true")||ft.includes("earth glowing")||ft.includes("planet glowing")||ft.includes("from deep space"))scene.earthGlow=true;
-    if(ft.includes("sunrise true")||ft.includes("sun rise true")||ft.includes("sun rising")||ft.includes("golden dawn"))scene.sunRise=true;
-    if(ft.includes("humanfigure true")||ft.includes("human figure true")||ft.includes("human figures")||ft.includes("crowd of human")||ft.includes("single human"))scene.humanFigure=true;
-    if(ft.includes("foglayer true")||ft.includes("fog layer true")||ft.includes("fog rolling")||ft.includes("heavy fog")||ft.includes("deep fog"))scene.fogLayer=true;
-    if(ft.includes("lightbeams true")||ft.includes("light beams true")||ft.includes("light beam")||ft.includes("light beams"))scene.lightBeams=true;
-    if(ft.includes("rays true")||ft.includes("rays of light")||ft.includes("light rays"))scene.rays=true;
-    if(ft.includes("groundlayer true")||ft.includes("ground layer true")||ft.includes("ground level")||ft.includes("ground visible"))scene.groundLayer=true;
-    if(ft.includes("horizon true")||ft.includes("flat horizon")||ft.includes("horizon line")||ft.includes("horizon of buildings")||ft.includes("horizon behind"))scene.horizon=true;
-    if(ft.includes("silhouette crowd")||ft.includes("crowd silhouetted")||ft.includes("crowd of human"))scene.silhouette="city";
-    if(ft.includes("silhouette person")||ft.includes("single human figure")||ft.includes("single figure"))scene.silhouette="person";
-    if(ft.includes("silhouette city"))scene.silhouette="city";
-    if(ft.includes("particles false")||ft.includes("particlecount 0"))scene.particles=false;
-    const pcMatch=fullText.match(/particlecount\s+(\d+)/);
-    if(pcMatch)scene.particleCount=parseInt(pcMatch[1]);
-    const skyMatch=fullText.match(/skycolor\s+(#[0-9a-f]{6})/i);
-    if(skyMatch)scene.skyColor=skyMatch[1];
-    const gndMatch=fullText.match(/groundcolor\s+(#[0-9a-f]{6})/i);
-    if(gndMatch)scene.groundColor=gndMatch[1];
-    const priMatch=fullText.match(/primarycolor\s+(#[0-9a-f]{6})/i);
-    if(priMatch)scene.primaryColor=priMatch[1];
-    const accMatch=fullText.match(/accentcolor\s+(#[0-9a-f]{6})/i);
-    if(accMatch)scene.accentColor=accMatch[1];
-    addLog("Scene: "+scene.sceneType+" city:"+scene.cityLights+" human:"+scene.humanFigure+" earth:"+scene.earthGlow+" stars:"+scene.starField+" dawn:"+scene.sunRise);
+    // Build scene from Claude analysis OR smart parse
+    let scene=aiScene||{};
+    if(!aiScene){
+      addLog("🔍 Analysing scene from prompt...");
+      const ft=prompt.toLowerCase().replace(/\s+/g," ");
+      scene.sceneType=ft.includes("space")||ft.includes("planet")||ft.includes("galaxy")||ft.includes("cosmos")?"cosmic":
+        ft.includes("city")||ft.includes("street")||ft.includes("building")||ft.includes("urban")?"city":
+        ft.includes("dawn")||ft.includes("sunrise")||ft.includes("golden hour")||ft.includes("morning")?"dawn":
+        ft.includes("dark")||ft.includes("alone")||ft.includes("interior")||ft.includes("room")||ft.includes("spotlight")?"interior":
+        ft.includes("landscape")||ft.includes("field")||ft.includes("horizon")||ft.includes("open ground")?"landscape":"abstract";
+      scene.starField=ft.includes("star")||ft.includes("space")||ft.includes("galaxy")||ft.includes("night sky");
+      scene.earthGlow=ft.includes("earth")||ft.includes("planet")||ft.includes("globe")||ft.includes("from space");
+      scene.cityLights=ft.includes("window")||ft.includes("city light")||ft.includes("lit building")||ft.includes("every light");
+      scene.humanFigure=ft.includes("person")||ft.includes("figure")||ft.includes("human")||ft.includes("crowd")||ft.includes("people")||ft.includes("man ")||ft.includes("woman ");
+      scene.silhouette=ft.includes("crowd")||ft.includes("people")||ft.includes("many")?"city":ft.includes("alone")||ft.includes("single")||ft.includes("one person")?"person":"none";
+      scene.fogLayer=ft.includes("fog")||ft.includes("mist")||ft.includes("haze")||ft.includes("smoke");
+      scene.lightBeams=ft.includes("beam")||ft.includes("shaft")||ft.includes("spotlight")||ft.includes("ray")||ft.includes("light from");
+      scene.rays=ft.includes("ray")||ft.includes("light expand")||ft.includes("radiating");
+      scene.sunRise=ft.includes("dawn")||ft.includes("sunrise")||ft.includes("sun rising")||ft.includes("golden dawn");
+      scene.groundLayer=ft.includes("ground")||ft.includes("earth")||ft.includes("floor")||ft.includes("field");
+      scene.horizon=ft.includes("horizon")||ft.includes("skyline")||ft.includes("far distance");
+      scene.particles=true;
+      scene.particleCount=ft.includes("dense")||ft.includes("many")||ft.includes("full")?100:ft.includes("sparse")||ft.includes("few")?20:60;
+      scene.waves=ft.includes("ocean")||ft.includes("sea")||ft.includes("water")||ft.includes("wave");
+      // Genre-based colour defaults
+      const genreColors={
+        cinematic:{sky:"#000000",ground:"#0a0500",primary:"#e8c96d",accent:"#a07820"},
+        documentary:{sky:"#050508",ground:"#080508",primary:"#d4c9a8",accent:"#888888"},
+        horror:{sky:"#020008",ground:"#050003",primary:"#cc2222",accent:"#440000"},
+        romance:{sky:"#080010",ground:"#0a0508",primary:"#ff88aa",accent:"#cc4466"},
+        scifi:{sky:"#000008",ground:"#000a0a",primary:"#44ccff",accent:"#0044aa"},
+        comedy:{sky:"#020510",ground:"#050a05",primary:"#ffdd44",accent:"#ff8822"},
+        action:{sky:"#050000",ground:"#0a0300",primary:"#ff6600",accent:"#cc2200"},
+        animation:{sky:"#000510",ground:"#050010",primary:"#aa44ff",accent:"#ff44aa"},
+        musical:{sky:"#000508",ground:"#050008",primary:"#ff44cc",accent:"#44ffcc"},
+        thriller:{sky:"#000000",ground:"#020202",primary:"#445566",accent:"#223344"},
+        nature:{sky:"#000a05",ground:"#030a00",primary:"#44ff88",accent:"#228844"},
+        historical:{sky:"#050300",ground:"#0a0700",primary:"#ccaa44",accent:"#886622"},
+      };
+      const gc=genreColors[genre]||genreColors.cinematic;
+      scene.skyColor=scene.skyColor||gc.sky;
+      scene.groundColor=scene.groundColor||gc.ground;
+      scene.primaryColor=scene.primaryColor||gc.primary;
+      scene.accentColor=scene.accentColor||gc.accent;
+    }
 
-    addLog("Building cinematic scene...");
-    addLog(`Resolution: ${W}x${H} · ${fps}fps · ${duration}s`);
+    // Override with colour grade if no Claude analysis
+    if(!aiScene){
+      scene.primaryColor=grade.fg;
+      scene.accentColor=grade.accent;
+    }
+
+    addLog("Scene: "+scene.sceneType+" · human:"+scene.humanFigure+" · city:"+scene.cityLights+" · stars:"+scene.starField);
 
     const mimeType=MediaRecorder.isTypeSupported("video/webm;codecs=vp9")?"video/webm;codecs=vp9":"video/webm";
-    const stream=canvas.captureStream(30);
-    const recorder=new MediaRecorder(stream,{mimeType,videoBitsPerSecond:25000000});
+    const stream=canvas.captureStream(fps);
+    const recorder=new MediaRecorder(stream,{mimeType,videoBitsPerSecond:resolution==="4K"?40000000:12000000});
     const chunks=[];
     recorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
     recorder.start(100);
-    addLog("Recording started...");
+    addLog("● Recording...");
 
-    const parseHex=(hex,fallback)=>{
-      const h=(hex||fallback||"#888888").replace("#","");
+    const parseHex=(hex)=>{
+      const h=(hex||"#888888").replace("#","");
       return[parseInt(h.slice(0,2),16)||0,parseInt(h.slice(2,4),16)||0,parseInt(h.slice(4,6),16)||0];
     };
     const [fgR,fgG,fgB]=parseHex(scene.primaryColor||grade.fg);
     const [acR,acG,acB]=parseHex(scene.accentColor||grade.accent);
-    const [skyR,skyG,skyB]=parseHex(scene.skyColor||scene.bgColors?.[0]||grade.bg);
+    const [skyR,skyG,skyB]=parseHex(scene.skyColor||grade.bg);
     const [gndR,gndG,gndB]=parseHex(scene.groundColor||"#0a0500");
-    const numParticles=scene.particleCount||60;
+    const numP=Math.min(200,scene.particleCount||60);
 
-    const stars=Array.from({length:200},(_,i)=>({
+    // Reference image
+    let refImg=null;
+    if(refImageUrl){
+      try{
+        refImg=new Image();
+        await new Promise(r=>{refImg.onload=r;refImg.onerror=r;refImg.src=refImageUrl;});
+      }catch(e){refImg=null;}
+    }
+
+    const stars=Array.from({length:300},(_,i)=>({
       x:(i*2791+i*i*37)%W,y:(i*1847+i*i*13)%H,
-      r:i%7===0?1.8:i%3===0?1.2:0.7,twinkleOffset:i*0.7,
+      r:i%7===0?2.2:i%3===0?1.4:0.8,tw:i*0.7,speed:0.3+i%3*0.2,
     }));
-
-    const buildings=Array.from({length:28},(_,i)=>({
-      x:i*(W/27),w:18+i%5*22,h:H*0.08+i%9*H*0.07,
+    const buildings=Array.from({length:40},(_,i)=>({
+      x:i*(W/39),w:14+i%7*28,h:H*0.06+i%11*H*0.09,
     }));
+    // Film grain pattern
+    const grainCanvas=document.createElement("canvas");
+    grainCanvas.width=W;grainCanvas.height=H;
+    const grainCtx=grainCanvas.getContext("2d");
+    const grainData=grainCtx.createImageData(W,H);
+    for(let i=0;i<grainData.data.length;i+=4){
+      const v=Math.random()*30-15;
+      grainData.data[i]=128+v;grainData.data[i+1]=128+v;grainData.data[i+2]=128+v;grainData.data[i+3]=22;
+    }
+    grainCtx.putImageData(grainData,0,0);
 
     const drawFrame=(frame)=>{
       const t=frame/totalFrames;
       const sec=frame/fps;
+      const ease=x=>x<0.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
 
+      // Background gradient
       const bgGrad=ctx.createLinearGradient(0,0,0,H);
       bgGrad.addColorStop(0,`rgb(${skyR},${skyG},${skyB})`);
       bgGrad.addColorStop(1,`rgb(${gndR},${gndG},${gndB})`);
       ctx.fillStyle=bgGrad;ctx.fillRect(0,0,W,H);
 
+      // Reference image as background layer
+      if(refImg){
+        ctx.save();ctx.globalAlpha=0.18;
+        ctx.drawImage(refImg,0,0,W,H);ctx.restore();
+      }
+
+      // STARS
       if(scene.starField){
         stars.forEach(s=>{
-          const tw=0.3+Math.sin(sec*1.1+s.twinkleOffset)*0.25;
+          const tw=0.25+Math.sin(sec*s.speed+s.tw)*0.3;
           ctx.fillStyle=`rgba(255,255,240,${Math.max(0,tw)})`;
           ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
         });
-      }
-
-      if(scene.earthGlow){
-        const eg=ctx.createRadialGradient(W*0.5,H*0.85,H*0.05,W*0.5,H*0.85,H*0.55);
-        eg.addColorStop(0,`rgba(30,80,180,0.55)`);eg.addColorStop(1,`rgba(0,0,0,0)`);
-        ctx.fillStyle=eg;ctx.fillRect(0,H*0.3,W,H*0.7);
-        ctx.save();ctx.beginPath();ctx.arc(W*0.5,H*1.15,H*0.72,Math.PI,0);
-        ctx.strokeStyle=`rgba(60,120,220,0.5)`;ctx.lineWidth=3;ctx.stroke();ctx.restore();
-      }
-
-      if(scene.sunRise){
-        const sp=Math.min(1,t*1.5);
-        const sunY=H*(0.75-sp*0.25);
-        const sunGlow=ctx.createRadialGradient(W*0.5,sunY,0,W*0.5,sunY,H*0.35);
-        sunGlow.addColorStop(0,`rgba(255,200,80,${0.7*sp})`);sunGlow.addColorStop(1,`rgba(0,0,0,0)`);
-        ctx.fillStyle=sunGlow;ctx.fillRect(0,0,W,H);
-      }
-
-      if(scene.rays||scene.lightBeams){
-        for(let i=0;i<6;i++){
-          const angle=-0.5+i*0.18+Math.sin(sec*0.2+i)*0.04;
-          ctx.save();ctx.translate(W*0.5,0);ctx.rotate(angle);
-          const ray=ctx.createLinearGradient(0,0,0,H*1.5);
-          ray.addColorStop(0,`rgba(${fgR},${fgG},${fgB},0.12)`);ray.addColorStop(1,`rgba(${fgR},${fgG},${fgB},0)`);
-          ctx.fillStyle=ray;ctx.fillRect(-60,0,120,H*1.5);ctx.restore();
+        // Nebula clouds
+        for(let n=0;n<3;n++){
+          const nx=W*(0.2+n*0.3),ny=H*(0.2+n*0.15);
+          const ng=ctx.createRadialGradient(nx,ny,0,nx,ny,W*0.18);
+          ng.addColorStop(0,`rgba(${fgR},${fgG},${fgB},0.04)`);
+          ng.addColorStop(1,`rgba(0,0,0,0)`);
+          ctx.fillStyle=ng;ctx.fillRect(0,0,W,H);
         }
       }
 
+      // EARTH GLOW
+      if(scene.earthGlow){
+        const earthY=H*0.78+Math.sin(sec*0.08)*H*0.015;
+        const eg=ctx.createRadialGradient(W*0.5,earthY,H*0.04,W*0.5,earthY,H*0.52);
+        eg.addColorStop(0,`rgba(30,80,180,0.65)`);
+        eg.addColorStop(0.4,`rgba(20,60,140,0.3)`);
+        eg.addColorStop(1,`rgba(0,0,0,0)`);
+        ctx.fillStyle=eg;ctx.fillRect(0,H*0.28,W,H*0.72);
+        // Planet arc
+        ctx.save();ctx.beginPath();
+        ctx.arc(W*0.5,H*1.12,H*0.75,Math.PI*1.1,Math.PI*1.9);
+        ctx.strokeStyle=`rgba(80,140,255,0.55)`;ctx.lineWidth=4;ctx.stroke();
+        // Atmosphere glow
+        ctx.beginPath();
+        ctx.arc(W*0.5,H*1.12,H*0.77,Math.PI*1.08,Math.PI*1.92);
+        ctx.strokeStyle=`rgba(120,180,255,0.2)`;ctx.lineWidth=12;ctx.stroke();
+        ctx.restore();
+      }
+
+      // SUN RISE
+      if(scene.sunRise){
+        const sp=Math.min(1,ease(t*1.4));
+        const sunY=H*(0.82-sp*0.32);
+        const sunGlow=ctx.createRadialGradient(W*0.5,sunY,0,W*0.5,sunY,H*0.55);
+        sunGlow.addColorStop(0,`rgba(255,220,100,${0.85*sp})`);
+        sunGlow.addColorStop(0.3,`rgba(255,150,30,${0.4*sp})`);
+        sunGlow.addColorStop(1,`rgba(0,0,0,0)`);
+        ctx.fillStyle=sunGlow;ctx.fillRect(0,0,W,H);
+        // Sun disc
+        if(sp>0.3){
+          const sd=ctx.createRadialGradient(W*0.5,sunY,0,W*0.5,sunY,H*0.04);
+          sd.addColorStop(0,`rgba(255,255,200,${sp})`);
+          sd.addColorStop(1,`rgba(255,200,50,0)`);
+          ctx.fillStyle=sd;ctx.fillRect(0,0,W,H);
+        }
+      }
+
+      // LIGHT RAYS
+      if(scene.rays||scene.lightBeams){
+        const numRays=scene.lightBeams?8:5;
+        for(let i=0;i<numRays;i++){
+          const angle=-0.6+i*(1.2/numRays)+Math.sin(sec*0.15+i)*0.03;
+          const alpha=0.06+Math.sin(sec*0.3+i*0.8)*0.04;
+          ctx.save();ctx.translate(W*0.5,0);ctx.rotate(angle);
+          const ray=ctx.createLinearGradient(0,0,0,H*1.8);
+          ray.addColorStop(0,`rgba(${fgR},${fgG},${fgB},${alpha})`);
+          ray.addColorStop(0.5,`rgba(${fgR},${fgG},${fgB},${alpha*0.5})`);
+          ray.addColorStop(1,`rgba(${fgR},${fgG},${fgB},0)`);
+          ctx.fillStyle=ray;
+          const w=80+i*20;
+          ctx.fillRect(-w/2,0,w,H*1.8);
+          ctx.restore();
+        }
+      }
+
+      // WAVES
       if(scene.waves){
-        for(let w=0;w<3;w++){
-          ctx.strokeStyle=`rgba(${fgR},${fgG},${fgB},${0.07-w*0.02})`;
-          ctx.lineWidth=1+w;ctx.beginPath();
-          for(let x=0;x<W;x+=2){
-            const waveY=H*(0.62+w*0.08)+Math.sin(x*0.006+sec*(0.8+w*0.3)+w)*H*(0.025+w*0.01);
-            x===0?ctx.moveTo(x,waveY):ctx.lineTo(x,waveY);
+        for(let w=0;w<4;w++){
+          const wAlpha=0.08-w*0.015;
+          ctx.strokeStyle=`rgba(${fgR},${fgG},${fgB},${wAlpha})`;
+          ctx.lineWidth=1.5+w;ctx.beginPath();
+          for(let x=0;x<=W;x+=3){
+            const wy=H*(0.55+w*0.09)+Math.sin(x*0.005+sec*(0.6+w*0.25)+w*1.2)*H*(0.028+w*0.012);
+            x===0?ctx.moveTo(x,wy):ctx.lineTo(x,wy);
           }
           ctx.stroke();
         }
+        // Water shimmer
+        for(let s=0;s<30;s++){
+          const sx=(s*W/30+sec*20)%W;
+          const sy=H*0.58+Math.sin(s*2.1+sec)*H*0.06;
+          ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},${0.04+Math.sin(s+sec*2)*0.03})`;
+          ctx.fillRect(sx,sy,3+s%5*2,1);
+        }
       }
 
-      const sil=scene.silhouette||"none";
-      if(sil==="city"||scene.cityLights){
-        ctx.fillStyle="rgba(0,0,0,0.88)";
-        buildings.forEach(b=>{ctx.fillRect(b.x,H-b.h,b.w,b.h);});
-        if(scene.cityLights){
-          buildings.forEach(b=>{
-            for(let wy=H-b.h+10;wy<H-10;wy+=18){
-              for(let wx=b.x+4;wx<b.x+b.w-4;wx+=12){
-                if(Math.sin(wx*5+wy*3+frame*0.015)>0.15){
-                  const lit=0.3+Math.sin(wx*7+wy*11+sec*0.5)*0.25;
-                  ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},${Math.max(0,lit)})`;
-                  ctx.fillRect(wx,wy,7,9);
+      // CITY BUILDINGS
+      if(scene.sceneType==="city"||scene.cityLights||scene.silhouette==="city"){
+        // Building silhouettes
+        ctx.fillStyle="rgba(0,0,0,0.92)";
+        buildings.forEach(b=>{
+          ctx.fillRect(b.x,H-b.h,b.w,b.h);
+          // Window rows
+          if(scene.cityLights){
+            for(let wy=H-b.h+8;wy<H-8;wy+=16){
+              for(let wx=b.x+4;wx<b.x+b.w-6;wx+=10){
+                if(Math.sin(wx*7+wy*5+frame*0.012)>0.05){
+                  const lit=0.25+Math.sin(wx*11+wy*7+sec*0.4)*0.3;
+                  const flicker=Math.random()>0.998?0:1;
+                  ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},${Math.max(0,lit)*flicker})`;
+                  ctx.fillRect(wx,wy,6,8);
                 }
               }
             }
-          });
+          }
+        });
+        // Street level glow
+        if(scene.groundLayer){
+          const sg=ctx.createLinearGradient(0,H*0.88,0,H);
+          sg.addColorStop(0,`rgba(${fgR},${fgG},${fgB},0.06)`);
+          sg.addColorStop(1,`rgba(0,0,0,0)`);
+          ctx.fillStyle=sg;ctx.fillRect(0,H*0.88,W,H*0.12);
         }
       }
 
-      if(sil==="mountain"){
-        ctx.fillStyle="rgba(0,0,0,0.8)";ctx.beginPath();ctx.moveTo(0,H);
-        for(let x=0;x<=W;x+=W/80){
-          const mh=H*0.72-Math.abs(Math.sin(x*0.003+0.5)*H*0.2)-Math.abs(Math.sin(x*0.009)*H*0.09);
-          x===0?ctx.moveTo(x,mh):ctx.lineTo(x,mh);
-        }
-        ctx.lineTo(W,H);ctx.closePath();ctx.fill();
-      }
-
-      if(sil==="person"||scene.humanFigure){
-        const fx=W*0.5,fh=H*0.28,fw=fh*0.22;
-        ctx.fillStyle="rgba(0,0,0,0.85)";
-        ctx.fillRect(fx-fw/2,H*0.72-fh,fw,fh*0.65);
-        ctx.beginPath();ctx.arc(fx,H*0.72-fh,fw*0.5,0,Math.PI*2);ctx.fill();
-        const figGlow=ctx.createRadialGradient(fx,H*0.72-fh*0.5,0,fx,H*0.72-fh*0.5,fw*4);
-        figGlow.addColorStop(0,`rgba(${fgR},${fgG},${fgB},0.08)`);figGlow.addColorStop(1,`rgba(${fgR},${fgG},${fgB},0)`);
-        ctx.fillStyle=figGlow;ctx.fillRect(fx-fw*5,H*0.5,fw*10,H*0.4);
-      }
-
-      if(scene.particles){
-        for(let i=0;i<numParticles;i++){
-          const px=(i*2791+frame*(0.15+i%3*0.05))%W;
-          const py=(i*1847+frame*(0.08+i%2*0.03))%H;
-          const tw=0.15+Math.sin(frame*0.06+i*1.3)*0.2;
-          ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},${Math.max(0,tw)})`;
-          ctx.beginPath();ctx.arc(px,py,i%7===0?2.2:i%3===0?1.4:0.8,0,Math.PI*2);ctx.fill();
+      // LANDSCAPE GROUND
+      if(scene.groundLayer&&scene.sceneType!=="city"){
+        const gg=ctx.createLinearGradient(0,H*0.7,0,H);
+        gg.addColorStop(0,`rgba(${gndR},${gndG},${gndB},0)`);
+        gg.addColorStop(0.3,`rgba(${gndR+10},${gndG+8},${gndB+5},0.8)`);
+        gg.addColorStop(1,`rgba(${Math.min(255,gndR+20)},${Math.min(255,gndG+15)},${Math.min(255,gndB+10)},1)`);
+        ctx.fillStyle=gg;ctx.fillRect(0,H*0.7,W,H*0.3);
+        // Ground texture lines
+        for(let gl=0;gl<8;gl++){
+          const gy=H*(0.72+gl*0.036);
+          ctx.strokeStyle=`rgba(${fgR},${fgG},${fgB},${0.03-gl*0.003})`;
+          ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();
         }
       }
 
-      if(scene.vignette){
-        const vig=ctx.createRadialGradient(W/2,H/2,W*0.18,W/2,H/2,W*0.75);
-        vig.addColorStop(0,"rgba(0,0,0,0)");vig.addColorStop(1,"rgba(0,0,0,0.9)");
-        ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
-      }
-
-      for(let gi=0;gi<200;gi++){
-        const gx=Math.random()*W,gy=Math.random()*H;
-        ctx.fillStyle=`rgba(${Math.random()>0.5?255:0},${Math.random()>0.5?255:0},${Math.random()>0.5?255:0},${0.015+Math.random()*0.02})`;
-        ctx.fillRect(gx,gy,1,1);
-      }
-
-      if(scene.letterbox!==false){
-        ctx.fillStyle="#000";
-        ctx.fillRect(0,0,W,H*0.07);
-        ctx.fillRect(0,H*0.93,W,H*0.07);
-      }
-
-      const lineCount=lines.length;
-      if(showText&&t>0.86){
-        const alpha=(t-0.86)/0.14;
-        ctx.globalAlpha=alpha*0.95;
-        ctx.fillStyle=`rgba(0,0,0,${alpha})`;ctx.fillRect(0,0,W,H);
-        ctx.fillStyle=grade.fg;
-        ctx.font=`900 ${Math.round(H*0.036)}px Arial Black,Arial`;
-        ctx.textAlign="center";ctx.shadowColor=grade.fg;ctx.shadowBlur=25;
-        ctx.fillText("MANDASTRONG STUDIO",W/2,H*0.47);
-        ctx.shadowBlur=0;ctx.fillStyle=grade.accent;
-        ctx.font=`400 ${Math.round(H*0.019)}px Arial`;
-        ctx.fillText("CINEMA INTELLIGENCE PLATFORM",W/2,H*0.555);
-        ctx.globalAlpha=1;
-      }
-
-      if(showText) lines.forEach((line,i)=>{
-        const ls=(i+0.5)/(lineCount+1),le=ls+0.75/(lineCount+1);
-        if(t>=ls-0.04&&t<=le+0.07){
-          const lt=Math.min(1,(t-(ls-0.04))/0.06);
-          const fo=t>le?Math.max(0,1-(t-le)/0.06):1;
-          ctx.globalAlpha=lt*fo;
-          ctx.fillStyle=i===0?grade.fg:"#ffffff";
-          ctx.font=`${i===0?"900":"700"} ${Math.round(i===0?H*0.068:H*0.05)}px Arial Black,Arial`;
-          ctx.textAlign="center";ctx.shadowColor=grade.fg;ctx.shadowBlur=i===0?20:0;
-          ctx.fillText(line.toUpperCase(),W/2,H*0.5+(i-lineCount/2)*(H*0.09));
-          ctx.shadowBlur=0;ctx.globalAlpha=1;
+      // HUMAN FIGURE
+      if(scene.humanFigure||scene.silhouette==="person"){
+        const numFigs=scene.silhouette==="city"?1:1;
+        for(let fi=0;fi<numFigs;fi++){
+          const fx=W*(0.42+fi*0.16);
+          const fh=H*0.32;const fw=fh*0.18;
+          const fy=H*0.68-fh;
+          // Body glow
+          const fg2=ctx.createRadialGradient(fx,fy+fh*0.5,0,fx,fy+fh*0.5,fw*6);
+          fg2.addColorStop(0,`rgba(${fgR},${fgG},${fgB},0.12)`);
+          fg2.addColorStop(1,`rgba(${fgR},${fgG},${fgB},0)`);
+          ctx.fillStyle=fg2;ctx.fillRect(fx-fw*6,fy-fw,fw*12,fh*1.5);
+          // Body silhouette
+          ctx.fillStyle="rgba(0,0,0,0.88)";
+          ctx.fillRect(fx-fw/2,fy+fh*0.28,fw,fh*0.72);
+          ctx.beginPath();ctx.arc(fx,fy+fh*0.22,fw*0.55,0,Math.PI*2);ctx.fill();
+          // Shoulders
+          ctx.beginPath();ctx.ellipse(fx,fy+fh*0.35,fw*0.8,fw*0.3,0,0,Math.PI*2);ctx.fill();
         }
-      });
+      }
+
+      // CROWD
+      if(scene.silhouette==="city"&&scene.humanFigure){
+        const crowdY=H*0.78;
+        for(let c=0;c<60;c++){
+          const cx=(c*W/59)+Math.sin(c*1.7+sec*0.1)*8;
+          const ch=H*(0.08+Math.sin(c*0.9)*0.04);
+          const cw=H*0.025;
+          ctx.fillStyle=`rgba(0,0,0,${0.7+c%3*0.1})`;
+          ctx.fillRect(cx-cw/2,crowdY-ch,cw,ch);
+          ctx.beginPath();ctx.arc(cx,crowdY-ch,cw*0.6,0,Math.PI*2);ctx.fill();
+          // Some with phone glow
+          if(c%4===0){
+            ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},0.15)`;
+            ctx.fillRect(cx-cw*0.4,crowdY-ch*0.5,cw*0.8,cw*1.1);
+          }
+        }
+      }
+
+      // FOG
+      if(scene.fogLayer){
+        const fogY=scene.groundLayer?H*0.65:H*0.45;
+        for(let fl=0;fl<5;fl++){
+          const fogOffset=Math.sin(sec*0.15+fl*1.2)*W*0.04;
+          const fog=ctx.createLinearGradient(0,fogY+fl*H*0.06,0,fogY+fl*H*0.06+H*0.18);
+          fog.addColorStop(0,`rgba(${skyR+20},${skyG+20},${skyB+20},${0.18-fl*0.025})`);
+          fog.addColorStop(1,`rgba(0,0,0,0)`);
+          ctx.save();ctx.translate(fogOffset,0);
+          ctx.fillStyle=fog;ctx.fillRect(-W*0.1,fogY+fl*H*0.06,W*1.2,H*0.18);
+          ctx.restore();
+        }
+      }
+
+      // PARTICLES
+      if(scene.particles!==false){
+        for(let i=0;i<numP;i++){
+          const speed=0.08+i%4*0.04;
+          const px=(i*2791+frame*speed*(0.8+i%3*0.3)+i*Math.sin(sec*0.1+i))%W;
+          const py=((i*1847+frame*(0.05+i%2*0.025))%H);
+          const ptw=0.12+Math.sin(frame*0.05+i*1.4)*0.22;
+          const pr=i%9===0?2.8:i%4===0?1.8:i%2===0?1.1:0.6;
+          ctx.fillStyle=`rgba(${fgR},${fgG},${fgB},${Math.max(0,ptw)})`;
+          ctx.beginPath();ctx.arc(px,py,pr,0,Math.PI*2);ctx.fill();
+        }
+      }
+
+      // VIGNETTE
+      const vig=ctx.createRadialGradient(W/2,H/2,W*0.15,W/2,H/2,W*0.78);
+      vig.addColorStop(0,"rgba(0,0,0,0)");
+      vig.addColorStop(0.7,"rgba(0,0,0,0.25)");
+      vig.addColorStop(1,"rgba(0,0,0,0.92)");
+      ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
+
+      // FILM GRAIN
+      ctx.save();ctx.globalAlpha=0.04;
+      ctx.drawImage(grainCanvas,Math.random()*4-2,Math.random()*4-2);
+      ctx.restore();
+
+      // LETTERBOX
+      ctx.fillStyle="#000";
+      ctx.fillRect(0,0,W,H*0.055);
+      ctx.fillRect(0,H*0.945,W,H*0.055);
+
+      // ON SCREEN TEXT
+      if(showText){
+        const lines=aiScene?.titleLines||[title||"",prompt.slice(0,50)];
+        lines.filter(Boolean).forEach((line,i)=>{
+          const ls=(i+0.5)/(lines.length+1);
+          const le=ls+0.7/(lines.length+1);
+          if(t>=ls-0.05&&t<=le+0.08){
+            const lt=Math.min(1,(t-(ls-0.05))/0.07);
+            const fo=t>le?Math.max(0,1-(t-le)/0.07):1;
+            ctx.globalAlpha=lt*fo;
+            ctx.fillStyle=i===0?grade.fg:"#ffffff";
+            ctx.font=`${i===0?"900":"700"} ${Math.round(i===0?H*0.065:H*0.044)}px Arial Black,sans-serif`;
+            ctx.textAlign="center";
+            ctx.shadowColor=grade.fg;ctx.shadowBlur=i===0?28:0;
+            ctx.fillText(line.toUpperCase(),W/2,H*0.5+(i-lines.length/2)*(H*0.1));
+            ctx.shadowBlur=0;ctx.globalAlpha=1;
+          }
+        });
+      }
+
+      // FADE IN/OUT
+      if(t<0.04){
+        ctx.fillStyle=`rgba(0,0,0,${1-t/0.04})`;ctx.fillRect(0,0,W,H);
+      }
+      if(t>0.94){
+        ctx.fillStyle=`rgba(0,0,0,${(t-0.94)/0.06})`;ctx.fillRect(0,0,W,H);
+      }
     };
 
-    addLog("Generating frames...");
+    addLog("🎞 Rendering "+totalFrames+" frames...");
     const msPerFrame=1000/fps;
 
     await new Promise(resolve=>{
@@ -1225,22 +1440,22 @@ function P8VideoGenerator({ onSave, mediaLib }) {
         if(frame>=totalFrames){resolve(null);return;}
         drawFrame(frame);
         setProgress(Math.round((frame/totalFrames)*88));
-        if(frame%(fps*2)===0)addLog(`  ${Math.round(frame/fps)}s / ${duration}s rendered...`);
+        if(frame%(fps*3)===0&&frame>0)addLog("  "+Math.round(frame/fps)+"s / "+duration+"s");
         frame++;
         setTimeout(renderNext,msPerFrame);
       };
       renderNext();
     });
 
-    addLog("Finalising...");setProgress(92);
-    await new Promise(r=>setTimeout(r,800));
+    addLog("⬛ Finalising...");setProgress(94);
+    await new Promise(r=>setTimeout(r,600));
     recorder.stop();
     await new Promise(r=>{recorder.onstop=r;});
 
     const blob=new Blob(chunks,{type:mimeType});
     const url=URL.createObjectURL(blob);
     setVideoUrl(url);setProgress(100);
-    addLog(`Complete! ${(blob.size/1024/1024).toFixed(1)}MB · ${duration}s`);
+    addLog("✅ COMPLETE — "+(blob.size/1024/1024).toFixed(1)+"MB · "+duration+"s · "+resolution);
     setTimeout(()=>{if(videoRef.current){videoRef.current.load();videoRef.current.play().catch(()=>{});}},200);
     setGenerating(false);
   };
@@ -1249,12 +1464,11 @@ function P8VideoGenerator({ onSave, mediaLib }) {
     if(!videoUrl)return;
     try{
       const response=await fetch(videoUrl);const blob=await response.blob();
-      const fileName=(title||"Scene")+" — "+style+" "+duration+"s.webm";
+      const fileName=(title||"Scene")+"_"+genre+"_"+resolution+"_"+duration+"s.webm";
       const file=new File([blob],fileName,{type:"video/webm"});
-      const newUrl=URL.createObjectURL(file);
-      if(onSave)onSave({id:Date.now()+Math.random(),name:fileName,type:"video/webm",url:newUrl,file});
+      if(onSave)onSave({id:Date.now()+Math.random(),name:fileName,type:"video/webm",url:URL.createObjectURL(file),file});
     }catch(e){
-      if(onSave)onSave({id:Date.now()+Math.random(),name:(title||"Scene")+" — "+style+" "+duration+"s.webm",type:"video/webm",url:videoUrl});
+      if(onSave)onSave({id:Date.now()+Math.random(),name:(title||"Scene")+"_"+duration+"s.webm",type:"video/webm",url:videoUrl});
     }
     setSaved(true);
   };
@@ -1267,223 +1481,181 @@ function P8VideoGenerator({ onSave, mediaLib }) {
       <canvas ref={canvasRef} style={{display:"none"}}/>
       <input ref={refImgRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>{
         const f=e.target.files&&e.target.files[0];
-        if(f){setRefImage(f);setRefImageUrl(URL.createObjectURL(f));}
+        if(f)setRefImageUrl(URL.createObjectURL(f));
       }}/>
 
-      {/* STUDIO HEADER */}
+      {/* HEADER */}
       <div style={{padding:"10px 20px",borderBottom:`2px solid ${GOLD}`,background:"#020200",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
         <div>
-          <div style={{fontSize:10,color:GOLD,letterSpacing:5,fontWeight:700}}>AI WORKSTATION 04 · CINEMA ENGINE · 1920×1080 · 4K READY</div>
-          <h1 style={{...H1,fontSize:22,margin:0}}>🎬 VIDEO GENERATOR — PROFESSIONAL CINEMA STUDIO</h1>
+          <div style={{fontSize:10,color:GOLD,letterSpacing:5,fontWeight:700}}>AI WORKSTATION 04 · CLAUDE-POWERED CINEMA ENGINE · MANDASTRONG STUDIO</div>
+          <h1 style={{...H1,fontSize:22,margin:0}}>🎬 VIDEO GENERATOR — MAKE ANY MOVIE</h1>
         </div>
-        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+        <div style={{display:"flex",gap:10,alignItems:"center"}}>
           <div style={{color:"#22c55e",fontSize:11,fontWeight:900,letterSpacing:2}}>● ENGINE READY</div>
-          <div style={{color:GOLD,fontSize:11,letterSpacing:2,fontWeight:700}}>CANVAS · {resolution} · {fps}FPS</div>
+          <div style={{color:GOLD,fontSize:11,fontWeight:700}}>{resolution} · {fps}FPS</div>
         </div>
       </div>
 
-      {/* MAIN LAYOUT */}
-      <div style={{display:"grid",gridTemplateColumns:"320px 1fr 340px",minHeight:"calc(100vh - 116px)"}}>
+      {/* 3-PANEL LAYOUT */}
+      <div style={{display:"grid",gridTemplateColumns:"300px 1fr 280px",minHeight:"calc(100vh - 116px)"}}>
 
-        {/* LEFT — CONTROLS */}
-        <div style={{borderRight:`1px solid ${GOLDDIM}`,background:"#030300",overflowY:"auto",display:"flex",flexDirection:"column"}}>
-          {/* TABS */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:`1px solid ${GOLDDIM}`,flexShrink:0}}>
-            {[["describe","📝 SCENE"],["style","🎨 STYLE"],["settings","⚙ SETTINGS"]].map(([t,l])=>(
-              <button key={t} onClick={()=>setActiveTab(t)} style={{background:activeTab===t?"#0a0800":"none",border:"none",borderBottom:activeTab===t?`2px solid ${GOLD}`:"2px solid transparent",color:activeTab===t?GOLD:WHITE,padding:"10px 4px",cursor:"pointer",fontSize:10,fontWeight:900,letterSpacing:1}}>{l}</button>
-            ))}
-          </div>
+        {/* LEFT PANEL */}
+        <div style={{borderRight:`1px solid ${GOLDDIM}`,background:"#020200",display:"flex",flexDirection:"column",overflowY:"auto"}}>
+          <div style={{padding:12,flex:1}}>
 
-          <div style={{padding:12,flex:1,overflowY:"auto"}}>
-            {activeTab==="describe"&&(
-              <div>
-                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:6}}>SCENE TITLE</div>
-                <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. Chapter 1 — The Beginning"
-                  style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"8px 10px",color:WHITE,fontSize:13,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
-
-                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:6}}>SCENE DESCRIPTION</div>
-                <textarea value={prompt} onChange={e=>setPrompt(e.target.value)}
-                  placeholder="Describe exactly what you want. Plain English. City at night, crowd of people, fog rolling, gold light from above..."
-                  style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"10px",color:WHITE,fontSize:12,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.8,height:130,resize:"none",marginBottom:8}}/>
-                <button onClick={getAIScene} disabled={aiLoading||!prompt.trim()}
-                  style={{...G("out",true),width:"100%",marginBottom:10,fontSize:10,opacity:aiLoading||!prompt.trim()?0.5:1}}>
-                  {aiLoading?"⟳ GENERATING...":"✦ WRITE SCENE TEXT WITH AI"}
+            {/* GENRE */}
+            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:8}}>MOVIE GENRE</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4,marginBottom:12}}>
+              {GENRES.map(g=>(
+                <button key={g.id} onClick={()=>setGenre(g.id)}
+                  style={{background:genre===g.id?"#0a0800":"#000",border:`1px solid ${genre===g.id?GOLD:GOLDDIM}`,padding:"6px 8px",cursor:"pointer",textAlign:"left"}}>
+                  <div style={{color:genre===g.id?GOLD:WHITE,fontSize:11,fontWeight:900}}>{g.label}</div>
+                  <div style={{color:DIM,fontSize:9}}>{g.desc}</div>
                 </button>
+              ))}
+            </div>
 
-                {aiScript&&(
-                  <div style={{marginBottom:10}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
-                      <div style={{color:GOLD,fontSize:10,letterSpacing:2,fontWeight:900}}>SCENE TEXT</div>
-                      <div style={{display:"flex",alignItems:"center",gap:6}}>
-                        <span style={{color:DIM,fontSize:9}}>{showText?"ON SCREEN":"HIDDEN"}</span>
-                        <div onClick={()=>setShowText(p=>!p)} style={{width:36,height:20,background:showText?GOLD:"#333",borderRadius:10,cursor:"pointer",position:"relative"}}>
-                          <div style={{position:"absolute",top:2,left:showText?18:2,width:16,height:16,background:showText?"#000":WHITE,borderRadius:"50%",transition:"left .15s"}}/>
-                        </div>
-                      </div>
-                    </div>
-                    <textarea value={aiScript} onChange={e=>setAiScript(e.target.value)}
-                      style={{width:"100%",background:"#000",border:`1px solid ${GOLD}`,padding:"8px",color:WHITE,fontSize:11,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.8,height:90,resize:"none"}}/>
-                  </div>
-                )}
+            {/* SCENE TITLE */}
+            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:5}}>SCENE TITLE</div>
+            <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. Chapter 1 — Opening"
+              style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"8px",color:WHITE,fontSize:12,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
 
-                {/* REFERENCE IMAGE */}
-                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:6}}>REFERENCE IMAGE</div>
-                {refImageUrl?(
-                  <div style={{position:"relative",marginBottom:10}}>
-                    <img src={refImageUrl} alt="reference" style={{width:"100%",height:100,objectFit:"cover",border:`1px solid ${GOLD}`}}/>
-                    <button onClick={()=>{setRefImage(null);setRefImageUrl("");}} style={{position:"absolute",top:4,right:4,background:"#000",border:`1px solid ${GOLD}`,color:GOLD,padding:"2px 6px",cursor:"pointer",fontSize:10}}>✕</button>
-                    <div style={{color:GOLD,fontSize:9,marginTop:3,letterSpacing:1}}>✓ Reference image loaded — mood and palette applied</div>
-                  </div>
-                ):(
-                  <div onClick={()=>refImgRef.current&&refImgRef.current.click()}
-                    style={{border:`1px dashed ${GOLDDIM}`,padding:"14px",textAlign:"center",cursor:"pointer",marginBottom:10}}
-                    onMouseEnter={e=>e.currentTarget.style.borderColor=GOLD}
-                    onMouseLeave={e=>e.currentTarget.style.borderColor=GOLDDIM}>
-                    <div style={{fontSize:20,marginBottom:4}}>🖼</div>
-                    <div style={{color:WHITE,fontSize:11,fontWeight:700}}>UPLOAD REFERENCE IMAGE</div>
-                    <div style={{color:DIM,fontSize:10,marginTop:2}}>Mood · Colour · Composition</div>
-                  </div>
-                )}
+            {/* SCENE DESCRIPTION */}
+            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:5}}>DESCRIBE YOUR SCENE</div>
+            <textarea value={prompt} onChange={e=>setPrompt(e.target.value)}
+              placeholder="Describe exactly what you want. Any movie type. Any scene. Plain English."
+              style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"10px",color:WHITE,fontSize:12,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.8,height:120,resize:"none",marginBottom:8}}/>
 
-                {/* MEDIA LIBRARY ASSETS */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:12}}>
+              <button onClick={analyseWithClaude} disabled={aiLoading||!prompt.trim()}
+                style={{...G("out",true),fontSize:9,opacity:aiLoading||!prompt.trim()?0.5:1}}>
+                {aiLoading?"⟳ ANALYSING...":"✦ CLAUDE ANALYSE"}
+              </button>
+              {aiScene&&<div style={{background:"#0a0800",border:`1px solid ${GOLD}`,padding:"4px 8px",fontSize:9,color:GOLD,fontWeight:900,textAlign:"center"}}>✓ CLAUDE READY</div>}
+            </div>
+
+            {/* COLOUR GRADE */}
+            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:6}}>COLOUR GRADE</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4,marginBottom:12}}>
+              {GRADES.map(g=>(
+                <button key={g.id} onClick={()=>setColorGrade(g.id)}
+                  style={{background:colorGrade===g.id?g.fg:"#111",border:`1px solid ${colorGrade===g.id?g.fg:GOLDDIM}`,color:colorGrade===g.id?"#000":WHITE,padding:"5px 6px",cursor:"pointer",fontSize:10,fontWeight:900}}>
+                  {g.label}
+                </button>
+              ))}
+            </div>
+
+            {/* SETTINGS */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}}>
+              <div>
+                <div style={{color:GOLD,fontSize:9,letterSpacing:2,marginBottom:4}}>RESOLUTION</div>
+                {["720p","1080p","4K"].map(r=>(
+                  <button key={r} onClick={()=>setResolution(r)} style={{background:resolution===r?GOLD:"#111",border:`1px solid ${resolution===r?"#000":GOLDDIM}`,color:resolution===r?"#000":WHITE,padding:"3px 8px",cursor:"pointer",fontSize:9,fontWeight:900,marginRight:3,marginBottom:3}}>{r}</button>
+                ))}
+              </div>
+              <div>
+                <div style={{color:GOLD,fontSize:9,letterSpacing:2,marginBottom:4}}>FRAME RATE</div>
+                {[24,30,60].map(f=>(
+                  <button key={f} onClick={()=>setFps(f)} style={{background:fps===f?GOLD:"#111",border:`1px solid ${fps===f?"#000":GOLDDIM}`,color:fps===f?"#000":WHITE,padding:"3px 8px",cursor:"pointer",fontSize:9,fontWeight:900,marginRight:3,marginBottom:3}}>{f}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* DURATION */}
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+              <span style={{color:GOLD,fontSize:9,letterSpacing:2,fontWeight:900}}>DURATION</span>
+              <span style={{color:WHITE,fontSize:10,fontWeight:900}}>{duration}s</span>
+            </div>
+            <input type="range" min={3} max={120} value={duration} onChange={e=>setDuration(+e.target.value)} style={{width:"100%",accentColor:GOLD,marginBottom:12}}/>
+
+            {/* TEXT OVERLAY */}
+            <div style={{display:"flex",gap:6,marginBottom:12}}>
+              <button onClick={()=>setShowText(false)} style={{...G(showText===false?"gold":"out",true),flex:1,fontSize:9}}>🎬 VISUALS ONLY</button>
+              <button onClick={()=>setShowText(true)} style={{...G(showText===true?"gold":"out",true),flex:1,fontSize:9}}>📝 WITH TEXT</button>
+            </div>
+
+            {/* REFERENCE IMAGE */}
+            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:6}}>REFERENCE IMAGE</div>
+            {refImageUrl?(
+              <div style={{position:"relative",marginBottom:12}}>
+                <img src={refImageUrl} alt="ref" style={{width:"100%",height:80,objectFit:"cover",border:`1px solid ${GOLD}`}}/>
+                <button onClick={()=>setRefImageUrl("")} style={{position:"absolute",top:4,right:4,background:"#000",border:`1px solid ${GOLD}`,color:GOLD,padding:"1px 6px",cursor:"pointer",fontSize:10}}>✕</button>
+              </div>
+            ):(
+              <div>
+                <div onClick={()=>refImgRef.current&&refImgRef.current.click()}
+                  style={{border:`1px dashed ${GOLDDIM}`,padding:"10px",textAlign:"center",cursor:"pointer",marginBottom:6}}
+                  onMouseEnter={e=>e.currentTarget.style.borderColor=GOLD}
+                  onMouseLeave={e=>e.currentTarget.style.borderColor=GOLDDIM}>
+                  <div style={{color:WHITE,fontSize:10,fontWeight:700}}>⬆ UPLOAD REFERENCE IMAGE</div>
+                </div>
                 {libImages.length>0&&(
-                  <div style={{marginBottom:10}}>
-                    <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:6}}>FROM YOUR LIBRARY</div>
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4}}>
-                      {libImages.slice(0,6).map(a=>(
-                        <div key={a.id} onClick={()=>{setRefImageUrl(a.url);setRefImage(null);}}
-                          style={{cursor:"pointer",border:`1px solid ${refImageUrl===a.url?GOLD:GOLDDIM}`,overflow:"hidden"}}>
-                          <img src={a.url} alt={a.name} style={{width:"100%",height:44,objectFit:"cover"}}/>
-                        </div>
-                      ))}
-                    </div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:3,marginBottom:6}}>
+                    {libImages.slice(0,8).map(a=>(
+                      <img key={a.id} src={a.url} alt="" onClick={()=>setRefImageUrl(a.url)}
+                        style={{width:"100%",height:36,objectFit:"cover",border:`1px solid ${refImageUrl===a.url?GOLD:GOLDDIM}`,cursor:"pointer"}}/>
+                    ))}
                   </div>
                 )}
-              </div>
-            )}
-
-            {activeTab==="style"&&(
-              <div>
-                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:8}}>VISUAL STYLE</div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:5,marginBottom:12}}>
-                  {STYLES.map(s=>(
-                    <div key={s.id} onClick={()=>setStyle(s.id)}
-                      style={{padding:"8px 10px",background:style===s.id?"#0a0800":"#000",border:`1px solid ${style===s.id?GOLD:GOLDDIM}`,cursor:"pointer"}}>
-                      <div style={{color:style===s.id?GOLD:WHITE,fontSize:11,fontWeight:900}}>{s.label}</div>
-                      <div style={{color:DIM,fontSize:9,marginTop:2}}>{s.desc}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:8}}>COLOUR GRADE</div>
-                <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:12}}>
-                  {GRADES.map(g=>(
-                    <button key={g.id} onClick={()=>setColorGrade(g.id)}
-                      style={{background:colorGrade===g.id?g.fg:"#111",border:`2px solid ${colorGrade===g.id?g.fg:GOLDDIM}`,color:colorGrade===g.id?"#000":WHITE,padding:"4px 10px",cursor:"pointer",fontSize:10,fontWeight:900}}>
-                      {g.label}
-                    </button>
-                  ))}
-                </div>
-                <div style={{display:"flex",gap:6,marginBottom:12}}>
-                  <button onClick={()=>setShowText(false)} style={{...G(showText===false?"gold":"out",true),flex:1,fontSize:10}}>🎬 VISUALS ONLY</button>
-                  <button onClick={()=>setShowText(true)} style={{...G(showText===true?"gold":"out",true),flex:1,fontSize:10}}>📝 WITH TEXT</button>
-                </div>
-              </div>
-            )}
-
-            {activeTab==="settings"&&(
-              <div>
-                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:8}}>RESOLUTION</div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:5,marginBottom:12}}>
-                  {[["720p","1280×720"],["1080p","1920×1080"],["4K","3840×2160"]].map(([r,sub])=>(
-                    <button key={r} onClick={()=>setResolution(r)} style={{background:resolution===r?"#0a0800":"#000",border:`1px solid ${resolution===r?GOLD:GOLDDIM}`,padding:"8px",cursor:"pointer",textAlign:"center"}}>
-                      <div style={{color:resolution===r?GOLD:WHITE,fontSize:12,fontWeight:900,fontFamily:"'Rajdhani',sans-serif"}}>{r}</div>
-                      <div style={{color:DIM,fontSize:9}}>{sub}</div>
-                    </button>
-                  ))}
-                </div>
-                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:8}}>FRAME RATE</div>
-                <div style={{display:"flex",gap:5,marginBottom:12}}>
-                  {[24,30,60].map(f=><button key={f} onClick={()=>setFps(f)} style={{...G(fps===f?"gold":"out",true),flex:1,fontSize:10}}>{f}fps</button>)}
-                </div>
-                <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:6}}>DURATION — {duration}s</div>
-                <input type="range" min={3} max={120} value={duration} onChange={e=>setDuration(+e.target.value)} style={{width:"100%",accentColor:GOLD,marginBottom:4}}/>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:12}}>
-                  <span style={{color:DIM,fontSize:9}}>3s</span>
-                  <span style={{color:GOLD,fontSize:10,fontWeight:900}}>{duration}s</span>
-                  <span style={{color:DIM,fontSize:9}}>120s</span>
-                </div>
               </div>
             )}
           </div>
 
           {/* GENERATE BUTTON */}
-          <div style={{padding:12,borderTop:`1px solid ${GOLDDIM}`,flexShrink:0}}>
-            <button onClick={generateVideo} disabled={generating||(!prompt.trim()&&!aiScript.trim())}
-              style={{...G("gold",false),width:"100%",padding:"14px",fontSize:13,letterSpacing:3,opacity:generating||(!prompt.trim()&&!aiScript.trim())?0.5:1}}>
-              {generating?"⟳ RENDERING... "+progress+"%":"🎬 GENERATE VIDEO CLIP"}
+          <div style={{padding:10,borderTop:`1px solid ${GOLDDIM}`,flexShrink:0}}>
+            <button onClick={generateVideo} disabled={generating||!prompt.trim()}
+              style={{...G("gold",false),width:"100%",padding:"14px",fontSize:13,letterSpacing:3,opacity:generating||!prompt.trim()?0.5:1}}>
+              {generating?"⟳ RENDERING "+progress+"%":"🎬 GENERATE CLIP"}
             </button>
           </div>
         </div>
 
-        {/* CENTRE — CANVAS PREVIEW */}
+        {/* CENTRE — PREVIEW */}
         <div style={{background:"#000",display:"flex",flexDirection:"column"}}>
-          {/* PREVIEW SCREEN */}
-          <div style={{background:"#000",aspectRatio:"16/9",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",borderBottom:`1px solid ${GOLDDIM}`,position:"relative"}}>
-            {videoUrl?(
-              <video key={videoUrl} ref={videoRef} src={videoUrl} controls autoPlay loop muted playsInline style={{width:"100%",height:"100%",objectFit:"contain"}}/>
-            ):(
-              <div style={{textAlign:"center",padding:20}}>
-                {refImageUrl&&<img src={refImageUrl} alt="ref" style={{width:"100%",height:"100%",objectFit:"cover",position:"absolute",inset:0,opacity:0.15}}/>}
-                <div style={{position:"relative",zIndex:1}}>
-                  <div style={{fontSize:42,marginBottom:10}}>🎬</div>
-                  <div style={{color:grade.fg,fontSize:14,letterSpacing:3,fontWeight:900}}>{title||"YOUR SCENE"}</div>
-                  <div style={{color:DIM,fontSize:11,marginTop:6}}>{style} · {grade.label} · {duration}s · {resolution}</div>
+          <div style={{background:"#000",position:"relative",width:"100%",paddingTop:"56.25%",borderBottom:`1px solid ${GOLDDIM}`,overflow:"hidden"}}>
+            <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+              {videoUrl?(
+                <video key={videoUrl} ref={videoRef} src={videoUrl} controls autoPlay loop muted playsInline style={{width:"100%",height:"100%",objectFit:"contain"}}/>
+              ):(
+                <div style={{textAlign:"center",padding:20,position:"relative",zIndex:1}}>
+                  {refImageUrl&&<img src={refImageUrl} alt="ref" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.12}}/>}
+                  <div style={{fontSize:42,marginBottom:8}}>🎬</div>
+                  <div style={{color:grade.fg,fontSize:13,letterSpacing:3,fontWeight:900}}>{title||"YOUR SCENE"}</div>
+                  <div style={{color:DIM,fontSize:10,marginTop:4}}>{GENRES.find(g=>g.id===genre)?.label} · {grade.label} · {duration}s · {resolution}</div>
+                  {aiScene&&<div style={{color:"#22c55e",fontSize:10,marginTop:6,fontWeight:900}}>✦ CLAUDE SCENE READY</div>}
                 </div>
-              </div>
-            )}
-            {generating&&(
-              <div style={{position:"absolute",bottom:0,left:0,right:0,height:4,background:"#000"}}>
-                <div style={{width:progress+"%",height:"100%",background:`linear-gradient(90deg,${GOLDDIM},${GOLD})`,transition:"width .2s"}}/>
-              </div>
-            )}
+              )}
+              {generating&&(
+                <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"#000"}}>
+                  <div style={{width:progress+"%",height:"100%",background:`linear-gradient(90deg,${GOLDDIM},${GOLD})`,transition:"width .15s"}}/>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* PROGRESS BAR */}
-          {generating&&(
-            <div style={{padding:"8px 16px",borderBottom:`1px solid ${GOLDDIM}`,background:"#020200"}}>
-              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                <span style={{color:GOLD,fontSize:10,fontWeight:900,letterSpacing:2}}>RENDERING</span>
-                <span style={{color:GOLD,fontSize:12,fontWeight:900}}>{progress}%</span>
-              </div>
-            </div>
-          )}
-
-          {/* EXPORT BUTTONS */}
+          {/* EXPORT BAR */}
           {videoUrl&&!generating&&(
-            <div style={{padding:"10px 16px",borderBottom:`1px solid ${GOLDDIM}`,background:"#020200"}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
-                <a href={videoUrl} download={(title||"scene").replace(/\s+/g,"_")+"_"+resolution+"_"+duration+"s.webm"}
-                  style={{...G("out",false),padding:"8px",fontSize:10,textDecoration:"none",textAlign:"center",display:"block",letterSpacing:1}}>⬇ DOWNLOAD</a>
-                <button onClick={saveToLibrary} style={{...G(saved?"out":"gold",false),padding:"8px",fontSize:10,letterSpacing:1}}>{saved?"✓ IN LIBRARY":"💾 SAVE TO LIBRARY"}</button>
-                <button onClick={()=>{setVideoUrl("");setLog([]);setSaved(false);}} style={{...G("out",false),padding:"8px",fontSize:10}}>🔄 NEW CLIP</button>
-              </div>
+            <div style={{padding:"8px 14px",borderBottom:`1px solid ${GOLDDIM}`,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
+              <a href={videoUrl} download={(title||"scene").replace(/\s+/g,"_")+"_"+resolution+"_"+duration+"s.webm"}
+                style={{...G("out",false),padding:"8px",fontSize:10,textDecoration:"none",textAlign:"center",display:"block"}}>⬇ DOWNLOAD</a>
+              <button onClick={saveToLibrary} style={{...G(saved?"out":"gold",false),padding:"8px",fontSize:10}}>{saved?"✓ SAVED":"💾 LIBRARY"}</button>
+              <button onClick={()=>{setVideoUrl("");setLog([]);setSaved(false);setAiScene(null);}} style={{...G("out",false),padding:"8px",fontSize:10}}>🔄 NEW</button>
             </div>
           )}
 
-          {/* MEDIA LIBRARY STRIP */}
+          {/* VIDEO LIBRARY STRIP */}
           {libVideos.length>0&&(
-            <div style={{borderBottom:`1px solid ${GOLDDIM}`,background:"#020200"}}>
-              <div style={{padding:"6px 16px 4px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                <span style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900}}>YOUR VIDEO CLIPS — {libVideos.length}</span>
+            <div style={{borderBottom:`1px solid ${GOLDDIM}`}}>
+              <div style={{padding:"4px 12px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <span style={{color:GOLD,fontSize:9,letterSpacing:2,fontWeight:900}}>LIBRARY — {libVideos.length} CLIPS</span>
                 <button onClick={()=>setShowLibrary(p=>!p)} style={{background:"none",border:"none",color:GOLD,cursor:"pointer",fontSize:10}}>{showLibrary?"▲":"▼"}</button>
               </div>
               {showLibrary&&(
-                <div style={{display:"flex",gap:6,padding:"0 10px 8px",overflowX:"auto"}}>
+                <div style={{display:"flex",gap:5,padding:"0 8px 8px",overflowX:"auto"}}>
                   {libVideos.map(a=>(
-                    <div key={a.id} style={{flexShrink:0,width:100,border:`1px solid ${GOLDDIM}`,cursor:"pointer"}}
-                      onClick={()=>{setVideoUrl(a.url);setSaved(true);}}>
-                      <video src={a.url} style={{width:"100%",height:56,objectFit:"cover"}} muted/>
-                      <div style={{color:WHITE,fontSize:8,padding:"2px 4px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.name.slice(0,14)}</div>
+                    <div key={a.id} onClick={()=>{setVideoUrl(a.url);setSaved(true);}} style={{flexShrink:0,width:90,cursor:"pointer",border:`1px solid ${GOLDDIM}`}}>
+                      <video src={a.url} style={{width:"100%",height:50,objectFit:"cover"}} muted/>
+                      <div style={{color:WHITE,fontSize:8,padding:"2px 4px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.name.slice(0,12)}</div>
                     </div>
                   ))}
                 </div>
@@ -1492,80 +1664,90 @@ function P8VideoGenerator({ onSave, mediaLib }) {
           )}
 
           {/* RENDER LOG */}
-          <div style={{flex:1,overflowY:"auto",padding:14,background:"#010100"}}>
+          <div style={{flex:1,overflowY:"auto",padding:12,background:"#010100"}}>
             {log.length>0?(
               <div>
-                <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:8}}>● RENDER LOG</div>
+                <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:6}}>● RENDER LOG</div>
                 {log.map((l,i)=>(
-                  <div key={i} style={{color:i===log.length-1?"#22c55e":"#555",fontSize:10,lineHeight:1.8,fontFamily:"monospace"}}>› {l}</div>
+                  <div key={i} style={{color:i===log.length-1?"#22c55e":"#444",fontSize:10,lineHeight:1.9,fontFamily:"monospace"}}>{l}</div>
                 ))}
               </div>
             ):(
-              <div style={{textAlign:"center",padding:"20px 16px",color:GOLDDIM}}>
-                <div style={{fontSize:28,marginBottom:8}}>🎬</div>
-                <div style={{fontSize:10,lineHeight:1.9,letterSpacing:1}}>PROFESSIONAL CINEMA ENGINE<br/>Describe your scene · Hit Generate<br/>Canvas renders at {resolution} · {fps}fps</div>
+              <div style={{textAlign:"center",padding:"20px",color:GOLDDIM}}>
+                <div style={{fontSize:24,marginBottom:8}}>🎬</div>
+                <div style={{fontSize:10,lineHeight:2,letterSpacing:1}}>CLAUDE-POWERED CINEMA ENGINE<br/>Any scene. Any genre. Any movie.<br/>Describe it. Generate it.</div>
               </div>
             )}
           </div>
         </div>
 
-        {/* RIGHT — SCENE INTELLIGENCE PANEL */}
-        <div style={{borderLeft:`1px solid ${GOLDDIM}`,background:"#020200",display:"flex",flexDirection:"column",overflowY:"auto"}}>
-          <div style={{padding:"10px 14px",borderBottom:`1px solid ${GOLDDIM}`}}>
-            <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900}}>✦ SCENE INTELLIGENCE</div>
-            <div style={{color:DIM,fontSize:9,marginTop:2}}>Auto-parsed from your description</div>
+        {/* RIGHT — INTELLIGENCE PANEL */}
+        <div style={{borderLeft:`1px solid ${GOLDDIM}`,background:"#020200",overflowY:"auto"}}>
+          <div style={{padding:"10px 12px",borderBottom:`1px solid ${GOLDDIM}`}}>
+            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900}}>✦ SCENE INTELLIGENCE</div>
           </div>
-          <div style={{padding:14,flex:1}}>
-            {/* SCENE TYPE INDICATOR */}
-            <div style={{...Card(),marginBottom:10,padding:10}}>
-              <div style={{color:GOLD,fontSize:9,letterSpacing:2,marginBottom:6}}>SCENE TYPE DETECTED</div>
-              {["city","cosmic","dawn","landscape","interior","abstract"].map(t=>(
-                <div key={t} style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
-                  <div style={{width:8,height:8,borderRadius:"50%",background:prompt.toLowerCase().includes(t)||prompt.toLowerCase().includes(t==="cosmic"?"space":t==="dawn"?"sunrise":t)?"#22c55e":"#333"}}/>
-                  <span style={{color:WHITE,fontSize:10,textTransform:"uppercase",letterSpacing:1}}>{t}</span>
-                </div>
-              ))}
-            </div>
+          <div style={{padding:12}}>
 
-            {/* ELEMENTS DETECTED */}
-            <div style={{...Card(),marginBottom:10,padding:10}}>
-              <div style={{color:GOLD,fontSize:9,letterSpacing:2,marginBottom:6}}>ELEMENTS</div>
-              {[["City Lights",["city","window","building","lit"]],["Star Field",["star","space","night sky","galaxy"]],["Human Figure",["person","figure","human","crowd","silhouette"]],["Fog Layer",["fog","mist","haze"]],["Light Beams",["beam","ray","shaft","light from"]],["Sun Rise",["sunrise","dawn","sun rising","golden hour"]]].map(([label,keys])=>{
-                const active=keys.some(k=>prompt.toLowerCase().includes(k));
-                return(
-                  <div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}>
-                    <span style={{color:active?WHITE:DIM,fontSize:10}}>{label}</span>
-                    <span style={{color:active?"#22c55e":"#333",fontSize:9,fontWeight:900}}>{active?"✓ ON":"—"}</span>
-                  </div>
-                );
-              })}
-            </div>
+            {aiScene?(
+              <div>
+                <div style={{...Card(),marginBottom:10,padding:10,border:`1px solid ${GOLD}`,background:"#0a0800"}}>
+                  <div style={{color:"#22c55e",fontSize:9,fontWeight:900,letterSpacing:2,marginBottom:6}}>✦ CLAUDE ANALYSIS</div>
+                  <div style={{color:GOLD,fontSize:11,fontWeight:900,marginBottom:4}}>{aiScene.sceneType?.toUpperCase()}</div>
+                  <div style={{color:WHITE,fontSize:10,lineHeight:1.7}}>{aiScene.mood}</div>
+                  <div style={{color:GOLD,fontSize:9,marginTop:6,lineHeight:1.6,fontStyle:"italic"}}>{aiScene.cinematicNote}</div>
+                </div>
+                <div style={{...Card(),marginBottom:10,padding:10}}>
+                  <div style={{color:GOLD,fontSize:9,letterSpacing:2,marginBottom:6}}>ELEMENTS ACTIVE</div>
+                  {[["Stars",aiScene.starField],["Earth Glow",aiScene.earthGlow],["City Lights",aiScene.cityLights],["Human Figure",aiScene.humanFigure],["Fog",aiScene.fogLayer],["Light Beams",aiScene.lightBeams],["Sun Rise",aiScene.sunRise],["Particles",aiScene.particles]].map(([l,v])=>(
+                    <div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
+                      <span style={{color:v?WHITE:DIM,fontSize:10}}>{l}</span>
+                      <span style={{color:v?"#22c55e":"#333",fontSize:9,fontWeight:900}}>{v?"✓":"-"}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ):(
+              <div style={{...Card(),marginBottom:10,padding:10}}>
+                <div style={{color:GOLD,fontSize:9,letterSpacing:2,marginBottom:6}}>AUTO DETECTION</div>
+                {[["Space/Cosmos",["space","planet","galaxy","cosmos","earth","stars"]],["City/Urban",["city","street","building","urban","window"]],["Human Present",["person","figure","human","crowd","man","woman"]],["Fog/Mist",["fog","mist","haze","smoke"]],["Light Beams",["beam","ray","shaft","spotlight"]],["Ocean/Water",["ocean","sea","water","wave","river"]]].map(([label,keys])=>{
+                  const active=keys.some(k=>prompt.toLowerCase().includes(k));
+                  return(
+                    <div key={label} style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
+                      <span style={{color:active?WHITE:DIM,fontSize:10}}>{label}</span>
+                      <span style={{color:active?"#22c55e":"#333",fontSize:9,fontWeight:900}}>{active?"✓ DETECTED":"—"}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* QUICK SCENE PRESETS */}
-            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:8}}>QUICK PRESETS</div>
+            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:8}}>QUICK SCENES</div>
             {[
-              ["🌌 Deep Space","Earth from deep space. Planet glowing blue. City lights on the dark side. Stars everywhere. Atmosphere burning gold at edges."],
-              ["🌆 City Night","City street at night. Tall buildings with every window lit. Crowd of people moving through heavy fog. Ground level."],
-              ["🌅 Golden Dawn","Single human figure standing on flat open ground at dawn. Sun rising from below. Gold light flooding everything. Wide horizon."],
-              ["👤 Lone Figure","Single human figure standing completely alone in total darkness. One beam of light straight down from above. Deep fog at the edges."],
-              ["🏙 Epic Skyline","Dense city skyline at night seen from above. Every window blazing gold. Fog at street level. Particles rising like embers."],
-              ["🌊 Ocean Moon","Dark ocean at night. Full moon reflection on the water. Thin horizon line. Stars above. Slow rolling waves. Deep silence."],
+              ["🌌 Deep Space","Earth from deep space. Planet glowing blue and white. Stars everywhere. City lights on the dark side. Atmosphere burning gold at the edges."],
+              ["🌆 City Night","City street at night. Crowd of people moving through heavy fog. Every window blazing. Ground level. Buildings rising on both sides."],
+              ["🌅 Golden Dawn","Single human figure standing on flat open ground at dawn. Sun rising from below flooding everything gold. Wide horizon."],
+              ["👤 Spotlight","Single human figure standing completely alone in total darkness. One beam of light straight down. Deep fog at the edges. Nothing else."],
+              ["🌊 Ocean Night","Dark ocean at night. Full moon reflected on the water. Thin horizon line. Stars above. Slow rolling waves."],
+              ["🏙 Epic Skyline","Dense city skyline at night from above. Every window blazing gold. Fog at street level. Particles rising like embers."],
+              ["🌋 Apocalypse","Vast cracked landscape under a dark heavy sky. Weak broken light barely reaching down. Fog closing in. Sparse particles."],
+              ["🎭 Theatre","Interior darkness. Single spotlight from above onto one figure. Complete black everywhere else. Deep fog at the edges."],
             ].map(([label,p])=>(
               <button key={label} onClick={()=>setPrompt(p)}
-                style={{width:"100%",textAlign:"left",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"7px 10px",cursor:"pointer",marginBottom:4,display:"block"}}
+                style={{width:"100%",textAlign:"left",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"6px 8px",cursor:"pointer",marginBottom:3,display:"block"}}
                 onMouseEnter={e=>{e.currentTarget.style.borderColor=GOLD;}}
                 onMouseLeave={e=>{e.currentTarget.style.borderColor=GOLDDIM;}}>
-                <div style={{color:WHITE,fontSize:11,fontWeight:700}}>{label}</div>
+                <div style={{color:WHITE,fontSize:10,fontWeight:700}}>{label}</div>
               </button>
             ))}
 
-            {/* COLOUR GRADE PREVIEW */}
-            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:8,marginTop:12}}>ACTIVE GRADE</div>
-            <div style={{background:grade.bg,border:`1px solid ${grade.fg}`,padding:"10px 12px",marginBottom:10}}>
-              <div style={{color:grade.fg,fontSize:12,fontWeight:900}}>{GRADES.find(g=>g.id===colorGrade)?.label}</div>
-              <div style={{display:"flex",gap:6,marginTop:6}}>
+            {/* COLOUR PREVIEW */}
+            <div style={{color:GOLD,fontSize:9,letterSpacing:3,fontWeight:900,marginBottom:6,marginTop:12}}>ACTIVE GRADE</div>
+            <div style={{background:grade.bg,border:`1px solid ${grade.fg}`,padding:"8px 10px"}}>
+              <div style={{color:grade.fg,fontSize:11,fontWeight:900,marginBottom:4}}>{GRADES.find(g=>g.id===colorGrade)?.label}</div>
+              <div style={{display:"flex",gap:4}}>
                 {[grade.bg,grade.fg,grade.accent].map((c,i)=>(
-                  <div key={i} style={{width:24,height:24,background:c,border:"1px solid #333"}}/>
+                  <div key={i} style={{width:20,height:20,background:c,border:"1px solid #333"}}/>
                 ))}
               </div>
             </div>
