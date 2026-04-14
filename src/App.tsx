@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [count, setCount] = useState<number>(0);
+  const [count, setCount] = useState(0);
 
   return (
     <div className="App">
@@ -14,7 +14,7 @@ function App() {
         </p>
 
         <button
-          onClick={() => setCount((prev) => prev + 1)}
+          onClick={() => setCount(count + 1)}
           style={{
             padding: '12px 24px',
             fontSize: '18px',
