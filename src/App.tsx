@@ -1,45 +1,45 @@
-// src/App.tsx
 import { useState } from 'react';
 import './App.css';
 
 function App() {
-  // Page state
-  const [currentPage, setCurrentPage] = useState(4); // Start on Page 4 as per your request
+  const [currentPage, setCurrentPage] = useState<number>(4);
 
   // Page 8 states
-  const [sceneTitle, setSceneTitle] = useState('');
-  const [sceneDescription, setSceneDescription] = useState('');
+  const [sceneTitle, setSceneTitle] = useState<string>('');
+  const [sceneDescription, setSceneDescription] = useState<string>('');
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const [referencePreview, setReferencePreview] = useState<string | null>(null);
-  const [duration, setDuration] = useState(60);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [duration, setDuration] = useState<number>(60);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
-  // Handle reference upload
   const handleReferenceUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setReferenceImage(file);
       const reader = new FileReader();
-      reader.onload = (event) => setReferencePreview(event.target?.result as string);
+      reader.onload = (event) => {
+        setReferencePreview(event.target?.result as string);
+      };
       reader.readAsDataURL(file);
     }
   };
 
-  // Generate video
   const handleGenerateClip = () => {
     if (!sceneDescription.trim()) {
       alert("Please enter a scene description.");
       return;
     }
+
     setIsGenerating(true);
 
-    console.log("Generating with reference:", {
-      title: sceneTitle,
-      description: sceneDescription,
-      reference: referenceImage?.name || "None",
-      duration
+    console.log("🚀 Generating video clip:", {
+      title: sceneTitle || "Untitled Scene",
+      description: sceneDescription.substring(0, 100) + "...",
+      reference: referenceImage ? referenceImage.name : "None",
+      duration: `${duration}s`
     });
 
+    // Simulate generation (replace with your actual API call)
     setTimeout(() => {
       alert("✅ Video clip generation started with reference materials!");
       setIsGenerating(false);
@@ -53,11 +53,11 @@ function App() {
         <p>🎬 CINEMA INTELLIGENCE PLATFORM • 2026</p>
       </header>
 
-      {/* ==================== PAGE 4 - PROJECT HISTORY ==================== */}
+      {/* Page 4 - Projects */}
       {currentPage === 4 && (
         <div className="page">
-          <h2>YOUR PROJECTS</h2>
-          <p>Load a previous project or start new.</p>
+          <h2>Your Projects</h2>
+          <p>Load a previous project or start a new one.</p>
 
           <div className="projects-list">
             <button className="project-btn">AI For Humanity - Full Film</button>
@@ -74,7 +74,7 @@ function App() {
         </div>
       )}
 
-      {/* ==================== PAGE 8 - VIDEO GENERATOR ==================== */}
+      {/* Page 8 - Video Generator */}
       {currentPage === 8 && (
         <div className="page">
           <h2>🎬 VIDEO GENERATOR — PROFESSIONAL CINEMA STUDIO</h2>
@@ -99,7 +99,7 @@ function App() {
             />
           </div>
 
-          {/* UPLOAD REFERENCE BUTTON - NORMAL SIZE, ABOVE GENERATE */}
+          {/* Upload Reference Button - Normal size, above Generate */}
           <div className="input-group">
             <label>REFERENCE MATERIALS</label>
             <button 
@@ -118,8 +118,8 @@ function App() {
 
             {referencePreview && (
               <div className="preview-small">
-                <p>Reference loaded</p>
-                <img src={referencePreview} alt="ref" />
+                <p>✅ Reference loaded</p>
+                <img src={referencePreview} alt="Reference" />
               </div>
             )}
           </div>
@@ -136,7 +136,7 @@ function App() {
             <span>{duration} seconds</span>
           </div>
 
-          {/* GENERATE BUTTON */}
+          {/* Generate Button */}
           <button 
             className="generate-btn"
             onClick={handleGenerateClip}
@@ -147,7 +147,7 @@ function App() {
         </div>
       )}
 
-      {/* ==================== THANK YOU PAGE WITH BACKGROUND VIDEO ==================== */}
+      {/* Thank You Page with background.mp4 */}
       {currentPage === 23 && (
         <div className="thankyou-page">
           <video 
@@ -158,6 +158,7 @@ function App() {
             playsInline
           >
             <source src="/background.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
           </video>
 
           <div className="thankyou-content">
