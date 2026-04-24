@@ -105,7 +105,7 @@ const IMAGE_T = ["Text to Image","Prompt to Image","Image to Image","Image Upsca
 const VIDEO_T = ["Text to Video","Image to Video","Video to Video","AI Video Creator","AI Film Generator","Video Upscaler","AI Video Generator 4K","Set to Video","Video Colorizer","Color Grading Pro","Fast Look Generator","Film Restoration","Time Lapse Creator","Video Trimmer","Background Remover","Digital Human Video","Rotoscope Video","Animation Creator","Puppet Animator","Motion Capture","Character Animator","Video Stabilizer","Video Compressor","Cinematic LUT","Black & White Film","Film Texture","VHS Effect","Glitch Effect","Quick Film Creator","Opening Slate","Time Freeze","Bullet Time Effect","Rain Simulation","Snow Simulation","Smoke Generator","Fire Simulation","Particle System","AI Progressive Video","4K Upscaling"];
 const MOTION = ["AI 8K Upscaling","AI 4K Upscaling","Video Super Resolution","Frame Interpolation","Video Denoiser","Noise Reduction","Grain Remover","Artifact Remover","Scratch Remover","Video Sharpener","Clarity Booster","Detail Enhancer","Edge Enhancement","Texture Boost","White Balance AI","Color Correction","Auto Color Balance","Color Match Pro","Color Grading AI","Cinematic Color Grade","Film Stock Emulation","LUT Generator","Tone Mapping Pro","HDR Enhancement","Deep HDR Boost","Dynamic Range Expansion","Shadow Recovery","Highlight Recovery","Black Point Calibration","Gamma Correction","Contrast Enhancer","Brightness Optimizer","Saturation Booster","Smart Saturation","Face Enhancement","Face Retouch","Eye Enhancer","Teeth Whitener","Skin Tone Enhancer","Background Enhancer","Sky Enhancer","Landscape Enhancer","Night Video Enhancer","Low Light Clarity","Motion Stabilization","Shake Remover","Rolling Shutter Fix"];
 
-const NAV = [{p:1,l:"Home"},{p:2,l:"Platform"},{p:3,l:"Examples"},{p:4,l:"Login / Pricing"},{p:5,l:"Writing Tools"},{p:6,l:"Voice Tools"},{p:7,l:"Image Tools"},{p:8,l:"Video Tools"},{p:9,l:"Motion & VFX"},{p:10,l:"Enhancement"},{p:11,l:"Upload Media"},{p:12,l:"Editor Suite"},{p:13,l:"Timeline Editor"},{p:14,l:"Enhancement Studio"},{p:15,l:"Audio Mixer"},{p:16,l:"Render Engine"},{p:17,l:"Film Preview"},{p:18,l:"Export & Distribute"},{p:19,l:"Tutorials"},{p:20,l:"Terms & Disclaimer"},{p:21,l:"Agent Grok"},{p:22,l:"Community Hub"},{p:23,l:"That's All Folks"}];
+const NAV = [{p:1,l:"Home"},{p:2,l:"Platform"},{p:3,l:"Examples"},{p:4,l:"Login / Pricing"},{p:5,l:"Writing Tools"},{p:6,l:"Voice Tools"},{p:7,l:"Image Tools"},{p:8,l:"Video Generator"},{p:9,l:"Motion & VFX"},{p:10,l:"Enhancement"},{p:11,l:"Upload Media"},{p:12,l:"Editor Suite"},{p:13,l:"Timeline Editor"},{p:14,l:"Enhancement Studio"},{p:15,l:"Audio Mixer"},{p:16,l:"Render Engine"},{p:17,l:"Film Preview"},{p:18,l:"Export & Distribute"},{p:19,l:"Tutorials"},{p:20,l:"Terms & Disclaimer"},{p:21,l:"Agent Grok"},{p:22,l:"Community Hub"},{p:23,l:"That's All Folks"}];
 
 function ProjectHistoryModal({ onClose, onResume }) {
   const [history,setHistory]=useState([]);
@@ -549,7 +549,7 @@ function MusicVideoStudio({ onClose, onSave }) {
           audioDest=audioCtx.createMediaStreamDestination();audioSource=audioCtx.createBufferSource();audioSource.buffer=buf;
           const gain=audioCtx.createGain();gain.gain.value=0.92;audioSource.connect(gain);gain.connect(audioDest);gain.connect(audioCtx.destination);
         }catch(e){addLog("Audio: "+e.message);audioCtx=null;}
-      }else{addLog("No audio — "+Math.round(totalDur)+"s visual");for(let t2=0;t2<totalDur;t2+=1.8)beatGrid.push(t2);}
+      }else{const mins=parseInt(config.duration)||3;totalDur=mins*60;addLog("No audio — "+mins+" min visual ("+totalDur+"s)");for(let t2=0;t2<totalDur;t2+=1.8)beatGrid.push(t2);}
       setRenderProgress(22);
 
       addLog("Rendering "+Math.round(totalDur)+"s at 12fps — photorealistic...");
@@ -748,12 +748,20 @@ function MusicVideoStudio({ onClose, onSave }) {
                   placeholder="e.g. A man sits alone on a windowsill fingerpicking acoustic guitar. Only his back is visible. Facing the open ocean at night. Full moon low on the water. A single candle burns to his right. The room behind him is empty. A cold couch. A coat still on a hook. He does not move. A man who has lost someone."
                   style={{...inp,height:160,resize:"vertical",lineHeight:1.8,border:`1px solid ${GOLD}`}}
                 />
-                {label("DURATION")}
-                <div style={{display:"flex",gap:6}}>
-                  {["2 Minutes","3 Minutes","4 Minutes","5 Minutes"].map(d=>(
-                    <button key={d} onClick={()=>set("duration",d)}
-                      style={{background:config.duration===d?GOLD:"#111",border:`1px solid ${config.duration===d?"#000":GOLDDIM}`,color:config.duration===d?"#000":WHITE,padding:"5px 12px",cursor:"pointer",fontSize:11,fontWeight:900}}>
-                      {d}
+                {label("DURATION — "+(parseInt(config.duration)||3)+" MINUTES")}
+                <input type="range" min={1} max={180} step={1} value={parseInt(config.duration)||3}
+                  onChange={e=>set("duration",e.target.value+" Minutes")}
+                  style={{width:"100%",accentColor:GOLD,marginBottom:4}}/>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                  <span style={{color:DIM,fontSize:10}}>1 MIN</span>
+                  <span style={{color:GOLD,fontSize:13,fontWeight:900}}>{parseInt(config.duration)||3} MINUTES</span>
+                  <span style={{color:DIM,fontSize:10}}>180 MIN</span>
+                </div>
+                <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                  {[2,3,5,10,30,60,90,120,180].map(d=>(
+                    <button key={d} onClick={()=>set("duration",d+" Minutes")}
+                      style={{background:parseInt(config.duration)===d?GOLD:"#111",border:`1px solid ${parseInt(config.duration)===d?"#000":GOLDDIM}`,color:parseInt(config.duration)===d?"#000":WHITE,padding:"3px 10px",cursor:"pointer",fontSize:11,fontWeight:900}}>
+                      {d}m
                     </button>
                   ))}
                 </div>
@@ -1733,11 +1741,32 @@ function P1({ go }) {
         ))}
       </div>
       <div style={{textAlign:"center",paddingBottom:24,paddingTop:16}}>
-        <a href="https://mandastrongstudio.bolt.host" download target="_blank" rel="noopener noreferrer"
-          style={{display:"inline-flex",flexDirection:"column",alignItems:"center",justifyContent:"center",width:110,height:110,background:"#000",border:`2px solid ${GOLD}`,cursor:"pointer",gap:4,textDecoration:"none"}}>
-          <div style={{fontSize:26,lineHeight:1}}>⬇</div>
-          <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:1,textAlign:"center",lineHeight:1.4}}>DOWNLOAD<br/>AS APP</div>
-        </a>
+        <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
+          <a href="https://mandastrongstudio2026.bolt.host" target="_blank" rel="noopener noreferrer"
+            style={{display:"inline-flex",flexDirection:"column",alignItems:"center",justifyContent:"center",width:130,height:90,background:"#000",border:`2px solid ${GOLD}`,cursor:"pointer",gap:4,textDecoration:"none"}}
+            onMouseEnter={e=>e.currentTarget.style.background=BG4}
+            onMouseLeave={e=>e.currentTarget.style.background="#000"}>
+            <div style={{fontSize:22,lineHeight:1}}>🌐</div>
+            <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:1,textAlign:"center",lineHeight:1.5}}>OPEN<br/>LIVE APP</div>
+          </a>
+          <div onClick={()=>{
+            if(navigator.share){navigator.share({title:"MandaStrong Studio",url:"https://mandastrongstudio2026.bolt.host"});}
+            else{navigator.clipboard&&navigator.clipboard.writeText("https://mandastrongstudio2026.bolt.host");alert("Link copied! Add to home screen from your browser menu.");}
+          }} style={{display:"inline-flex",flexDirection:"column",alignItems:"center",justifyContent:"center",width:130,height:90,background:"#000",border:`2px solid ${GOLD}`,cursor:"pointer",gap:4}}
+            onMouseEnter={e=>e.currentTarget.style.background=BG4}
+            onMouseLeave={e=>e.currentTarget.style.background="#000"}>
+            <div style={{fontSize:22,lineHeight:1}}>📲</div>
+            <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:1,textAlign:"center",lineHeight:1.5}}>ADD TO<br/>HOME SCREEN</div>
+          </div>
+          <div onClick={()=>window.dispatchEvent(new CustomEvent("ms_open_history"))}
+            style={{display:"inline-flex",flexDirection:"column",alignItems:"center",justifyContent:"center",width:130,height:90,background:"#000",border:`2px solid ${GOLD}`,cursor:"pointer",gap:4}}
+            onMouseEnter={e=>e.currentTarget.style.background=BG4}
+            onMouseLeave={e=>e.currentTarget.style.background="#000"}>
+            <div style={{fontSize:22,lineHeight:1}}>📂</div>
+            <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:1,textAlign:"center",lineHeight:1.5}}>OPEN<br/>PROJECT</div>
+          </div>
+        </div>
+        </div>
       </div>
     </div>
   );
@@ -1764,38 +1793,83 @@ function P2({ go }) {
   );
 }
 
-function P3() {
-  const [playing, setPlaying] = useState([false,false,false]);
-  return (
+function P3({onSave}) {
+  const [f0,setF0]=useState(null);const [f1,setF1]=useState(null);const [f2,setF2]=useState(null);
+  const [n0,setN0]=useState("");const [n1,setN1]=useState("");const [n2,setN2]=useState("");
+  const handle=(idx,e)=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    const url=URL.createObjectURL(f);
+    if(idx===0){setF0(url);setN0(f.name);}
+    if(idx===1){setF1(url);setN1(f.name);}
+    if(idx===2){setF2(url);setN2(f.name);}
+    if(onSave)onSave({id:Date.now()+Math.random(),name:f.name,type:f.type,file:f,url});
+  };
+  const inputStyle={
+    display:"block",width:"100%",padding:"12px",
+    background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,
+    color:"#000",fontSize:12,fontWeight:900,letterSpacing:2,
+    fontFamily:"'Rajdhani',sans-serif",textAlign:"center",
+    cursor:"pointer",border:"none",outline:"none",
+    WebkitAppearance:"none",appearance:"none",
+  };
+  return(
     <div style={{...Sp,padding:40}}>
       <div style={{maxWidth:980,margin:"0 auto"}}>
-        <div style={{fontSize:12,color:GOLD,letterSpacing:4,marginBottom:8,fontWeight:700}}>SHOWCASE</div>
-        <h1 style={{...H1,fontSize:30,marginBottom:24}}>EXAMPLES MADE BY MANDASTRONG STUDIO</h1>
+        <div style={{fontSize:12,color:GOLD,letterSpacing:4,marginBottom:4,fontWeight:700}}>SHOWCASE</div>
+        <h1 style={{...H1,fontSize:30,marginBottom:8}}>MADE WITH MANDASTRONG STUDIO</h1>
+        <div style={{color:WHITE,fontSize:13,lineHeight:1.8,marginBottom:24}}>Real films produced entirely inside this platform. Click play to watch.</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
-          {[1,2,3].map(s=>(
-            <div key={s} style={{...Card()}}>
-              <div style={{background:"#000",height:160,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:12,border:`1px solid ${GOLDDIM}`,cursor:"pointer"}} onClick={()=>setPlaying(p=>p.map((v,j)=>j===s-1?!v:v))}>
-                <div style={{width:52,height:52,border:`2px solid ${GOLD}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  <div style={{color:GOLD,fontSize:22,marginLeft:4}}>{playing[s-1]?"⏸":"▶"}</div>
-                </div>
-              </div>
-              <button style={{...G("out",true),width:"100%"}}>⬆ UPLOAD FILM</button>
+
+          <div style={{...Card(),padding:0,overflow:"hidden"}}>
+            <div style={{background:"#000",aspectRatio:"16/9",display:"flex",alignItems:"center",justifyContent:"center",borderBottom:`1px solid ${GOLDDIM}`}}>
+              {f0?<video src={f0} controls playsInline style={{width:"100%",height:"100%",objectFit:"contain"}}/>
+              :<div style={{textAlign:"center"}}><div style={{fontSize:40}}>🎬</div><div style={{color:GOLDDIM,fontSize:11,marginTop:8}}>SLOT 1</div></div>}
             </div>
-          ))}
+            {n0&&<div style={{padding:"6px 12px",color:GOLD,fontSize:11,fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{n0}</div>}
+            <div style={{padding:"8px 12px 12px"}}>
+              <input type="file" accept="video/*,video/mp4,video/webm,video/quicktime" style={inputStyle} onChange={e=>handle(0,e)}/>
+            </div>
+          </div>
+
+          <div style={{...Card(),padding:0,overflow:"hidden"}}>
+            <div style={{background:"#000",aspectRatio:"16/9",display:"flex",alignItems:"center",justifyContent:"center",borderBottom:`1px solid ${GOLDDIM}`}}>
+              {f1?<video src={f1} controls playsInline style={{width:"100%",height:"100%",objectFit:"contain"}}/>
+              :<div style={{textAlign:"center"}}><div style={{fontSize:40}}>🎬</div><div style={{color:GOLDDIM,fontSize:11,marginTop:8}}>SLOT 2</div></div>}
+            </div>
+            {n1&&<div style={{padding:"6px 12px",color:GOLD,fontSize:11,fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{n1}</div>}
+            <div style={{padding:"8px 12px 12px"}}>
+              <input type="file" accept="video/*,video/mp4,video/webm,video/quicktime" style={inputStyle} onChange={e=>handle(1,e)}/>
+            </div>
+          </div>
+
+          <div style={{...Card(),padding:0,overflow:"hidden"}}>
+            <div style={{background:"#000",aspectRatio:"16/9",display:"flex",alignItems:"center",justifyContent:"center",borderBottom:`1px solid ${GOLDDIM}`}}>
+              {f2?<video src={f2} controls playsInline style={{width:"100%",height:"100%",objectFit:"contain"}}/>
+              :<div style={{textAlign:"center"}}><div style={{fontSize:40}}>🎬</div><div style={{color:GOLDDIM,fontSize:11,marginTop:8}}>SLOT 3</div></div>}
+            </div>
+            {n2&&<div style={{padding:"6px 12px",color:GOLD,fontSize:11,fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{n2}</div>}
+            <div style={{padding:"8px 12px 12px"}}>
+              <input type="file" accept="video/*,video/mp4,video/webm,video/quicktime" style={inputStyle} onChange={e=>handle(2,e)}/>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
   );
 }
-
 function P4({ go, setUser }) {
   const [email,setEmail]=useState(""); const [pass,setPass]=useState("");
   const [name,setName]=useState(""); const [re,setRe]=useState("");
   const inp={width:"100%",background:"#0a0a0a",border:`1px solid ${GOLDDIM}`,padding:"10px 12px",color:WHITE,fontSize:14,marginBottom:10,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif"};
   const login=()=>{
-    if(email==="woolleya129@gmail.com"&&pass==="Mangler1970!!"){setUser({name:"Amanda",plan:"Studio",isAdmin:true});go(5);}
-    else if(email.includes("@")){setUser({name:email.split("@")[0]||"Creator",plan:"Creator",isAdmin:false});go(5);}
-    else{alert("Please enter a valid email address.");}
+    if(email==="woolleya129@gmail.com"&&pass==="Mangler1970!!"){
+      const u={name:"Amanda",plan:"Studio",isAdmin:true};
+      setUser(u);localStorage.setItem("ms_user",JSON.stringify(u));go(5);
+    } else if(email.includes("@")){
+      const u={name:email.split("@")[0]||"Creator",plan:"Creator",isAdmin:false};
+      setUser(u);localStorage.setItem("ms_user",JSON.stringify(u));go(5);
+    } else{alert("Please enter a valid email address.");}
   };
   return (
     <div style={{...Sp,padding:40}}>
@@ -1825,7 +1899,8 @@ function P4({ go, setUser }) {
           </div>
         </div>
         <div style={{textAlign:"center",marginBottom:20}}>
-          <button onClick={()=>{try{const m=JSON.parse(localStorage.getItem("ms_medialib")||"[]");const t=JSON.parse(localStorage.getItem("ms_timeline")||"{}");const u=JSON.parse(localStorage.getItem("ms_user")||"{}");const p=JSON.parse(localStorage.getItem("ms_page")||"5");if(m.length>0||Object.keys(t).length>0){setMediaLib(m);setTimeline(t);if(u&&u.name)setUser(u);go(p);setSavedNotice(true);setTimeout(()=>setSavedNotice(false),2500);}else{alert("No saved project found. Hit SAVE PROJECT in the footer first.");}}catch(e){alert("Could not load project.");}}} style={{...G("gold",false),padding:"12px 32px"}}>📂 OPEN PROJECT</button>
+          <button onClick={()=>window.dispatchEvent(new CustomEvent("ms_open_history"))} style={{...G("gold",false),padding:"12px 32px",fontSize:13,letterSpacing:3}}>📂 OPEN PROJECT</button>
+          <div style={{color:DIM,fontSize:11,marginTop:8}}>Continue where you left off</div>
         </div>
         <h2 style={{...H1,fontSize:22,textAlign:"center",marginBottom:22}}>SUBSCRIPTION PLANS</h2>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
@@ -2820,10 +2895,76 @@ export default function App() {
     // Viewport — responsive for all devices
     let vp=document.querySelector("meta[name=viewport]");
     if(!vp){vp=document.createElement("meta");vp.name="viewport";document.head.appendChild(vp);}
-    vp.content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes";
+    vp.content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes,viewport-fit=cover";
     // Global responsive + Bolt badge suppression
     const style=document.createElement("style");
-    style.textContent=`*{box-sizing:border-box!important;}body,html{margin:0;padding:0;width:100%;overflow-x:hidden;}[data-bolt-badge],a[href*='bolt.new'],.bolt-badge,[class*='bolt'],[id*='bolt'],div[style*='bolt'],iframe[src*='bolt'],a[href*='stackblitz'],[class*='stackblitz']{display:none!important;opacity:0!important;pointer-events:none!important;width:0!important;height:0!important;overflow:hidden!important;}@media(max-width:900px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr 1fr!important;}}@media(max-width:600px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr!important;}}`;
+    style.textContent=`
+      *{box-sizing:border-box!important;}
+      html,body{margin:0;padding:0;width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+      img,video,canvas{max-width:100%;height:auto;}
+      input,button,textarea,select{font-family:inherit;max-width:100%;}
+
+      /* Hide Bolt badge */
+      [data-bolt-badge],a[href*='bolt.new'],.bolt-badge,[class*='bolt'],[id*='bolt'],
+      div[style*='bolt'],iframe[src*='bolt'],a[href*='stackblitz'],[class*='stackblitz']
+      {display:none!important;opacity:0!important;pointer-events:none!important;width:0!important;height:0!important;overflow:hidden!important;}
+
+      /* ── TABLET 600–900px ── */
+      @media(max-width:900px){
+        div[style*="grid-template-columns: repeat(4"]{grid-template-columns:1fr 1fr!important;}
+        div[style*="grid-template-columns: repeat(3"]{grid-template-columns:1fr 1fr!important;}
+        div[style*="gridTemplateColumns: repeat(4"]{grid-template-columns:1fr 1fr!important;}
+        div[style*="gridTemplateColumns: repeat(3"]{grid-template-columns:1fr 1fr!important;}
+        div[style*="grid-template-columns: 1fr 1fr 1fr"]{grid-template-columns:1fr 1fr!important;}
+        div[style*="gridTemplateColumns: 1fr 1fr 1fr"]{grid-template-columns:1fr 1fr!important;}
+        div[style*="290px 1fr"]{grid-template-columns:1fr!important;}
+        div[style*="1fr 420px"]{grid-template-columns:1fr!important;}
+        div[style*="1fr 320px"]{grid-template-columns:1fr!important;}
+      }
+
+      /* ── MOBILE ≤600px ── */
+      @media(max-width:600px){
+        div[style*="grid-template-columns"]{grid-template-columns:1fr!important;}
+        div[style*="gridTemplateColumns"]{grid-template-columns:1fr!important;}
+        div[style*="display: grid"]{grid-template-columns:1fr!important;}
+        div[style*="padding: 40px"]{padding:16px!important;}
+        div[style*="padding:40px"]{padding:16px!important;}
+        div[style*="padding: 20px"]{padding:12px!important;}
+        div[style*="padding:20px"]{padding:12px!important;}
+        h1[style]{font-size:clamp(18px,5vw,28px)!important;}
+        div[style*="fontSize: 28"]{font-size:20px!important;}
+        div[style*="fontSize:28"]{font-size:20px!important;}
+        div[style*="fontSize: 30"]{font-size:22px!important;}
+        div[style*="fontSize:30"]{font-size:22px!important;}
+        /* Footer wraps nicely */
+        footer > div:last-child{flex-wrap:wrap!important;gap:6px!important;}
+        footer > div:last-child > *{font-size:10px!important;padding:4px 8px!important;}
+        /* Header */
+        header{height:auto!important;padding:8px 12px!important;flex-wrap:wrap!important;}
+        /* Modals full width */
+        div[style*="min(580px"]{width:98vw!important;}
+        div[style*="min(600px"]{width:98vw!important;}
+        div[style*="min(960px"]{width:100vw!important;height:100vh!important;}
+        div[style*="min(400px"]{width:96vw!important;}
+        /* Voice page sidebar stacks */
+        div[style*="290px 1fr"]{display:block!important;}
+        div[style*="gridTemplateColumns: 290px"]{display:block!important;}
+      }
+
+      /* ── TOUCH targets ── */
+      @media(hover:none){
+        button,a,[role=button]{min-height:44px;min-width:44px;}
+      }
+
+      /* ── SAFE AREA for notched phones ── */
+      @supports(padding:max(0px)){
+        body{
+          padding-left:env(safe-area-inset-left);
+          padding-right:env(safe-area-inset-right);
+          padding-bottom:env(safe-area-inset-bottom);
+        }
+      }
+    `;
     document.head.appendChild(style);
     return()=>{try{document.head.removeChild(link);}catch{}};
   },[]);
@@ -2945,12 +3086,12 @@ export default function App() {
 const allPages=[
     {p:1,el:<P1 go={go}/>},
     {p:2,el:<P2 go={go}/>},
-    {p:3,el:<P3/>},
+    {p:3,el:<P3 onSave={saveAsset}/>},
     {p:4,el:<P4 go={go} setUser={setUser}/>},
     {p:5,el:<ToolPage title="WRITING TOOLS" subtitle="AI WORKSTATION 01 — WRITING" tools={WRITING} onSave={saveAsset}/>},
     {p:6,el:<P6Voice onSave={saveAsset}/>},
     {p:7,el:<ToolPage title="IMAGE TOOLS" subtitle="AI WORKSTATION 03 — IMAGE" tools={IMAGE_T} onSave={saveAsset}/>},
-    {p:8,el:<P8VideoGenerator onSave={saveAsset} user={user} filmDuration={filmDuration} setFilmDuration={setFilmDuration}/>},
+    {p:8,el:<P8VideoGenerator key="p8vg" onSave={saveAsset} user={user} filmDuration={filmDuration} setFilmDuration={setFilmDuration}/>},
     {p:9,el:<ToolPage title="MOTION & VFX" subtitle="AI WORKSTATION 05 — MOTION" tools={MOTION} onSave={saveAsset}/>},
     {p:10,el:<ToolPage title="ENHANCEMENT STUDIO" subtitle="AI WORKSTATION 06 — ENHANCE" tools={MOTION} onSave={saveAsset}/>},
     {p:11,el:<P11 mediaLib={mediaLib} setMediaLib={setMediaLib}/>},
