@@ -60,52 +60,32 @@ function speakText(voiceId, txt, onStart, onEnd) {
   if (!txt||!txt.trim()) return;
   window.speechSynthesis.cancel();
   currentUtterance = null;
-
-  // Human-like text processing — add natural pauses and rhythm
   const clean = txt
-    .replace(/\[pause\]/g," ... ")
-    .replace(/\.{3}/g," ... ")
+    .replace(/\.\.\.|\.{3}/g," ... ")
     .replace(/—/g,", ")
     .replace(/[*\/]/g," ")
-    .replace(/([.!?])\s+([A-Z])/g,"$1 ... $2")  // pause between sentences
-    .replace(/,\s+/g,", ")
-    .replace(/\bCAPS\b/g, txt=>txt.toLowerCase())
+    .replace(/([.!?])\s+([A-Z])/g,"$1 ... $2")
     .slice(0,5000);
-
   const doSpeak = () => {
     const allVoices = window.speechSynthesis.getVoices();
-    // Get voice character settings
     const voiceChar = typeof VOICE_CHARACTERS !== "undefined"
-      ? VOICE_CHARACTERS.find(v=>v.id===voiceId)
-      : null;
-
+      ? VOICE_CHARACTERS.find(v=>v.id===voiceId) : null;
     const utt = new SpeechSynthesisUtterance(clean);
-
-    // Apply character settings — each voice has unique pitch/rate personality
     utt.pitch = voiceChar ? voiceChar.pitch : 1.0;
     utt.rate  = voiceChar ? voiceChar.rate  : 0.85;
     utt.volume = 1.0;
-
-    // Pick best matching browser voice for this character
     const assignedName = VOICE_ASSIGNMENTS[voiceId];
     let picked = null;
-
-    if(assignedName){
-      picked = allVoices.find(v=>v.name===assignedName);
-    }
-
+    if(assignedName) picked = allVoices.find(v=>v.name===assignedName);
     if(!picked && voiceChar){
       const origin = (voiceChar.origin||"").toLowerCase();
       const gender = (voiceChar.gender||"").toLowerCase();
-
-      // Priority order: best premium voices first
       const premiumBritish  = ["Daniel","Oliver","Arthur","George","Malcolm"];
       const premiumUSFemale = ["Samantha","Ava","Victoria","Karen"];
       const premiumUSMale   = ["Alex","Tom","Fred","Aaron"];
       const premiumAussie   = ["Karen","Lee"];
       const premiumIrish    = ["Moira"];
       const premiumScottish = ["Fiona"];
-
       let candidates = [];
       if(origin.includes("british")||origin.includes("english"))
         candidates = gender==="female" ? ["Serena","Tessa","Kate"] : premiumBritish;
@@ -113,33 +93,24 @@ function speakText(voiceId, txt, onStart, onEnd) {
       else if(origin.includes("scottish")) candidates = premiumScottish;
       else if(origin.includes("australian")) candidates = premiumAussie;
       else if(gender==="female") candidates = premiumUSFemale;
-      else                        candidates = premiumUSMale;
-
+      else candidates = premiumUSMale;
       for(const name of candidates){
         picked = allVoices.find(v=>v.name.includes(name));
         if(picked) break;
       }
     }
-
-    // Fallback to any available voice matching language
     if(!picked) picked = allVoices.find(v=>v.lang&&v.lang.startsWith("en"));
     if(!picked && allVoices.length) picked = allVoices[0];
-
     if(picked) utt.voice = picked;
     utt.lang = "en-GB";
-
     utt.onstart  = ()=>{ currentUtterance=utt; if(onStart) onStart(); };
     utt.onend    = ()=>{ currentUtterance=null; if(onEnd) onEnd(); };
     utt.onerror  = ()=>{ currentUtterance=null; if(onEnd) onEnd(); };
     window.speechSynthesis.speak(utt);
   };
-
-  // Voices may not be loaded yet
   if(window.speechSynthesis.getVoices().length===0){
     window.speechSynthesis.onvoiceschanged=()=>{ window.speechSynthesis.onvoiceschanged=null; doSpeak(); };
-  } else {
-    doSpeak();
-  }
+  } else { doSpeak(); }
 }
 
 function stopSpeaking() {
@@ -1456,77 +1427,80 @@ function P6Voice({ onSave }) {
             </div>
           </div>
         </div>
-        {/* RIGHT PANEL — speak controls */}
-        <div style={{display:"flex",flexDirection:"column",background:"#030303"}}>
-          <div style={{borderBottom:`1px solid ${GOLDDIM}`,display:"flex",flexShrink:0}}>
-            {[["speak","🎙 SPEAK"],["result","✦ RESULT"],["settings","🎚 SLIDERS"]].map(([t,l])=>(
-              <button key={t} onClick={()=>setActiveTab(t)} style={{background:activeTab===t?"#0a0800":"none",border:"none",borderBottom:activeTab===t?`2px solid ${GOLD}`:"2px solid transparent",color:activeTab===t?GOLD:WHITE,padding:"12px 16px",cursor:"pointer",fontSize:11,fontWeight:900,letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>
-                {l}
-              </button>
+        {/* RIGHT PANEL — speak + sliders always visible */}
+        <div style={{display:"flex",flexDirection:"column",background:"#030303",overflowY:"auto",padding:20}}>
+          {/* Selected voice info */}
+          <div style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:"10px 14px",marginBottom:14,flexShrink:0}}>
+            <div style={{color:WHITE,fontSize:13,fontWeight:900}}>{selected.name} {selected.emoji} · {selected.origin} · {selected.gender}</div>
+            <div style={{color:GOLDDIM,fontSize:11,marginTop:3}}>{selected.style}</div>
+            <div style={{color:DIM,fontSize:11,marginTop:2,fontStyle:"italic"}}>{selected.desc}</div>
+          </div>
+
+          {/* Script textarea */}
+          <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:6}}>YOUR NARRATION SCRIPT</div>
+          <textarea value={text} onChange={e=>setText(e.target.value)}
+            placeholder="Paste your narration script here..."
+            style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"12px 14px",color:WHITE,fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.9,height:180,resize:"vertical",marginBottom:14}}/>
+
+          {/* Sliders — always visible */}
+          <div style={{background:"#0a0a0a",border:`1px solid ${GOLDDIM}`,padding:"12px 14px",marginBottom:14}}>
+            <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:10}}>VOICE SETTINGS</div>
+            {[
+              ["SPEED",speed,0.3,1.5,0.01,(v)=>setSpeed(v),`${speed.toFixed(2)}x`],
+              ["PITCH",pitchV,0.3,2.0,0.01,(v)=>setPitchV(v),`${pitchV.toFixed(2)}`],
+              ["PAUSE (ms)",pauseLen,200,2000,50,(v)=>setPauseLen(v),`${pauseLen}ms`],
+              ["VOLUME",volume,0.1,1.0,0.05,(v)=>setVolume(v),`${Math.round(volume*100)}%`],
+            ].map(([label,val,min,max,step,setter,display])=>(
+              <div key={label} style={{marginBottom:10}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                  <span style={{color:GOLDDIM,fontSize:10,fontWeight:900,letterSpacing:2}}>{label}</span>
+                  <span style={{color:GOLD,fontSize:11,fontWeight:900}}>{display}</span>
+                </div>
+                <input type="range" min={min} max={max} step={step} value={val}
+                  onChange={e=>setter(+e.target.value)} style={{width:"100%",accentColor:GOLD}}/>
+              </div>
             ))}
+            <button onClick={()=>{setSpeed(0.62);setPitchV(0.86);setPauseLen(1600);setVolume(1.0);setSelVoice("james");setMood("Neutral");}}
+              style={{...G("out",true),fontSize:10,marginTop:4}}>⚡ JAMES DOCUMENTARY SETTINGS</button>
+            <div style={{marginTop:10}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                <span style={{color:GOLDDIM,fontSize:10,fontWeight:900,letterSpacing:2}}>MOOD</span>
+                <span style={{color:GOLD,fontSize:11,fontWeight:900}}>{mood}</span>
+              </div>
+              <select value={mood} onChange={e=>setMood(e.target.value)}
+                style={{width:"100%",background:"#111",border:`1px solid ${GOLDDIM}`,color:GOLD,padding:"5px 8px",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>
+                {["Neutral","Happy","Sad","Angry","Fearful","Surprised","Tender","Serious","Excited","Melancholic","Hopeful","Tense","Calm","Dramatic"].map(m=><option key={m} value={m}>{m}</option>)}
+              </select>
+            </div>
           </div>
-          <div style={{flex:1,padding:20,overflowY:"auto"}}>
-            {activeTab==="speak"&&(
-              <div>
-                <div style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:"10px 14px",marginBottom:14}}>
-                  <div style={{color:WHITE,fontSize:12,fontWeight:900}}>{selected.name} {selected.emoji} · {selected.origin} · {selected.gender}</div>
-                  <div style={{color:GOLDDIM,fontSize:11,marginTop:3}}>{selected.style}</div>
-                  <div style={{color:DIM,fontSize:11,marginTop:3,fontStyle:"italic"}}>{selected.desc}</div>
-                </div>
-                <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:6}}>YOUR SCRIPT</div>
-                <textarea value={text} onChange={e=>setText(e.target.value)}
-                  placeholder="Paste your narration script here... Tip: For documentary use James — pitch 0.86, rate 0.62, pause 1600ms."
-                  style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"12px 14px",color:WHITE,fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.9,height:220,resize:"vertical"}}/>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:10}}>
-                  <button onClick={processAndSpeak} disabled={loading||!text.trim()}
-                    style={{background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,border:"none",color:"#000",padding:"14px",fontSize:13,fontWeight:900,letterSpacing:2,cursor:loading||!text.trim()?"not-allowed":"pointer",fontFamily:"'Rajdhani',sans-serif",opacity:loading||!text.trim()?0.5:1}}>
-                    {loading?"⟳ PREPARING...":"✦ PREPARE & SPEAK"}
-                  </button>
-                  <button onClick={()=>{if(speaking){stop();}else{speakNow(text);}}} disabled={!text.trim()}
-                    style={{background:"transparent",border:`1px solid ${GOLD}`,color:GOLD,padding:"14px",fontSize:13,fontWeight:900,letterSpacing:2,cursor:!text.trim()?"not-allowed":"pointer",fontFamily:"'Rajdhani',sans-serif",opacity:!text.trim()?0.5:1}}>
-                    {speaking?"⏹ STOP":"▶ SPEAK NOW"}
-                  </button>
-                </div>
-              </div>
-            )}
-            {activeTab==="result"&&(
-              <div>
-                <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:8}}>AI-FORMATTED RESULT</div>
-                {processed?(
-                  <div>
-                    <textarea value={processed} onChange={e=>setProcessed(e.target.value)}
-                      style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"12px 14px",color:WHITE,fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.9,height:200,resize:"vertical"}}/>
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginTop:10}}>
-                      <button onClick={()=>speakNow(processed)} style={{...G("gold",false),padding:"10px"}}>▶ PLAY</button>
-                      <button onClick={stop} style={{...G("out",false),padding:"10px"}}>⏹ STOP</button>
-                      <button onClick={()=>{if(onSave)onSave({id:Date.now()+Math.random(),name:`${selected.name} — Narration`,type:"audio/narration",content:processed,url:""});setSaved(true);}} style={{...G("gold",false),padding:"10px"}}>{saved?"✓ SAVED":"💾 SAVE"}</button>
-                    </div>
-                    {saved&&<div style={{marginTop:8,background:"#061406",border:"1px solid #22c55e",padding:"8px",textAlign:"center",color:"#22c55e",fontSize:11,fontWeight:900,letterSpacing:2}}>✓ SAVED TO MEDIA LIBRARY</div>}
-                  </div>
-                ):(
-                  <div style={{color:GOLDDIM,fontSize:13,lineHeight:1.8,padding:"20px 0"}}>No result yet. Use PREPARE & SPEAK to format your script for natural delivery.</div>
-                )}
-              </div>
-            )}
-            {activeTab==="settings"&&(
-              <div>
-                <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:14}}>VOICE SETTINGS — {selected.name}</div>
-                {[["SPEED",speed,0.3,1.5,0.01,(v)=>setSpeed(v),`${speed.toFixed(2)}x`],["PITCH",pitchV,0.3,2.0,0.01,(v)=>setPitchV(v),`${pitchV.toFixed(2)}`],["PAUSE (ms)",pauseLen,200,2000,50,(v)=>setPauseLen(v),`${pauseLen}ms`],["VOLUME",volume,0.1,1.0,0.05,(v)=>setVolume(v),`${Math.round(volume*100)}%`]].map(([label,val,min,max,step,setter,display])=>(
-                  <div key={label} style={{marginBottom:16}}>
-                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
-                      <span style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2}}>{label}</span>
-                      <span style={{color:WHITE,fontSize:12,fontWeight:900}}>{display}</span>
-                    </div>
-                    <input type="range" min={min} max={max} step={step} value={val} onChange={e=>setter(+e.target.value)} style={{width:"100%",accentColor:GOLD}}/>
-                  </div>
-                ))}
-                <div style={{background:"#0a0800",border:`1px solid ${GOLDDIM}`,padding:"10px 14px",marginTop:8}}>
-                  <div style={{color:GOLDDIM,fontSize:10,letterSpacing:2,marginBottom:6}}>JAMES DOCUMENTARY SETTINGS</div>
-                  <button onClick={()=>{setSpeed(0.62);setPitchV(0.86);setPauseLen(1600);setVolume(1.0);setSelVoice("james");setMood("Neutral");}} style={{...G("gold",true),fontSize:10}}>APPLY JAMES SETTINGS</button>
-                </div>
-              </div>
-            )}
+
+          {/* Speak buttons */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
+            <button onClick={processAndSpeak} disabled={loading||!text.trim()}
+              style={{background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,border:"none",color:"#000",padding:"14px",fontSize:13,fontWeight:900,letterSpacing:2,cursor:loading||!text.trim()?"not-allowed":"pointer",fontFamily:"'Rajdhani',sans-serif",opacity:loading||!text.trim()?0.5:1}}>
+              {loading?"⟳ PREPARING...":"✦ PREPARE & SPEAK"}
+            </button>
+            <button onClick={()=>{if(speaking){stop();}else{speakNow(text);}}} disabled={!text.trim()}
+              style={{background:"transparent",border:`1px solid ${GOLD}`,color:GOLD,padding:"14px",fontSize:13,fontWeight:900,letterSpacing:2,cursor:!text.trim()?"not-allowed":"pointer",fontFamily:"'Rajdhani',sans-serif",opacity:!text.trim()?0.5:1}}>
+              {speaking?"⏹ STOP":"▶ SPEAK NOW"}
+            </button>
           </div>
+
+          {/* Result */}
+          {processed&&(
+            <div>
+              <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:6}}>AI-FORMATTED RESULT</div>
+              <textarea value={processed} onChange={e=>setProcessed(e.target.value)}
+                style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"12px 14px",color:WHITE,fontSize:13,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.9,height:140,resize:"vertical",marginBottom:8}}/>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+                <button onClick={()=>speakNow(processed)} style={{...G("gold",false),padding:"10px"}}>▶ PLAY</button>
+                <button onClick={stop} style={{...G("out",false),padding:"10px"}}>⏹ STOP</button>
+                <button onClick={()=>{if(onSave)onSave({id:Date.now()+Math.random(),name:`${selected.name} — Narration`,type:"audio/narration",content:processed,url:""});setSaved(true);}}
+                  style={{...G("gold",false),padding:"10px"}}>{saved?"✓ SAVED":"💾 SAVE"}</button>
+              </div>
+              {saved&&<div style={{marginTop:8,background:"#061406",border:"1px solid #22c55e",padding:"8px",textAlign:"center",color:"#22c55e",fontSize:11,fontWeight:900,letterSpacing:2}}>✓ SAVED TO MEDIA LIBRARY</div>}
+            </div>
+          )}
         </div>
     </div>
   );
@@ -2987,8 +2961,13 @@ function P19() {
 }
 
 function P20() {
-  const pp=(txt)=><p style={{color:WHITE,fontSize:13,lineHeight:1.85,marginBottom:8}}>{txt}</p>;
-  const ss=(title,body)=>(<div style={{marginBottom:14}}><div style={{color:GOLD,fontWeight:900,fontSize:12,letterSpacing:2,marginBottom:6,borderBottom:`1px solid ${GOLDDIM}44`,paddingBottom:4}}>{title}</div>{body}</div>);
+  const p2=(txt)=><p style={{color:WHITE,fontSize:13,lineHeight:1.85,marginBottom:8}}>{txt}</p>;
+  const sec2=(title,body)=>(
+    <div style={{marginBottom:14}}>
+      <div style={{color:GOLD,fontWeight:900,fontSize:12,letterSpacing:2,marginBottom:6,borderBottom:`1px solid ${GOLDDIM}44`,paddingBottom:4}}>{title}</div>
+      {body}
+    </div>
+  );
   return (
     <div style={{...Sp,padding:"30px 40px 80px"}}>
       <div style={{maxWidth:900,margin:"0 auto"}}>
@@ -2998,22 +2977,26 @@ function P20() {
         <div style={{background:"#050505",border:`2px solid ${GOLD}`,padding:"22px 26px",marginBottom:20}}>
           <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,letterSpacing:3,marginBottom:4,textAlign:"center"}}>TERMS OF SERVICE</div>
           <div style={{color:WHITE,fontSize:11,textAlign:"center",letterSpacing:2,marginBottom:18,paddingBottom:14,borderBottom:`1px solid ${GOLDDIM}`}}>By using MandaStrong Studio you agree to be legally bound by these Terms.</div>
-          {ss("1. ACCEPTANCE",<>{pp("By accessing or using MandaStrong Studio you agree to be legally bound by these Terms. If you do not agree, do not use this platform.")}</>)}
-          {ss("2. SUBSCRIPTIONS & BILLING",<>{pp("Creator $20/mo · Pro $30/mo · Studio $50/mo. All plans auto-renew monthly. Studio includes 7-day free trial. All payments via Stripe. No refunds for partial periods.")}</>)}
-          {ss("3. INTELLECTUAL PROPERTY",<>{pp("You retain full ownership of all original content. Studio Plan subscribers receive full commercial rights to AI-generated content. MandaStrong Studio and its codebase remain the intellectual property of Amanda Woolley and MandaStrong Studio LLC.")}</>)}
-          {ss("4. ACCEPTABLE USE",<>{pp("Lawful use only. Prohibited: defamatory content, infringing IP, reverse-engineering the platform, spam, malware, or sharing credentials.")}</>)}
-          {ss("5. SOCIAL MISSION",<>{pp("A meaningful portion of all subscription proceeds funds veterans mental health initiatives and school anti-bullying programmes. This is the founding mission of this platform.")}</>)}
-          {ss("6. LIMITATION OF LIABILITY",<>{pp("Provided as-is. No liability for indirect or consequential damages. Total liability capped at amounts paid in the prior 30 days. Governed by the laws of the jurisdiction of MandaStrong Studio LLC.")}</>)}
-          <div style={{borderTop:`1px solid ${GOLDDIM}`,paddingTop:10,marginTop:4}}><p style={{color:GOLDDIM,fontSize:11,margin:0,letterSpacing:1}}>MANDASTRONG STUDIO LLC · AMANDA WOOLLEY · MARCH 2026 · MandaStrong1.Etsy.com</p></div>
+          {sec2("1. ACCEPTANCE",<>{p2("By accessing or using MandaStrong Studio you agree to be legally bound by these Terms. If you do not agree, do not use this platform.")}</>)}
+          {sec2("2. SUBSCRIPTIONS & BILLING",<>{p2("Three paid plans: Creator ($20/mo), Pro ($30/mo), Studio ($50/mo). All plans auto-renew monthly. Studio Plan includes a 7-day free trial. All payments via Stripe. No refunds for partial billing periods.")}</>)}
+          {sec2("3. INTELLECTUAL PROPERTY",<>{p2("You retain full ownership of all original content you upload. Studio Plan subscribers receive full commercial rights to AI-generated content. MandaStrong Studio, its tools, interface, branding and codebase remain the intellectual property of Amanda Woolley and MandaStrong Studio LLC.")}</>)}
+          {sec2("4. ACCEPTABLE USE",<>{p2("You agree to use this platform only for lawful purposes. Prohibited: defamatory content, infringing IP, reverse-engineering the platform, generating spam or malware, or sharing account credentials.")}</>)}
+          {sec2("5. SOCIAL MISSION",<>{p2("A meaningful portion of all subscription proceeds funds veterans mental health initiatives and school anti-bullying programmes. This is the founding mission of MandaStrong Studio.")}</>)}
+          {sec2("6. LIMITATION OF LIABILITY",<>{p2("The platform is provided as-is. MandaStrong Studio LLC shall not be liable for indirect or consequential damages. Total liability shall not exceed amounts paid in the 30 days prior to any claim.")}</>)}
+          <div style={{borderTop:`1px solid ${GOLDDIM}`,paddingTop:10,marginTop:4}}>
+            <p style={{color:GOLDDIM,fontSize:11,margin:0,letterSpacing:1}}>MANDASTRONG STUDIO LLC · AMANDA WOOLLEY, FOUNDER · MARCH 2026 · MandaStrong1.Etsy.com</p>
+          </div>
         </div>
         <div style={{background:"#050505",border:`2px solid ${GOLD}`,padding:"22px 26px"}}>
           <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,letterSpacing:3,marginBottom:4,textAlign:"center"}}>DISCLAIMER</div>
           <div style={{color:WHITE,fontSize:11,textAlign:"center",letterSpacing:2,marginBottom:18,paddingBottom:14,borderBottom:`1px solid ${GOLDDIM}`}}>Please read carefully before using this platform.</div>
-          {ss("AI-GENERATED CONTENT",<>{pp("All outputs are generated algorithmically. Review all content before publication. No guarantee of accuracy or appropriateness. You are solely responsible for fact-checking and compliance.")}</>)}
-          {ss("NO PROFESSIONAL ADVICE",<>{pp("Nothing generated constitutes legal, medical, financial, or professional advice. Consult a qualified professional before acting on any AI-generated information.")}</>)}
-          {ss("PLATFORM AVAILABILITY",<>{pp("Provided on an 'as available' basis. No guarantee of uninterrupted access or data retention. Download and back up all productions regularly.")}</>)}
-          {ss("USER RESPONSIBILITY",<>{pp("All responsibility for how content is deployed, distributed, monetised, or shared rests entirely with the user.")}</>)}
-          <div style={{borderTop:`1px solid ${GOLDDIM}`,paddingTop:10,marginTop:4}}><p style={{color:GOLDDIM,fontSize:11,margin:0,letterSpacing:1}}>— AMANDA WOOLLEY · FOUNDER · MANDASTRONG STUDIO LLC · MARCH 2026</p></div>
+          {sec2("AI-GENERATED CONTENT",<>{p2("All outputs are generated algorithmically and must be reviewed before publication. The platform does not guarantee accuracy or appropriateness of AI-generated material. You are solely responsible for fact-checking and compliance.")}</>)}
+          {sec2("NO PROFESSIONAL ADVICE",<>{p2("Nothing generated constitutes legal, medical, financial, or professional advice. Always consult a qualified professional before acting on AI-generated information.")}</>)}
+          {sec2("PLATFORM AVAILABILITY",<>{p2("Provided on an 'as available' basis. We do not guarantee uninterrupted access or data retention. Download and back up all completed productions regularly.")}</>)}
+          {sec2("USER RESPONSIBILITY",<>{p2("All responsibility for how content is deployed, distributed, monetised, or shared rests entirely with the user. MandaStrong Studio shall not be liable for any consequences arising from published content.")}</>)}
+          <div style={{borderTop:`1px solid ${GOLDDIM}`,paddingTop:10,marginTop:4}}>
+            <p style={{color:GOLDDIM,fontSize:11,margin:0,letterSpacing:1}}>— AMANDA WOOLLEY · FOUNDER · MANDASTRONG STUDIO LLC · MARCH 2026</p>
+          </div>
         </div>
       </div>
     </div>
@@ -3122,24 +3105,26 @@ function P23({ go }) {
         <div style={{...Card(),textAlign:"left",marginBottom:16,background:"#050505",border:`1px solid ${GOLD}`}}>
           <div style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:3,marginBottom:14,textAlign:"center"}}>✦ OUR MISSION ✦</div>
           <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:"0 0 12px 0"}}>I am Amanda Woolley — author, creative producer, and founder of MandaStrong Studio. I built this platform because I believe technology should serve humanity, and art should serve truth. MandaStrong Studio supports two causes close to my heart: <strong style={{color:GOLD}}>veterans' mental health</strong> and <strong style={{color:GOLD}}>anti-bullying programmes in schools</strong>.</p>
-          <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:0}}>We are a professional cinema intelligence platform giving creators access to <strong style={{color:GOLD}}>600+ AI filmmaking tools</strong>, a full production pipeline from script to screen, and films up to 3 hours long — on any device.</p>
+          <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:0}}>We are a professional cinema intelligence platform giving creators access to <strong style={{color:GOLD}}>600+ AI filmmaking tools</strong>, a full production pipeline from script to screen, and the ability to produce films up to 3 hours long — all from a single platform, on any device.</p>
         </div>
-        <div onClick={()=>setGuideOpen(g=>!g)} style={{...Card(),marginBottom:guideOpen?0:16,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",border:`2px solid ${GOLD}`,background:"#0a0800"}}>
+        <div onClick={()=>setGuideOpen(g=>!g)}
+          style={{...Card(),marginBottom:guideOpen?0:16,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",border:`2px solid ${GOLD}`,background:"#0a0800"}}>
           <span style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:3}}>📖 MANDASTRONG STUDIO — COMPLETE HOW TO USE GUIDE</span>
           <span style={{color:GOLD,fontSize:18}}>{guideOpen?"▲":"▼"}</span>
         </div>
         {guideOpen&&(
           <div style={{...Card(),textAlign:"left",marginBottom:16,padding:"24px 28px",border:`2px solid ${GOLD}`,borderTopWidth:0}}>
             {[
-              {t:"GETTING STARTED",c:"Use the ☰ menu top left to jump to any of the 23 pages. Hit 💾 SAVE PROJECT in the footer. 📂 MY PROJECTS restores your session."},
+              {t:"GETTING STARTED",c:"Use the ☰ menu top left to jump to any of the 23 pages. Hit 💾 SAVE PROJECT in the footer to save your session. 📂 MY PROJECTS restores where you left off."},
               {t:"PAGE 4 — LOGIN & PRICING",c:"Creator $20/mo · Pro $30/mo · Studio $50/mo with 7-day free trial. All payments via Stripe."},
-              {t:"PAGE 6 — VOICE ENGINE",c:"54 voice characters. Filter by gender, age, origin. Hit ▶ TEST. Set Speed, Pitch, Pause, Volume and Mood. Hit ⚡ JAMES DOCUMENTARY SETTINGS. Paste script and hit PREPARE & SPEAK."},
-              {t:"PAGE 8 — VIDEO GENERATOR",c:"Describe any scene. Hit 🎬 GENERATE SCENE. Every clip saves automatically to your Media Library."},
-              {t:"PAGE 13 — TIMELINE EDITOR",c:"Drag clips to tracks. Hit ⚡ SYNC ALL TRACKS. Hit → RENDER when ready."},
-              {t:"PAGE 15 — AUDIO MIXER",c:"Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85."},
-              {t:"PAGE 16 — RENDER ENGINE",c:"Choose quality up to 4K. Hit START RENDER. Download, Preview or Export."},
-              {t:"PAGE 18 — EXPORT & DISTRIBUTE",c:"Share directly to YouTube, Instagram, TikTok, Facebook, LinkedIn, Vimeo and WhatsApp."},
-              {t:"RECOMMENDED WORKFLOW",c:"Page 8 → Page 6 → Page 13 → Page 15 → Page 16 → Page 17 → Page 18."},
+              {t:"PAGE 6 — VOICE ENGINE",c:"54 voice characters. Filter by gender, age, origin. Hit ▶ TEST to hear any voice. Set Speed, Pitch, Pause, Volume and Mood sliders. Hit ⚡ JAMES DOCUMENTARY SETTINGS for documentary narration. Hit PREPARE & SPEAK to generate."},
+              {t:"PAGE 8 — VIDEO GENERATOR",c:"Describe any scene. Upload a reference image. Hit 🎬 GENERATE SCENE. Every clip saves to your Media Library automatically."},
+              {t:"PAGE 13 — TIMELINE EDITOR",c:"Drag clips to Video, Audio and Text tracks. Hit ⚡ SYNC ALL TRACKS to auto-populate. Hit → RENDER when ready."},
+              {t:"PAGE 15 — AUDIO MIXER",c:"Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85. Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85."},
+              {t:"PAGE 16 — RENDER ENGINE",c:"Choose quality up to 4K. Hit START RENDER. Download, Preview on Page 17, or Export on Page 18."},
+              {t:"PAGE 18 — EXPORT & DISTRIBUTE",c:"Download your film then share directly to YouTube, Instagram, TikTok, Facebook, LinkedIn, Vimeo and WhatsApp."},
+              {t:"PAGE 21 — AGENT GROK",c:"Your 24/7 AI studio assistant. Ask anything about tools, workflow, pricing or production."},
+              {t:"RECOMMENDED WORKFLOW",c:"Page 8 → Page 6 → Page 13 → Page 15 → Page 16 → Page 17 → Page 18. Save at every stage."},
             ].map(({t,c})=>(
               <div key={t} style={{borderBottom:`1px solid ${GOLDDIM}33`,paddingBottom:14,marginBottom:14}}>
                 <div style={{color:GOLD,fontWeight:900,fontSize:12,letterSpacing:2,marginBottom:6}}>✦ {t}</div>
