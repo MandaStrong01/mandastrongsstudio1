@@ -1525,15 +1525,10 @@ function P6Voice({ onSave }) {
                   <button onClick={()=>{setSpeed(0.62);setPitchV(0.86);setPauseLen(1600);setVolume(1.0);setSelVoice("james");setMood("Neutral");}} style={{...G("gold",true),fontSize:10}}>APPLY JAMES SETTINGS</button>
                 </div>
                 <div style={{marginTop:14}}>
-                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
-                    <span style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2}}>MOOD</span>
-                    <span style={{color:WHITE,fontSize:12,fontWeight:900}}>{mood}</span>
-                  </div>
-                  <select value={mood} onChange={e=>setMood(e.target.value)}
-                    style={{width:"100%",background:"#111",border:`1px solid ${GOLDDIM}`,color:GOLD,padding:"7px 10px",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2}}>MOOD</span><span style={{color:WHITE,fontSize:12}}>{mood}</span></div>
+                  <select value={mood} onChange={e=>setMood(e.target.value)} style={{width:"100%",background:"#111",border:`1px solid ${GOLDDIM}`,color:GOLD,padding:"7px 10px",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>
                     {["Neutral","Happy","Sad","Angry","Fearful","Surprised","Tender","Serious","Excited","Melancholic","Hopeful","Tense","Calm","Dramatic"].map(m=><option key={m} value={m}>{m}</option>)}
                   </select>
-                  <div style={{color:GOLDDIM,fontSize:9,letterSpacing:1,marginTop:4}}>AFFECTS DELIVERY TONE</div>
                 </div>
               </div>
             )}
@@ -2941,14 +2936,7 @@ function P19() {
     <div style={{...Sp,padding:"30px 40px"}}>
       <div style={{maxWidth:880,margin:"0 auto"}}>
         <div style={{fontSize:11,color:GOLD,letterSpacing:4,marginBottom:4,fontWeight:700}}>LEARNING CENTER</div>
-        <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:4,flexWrap:"wrap"}}>
-          <h1 style={{...H1,fontSize:28,margin:0}}>TUTORIALS</h1>
-          <div style={{background:"#0a0500",border:`1px solid ${GOLD}`,padding:"4px 14px",display:"flex",alignItems:"center",gap:8}}>
-            <div style={{width:7,height:7,borderRadius:"50%",background:GOLD,animation:"pulse 1.5s ease-in-out infinite"}}/>
-            <span style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2}}>VIDEO CREATION IN PROGRESS</span>
-          </div>
-        </div>
-        <style>{`@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}`}</style>
+        <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:4,flexWrap:"wrap"}}><h1 style={{...H1,fontSize:28,margin:0}}>TUTORIALS</h1><div style={{background:"#0a0500",border:`1px solid ${GOLD}`,padding:"4px 14px",display:"flex",alignItems:"center",gap:8}}><div style={{width:7,height:7,borderRadius:"50%",background:GOLD,animation:"pulse 1.5s ease-in-out infinite"}}/><span style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2}}>VIDEO CREATION IN PROGRESS</span></div></div><style>{`@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}`}</style>
         <div style={{color:WHITE,fontSize:13,marginBottom:24,lineHeight:1.8}}>
           Step-by-step guides for every part of MandaStrong Studio. Click any tutorial to open a full explanation and watch on YouTube.
         </div>
