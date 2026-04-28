@@ -2876,6 +2876,115 @@ function P18({ rendered, mediaLib }) {
   );
 }
 
+function TutPlayer({tut,onClose,onPrev,onNext,hasPrev,hasNext}:{tut:any,onClose:()=>void,onPrev:()=>void,onNext:()=>void,hasPrev:boolean,hasNext:boolean}){
+  const [step,setStep]=useState(0);
+  const [playing,setPlaying]=useState(true);
+  const [animKey,setAnimKey]=useState(0);
+  const timerRef=useRef<any>(null);
+  const stepDur=3200;
+  useEffect(()=>{setStep(0);setPlaying(true);setAnimKey(k=>k+1);},[tut]);
+  useEffect(()=>{
+    if(!playing)return;
+    timerRef.current=setInterval(()=>{
+      setStep(s=>{
+        if(s>=tut.steps.length-1){setPlaying(false);clearInterval(timerRef.current);return s;}
+        return s+1;
+      });
+    },stepDur);
+    return()=>clearInterval(timerRef.current);
+  },[playing,tut]);
+  const restart=()=>{setStep(0);setPlaying(true);setAnimKey(k=>k+1);};
+  const lc:Record<string,string>={Beginner:"#22c55e",Intermediate:"#f59e0b",Advanced:"#ef4444"};
+  return(
+    <div style={{background:"#030300",border:`2px solid ${GOLD}`,marginBottom:24,position:"relative"}}>
+      {/* Header bar */}
+      <div style={{background:"linear-gradient(135deg,#0a0800,#050400)",borderBottom:`1px solid ${GOLD}`,padding:"14px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12}}>
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <span style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:22,fontWeight:900,minWidth:32}}>{tut.n}</span>
+          <div>
+            <div style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:15,fontWeight:900,letterSpacing:2}}>{tut.t}</div>
+            <div style={{display:"flex",gap:10,alignItems:"center",marginTop:3}}>
+              <span style={{background:lc[tut.l]+"22",border:`1px solid ${lc[tut.l]}`,color:lc[tut.l],padding:"2px 8px",fontSize:10,fontWeight:900,letterSpacing:2}}>{tut.l.toUpperCase()}</span>
+              <span style={{color:DIM,fontSize:11,letterSpacing:1}}>{tut.steps.length} STEPS</span>
+            </div>
+          </div>
+        </div>
+        <button onClick={onClose} style={{background:"none",border:`1px solid ${GOLD}`,color:GOLD,width:28,height:28,cursor:"pointer",fontSize:14,fontWeight:900,flexShrink:0}}>✕</button>
+      </div>
+      {/* Animated screen demo */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0}}>
+        {/* Left: animated screen */}
+        <div style={{background:"#000",borderRight:`1px solid ${GOLDDIM}`,padding:20,minHeight:320,position:"relative",overflow:"hidden"}}>
+          <div style={{fontSize:10,color:GOLDDIM,letterSpacing:3,marginBottom:10,fontWeight:700}}>LIVE DEMO — MANDASTRONG STUDIO</div>
+          {/* Simulated app screen */}
+          <div key={animKey} style={{background:"#0a0800",border:`1px solid ${GOLDDIM}`,borderRadius:0,padding:12,fontSize:12,color:WHITE,fontFamily:"'Rajdhani',sans-serif",lineHeight:1.7}}>
+            {/* Top bar sim */}
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:`1px solid ${GOLDDIM}`,paddingBottom:8,marginBottom:10}}>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <div style={{width:18,height:14,display:"flex",flexDirection:"column",gap:3,cursor:"pointer"}}>
+                  {[0,1,2].map(i=><div key={i} style={{height:2,background:GOLD,width:i===1?"70%":"100%"}}/>)}
+                </div>
+                <span style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:900,letterSpacing:2}}>MANDASTRONG</span>
+              </div>
+              <div style={{display:"flex",gap:6}}>
+                {["💾","📂"].map(ic=><span key={ic} style={{fontSize:12,cursor:"pointer"}}>{ic}</span>)}
+              </div>
+            </div>
+            {/* Step content */}
+            <div style={{minHeight:180}}>
+              {tut.frames&&tut.frames[step]?tut.frames[step]:
+                <div style={{padding:10}}>
+                  <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:10}}>STEP {step+1} OF {tut.steps.length}</div>
+                  <div style={{color:WHITE,fontSize:13,lineHeight:1.8,animation:"fadeIn .4s ease"}}>{tut.steps[step]}</div>
+                  {/* Animated cursor dot */}
+                  <div style={{width:10,height:10,borderRadius:"50%",background:GOLD,marginTop:14,animation:"pulse 1s infinite",boxShadow:`0 0 8px ${GOLD}`}}/>
+                </div>
+              }
+            </div>
+          </div>
+          {/* Progress bar */}
+          <div style={{marginTop:12,height:3,background:"#1a1400",borderRadius:0}}>
+            <div style={{height:"100%",background:`linear-gradient(90deg,${GOLDDIM},${GOLD})`,width:`${((step+1)/tut.steps.length)*100}%`,transition:"width .4s ease"}}/>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",marginTop:6}}>
+            <span style={{color:DIM,fontSize:10,letterSpacing:1}}>STEP {step+1}/{tut.steps.length}</span>
+            <span style={{color:playing?GOLD:"#22c55e",fontSize:10,fontWeight:900,letterSpacing:2}}>{playing?"● PLAYING":"✓ COMPLETE"}</span>
+          </div>
+          {/* Playback controls */}
+          <div style={{display:"flex",gap:8,marginTop:10}}>
+            <button onClick={()=>{setStep(s=>Math.max(0,s-1));setPlaying(false);}} style={{background:"#0a0800",border:`1px solid ${GOLDDIM}`,color:WHITE,padding:"5px 12px",cursor:"pointer",fontSize:11,fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>◀ BACK</button>
+            <button onClick={restart} style={{background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,border:"none",color:"#000",padding:"5px 14px",cursor:"pointer",fontSize:11,fontFamily:"'Rajdhani',sans-serif",fontWeight:900}}>↺ REPLAY</button>
+            <button onClick={()=>{setStep(s=>Math.min(tut.steps.length-1,s+1));setPlaying(false);}} style={{background:"#0a0800",border:`1px solid ${GOLDDIM}`,color:WHITE,padding:"5px 12px",cursor:"pointer",fontSize:11,fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>NEXT ▶</button>
+          </div>
+        </div>
+        {/* Right: steps + tips */}
+        <div style={{padding:20,overflowY:"auto",maxHeight:420}}>
+          <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:12}}>ALL STEPS</div>
+          {tut.steps.map((s:string,i:number)=>(
+            <div key={i} onClick={()=>{setStep(i);setPlaying(false);}}
+              style={{display:"flex",gap:10,marginBottom:8,alignItems:"flex-start",padding:"8px 10px",cursor:"pointer",background:step===i?"#0a0800":"transparent",border:step===i?`1px solid ${GOLD}`:`1px solid ${GOLDDIM}33`,transition:"all .2s"}}>
+              <span style={{color:step===i?GOLD:GOLDDIM,fontWeight:900,fontSize:12,minWidth:20,flexShrink:0}}>{i+1}</span>
+              <span style={{color:step===i?WHITE:DIM,fontSize:12,lineHeight:1.6}}>{s}</span>
+            </div>
+          ))}
+          <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:10,marginTop:16}}>PRO TIPS</div>
+          {tut.tips.map((tip:string,i:number)=>(
+            <div key={i} style={{display:"flex",gap:8,marginBottom:8,alignItems:"flex-start"}}>
+              <span style={{color:GOLD,fontWeight:900,flexShrink:0,fontSize:12}}>✦</span>
+              <span style={{color:WHITE,fontSize:12,lineHeight:1.6}}>{tip}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Bottom nav */}
+      <div style={{borderTop:`1px solid ${GOLDDIM}`,padding:"12px 20px",display:"flex",gap:10}}>
+        {hasPrev&&<button onClick={onPrev} style={{...G("out",true)}}>◀ PREV TUTORIAL</button>}
+        {hasNext&&<button onClick={onNext} style={{...G("out",true)}}>NEXT TUTORIAL ▶</button>}
+      </div>
+    </div>
+  );
+}
+
 function P19() {
   const [activeVid, setActiveVid] = useState(null);
 
@@ -2968,54 +3077,46 @@ function P19() {
 
   const lc = { Beginner:"#22c55e", Intermediate:"#f59e0b", Advanced:"#ef4444" };
 
+  const lcMap:{[k:string]:string}={Beginner:"#22c55e",Intermediate:"#f59e0b",Advanced:"#ef4444"};
+
   return (
-    <div style={{...Sp,padding:"30px 40px"}}>
-      <div style={{maxWidth:880,margin:"0 auto"}}>
+    <div style={{...Sp,padding:"30px 40px 100px"}}>
+      <style>{`
+        @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes pulse{0%,100%{box-shadow:0 0 6px #e8c96d}50%{box-shadow:0 0 18px #e8c96d,0 0 30px #e8c96d55}}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+      `}</style>
+      <div style={{maxWidth:960,margin:"0 auto"}}>
         <div style={{fontSize:11,color:GOLD,letterSpacing:4,marginBottom:4,fontWeight:700}}>LEARNING CENTER</div>
         <h1 style={{...H1,fontSize:28,marginBottom:4}}>TUTORIALS</h1>
-        <div style={{color:WHITE,fontSize:13,marginBottom:24,lineHeight:1.8}}>
-          Step-by-step guides for every part of MandaStrong Studio. Click any tutorial to expand the full walkthrough, step-by-step instructions, and pro tips — all based on the actual platform.
+        <div style={{color:WHITE,fontSize:13,marginBottom:28,lineHeight:1.8}}>
+          Interactive step-by-step tutorials for every part of MandaStrong Studio. Click any tutorial to launch the interactive player — each step auto-advances so you can follow along in real time.
         </div>
 
         {activeVid!==null&&(
-          <div style={{background:"#050500",border:`2px solid ${GOLD}`,padding:24,marginBottom:24,position:"relative"}}>
-            <button onClick={()=>setActiveVid(null)} style={{position:"absolute",top:12,right:12,background:"none",border:`1px solid ${GOLD}`,color:GOLD,width:28,height:28,cursor:"pointer",fontSize:14,fontWeight:900}}>✕</button>
-            <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:4}}>TUTORIAL {tuts[activeVid].n} · {tuts[activeVid].l.toUpperCase()} · {tuts[activeVid].dur}</div>
-            <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:18,fontWeight:900,marginBottom:12,letterSpacing:2}}>{tuts[activeVid].t}</div>
-            <p style={{color:WHITE,fontSize:14,lineHeight:1.9,marginBottom:18}}>{tuts[activeVid].d}</p>
-            <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:10}}>STEP BY STEP</div>
-            {tuts[activeVid].steps.map((step,i)=>(
-              <div key={i} style={{display:"flex",gap:10,marginBottom:9,alignItems:"flex-start",background:"#0a0800",padding:"8px 12px",border:`1px solid ${GOLDDIM}33`}}>
-                <span style={{color:WHITE,fontSize:13,lineHeight:1.7}}>{step}</span>
-              </div>
-            ))}
-            <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:10,marginTop:18}}>PRO TIPS</div>
-            {tuts[activeVid].tips.map((tip,i)=>(
-              <div key={i} style={{display:"flex",gap:10,marginBottom:8,alignItems:"flex-start"}}>
-                <span style={{color:GOLD,fontWeight:900,flexShrink:0}}>✦</span>
-                <span style={{color:WHITE,fontSize:13,lineHeight:1.7}}>{tip}</span>
-              </div>
-            ))}
-            <div style={{marginTop:18,display:"flex",gap:10}}>
-              {activeVid > 0 && <button onClick={()=>setActiveVid(activeVid-1)} style={{...G("out",true)}}>◀ PREV</button>}
-              {activeVid < tuts.length-1 && <button onClick={()=>setActiveVid(activeVid+1)} style={{...G("out",true)}}>NEXT ▶</button>}
-            </div>
-          </div>
+          <TutPlayer
+            tut={tuts[activeVid]}
+            onClose={()=>setActiveVid(null)}
+            onPrev={()=>setActiveVid((activeVid as number)-1)}
+            onNext={()=>setActiveVid((activeVid as number)+1)}
+            hasPrev={(activeVid as number)>0}
+            hasNext={(activeVid as number)<tuts.length-1}
+          />
         )}
 
         {tuts.map((t,idx)=>(
-          <div key={t.n} onClick={()=>setActiveVid(idx)}
-            style={{...Card(),marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",borderColor:activeVid===idx?GOLD:GOLDDIM}}
+          <div key={t.n} onClick={()=>{setActiveVid(idx);window.scrollTo(0,0);}}
+            style={{...Card(),marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",borderColor:activeVid===idx?GOLD:GOLDDIM,transition:"border-color .2s"}}
             onMouseEnter={e=>e.currentTarget.style.borderColor=GOLD}
             onMouseLeave={e=>e.currentTarget.style.borderColor=activeVid===idx?GOLD:GOLDDIM}>
             <div style={{display:"flex",alignItems:"center",gap:14}}>
-              <span style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,minWidth:28}}>{t.n}</span>
+              <span style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:18,fontWeight:900,minWidth:32}}>{t.n}</span>
               <div>
                 <div style={{color:WHITE,fontWeight:800,fontSize:14}}>{t.t}</div>
-                <div style={{color:DIM,fontSize:11,marginTop:2,letterSpacing:1}}>{t.dur} · {t.steps.length} STEPS · {t.tips.length} PRO TIPS · CLICK TO EXPAND</div>
+                <div style={{color:DIM,fontSize:11,marginTop:3,letterSpacing:1}}>{t.steps.length} STEPS · {t.tips.length} PRO TIPS · {activeVid===idx?"▶ NOW PLAYING":"CLICK TO LAUNCH"}</div>
               </div>
             </div>
-            <span style={{background:lc[t.l]+"22",border:`1px solid ${lc[t.l]}`,color:lc[t.l],padding:"3px 10px",fontSize:11,fontWeight:900,letterSpacing:2,flexShrink:0}}>{t.l.toUpperCase()}</span>
+            <span style={{background:lcMap[t.l]+"22",border:`1px solid ${lcMap[t.l]}`,color:lcMap[t.l],padding:"3px 10px",fontSize:11,fontWeight:900,letterSpacing:2,flexShrink:0}}>{t.l.toUpperCase()}</span>
           </div>
         ))}
       </div>
@@ -3174,7 +3275,7 @@ function P23({ go }) {
       <video autoPlay loop playsInline preload="auto" muted
         style={{width:"100%",aspectRatio:"16/9",background:"#000",border:`1px solid ${GOLD}`,marginBottom:24,display:"block"}}
         onError={e=>{e.currentTarget.style.display="none";}}>
-        <source src="/background.mp4" type="video/mp4"/>
+        <source src="/thatsallfolks.mp4" type="video/mp4"/>
       </video>
       <div style={{maxWidth:820,margin:"0 auto",textAlign:"center"}}>
         <div style={{fontSize:10,color:GOLD,letterSpacing:6,marginBottom:10,fontWeight:700}}>MANDASTRONG STUDIO · CINEMA INTELLIGENCE PLATFORM · 2026</div>
@@ -3252,21 +3353,28 @@ export default function App() {
     } else {
       vp.content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes";
     }
-    // Global responsive + Bolt badge suppression
+    // Global responsive + Bolt badge suppression — every method
     const style=document.createElement("style");
-    style.textContent=`[data-bolt-badge],a[href*="bolt.new"],.bolt-badge,#bolt-badge,[class*="bolt-badge"],[id*="bolt-badge"],img[src*="bolt"],a[href*="bolt.new"] img,div[class*="badge"][style*="bolt"],iframe[src*="bolt"]{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;width:0!important;height:0!important;overflow:hidden!important;}*{box-sizing:border-box!important;}body,html{margin:0;padding:0;width:100%;overflow-x:hidden;}@media(max-width:900px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr 1fr!important;}}@media(max-width:600px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr!important;}}`;
+    style.textContent=`[data-bolt-badge],a[href*="bolt.new"],.bolt-badge,#bolt-badge,[class*="bolt-badge"],[id*="bolt-badge"],img[src*="bolt"],a[href*="bolt.new"] img,div[class*="badge"][style*="bolt"],iframe[src*="bolt"],bolt-ai-badge{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;width:0!important;height:0!important;max-width:0!important;max-height:0!important;overflow:hidden!important;position:absolute!important;left:-9999px!important;}*{box-sizing:border-box!important;}body,html{margin:0;padding:0;width:100%;overflow-x:hidden;}@media(max-width:900px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr 1fr!important;}}@media(max-width:600px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr!important;}}`;
     document.head.appendChild(style);
-    // MutationObserver — kill any bolt badge that gets injected after load
+    const HIDE="display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;position:absolute!important;left:-9999px!important;";
     const killBolt=()=>{
-      document.querySelectorAll('[data-bolt-badge],[class*="bolt-badge"],[id*="bolt-badge"],a[href*="bolt.new"]').forEach(el=>{(el as HTMLElement).style.cssText="display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;";});
+      const sel='[data-bolt-badge],[class*="bolt-badge"],[id*="bolt-badge"],a[href*="bolt.new"],bolt-ai-badge,[data-testid*="bolt"]';
+      document.querySelectorAll(sel).forEach(el=>{(el as HTMLElement).style.cssText=HIDE;});
+      document.querySelectorAll('*').forEach(el=>{
+        try{
+          if(el.shadowRoot){el.shadowRoot.querySelectorAll(sel).forEach(s=>{(s as HTMLElement).style.cssText=HIDE;});}
+        }catch{}
+      });
     };
     killBolt();
     const boltObserver=new MutationObserver(killBolt);
-    boltObserver.observe(document.body,{childList:true,subtree:true});
+    boltObserver.observe(document.body,{childList:true,subtree:true,attributes:true});
+    const boltInterval=setInterval(killBolt,500);
     // PWA install prompt capture
     const handleInstall=(e)=>{e.preventDefault();window.deferredInstallPrompt=e;};
     window.addEventListener("beforeinstallprompt",handleInstall);
-    return()=>{try{document.head.removeChild(link);}catch{} window.removeEventListener("beforeinstallprompt",handleInstall);boltObserver.disconnect();};
+    return()=>{try{document.head.removeChild(link);}catch{} window.removeEventListener("beforeinstallprompt",handleInstall);boltObserver.disconnect();clearInterval(boltInterval);};
   },[]);
   const [user,setUser]=useState(()=>{try{return JSON.parse(localStorage.getItem("ms_user")||'{"name":"Guest","plan":"Guest","isAdmin":false}');}catch{return {name:"Guest",plan:"Guest",isAdmin:false};}});
   const [mediaLib,setMediaLib]=useState([]);

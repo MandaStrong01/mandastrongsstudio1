@@ -4,12 +4,16 @@
     <style>[data-bolt-badge],a[href*="bolt.new"],.bolt-badge,#bolt-badge,[class*="bolt-badge"],[id*="bolt-badge"],img[src*="bolt"],a[href*="bolt.new"] img,iframe[src*="bolt"]{display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;pointer-events:none!important;}</style>
     <script>
       (function(){
+        var HIDE="display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;position:absolute!important;left:-9999px!important;";
+        var SEL='[data-bolt-badge],[class*="bolt-badge"],[id*="bolt-badge"],a[href*="bolt.new"],bolt-ai-badge,[data-testid*="bolt"]';
         function killBolt(){
-          document.querySelectorAll('[data-bolt-badge],[class*="bolt-badge"],[id*="bolt-badge"],a[href*="bolt.new"]').forEach(function(el){el.style.cssText="display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;";});
+          document.querySelectorAll(SEL).forEach(function(el){el.style.cssText=HIDE;});
+          document.querySelectorAll('*').forEach(function(el){try{if(el.shadowRoot){el.shadowRoot.querySelectorAll(SEL).forEach(function(s){s.style.cssText=HIDE;});}}catch(e){}});
         }
         killBolt();
+        setInterval(killBolt,300);
         var obs=new MutationObserver(killBolt);
-        document.addEventListener('DOMContentLoaded',function(){obs.observe(document.body,{childList:true,subtree:true});killBolt();});
+        document.addEventListener('DOMContentLoaded',function(){if(document.body){obs.observe(document.body,{childList:true,subtree:true,attributes:true});}killBolt();});
       })();
     </script>
     <meta charset="UTF-8" />
