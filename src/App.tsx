@@ -1399,7 +1399,7 @@ function P6Voice({ onSave }) {
       <div style={{padding:"12px 18px",borderBottom:`1px solid ${GOLDDIM}`,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
         <div>
           <div style={{fontSize:11,color:GOLD,letterSpacing:4,fontWeight:700}}>AI WORKSTATION 02 — CINEMA VOICE ENGINE</div>
-          <h1 style={{...H1,fontSize:24,margin:0}}>TEXT TO LIFELIKE SPEECH · HUMAN VOICES</h1>
+          <h1 style={{...H1,fontSize:24,margin:0}}>TEXT TO LIFELIKE SPEECH</h1>
         </div>
         <button onClick={()=>setShowMVS(true)} style={{...G("gold",true)}}>🎬 MUSIC VIDEO STUDIO</button>
       </div>
@@ -2882,87 +2882,87 @@ function P19() {
   const tuts = [
     {
       n:"01", t:"Getting Started — Platform Overview & Navigation",
-      d:"Full walkthrough of all 23 pages, the Quick Access menu, footer controls, and how to navigate the studio.",
-      dur:"12:00", l:"Beginner",
-      url:"https://www.youtube.com/watch?v=MLC3inMQ9D4",
+      d:"MandaStrong Studio has 23 pages. Use the ☰ hamburger menu (top left) to jump to any page instantly. The footer at the bottom of every page shows your current page number and gives you quick access to SAVE PROJECT and MY PROJECTS. Pages 1–3 are the public-facing home, platform overview, and examples. Pages 4–18 are your full production pipeline. Pages 19–23 are tutorials, legal, Agent Grok, community, and the closing page. You do not need to follow the pages in order — use Quick Access to jump anywhere.",
+      dur:"5 min read", l:"Beginner",
+      steps:["1. Open the ☰ menu top-left — all 23 pages are listed","2. Click any page name to jump there instantly","3. The footer always shows your current page","4. Hit 💾 SAVE PROJECT in the footer to save your session","5. Hit 📂 MY PROJECTS to restore any previous session","6. Page 23 has the full How-To guide with all page instructions"],
       tips:["Use ☰ top left to jump to any page instantly","Footer shows your current page and lets you save your project","Page 23 has the full How-To guide"]
     },
     {
-      n:"02", t:"Writing Tools — Script to Screen in Minutes",
-      d:"How to use the 50+ writing tools on Page 5. From logline to full feature script using AI Create.",
-      dur:"9:30", l:"Beginner",
-      url:"https://www.youtube.com/watch?v=biEE_AEJYPk",
-      tips:["Click any tool card to open it","Use AI CREATE for instant professional scripts","Save results to your Media Library"]
+      n:"02", t:"Writing Tools — AI Script Generator (Page 5)",
+      d:"Page 5 is your AI Writing Workstation with 50+ professional screenplay and storytelling tools. Each tool card shows the tool name and a one-line description. Click any card to open the tool input panel. Type your prompt — for example: 'A veteran returns home to find his family has moved on without him' — and hit AI CREATE. The platform generates a professional output you can copy, edit, or save directly to your Media Library. Tools cover: Logline, Treatment, Beat Sheet, Scene by Scene, Full Feature Script, Character Profiles, Dialogue, Voiceover Script, Documentary Outline, and more.",
+      dur:"7 min read", l:"Beginner",
+      steps:["1. Go to Page 5 — Writing Tools","2. Browse the tool cards — 50+ tools available","3. Click any tool card to open it","4. Type your story idea or prompt in the input box","5. Hit AI CREATE to generate your content","6. Copy or save the output to your Media Library"],
+      tips:["Click any tool card to open it","Use AI CREATE for instant professional scripts","Save results directly to your Media Library","Try Logline first — one sentence that defines your entire film"]
     },
     {
-      n:"03", t:"Voice Engine — 54 Characters, Real Narration",
-      d:"Complete guide to Page 6. Selecting voices, setting pitch and rate, using the TEST button, and preparing narration for your documentary.",
-      dur:"14:20", l:"Beginner",
-      url:"https://www.youtube.com/watch?v=IEZzTTWMHmI",
-      tips:["James is your primary documentary narrator — pitch 0.86, rate 0.62","Hit TEST on any voice card to hear it instantly","Use PREPARE & SPEAK to AI-format your script before speaking"]
+      n:"03", t:"Voice Engine — 54 Characters & Narration (Page 6)",
+      d:"Page 6 is the Cinema Voice Engine. At the top of the page are the VOICE SETTINGS SLIDERS — Speed, Pitch, Pause, Volume, and Mood. These apply to whichever voice you select. Below the sliders are 54 voice character cards — filter by Gender, Age, and Origin to find your voice. Each card has a ▶ TEST button — click it to hear the voice instantly. For documentary narration, hit APPLY JAMES SETTINGS (Speed 0.62, Pitch 0.86, Pause 1600ms — the MandaStrong documentary standard). On the SPEAK tab, paste your script and hit PREPARE & SPEAK to have your chosen voice narrate it. Generated narration saves automatically to your Media Library.",
+      dur:"8 min read", l:"Beginner",
+      steps:["1. Go to Page 6 — Voice Engine","2. Set your sliders: Speed, Pitch, Pause, Volume, Mood","3. For documentary — hit APPLY JAMES SETTINGS","4. Browse 54 voice cards — filter by gender, age, origin","5. Hit ▶ TEST on any card to hear the voice","6. Click SPEAK tab — paste your script","7. Hit PREPARE & SPEAK — narration saves to Media Library"],
+      tips:["James: Speed 0.62, Pitch 0.86, Pause 1600ms — perfect documentary voice","Hit ▶ TEST on any voice card to hear it before committing","PREPARE & SPEAK auto-formats your script for natural delivery","54 voices — filter by origin to match your documentary's tone"]
     },
     {
-      n:"04", t:"Music Video Studio — Full Production Walkthrough",
-      d:"Step-by-step: Song setup, style selection, scene description, generating your music video, and exporting to social platforms.",
-      dur:"18:45", l:"Intermediate",
-      url:"https://www.youtube.com/watch?v=jCqnlgcHzas",
-      tips:["Access from the MUSIC VIDEO STUDIO button on Page 6","Upload your own audio track on Step 1 for beat-synced video","The more detailed your scene description, the better the output","Download directly or share to YouTube, TikTok, Instagram"]
+      n:"04", t:"Music Video Studio — Full Production (Page 6)",
+      d:"The MUSIC VIDEO STUDIO is accessed from the gold button at the top of Page 6. It is a 4-step wizard. Step 1: Upload your audio track or paste a song link. Step 2: Choose your visual style (cinematic, anime, documentary, abstract, etc.). Step 3: Write a scene description for each section of the song — the more specific your description (lighting, mood, camera angle, location), the better the output. Step 4: Generate your music video. The completed video is saved to your Media Library and can be exported directly to YouTube, TikTok, or Instagram from Page 18.",
+      dur:"10 min read", l:"Intermediate",
+      steps:["1. Go to Page 6 — click 🎬 MUSIC VIDEO STUDIO (top right)","2. Step 1: Upload your audio track or paste a song link","3. Step 2: Choose your visual style","4. Step 3: Write your scene description — be detailed","5. Hit GENERATE to build your music video","6. Video saves to Media Library automatically","7. Export to social platforms from Page 18"],
+      tips:["The more detailed your scene description the better the output","Upload your own audio on Step 1 for beat-synced visuals","Choose 'Cinematic' style for a documentary feel","Export directly to YouTube, TikTok, Instagram from Page 18"]
     },
     {
-      n:"05", t:"Video Generator — Generating Cinematic Scenes (Page 8)",
-      d:"How to describe any scene and have the MandaStrong Cinema Engine build it. Using reference images, duration settings, and saving to your Media Library.",
-      dur:"16:00", l:"Intermediate",
-      url:"https://www.youtube.com/watch?v=-og75MUlnFk",
-      tips:["Be specific in your scene description — lighting, mood, camera angle","Upload a reference image to match a visual style","Each scene saves automatically to your Media Library","Use NEXT SCENE to build your full film clip by clip"]
+      n:"05", t:"Video Generator — Cinematic Scene Builder (Page 8)",
+      d:"Page 8 is the MandaStrong Cinema Engine — your AI video scene generator. Type a detailed scene description in plain English: include the setting, lighting, mood, camera angle, and any characters. You can optionally upload a reference image to match a specific visual style. Set the scene duration (5–30 seconds). Hit 🎬 GENERATE SCENE. The engine builds your scene and saves it automatically to your Media Library with the scene name as its label. Hit NEXT SCENE to describe and generate the next clip. Repeat for every chapter of your film. A 90-minute documentary typically uses 10–15 generated scenes.",
+      dur:"10 min read", l:"Intermediate",
+      steps:["1. Go to Page 8 — Video Generator","2. Type your scene description — setting, lighting, mood, camera","3. Optionally upload a reference image for visual style","4. Set scene duration (5–30 seconds)","5. Hit 🎬 GENERATE SCENE","6. Scene saves to Media Library automatically","7. Hit NEXT SCENE and repeat for each chapter"],
+      tips:["Be specific: 'golden hour light, handheld camera, desert highway' beats 'outdoor scene'","Upload a reference image to lock in a visual style","Each generated scene is labelled by its name in your Media Library","Build your film chapter by chapter — one scene at a time"]
     },
     {
-      n:"06", t:"Timeline Editor — Building Your Film (Page 13)",
-      d:"Dragging clips to tracks, syncing audio and video, adjusting film duration from 60 to 180 minutes, and preparing for render.",
-      dur:"11:30", l:"Intermediate",
-      url:"https://www.youtube.com/watch?v=X1Oq174ubB0",
-      tips:["Hit ⚡ SYNC ALL TRACKS to auto-populate from your Media Library","Drag any clip from the library to any track","Set film duration with the slider — 60, 90, or 180 minutes","Hit → RENDER when your timeline is ready"]
+      n:"06", t:"Timeline Editor — Assembling Your Film (Page 13)",
+      d:"Page 13 is the Timeline Editor — this is where you assemble your film. The timeline has three tracks: Video, Audio, and Text. Your Media Library is shown on the left. Drag any clip from the library to the Video track. Drag narration or music files to the Audio track. Use the Text track for titles, captions, and credits. Hit ⚡ SYNC ALL TRACKS to automatically populate all tracks from your Media Library in sequence. Use the duration slider (bottom of page) to set your film length: 60, 90, or 180 minutes. When your timeline is complete, hit → RENDER to send to the Render Engine on Page 16.",
+      dur:"9 min read", l:"Intermediate",
+      steps:["1. Go to Page 13 — Timeline Editor","2. Your Media Library clips appear on the left panel","3. Drag clips to the Video track","4. Drag audio/narration files to the Audio track","5. Add titles to the Text track","6. Hit ⚡ SYNC ALL TRACKS to auto-populate","7. Set film duration with the slider (60 / 90 / 180 min)","8. Hit → RENDER when timeline is ready"],
+      tips:["SYNC ALL TRACKS populates everything from your Media Library instantly","Drag to reorder clips — your sequence becomes your film","Set film duration before rendering — it locks the final length","Hit → RENDER only when your timeline is exactly how you want it"]
     },
     {
-      n:"07", t:"Audio Mixer — Professional Sound (Page 15)",
-      d:"Setting the perfect mix for documentary, narrative film, or music video. Recommended levels explained.",
-      dur:"7:15", l:"Beginner",
-      url:"https://www.youtube.com/watch?v=aX7hERErmZ4",
-      tips:["Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85","Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85","Hit SAVE PRESET to store your favourite mix"]
+      n:"07", t:"Audio Mixer — Professional Sound Mix (Page 15)",
+      d:"Page 15 is the Audio Mixer. There are four fader channels: VOICE, MUSIC, EFX, and MASTER. Each fader has a slider (0–100) and a level meter. For documentary films use: VOICE 85, MUSIC 40, EFX 50, MASTER 85. For music videos use: MUSIC 75, VOICE 60, EFX 40, MASTER 85. For narrative films use: VOICE 75, MUSIC 55, EFX 65, MASTER 85. Hit SAVE PRESET to store your mix settings for future projects. The mix is applied automatically when you render on Page 16.",
+      dur:"6 min read", l:"Beginner",
+      steps:["1. Go to Page 15 — Audio Mixer","2. Set VOICE fader for narration level","3. Set MUSIC fader for score/background music","4. Set EFX fader for sound effects","5. Set MASTER fader for overall output level","6. Hit SAVE PRESET to store your mix","7. Mix applies automatically on Page 16 render"],
+      tips:["Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85","Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85","Narrative film: VOICE 75 · MUSIC 55 · EFX 65 · MASTER 85","Always set MASTER last — it controls total output volume"]
     },
     {
-      n:"08", t:"Render Engine — Exporting Your Film in 4K (Page 16)",
-      d:"Choosing quality settings, understanding VP9 vs VP8, starting the render, and what to do if clips need regenerating.",
-      dur:"10:45", l:"Intermediate",
-      url:"https://www.youtube.com/watch?v=cCdlYaa2tHw",
-      tips:["1080p recommended for most use","4K for professional distribution","VP9 gives better quality at same file size","If clips are missing the engine regenerates them from their names automatically"]
+      n:"08", t:"Render Engine — Exporting in 4K (Page 16)",
+      d:"Page 16 is the Render Engine. Choose your output quality: 480p (fast), 720p (standard), 1080p (recommended), or 4K (professional distribution). Choose codec: VP9 (better quality, smaller file) or VP8 (wider compatibility). Hit START RENDER. The engine processes every clip on your timeline, applies your audio mix from Page 15, and produces your finished film. If any clips are missing from the timeline, the engine regenerates them automatically using their saved names. When rendering is complete, three buttons appear: DOWNLOAD (saves to your device), PREVIEW (goes to Page 17), and EXPORT (goes to Page 18).",
+      dur:"8 min read", l:"Intermediate",
+      steps:["1. Go to Page 16 — Render Engine","2. Choose quality: 480p / 720p / 1080p / 4K","3. Choose codec: VP9 (recommended) or VP8","4. Hit START RENDER","5. Wait for the engine to process all clips","6. When complete: DOWNLOAD · PREVIEW · EXPORT","7. Missing clips are auto-regenerated from their names"],
+      tips:["1080p VP9 is the best balance of quality and file size","4K for festival submissions or professional distribution","VP9 produces smaller files than VP8 at the same quality","Always DOWNLOAD your film to your device before closing the browser"]
     },
     {
-      n:"09", t:"Export & Distribute — Getting Your Film Out (Page 18)",
-      d:"Downloading your film, sharing to YouTube, TikTok, Instagram, Facebook, LinkedIn, Vimeo and WhatsApp directly from the platform.",
-      dur:"6:00", l:"Beginner",
-      url:"https://www.youtube.com/watch?v=Q3_gsNcqb5s",
-      tips:["Hit DOWNLOAD to save to your device first","Each social platform button opens the upload page directly","Share your MandaStrong Studio credit in your post description"]
+      n:"09", t:"Export & Distribute — Share Your Film (Page 18)",
+      d:"Page 18 is Export & Distribute. Your rendered film can be shared directly from this page to seven platforms: YouTube, Instagram, TikTok, Facebook, LinkedIn, Vimeo, and WhatsApp. Each platform button opens that platform's upload page in a new tab with your film ready to post. Hit DOWNLOAD first to save the file to your device as a backup. The page also shows your film metadata: title, duration, format, and file size.",
+      dur:"5 min read", l:"Beginner",
+      steps:["1. Complete your render on Page 16 first","2. Go to Page 18 — Export & Distribute","3. Hit DOWNLOAD to save film to your device","4. Click any social platform button to share","5. Platform opens in new tab — upload your film","6. Include MandaStrong Studio in your post description"],
+      tips:["Always DOWNLOAD before sharing — your local copy is your master","YouTube button opens youtube.com/upload directly","TikTok, Instagram, Facebook, LinkedIn, Vimeo, WhatsApp all one click","Mention MandaStrong Studio in your post to help others find the platform"]
     },
     {
-      n:"10", t:"AI For Humanity Documentary — Full Production Case Study",
-      d:"Complete case study: how the AI For Humanity documentary was built inside MandaStrong Studio from script to render. Real workflow. Real results.",
-      dur:"25:00", l:"Advanced",
-      url:"https://www.youtube.com/watch?v=8qW4ZjhXUNc",
-      tips:["James narration — pitch 0.86, rate 0.62, pause 1600ms","13 scenes generated on Page 8, synced on Page 13","Full production workflow: P8 → P6 → P13 → P15 → P16 → P17 → P18","Each chapter gets its own generated scene — total runtime 90 minutes"]
+      n:"10", t:"Full Workflow — Script to Finished Film",
+      d:"This is the complete MandaStrong Studio production workflow from first idea to finished film ready to distribute. Follow these steps in order for the cleanest result. The entire process can be completed in one session. A 90-minute documentary using this workflow typically takes 3–6 hours from blank page to finished render.",
+      dur:"15 min read", l:"Advanced",
+      steps:["STEP 1 — Page 5: Write your script, logline, and treatment using AI writing tools","STEP 2 — Page 8: Generate your cinematic scenes one by one — describe each scene in detail","STEP 3 — Page 6: Select your narrator voice — set James settings for documentary","STEP 4 — Page 6 (SPEAK tab): Paste your narration script and generate all voice tracks","STEP 5 — Page 12: Review and edit your script in the Script Editor","STEP 6 — Page 13: Open Timeline Editor — drag all clips to tracks — hit SYNC ALL TRACKS","STEP 7 — Page 15: Set your audio mix (Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85)","STEP 8 — Page 16: Choose quality (1080p VP9 recommended) — hit START RENDER","STEP 9 — Page 17: Preview your finished film","STEP 10 — Page 18: Download and distribute to all platforms"],
+      tips:["Save after every step — hit 💾 SAVE PROJECT in the footer","Generate all scenes on Page 8 before moving to Page 13","James voice (Speed 0.62, Pitch 0.86, Pause 1600ms) is the MandaStrong documentary standard","Download your finished film before closing the browser — always"]
     },
     {
       n:"11", t:"Saving, Loading & Project History",
-      d:"How to save your session, restore from the project history, and use IndexedDB clip persistence so nothing is ever lost.",
-      dur:"5:30", l:"Beginner",
-      url:"https://www.youtube.com/watch?v=34MVWYEGZzI",
-      tips:["Hit 💾 SAVE PROJECT in the footer at any time","📂 MY PROJECTS shows your full session history","Clips survive page reloads automatically via local storage","Always download your finished film before closing the browser"]
+      d:"MandaStrong Studio automatically saves your clips and media to IndexedDB in your browser — they survive page reloads and session changes. To manually save your full project state (page, timeline, settings, media library), hit 💾 SAVE PROJECT in the footer at any time. You will be prompted to name your project and add an optional note. To restore a saved session, hit 📂 MY PROJECTS in the footer. All saved sessions are listed with their date, name, and note. Click ▶ CONTINUE PROJECT next to any session to restore it exactly as you left it.",
+      dur:"5 min read", l:"Beginner",
+      steps:["1. Hit 💾 SAVE PROJECT in the footer to save at any time","2. Name your project and add a note when prompted","3. Hit 📂 MY PROJECTS to see all saved sessions","4. Click ▶ CONTINUE PROJECT to restore any session","5. Clips survive reloads automatically via browser storage","6. Always DOWNLOAD your finished film as a permanent backup"],
+      tips:["Save after every major step — it takes 2 seconds","MY PROJECTS shows every session you have saved with dates","Clips auto-survive browser reloads — but SAVE PROJECT saves everything","Download finished films to your device — browser storage can be cleared"]
     },
     {
       n:"12", t:"Agent Grok — Your 24/7 AI Studio Assistant (Page 21)",
-      d:"How to use Agent Grok to get instant answers about any tool, workflow, pricing, or production question.",
-      dur:"4:00", l:"Beginner",
-      url:"https://www.youtube.com/watch?v=4RAvJt3fWoI",
-      tips:["Ask anything — tools, pricing, workflow, export settings","Use the quick-question buttons for instant answers","Agent Grok knows the entire MandaStrong Studio platform"]
+      d:"Agent Grok is your built-in AI assistant on Page 21, available 24 hours a day, 7 days a week. Ask Grok anything about MandaStrong Studio: which tool to use, how to fix a problem, what settings to apply, how pricing works, or how to complete a specific production task. Grok knows every page, every tool, every workflow, and every setting in the platform. You can also access Grok from the floating chat button at the bottom-right of any page — you do not need to navigate to Page 21 to use it.",
+      dur:"4 min read", l:"Beginner",
+      steps:["1. Go to Page 21 — Agent Grok","2. Or click the floating chat button (bottom right, any page)","3. Type your question in plain English","4. Grok answers instantly — ask follow-up questions freely","5. Use quick-question buttons for common topics","6. Grok knows every tool, page, workflow, and price on the platform"],
+      tips:["Ask anything — Grok knows every tool and workflow","Use the floating chat button on any page for instant access","Ask 'what are the James voice settings?' for an instant answer","Grok can walk you through any production problem step by step"]
     },
   ];
 
@@ -2974,16 +2974,22 @@ function P19() {
         <div style={{fontSize:11,color:GOLD,letterSpacing:4,marginBottom:4,fontWeight:700}}>LEARNING CENTER</div>
         <h1 style={{...H1,fontSize:28,marginBottom:4}}>TUTORIALS</h1>
         <div style={{color:WHITE,fontSize:13,marginBottom:24,lineHeight:1.8}}>
-          Step-by-step guides for every part of MandaStrong Studio. Click any tutorial to expand it and read the full walkthrough and pro tips. Hit WATCH ON YOUTUBE to open the full video tutorial.
+          Step-by-step guides for every part of MandaStrong Studio. Click any tutorial to expand the full walkthrough, step-by-step instructions, and pro tips — all based on the actual platform.
         </div>
 
         {activeVid!==null&&(
           <div style={{background:"#050500",border:`2px solid ${GOLD}`,padding:24,marginBottom:24,position:"relative"}}>
             <button onClick={()=>setActiveVid(null)} style={{position:"absolute",top:12,right:12,background:"none",border:`1px solid ${GOLD}`,color:GOLD,width:28,height:28,cursor:"pointer",fontSize:14,fontWeight:900}}>✕</button>
-            <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:4}}>TUTORIAL {tuts[activeVid].n} · {tuts[activeVid].l.toUpperCase()}</div>
-            <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:18,fontWeight:900,marginBottom:10,letterSpacing:2}}>{tuts[activeVid].t}</div>
-            <p style={{color:WHITE,fontSize:14,lineHeight:1.9,marginBottom:16}}>{tuts[activeVid].d}</p>
-            <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:10}}>PRO TIPS</div>
+            <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:4}}>TUTORIAL {tuts[activeVid].n} · {tuts[activeVid].l.toUpperCase()} · {tuts[activeVid].dur}</div>
+            <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:18,fontWeight:900,marginBottom:12,letterSpacing:2}}>{tuts[activeVid].t}</div>
+            <p style={{color:WHITE,fontSize:14,lineHeight:1.9,marginBottom:18}}>{tuts[activeVid].d}</p>
+            <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:10}}>STEP BY STEP</div>
+            {tuts[activeVid].steps.map((step,i)=>(
+              <div key={i} style={{display:"flex",gap:10,marginBottom:9,alignItems:"flex-start",background:"#0a0800",padding:"8px 12px",border:`1px solid ${GOLDDIM}33`}}>
+                <span style={{color:WHITE,fontSize:13,lineHeight:1.7}}>{step}</span>
+              </div>
+            ))}
+            <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:10,marginTop:18}}>PRO TIPS</div>
             {tuts[activeVid].tips.map((tip,i)=>(
               <div key={i} style={{display:"flex",gap:10,marginBottom:8,alignItems:"flex-start"}}>
                 <span style={{color:GOLD,fontWeight:900,flexShrink:0}}>✦</span>
@@ -2991,10 +2997,6 @@ function P19() {
               </div>
             ))}
             <div style={{marginTop:18,display:"flex",gap:10}}>
-              <button onClick={()=>window.open(tuts[activeVid].url,"_blank")}
-                style={{background:`linear-gradient(135deg,#a07820,#e8c96d)`,border:"none",color:"#000",padding:"12px 24px",cursor:"pointer",fontSize:12,fontWeight:900,letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>
-                ▶ WATCH ON YOUTUBE
-              </button>
               {activeVid > 0 && <button onClick={()=>setActiveVid(activeVid-1)} style={{...G("out",true)}}>◀ PREV</button>}
               {activeVid < tuts.length-1 && <button onClick={()=>setActiveVid(activeVid+1)} style={{...G("out",true)}}>NEXT ▶</button>}
             </div>
@@ -3010,7 +3012,7 @@ function P19() {
               <span style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,minWidth:28}}>{t.n}</span>
               <div>
                 <div style={{color:WHITE,fontWeight:800,fontSize:14}}>{t.t}</div>
-                <div style={{color:DIM,fontSize:11,marginTop:2,letterSpacing:1}}>{t.dur} · {t.tips.length} PRO TIPS · CLICK TO EXPAND</div>
+                <div style={{color:DIM,fontSize:11,marginTop:2,letterSpacing:1}}>{t.dur} · {t.steps.length} STEPS · {t.tips.length} PRO TIPS · CLICK TO EXPAND</div>
               </div>
             </div>
             <span style={{background:lc[t.l]+"22",border:`1px solid ${lc[t.l]}`,color:lc[t.l],padding:"3px 10px",fontSize:11,fontWeight:900,letterSpacing:2,flexShrink:0}}>{t.l.toUpperCase()}</span>
@@ -3252,12 +3254,19 @@ export default function App() {
     }
     // Global responsive + Bolt badge suppression
     const style=document.createElement("style");
-    style.textContent=`[data-bolt-badge],a[href*="bolt.new"],.bolt-badge{display:none!important;}*{box-sizing:border-box!important;}body,html{margin:0;padding:0;width:100%;overflow-x:hidden;}[data-bolt-badge],a[href*='bolt.new'],.bolt-badge{display:none!important;}[data-bolt-badge],a[href*='bolt.new'],.bolt-badge{display:none!important;}@media(max-width:900px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr 1fr!important;}}@media(max-width:600px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr!important;}}`;
+    style.textContent=`[data-bolt-badge],a[href*="bolt.new"],.bolt-badge,#bolt-badge,[class*="bolt-badge"],[id*="bolt-badge"],img[src*="bolt"],a[href*="bolt.new"] img,div[class*="badge"][style*="bolt"],iframe[src*="bolt"]{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;width:0!important;height:0!important;overflow:hidden!important;}*{box-sizing:border-box!important;}body,html{margin:0;padding:0;width:100%;overflow-x:hidden;}@media(max-width:900px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr 1fr!important;}}@media(max-width:600px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr!important;}}`;
     document.head.appendChild(style);
+    // MutationObserver — kill any bolt badge that gets injected after load
+    const killBolt=()=>{
+      document.querySelectorAll('[data-bolt-badge],[class*="bolt-badge"],[id*="bolt-badge"],a[href*="bolt.new"]').forEach(el=>{(el as HTMLElement).style.cssText="display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;";});
+    };
+    killBolt();
+    const boltObserver=new MutationObserver(killBolt);
+    boltObserver.observe(document.body,{childList:true,subtree:true});
     // PWA install prompt capture
     const handleInstall=(e)=>{e.preventDefault();window.deferredInstallPrompt=e;};
     window.addEventListener("beforeinstallprompt",handleInstall);
-    return()=>{try{document.head.removeChild(link);}catch{} window.removeEventListener("beforeinstallprompt",handleInstall);};
+    return()=>{try{document.head.removeChild(link);}catch{} window.removeEventListener("beforeinstallprompt",handleInstall);boltObserver.disconnect();};
   },[]);
   const [user,setUser]=useState(()=>{try{return JSON.parse(localStorage.getItem("ms_user")||'{"name":"Guest","plan":"Guest","isAdmin":false}');}catch{return {name:"Guest",plan:"Guest",isAdmin:false};}});
   const [mediaLib,setMediaLib]=useState([]);

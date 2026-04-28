@@ -1,15 +1,24 @@
 <!doctype html>
 <html lang="en">
   <head>
-<style>[data-bolt-badge],a[href*="bolt.new"],.bolt-badge{display:none!important;}</style>
+    <style>[data-bolt-badge],a[href*="bolt.new"],.bolt-badge,#bolt-badge,[class*="bolt-badge"],[id*="bolt-badge"],img[src*="bolt"],a[href*="bolt.new"] img,iframe[src*="bolt"]{display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;pointer-events:none!important;}</style>
+    <script>
+      (function(){
+        function killBolt(){
+          document.querySelectorAll('[data-bolt-badge],[class*="bolt-badge"],[id*="bolt-badge"],a[href*="bolt.new"]').forEach(function(el){el.style.cssText="display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;";});
+        }
+        killBolt();
+        var obs=new MutationObserver(killBolt);
+        document.addEventListener('DOMContentLoaded',function(){obs.observe(document.body,{childList:true,subtree:true});killBolt();});
+      })();
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manda Strong Studio Rebuild</title>
+    <title>MandaStrong Studio</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-<style>[data-bolt-badge],a[href*="bolt.new"],img[src*="bolt"],.bolt-badge{display:none!important;}</style>
