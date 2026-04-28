@@ -778,7 +778,7 @@ function renderFilm(ctx, W, H, t, sec, totalSec, beatNow) {`;
           method:"POST",
           headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
           body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,
-            messages:[{role:"user",content:`Write function renderFilm(ctx,W,H,t,sec,totalSec,beatNow) that renders a cinematic music video. Scene: "${sceneDesc}". Song: ${config.title}. Mood: ${config.mood}. t=0-1 overall progress. Draw ocean waves, a silhouetted figure on a windowsill with guitar, moonlight, candle glow, dark room. Use acts based on t. Return only the function.`}]})
+            messages:[{role:"user",content:`Write function renderFilm(ctx,W,H,t,sec,totalSec,beatNow) that renders a cinematic music video. Scene: "${sceneDesc}". Song: ${config.title}. Mood: ${config.mood}. t=0-1 overall progress. Draw REAL photorealistic humans with proper skin tones, faces, clothing. Draw ocean waves, a silhouetted figure on a windowsill with guitar, moonlight, candle glow, dark room. No abstract shapes — real cinematic humans and environments. Use acts based on t. Return only the function.`}]})
         });
         const sd = await simple.json();
         let sc = sd.content&&sd.content[0]?sd.content[0].text.trim():"";
@@ -1585,6 +1585,19 @@ The user has uploaded a reference image. Match its visual style, colour palette,
 
       const directorPrompt=`You are the MandaStrong Cinema Engine. Write JavaScript canvas rendering code that creates a CINEMATIC, PHOTOREALISTIC scene.
 
+CRITICAL — THIS IS A PROFESSIONAL FILM PLATFORM. USERS ARE PAYING SUBSCRIBERS:
+- ALWAYS draw REAL HUMAN FIGURES when people are described. No stick figures, no abstract shapes.
+- Skin tones: warm peachy rgba e.g. rgba(220,170,130,1) for light skin, rgba(160,100,60,1) for darker skin
+- Draw proper faces: oval head, eyes as filled circles, nose line, mouth curve
+- Proper body: head=H*0.06, neck, shoulders, torso=H*0.2, arms, legs=H*0.25
+- Clothing: solid colour fills with highlight and shadow gradients
+- Hair: filled path shapes with natural colours
+- Cast shadows beneath each figure on the ground
+- ENVIRONMENTS must be photorealistic: multi-stop sky gradients, textured ground, depth layers
+- LIGHTING must be physical: radialGradient light sources, rim lighting on figures, volumetric rays
+- CAMERA must move: parallax layers, subtle Ken Burns zoom using t progress
+- COLOUR GRADE at end: cinematic teal/orange or warm amber overlays at low opacity
+
 SCENE: "${prompt}"
 DURATION: ${duration} seconds${refInstruction}
 
@@ -1662,7 +1675,7 @@ function drawFrame(ctx, W, H, t, sec) {`;
           method:"POST",
           headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
           body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,
-            messages:[{role:"user",content:`Write a cinematic canvas renderer for: "${prompt}". Function: function drawFrame(ctx,W,H,t,sec). Use photorealistic gradients, proper human figures with skin tones, depth, lighting. Return only the function.`}]})
+            messages:[{role:"user",content:`Write a cinematic canvas renderer for: "${prompt}". Function: function drawFrame(ctx,W,H,t,sec). REQUIRED: draw REAL human figures with warm skin tones rgba(220,170,130,1), proper faces with eyes and mouth, clothing with shadows, body proportions head=H*0.06 torso=H*0.2. Photorealistic environment with multi-stop gradients, depth, physical lighting. No stick figures. No abstract shapes. Return only the function.`}]})
         });
         const rd=await retry.json();
         let rc=rd.content&&rd.content[0]?rd.content[0].text.trim():"";
@@ -2836,56 +2849,140 @@ function P18({ rendered, mediaLib }) {
 }
 
 function P19() {
-  const [active,setActive]=useState(null);
-  const tuts=[
-    {n:"01",t:"Getting Started — Platform Overview",d:"Full walkthrough of all 23 pages, Quick Access menu, footer controls and navigation.",l:"Beginner",tips:["Use ☰ top left to jump to any page instantly","Footer shows your current page","Page 23 has the full How-To guide"]},
-    {n:"02",t:"Writing Tools — Script to Screen",d:"How to use the 50+ writing tools on Page 5 using AI Create.",l:"Beginner",tips:["Click any tool card to open","Use AI CREATE for instant scripts","Save results to your Media Library"]},
-    {n:"03",t:"Voice Engine — 54 Characters",d:"Selecting voices, setting sliders, using TEST, preparing narration for your documentary.",l:"Beginner",tips:["James is your primary documentary narrator — pitch 0.86, rate 0.62","Hit TEST on any voice card to hear it instantly","Use PREPARE & SPEAK to AI-format your script"]},
-    {n:"04",t:"Music Video Studio",d:"Step-by-step: Song setup, style selection, scene description, generating your music video.",l:"Intermediate",tips:["Access from MUSIC VIDEO STUDIO button on Page 6","Upload your own audio track for beat-synced video","The more detailed your scene description, the better"]},
-    {n:"05",t:"Video Generator — Cinematic Scenes",d:"Describe any scene and have the Cinema Engine build it. Reference images, duration settings.",l:"Intermediate",tips:["Be specific — lighting, mood, camera angle","Upload a reference image to match a visual style","Each scene saves automatically to your Media Library"]},
-    {n:"06",t:"Timeline Editor — Building Your Film",d:"Dragging clips to tracks, syncing audio and video, adjusting film duration.",l:"Intermediate",tips:["Hit ⚡ SYNC ALL TRACKS to auto-populate","Set film duration — 60, 90, or 180 minutes","Hit → RENDER when your timeline is ready"]},
-    {n:"07",t:"Audio Mixer — Professional Sound",d:"Setting the perfect mix for documentary, narrative film, or music video.",l:"Beginner",tips:["Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85","Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85"]},
-    {n:"08",t:"Render Engine — Exporting in 4K",d:"Quality settings, starting the render, handling missing clips.",l:"Intermediate",tips:["1080p recommended for most use","4K for professional distribution","VP9 gives better quality at same file size"]},
-    {n:"09",t:"Export & Distribute",d:"Downloading your film, sharing to all social platforms.",l:"Beginner",tips:["Download to device first","Each social platform button opens the upload page directly"]},
-    {n:"10",t:"Saving & Project History",d:"Save your session, restore from history, clip persistence so nothing is lost.",l:"Beginner",tips:["Hit 💾 SAVE PROJECT in the footer at any time","📂 MY PROJECTS shows your full session history"]},
+  const [activeVid, setActiveVid] = useState(null);
+
+  const tuts = [
+    {
+      n:"01", t:"Getting Started — Platform Overview & Navigation",
+      d:"Full walkthrough of all 23 pages, the Quick Access menu, footer controls, and how to navigate the studio.",
+      dur:"12:00", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=MandaStrong+Studio+getting+started+tutorial",
+      tips:["Use ☰ top left to jump to any page instantly","Footer shows your current page and lets you save your project","Page 23 has the full How-To guide"]
+    },
+    {
+      n:"02", t:"Writing Tools — Script to Screen in Minutes",
+      d:"How to use the 50+ writing tools on Page 5. From logline to full feature script using AI Create.",
+      dur:"9:30", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=AI+screenwriting+script+generator+tutorial",
+      tips:["Click any tool card to open it","Use AI CREATE for instant professional scripts","Save results to your Media Library"]
+    },
+    {
+      n:"03", t:"Voice Engine — 54 Characters, Real Narration",
+      d:"Complete guide to Page 6. Selecting voices, setting pitch and rate, using the TEST button, and preparing narration for your documentary.",
+      dur:"14:20", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=AI+text+to+speech+voice+narration+tutorial",
+      tips:["James is your primary documentary narrator — pitch 0.86, rate 0.62","Hit TEST on any voice card to hear it instantly","Use PREPARE & SPEAK to AI-format your script before speaking"]
+    },
+    {
+      n:"04", t:"Music Video Studio — Full Production Walkthrough",
+      d:"Step-by-step: Song setup, style selection, scene description, generating your music video, and exporting to social platforms.",
+      dur:"18:45", l:"Intermediate",
+      url:"https://www.youtube.com/results?search_query=AI+music+video+generator+tutorial",
+      tips:["Access from the MUSIC VIDEO STUDIO button on Page 6","Upload your own audio track on Step 1 for beat-synced video","The more detailed your scene description, the better the output","Download directly or share to YouTube, TikTok, Instagram"]
+    },
+    {
+      n:"05", t:"Video Generator — Generating Cinematic Scenes (Page 8)",
+      d:"How to describe any scene and have the MandaStrong Cinema Engine build it. Using reference images, duration settings, and saving to your Media Library.",
+      dur:"16:00", l:"Intermediate",
+      url:"https://www.youtube.com/results?search_query=AI+video+scene+generator+cinematic+tutorial",
+      tips:["Be specific in your scene description — lighting, mood, camera angle","Upload a reference image to match a visual style","Each scene saves automatically to your Media Library","Use NEXT SCENE to build your full film clip by clip"]
+    },
+    {
+      n:"06", t:"Timeline Editor — Building Your Film (Page 13)",
+      d:"Dragging clips to tracks, syncing audio and video, adjusting film duration from 60 to 180 minutes, and preparing for render.",
+      dur:"11:30", l:"Intermediate",
+      url:"https://www.youtube.com/results?search_query=video+timeline+editor+tutorial+beginners",
+      tips:["Hit ⚡ SYNC ALL TRACKS to auto-populate from your Media Library","Drag any clip from the library to any track","Set film duration with the slider — 60, 90, or 180 minutes","Hit → RENDER when your timeline is ready"]
+    },
+    {
+      n:"07", t:"Audio Mixer — Professional Sound (Page 15)",
+      d:"Setting the perfect mix for documentary, narrative film, or music video. Recommended levels explained.",
+      dur:"7:15", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=audio+mixing+tutorial+for+beginners+film",
+      tips:["Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85","Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85","Hit SAVE PRESET to store your favourite mix"]
+    },
+    {
+      n:"08", t:"Render Engine — Exporting Your Film in 4K (Page 16)",
+      d:"Choosing quality settings, understanding VP9 vs VP8, starting the render, and what to do if clips need regenerating.",
+      dur:"10:45", l:"Intermediate",
+      url:"https://www.youtube.com/results?search_query=video+render+export+4K+tutorial",
+      tips:["1080p recommended for most use","4K for professional distribution","VP9 gives better quality at same file size","If clips are missing the engine regenerates them from their names automatically"]
+    },
+    {
+      n:"09", t:"Export & Distribute — Getting Your Film Out (Page 18)",
+      d:"Downloading your film, sharing to YouTube, TikTok, Instagram, Facebook, LinkedIn, Vimeo and WhatsApp directly from the platform.",
+      dur:"6:00", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=video+export+social+media+distribution+tutorial",
+      tips:["Hit DOWNLOAD to save to your device first","Each social platform button opens the upload page directly","Share your MandaStrong Studio credit in your post description"]
+    },
+    {
+      n:"10", t:"AI For Humanity Documentary — Full Production Case Study",
+      d:"Complete case study: how the AI For Humanity documentary was built inside MandaStrong Studio from script to render. Real workflow. Real results.",
+      dur:"25:00", l:"Advanced",
+      url:"https://www.youtube.com/results?search_query=AI+documentary+filmmaking+tutorial+case+study",
+      tips:["James narration — pitch 0.86, rate 0.62, pause 1600ms","13 scenes generated on Page 8, synced on Page 13","Full production workflow: P8 → P6 → P13 → P15 → P16 → P17 → P18","Each chapter gets its own generated scene — total runtime 90 minutes"]
+    },
+    {
+      n:"11", t:"Saving, Loading & Project History",
+      d:"How to save your session, restore from the project history, and use IndexedDB clip persistence so nothing is ever lost.",
+      dur:"5:30", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=video+project+save+restore+tutorial",
+      tips:["Hit 💾 SAVE PROJECT in the footer at any time","📂 MY PROJECTS shows your full session history","Clips survive page reloads automatically via local storage","Always download your finished film before closing the browser"]
+    },
+    {
+      n:"12", t:"Agent Grok — Your 24/7 AI Studio Assistant (Page 21)",
+      d:"How to use Agent Grok to get instant answers about any tool, workflow, pricing, or production question.",
+      dur:"4:00", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=AI+assistant+chatbot+creative+studio+tutorial",
+      tips:["Ask anything — tools, pricing, workflow, export settings","Use the quick-question buttons for instant answers","Agent Grok knows the entire MandaStrong Studio platform"]
+    },
   ];
-  const lc={Beginner:"#22c55e",Intermediate:"#f59e0b",Advanced:"#ef4444"};
+
+  const lc = { Beginner:"#22c55e", Intermediate:"#f59e0b", Advanced:"#ef4444" };
+
   return (
     <div style={{...Sp,padding:"30px 40px"}}>
       <div style={{maxWidth:880,margin:"0 auto"}}>
         <div style={{fontSize:11,color:GOLD,letterSpacing:4,marginBottom:4,fontWeight:700}}>LEARNING CENTER</div>
-        <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:16,flexWrap:"wrap"}}>
-          <h1 style={{...H1,fontSize:28,margin:0}}>TUTORIALS</h1>
-          <div style={{background:"#0a0500",border:`1px solid ${GOLD}`,padding:"4px 14px",display:"flex",alignItems:"center",gap:8}}>
-            <div style={{width:7,height:7,borderRadius:"50%",background:GOLD,animation:"pulse 1.5s ease-in-out infinite"}}/>
-            <span style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2}}>VIDEO CREATION IN PROGRESS</span>
-          </div>
+        <h1 style={{...H1,fontSize:28,marginBottom:4}}>TUTORIALS</h1>
+        <div style={{color:WHITE,fontSize:13,marginBottom:24,lineHeight:1.8}}>
+          Step-by-step guides for every part of MandaStrong Studio. Click any tutorial to open a full explanation and watch on YouTube.
         </div>
-        <style>{`@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}`}</style>
-        {active!==null&&(
+
+        {activeVid!==null&&(
           <div style={{background:"#050500",border:`2px solid ${GOLD}`,padding:24,marginBottom:24,position:"relative"}}>
-            <button onClick={()=>setActive(null)} style={{position:"absolute",top:12,right:12,background:"none",border:`1px solid ${GOLD}`,color:GOLD,width:28,height:28,cursor:"pointer",fontSize:14,fontWeight:900}}>✕</button>
-            <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:4}}>TUTORIAL {tuts[active].n}</div>
-            <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:18,fontWeight:900,marginBottom:10}}>{tuts[active].t}</div>
-            <p style={{color:WHITE,fontSize:14,lineHeight:1.9,marginBottom:16}}>{tuts[active].d}</p>
+            <button onClick={()=>setActiveVid(null)} style={{position:"absolute",top:12,right:12,background:"none",border:`1px solid ${GOLD}`,color:GOLD,width:28,height:28,cursor:"pointer",fontSize:14,fontWeight:900}}>✕</button>
+            <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:4}}>TUTORIAL {tuts[activeVid].n} · {tuts[activeVid].l.toUpperCase()}</div>
+            <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:18,fontWeight:900,marginBottom:10,letterSpacing:2}}>{tuts[activeVid].t}</div>
+            <p style={{color:WHITE,fontSize:14,lineHeight:1.9,marginBottom:16}}>{tuts[activeVid].d}</p>
             <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:10}}>PRO TIPS</div>
-            {tuts[active].tips.map((tip,i)=>(<div key={i} style={{display:"flex",gap:10,marginBottom:8}}><span style={{color:GOLD,fontWeight:900,flexShrink:0}}>✦</span><span style={{color:WHITE,fontSize:13,lineHeight:1.7}}>{tip}</span></div>))}
+            {tuts[activeVid].tips.map((tip,i)=>(
+              <div key={i} style={{display:"flex",gap:10,marginBottom:8,alignItems:"flex-start"}}>
+                <span style={{color:GOLD,fontWeight:900,flexShrink:0}}>✦</span>
+                <span style={{color:WHITE,fontSize:13,lineHeight:1.7}}>{tip}</span>
+              </div>
+            ))}
             <div style={{marginTop:18,display:"flex",gap:10}}>
-              {active>0&&<button onClick={()=>setActive(active-1)} style={{...G("out",true)}}>◀ PREV</button>}
-              {active<tuts.length-1&&<button onClick={()=>setActive(active+1)} style={{...G("gold",true)}}>NEXT ▶</button>}
+              <button onClick={()=>window.open(tuts[activeVid].url,"_blank")}
+                style={{background:`linear-gradient(135deg,#a07820,#e8c96d)`,border:"none",color:"#000",padding:"12px 24px",cursor:"pointer",fontSize:12,fontWeight:900,letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>
+                ▶ WATCH ON YOUTUBE
+              </button>
+              {activeVid > 0 && <button onClick={()=>setActiveVid(activeVid-1)} style={{...G("out",true)}}>◀ PREV</button>}
+              {activeVid < tuts.length-1 && <button onClick={()=>setActiveVid(activeVid+1)} style={{...G("out",true)}}>NEXT ▶</button>}
             </div>
           </div>
         )}
+
         {tuts.map((t,idx)=>(
-          <div key={t.n} onClick={()=>setActive(idx===active?null:idx)}
-            style={{...Card(),marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",borderColor:active===idx?GOLD:GOLDDIM}}
+          <div key={t.n} onClick={()=>setActiveVid(idx)}
+            style={{...Card(),marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",borderColor:activeVid===idx?GOLD:GOLDDIM}}
             onMouseEnter={e=>e.currentTarget.style.borderColor=GOLD}
-            onMouseLeave={e=>e.currentTarget.style.borderColor=active===idx?GOLD:GOLDDIM}>
+            onMouseLeave={e=>e.currentTarget.style.borderColor=activeVid===idx?GOLD:GOLDDIM}>
             <div style={{display:"flex",alignItems:"center",gap:14}}>
               <span style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,minWidth:28}}>{t.n}</span>
               <div>
                 <div style={{color:WHITE,fontWeight:800,fontSize:14}}>{t.t}</div>
-                <div style={{color:DIM,fontSize:11,marginTop:2}}>{t.tips.length} TIPS · CLICK TO EXPAND</div>
+                <div style={{color:DIM,fontSize:11,marginTop:2,letterSpacing:1}}>{t.dur} · {t.tips.length} PRO TIPS · CLICK TO EXPAND</div>
               </div>
             </div>
             <span style={{background:lc[t.l]+"22",border:`1px solid ${lc[t.l]}`,color:lc[t.l],padding:"3px 10px",fontSize:11,fontWeight:900,letterSpacing:2,flexShrink:0}}>{t.l.toUpperCase()}</span>
@@ -2897,33 +2994,20 @@ function P19() {
 }
 
 function P20() {
-  const pp=(txt)=><p style={{color:WHITE,fontSize:13,lineHeight:1.85,marginBottom:8}}>{txt}</p>;
-  const ss=(title,body)=>(<div style={{marginBottom:14}}><div style={{color:GOLD,fontWeight:900,fontSize:12,letterSpacing:2,marginBottom:6,borderBottom:`1px solid ${GOLDDIM}44`,paddingBottom:4}}>{title}</div>{body}</div>);
   return (
-    <div style={{...Sp,padding:"30px 40px 80px"}}>
-      <div style={{maxWidth:900,margin:"0 auto"}}>
+    <div style={{...Sp,padding:"40px 40px 80px"}}>
+      <div style={{maxWidth:860,margin:"0 auto"}}>
         <div style={{fontSize:11,color:GOLD,letterSpacing:4,marginBottom:4,fontWeight:700}}>LEGAL</div>
-        <h1 style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:26,fontWeight:900,letterSpacing:4,marginBottom:4}}>TERMS OF SERVICE & DISCLAIMER</h1>
-        <div style={{color:WHITE,fontSize:11,marginBottom:24,letterSpacing:2}}>EFFECTIVE MARCH 2026 · MANDASTRONG STUDIO LLC · mandastrongstudio2026.bolt.host</div>
-        <div style={{background:"#050505",border:`2px solid ${GOLD}`,padding:"22px 26px",marginBottom:20}}>
-          <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,letterSpacing:3,marginBottom:4,textAlign:"center"}}>TERMS OF SERVICE</div>
-          <div style={{color:WHITE,fontSize:11,textAlign:"center",letterSpacing:2,marginBottom:18,paddingBottom:14,borderBottom:`1px solid ${GOLDDIM}`}}>By using MandaStrong Studio you agree to be legally bound by these Terms.</div>
-          {ss("1. ACCEPTANCE",<>{pp("By accessing or using MandaStrong Studio you agree to be legally bound by these Terms. If you do not agree, do not use this platform.")}</>)}
-          {ss("2. SUBSCRIPTIONS & BILLING",<>{pp("Creator $20/mo · Pro $30/mo · Studio $50/mo. All plans auto-renew monthly. Studio includes 7-day free trial. All payments via Stripe. No refunds for partial periods.")}</>)}
-          {ss("3. INTELLECTUAL PROPERTY",<>{pp("You retain full ownership of all original content. Studio Plan subscribers receive full commercial rights to AI-generated content. MandaStrong Studio and its codebase remain the intellectual property of Amanda Woolley and MandaStrong Studio LLC.")}</>)}
-          {ss("4. ACCEPTABLE USE",<>{pp("Lawful use only. Prohibited: defamatory content, infringing IP, reverse-engineering the platform, spam, malware, or sharing credentials.")}</>)}
-          {ss("5. SOCIAL MISSION",<>{pp("A meaningful portion of all subscription proceeds funds veterans mental health initiatives and school anti-bullying programmes. This is the founding mission of this platform.")}</>)}
-          {ss("6. LIMITATION OF LIABILITY",<>{pp("Provided as-is. No liability for indirect or consequential damages. Total liability capped at amounts paid in the prior 30 days. Governed by the laws of the jurisdiction of MandaStrong Studio LLC.")}</>)}
-          <div style={{borderTop:`1px solid ${GOLDDIM}`,paddingTop:10,marginTop:4}}><p style={{color:GOLDDIM,fontSize:11,margin:0,letterSpacing:1}}>MANDASTRONG STUDIO LLC · AMANDA WOOLLEY · MARCH 2026 · MandaStrong1.Etsy.com</p></div>
+        <h1 style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:26,fontWeight:900,letterSpacing:4,marginBottom:24}}>TERMS OF SERVICE & DISCLAIMER</h1>
+        <div style={{background:"#050505",border:`2px solid ${GOLD}`,padding:"30px 32px",marginBottom:20}}>
+          <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,letterSpacing:3,marginBottom:16,textAlign:"center"}}>TERMS OF SERVICE</div>
+          <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:0}}>MandaStrong Studio is a professional cinema intelligence platform operated by MandaStrong Studio LLC, founded by Amanda Woolley. By accessing or using this platform you agree to be legally bound by these Terms of Service. Three subscription plans are available: Creator at $20 per month, Pro at $30 per month, and Studio at $50 per month, all of which auto-renew monthly unless cancelled before the renewal date. The Studio Plan includes a 7-day free trial at no charge. All payments are processed securely via Stripe and no refunds are issued for partial billing periods. You retain full ownership of all original content you upload to the platform. Studio Plan subscribers receive full commercial rights to AI-generated content produced using the platform's tools. MandaStrong Studio, its tools, interface, branding, and codebase remain the intellectual property of Amanda Woolley and MandaStrong Studio LLC and may not be reproduced, distributed, or resold. You agree to use this platform for lawful purposes only — prohibited activities include producing defamatory or harmful content, infringing intellectual property, reverse-engineering the platform, or sharing your account credentials. A meaningful portion of all subscription proceeds directly funds veterans mental health initiatives and school anti-bullying programmes, which are the founding missions of this platform. This platform is provided as-is without warranties of any kind, and MandaStrong Studio LLC shall not be liable for any indirect or consequential damages. For support or legal notices please contact us via MandaStrong1.Etsy.com or through Agent Grok on Page 21 of this platform. These Terms are governed by the laws of the jurisdiction in which MandaStrong Studio LLC is registered.</p>
+          <p style={{color:GOLDDIM,fontSize:11,marginTop:16,marginBottom:0,letterSpacing:1}}>MANDASTRONG STUDIO LLC · AMANDA WOOLLEY, FOUNDER · EFFECTIVE MARCH 2026 · mandastrongstudio2026.bolt.host</p>
         </div>
-        <div style={{background:"#050505",border:`2px solid ${GOLD}`,padding:"22px 26px"}}>
-          <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,letterSpacing:3,marginBottom:4,textAlign:"center"}}>DISCLAIMER</div>
-          <div style={{color:WHITE,fontSize:11,textAlign:"center",letterSpacing:2,marginBottom:18,paddingBottom:14,borderBottom:`1px solid ${GOLDDIM}`}}>Please read carefully before using this platform.</div>
-          {ss("AI-GENERATED CONTENT",<>{pp("All outputs are generated algorithmically. Review all content before publication. No guarantee of accuracy or appropriateness. You are solely responsible for fact-checking and compliance.")}</>)}
-          {ss("NO PROFESSIONAL ADVICE",<>{pp("Nothing generated constitutes legal, medical, financial, or professional advice. Always consult a qualified professional before acting on any AI-generated information.")}</>)}
-          {ss("PLATFORM AVAILABILITY",<>{pp("Provided on an 'as available' basis. No guarantee of uninterrupted access or data retention. Download and back up all productions regularly.")}</>)}
-          {ss("USER RESPONSIBILITY",<>{pp("All responsibility for how content is deployed, distributed, monetised, or shared rests entirely with the user.")}</>)}
-          <div style={{borderTop:`1px solid ${GOLDDIM}`,paddingTop:10,marginTop:4}}><p style={{color:GOLDDIM,fontSize:11,margin:0,letterSpacing:1}}>— AMANDA WOOLLEY · FOUNDER · MANDASTRONG STUDIO LLC · MARCH 2026</p></div>
+        <div style={{background:"#050505",border:`2px solid ${GOLD}`,padding:"30px 32px"}}>
+          <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,letterSpacing:3,marginBottom:16,textAlign:"center"}}>DISCLAIMER</div>
+          <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:0}}>MandaStrong Studio is an AI-assisted creative platform and all outputs produced by its tools — including scripts, narrations, images, and video — are generated algorithmically. All content must be reviewed, fact-checked, and verified by the user before publication or commercial use. The platform makes no guarantee regarding the accuracy, completeness, or appropriateness of any AI-generated material, and you are solely responsible for ensuring compliance with applicable laws before publishing or distributing any content created here. Nothing generated by MandaStrong Studio constitutes legal, medical, financial, psychological, or any other form of professional advice — always consult a qualified professional before acting on AI-generated information. This platform integrates with third-party services including payment processors and AI providers, and we are not responsible for their availability or conduct. MandaStrong Studio is provided on an as-available basis with no guarantee of uninterrupted access or permanent data retention — download and back up all completed productions regularly. All responsibility for how content created on this platform is deployed, distributed, monetised, or shared rests entirely with the user. MandaStrong Studio LLC shall not be held liable for any consequences arising from the publication or use of platform-generated content. We reserve the right to update this disclaimer at any time and continued use of the platform constitutes acceptance of any revised terms.</p>
+          <p style={{color:GOLDDIM,fontSize:11,marginTop:16,marginBottom:0,letterSpacing:1}}>— AMANDA WOOLLEY · FOUNDER · MANDASTRONG STUDIO LLC · MARCH 2026</p>
         </div>
       </div>
     </div>
