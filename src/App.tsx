@@ -624,7 +624,7 @@ function MusicVideoStudio({ onClose, onSave }) {
       // One function. All scenes. Seamless transitions. Beat responsive.
       addLog("Claude is writing your film renderer...");
 
-      const filmPrompt = `You are the MandaStrong Cinema Engine — the world's most advanced browser-based film renderer.
+      const filmPrompt = `You are the MandaStrong Cinema Engine — a professional cinematic renderer. CRITICAL: All output must be PHOTOREALISTIC. Draw REAL human figures with proper skin tones (warm peachy rgba values e.g. rgba(220,170,130,1)), realistic faces with eyes, nose and mouth, clothing with light and shadow, correct body proportions. Environments must use multi-stop gradients, depth layers, physical lighting. NO cartoons, NO stick figures, NO flat colours, NO abstract shapes. Every frame must look like a real film.
 
 Write a SINGLE JavaScript function that renders an entire music video from start to finish.
 
@@ -945,7 +945,7 @@ function renderFilm(ctx, W, H, t, sec, totalSec, beatNow) {`;
   );
 
   const steps = ["🎵 SONG","🎤 STYLE","🎬 SCENE","▶ GENERATE"];
-  const fmt = (s)=>{const m=Math.floor(s/60);const sc=Math.floor(s%60);return String(m).padStart(2,"0")+":"+String(sc).padStart(2,"0");};
+  const fmt = (s)=>{if(!s||!isFinite(s))return "00:00";const m=Math.floor(s/60);const sc=Math.floor(s%60);return String(m).padStart(2,"0")+":"+String(sc).padStart(2,"0");};
 
   return (
     <div style={{position:"fixed",inset:0,zIndex:1100,background:"rgba(0,0,0,0.98)",display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -1394,53 +1394,19 @@ function P6Voice({ onSave }) {
   return (
     <div style={{...Sp}}>
       {showMVS&&<MusicVideoStudio onClose={()=>setShowMVS(false)} onSave={onSave}/>}
-
-      {/* ── PAGE HEADER ── */}
       <div style={{padding:"12px 18px",borderBottom:`1px solid ${GOLDDIM}`,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
         <div>
           <div style={{fontSize:11,color:GOLD,letterSpacing:4,fontWeight:700}}>AI WORKSTATION 02 — CINEMA VOICE ENGINE</div>
           <h1 style={{...H1,fontSize:24,margin:0}}>TEXT TO LIFELIKE SPEECH</h1>
         </div>
-        <button onClick={()=>setShowMVS(true)} style={{...G("gold",true)}}>🎬 MUSIC VIDEO STUDIO</button>
+        <button onClick={()=>setShowMVS(true)} style={{...G("gold",true)}}>
+          🎬 MUSIC VIDEO STUDIO
+        </button>
       </div>
-
-      {/* ── VOICE SETTINGS BAR — always visible at top ── */}
-      <div style={{background:"#060600",borderBottom:`2px solid ${GOLD}`,padding:"14px 20px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:"14px 24px",alignItems:"end"}}>
-          {[
-            ["SPEED",speed,0.3,1.5,0.01,(v)=>setSpeed(v),`${speed.toFixed(2)}x`],
-            ["PITCH",pitchV,0.3,2.0,0.01,(v)=>setPitchV(v),`${pitchV.toFixed(2)}`],
-            ["PAUSE (ms)",pauseLen,200,2000,50,(v)=>setPauseLen(v),`${pauseLen}ms`],
-            ["VOLUME",volume,0.1,1.0,0.05,(v)=>setVolume(v),`${Math.round(volume*100)}%`],
-          ].map(([label,val,min,max,step,setter,display])=>(
-            <div key={label}>
-              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                <span style={{color:GOLD,fontSize:10,fontWeight:900,letterSpacing:2}}>{label}</span>
-                <span style={{color:WHITE,fontSize:11,fontWeight:900}}>{display}</span>
-              </div>
-              <input type="range" min={min} max={max} step={step} value={val} onChange={e=>setter(+e.target.value)} style={{width:"100%",accentColor:GOLD,height:4}}/>
-            </div>
-          ))}
-          <div>
-            <div style={{color:GOLD,fontSize:10,fontWeight:900,letterSpacing:2,marginBottom:4}}>MOOD · {mood}</div>
-            <select value={mood} onChange={e=>setMood(e.target.value)} style={{width:"100%",background:"#111",border:`1px solid ${GOLDDIM}`,color:GOLD,padding:"5px 8px",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>
-              {["Neutral","Happy","Sad","Angry","Fearful","Surprised","Tender","Serious","Excited","Melancholic","Hopeful","Tense","Calm","Dramatic"].map(m=><option key={m} value={m}>{m}</option>)}
-            </select>
-          </div>
-          <div style={{display:"flex",flexDirection:"column",gap:4}}>
-            <button onClick={()=>{setSpeed(0.62);setPitchV(0.86);setPauseLen(1600);setVolume(1.0);setSelVoice("james");setMood("Neutral");}} style={{...G("gold",true),fontSize:10,whiteSpace:"nowrap"}}>⚙ JAMES DOCUMENTARY</button>
-            <div style={{color:GOLDDIM,fontSize:9,letterSpacing:1,textAlign:"center"}}>PRESET SETTINGS</div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── MAIN GRID — voice list left, speak panel right ── */}
-      <div style={{display:"grid",gridTemplateColumns:"290px 1fr",minHeight:"calc(100vh - 220px)"}}>
-
-        {/* LEFT — voice library */}
+      <div style={{display:"grid",gridTemplateColumns:"290px 1fr",minHeight:"calc(100vh - 120px)"}}>
         <div style={{borderRight:`1px solid ${GOLDDIM}`,background:"#030303",display:"flex",flexDirection:"column"}}>
           <div style={{padding:"10px 10px 6px"}}>
-            <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:8}}>HUMAN VOICE LIBRARY — {filtered.length} / {VOICE_CHARACTERS.length}</div>
+            <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:8}}>VOICE LIBRARY — {filtered.length} / {VOICE_CHARACTERS.length}</div>
             <div style={{marginBottom:5}}>
               <div style={{color:GOLDDIM,fontSize:9,letterSpacing:2,marginBottom:3}}>GENDER</div>
               <div style={{display:"flex",gap:4}}>
@@ -1474,7 +1440,9 @@ function P6Voice({ onSave }) {
                     </div>
                   </div>
                   <div style={{display:"flex",alignItems:"center",gap:6}}>
-                    <div style={{color:GOLDDIM,fontSize:9,letterSpacing:1}}>P {v.pitch} · R {v.rate}</div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{color:GOLDDIM,fontSize:9,letterSpacing:1}}>PITCH {v.pitch} · RATE {v.rate}</div>
+                    </div>
                     <button onClick={e=>{e.stopPropagation();setSelVoice(v.id);setTimeout(()=>speakNow("Hello. This is "+v.name+". "+v.desc),100);}}
                       style={{background:GOLDDIM,border:"none",color:"#000",padding:"3px 8px",cursor:"pointer",fontSize:9,fontWeight:900,letterSpacing:1,fontFamily:"'Rajdhani',sans-serif",whiteSpace:"nowrap"}}>
                       ▶ TEST
@@ -1482,17 +1450,17 @@ function P6Voice({ onSave }) {
                   </div>
                 </div>
                 <div style={{color:DIM,fontSize:10,lineHeight:1.5}}>{v.style}</div>
-                {selVoice===v.id&&<div style={{color:GOLD,fontSize:9,letterSpacing:2,marginTop:4,fontWeight:900}}>✓ SELECTED</div>}
+                {selVoice===v.id&&<div style={{color:GOLD,fontSize:9,letterSpacing:2,marginTop:4,fontWeight:900}}>✓ SELECTED — SPEAK ABOVE TO USE THIS VOICE</div>}
               </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-
-        {/* RIGHT — speak & result tabs */}
+        {/* RIGHT PANEL — speak controls */}
         <div style={{display:"flex",flexDirection:"column",background:"#030303"}}>
           <div style={{borderBottom:`1px solid ${GOLDDIM}`,display:"flex",flexShrink:0}}>
-            {[["speak","🎙 SPEAK"],["result","✦ RESULT"]].map(([t,l])=>(
-              <button key={t} onClick={()=>setActiveTab(t)} style={{background:activeTab===t?"#0a0800":"none",border:"none",borderBottom:activeTab===t?`2px solid ${GOLD}`:"2px solid transparent",color:activeTab===t?GOLD:WHITE,padding:"12px 20px",cursor:"pointer",fontSize:11,fontWeight:900,letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>
+            {[["speak","🎙 SPEAK"],["result","✦ RESULT"],["settings","🎚 SLIDERS"]].map(([t,l])=>(
+              <button key={t} onClick={()=>setActiveTab(t)} style={{background:activeTab===t?"#0a0800":"none",border:"none",borderBottom:activeTab===t?`2px solid ${GOLD}`:"2px solid transparent",color:activeTab===t?GOLD:WHITE,padding:"12px 16px",cursor:"pointer",fontSize:11,fontWeight:900,letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>
                 {l}
               </button>
             ))}
@@ -1501,14 +1469,14 @@ function P6Voice({ onSave }) {
             {activeTab==="speak"&&(
               <div>
                 <div style={{background:"#000",border:`1px solid ${GOLDDIM}`,padding:"10px 14px",marginBottom:14}}>
-                  <div style={{color:WHITE,fontSize:12,fontWeight:900}}>{selected.name} {selected.emoji} · {selected.origin} · {selected.gender} · {selected.age}</div>
+                  <div style={{color:WHITE,fontSize:12,fontWeight:900}}>{selected.name} {selected.emoji} · {selected.origin} · {selected.gender}</div>
                   <div style={{color:GOLDDIM,fontSize:11,marginTop:3}}>{selected.style}</div>
                   <div style={{color:DIM,fontSize:11,marginTop:3,fontStyle:"italic"}}>{selected.desc}</div>
                 </div>
                 <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:6}}>YOUR SCRIPT</div>
                 <textarea value={text} onChange={e=>setText(e.target.value)}
-                  placeholder="Paste your narration script here... For documentary: select James and use the JAMES DOCUMENTARY preset above."
-                  style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"12px 14px",color:WHITE,fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.9,height:240,resize:"vertical"}}/>
+                  placeholder="Paste your narration script here... Tip: For documentary use James — pitch 0.86, rate 0.62, pause 1600ms."
+                  style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"12px 14px",color:WHITE,fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.9,height:220,resize:"vertical"}}/>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:10}}>
                   <button onClick={processAndSpeak} disabled={loading||!text.trim()}
                     style={{background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,border:"none",color:"#000",padding:"14px",fontSize:13,fontWeight:900,letterSpacing:2,cursor:loading||!text.trim()?"not-allowed":"pointer",fontFamily:"'Rajdhani',sans-serif",opacity:loading||!text.trim()?0.5:1}}>
@@ -1527,7 +1495,7 @@ function P6Voice({ onSave }) {
                 {processed?(
                   <div>
                     <textarea value={processed} onChange={e=>setProcessed(e.target.value)}
-                      style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"12px 14px",color:WHITE,fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.9,height:220,resize:"vertical"}}/>
+                      style={{width:"100%",background:"#000",border:`1px solid ${GOLDDIM}`,padding:"12px 14px",color:WHITE,fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.9,height:200,resize:"vertical"}}/>
                     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginTop:10}}>
                       <button onClick={()=>speakNow(processed)} style={{...G("gold",false),padding:"10px"}}>▶ PLAY</button>
                       <button onClick={stop} style={{...G("out",false),padding:"10px"}}>⏹ STOP</button>
@@ -1536,13 +1504,31 @@ function P6Voice({ onSave }) {
                     {saved&&<div style={{marginTop:8,background:"#061406",border:"1px solid #22c55e",padding:"8px",textAlign:"center",color:"#22c55e",fontSize:11,fontWeight:900,letterSpacing:2}}>✓ SAVED TO MEDIA LIBRARY</div>}
                   </div>
                 ):(
-                  <div style={{color:GOLDDIM,fontSize:13,lineHeight:1.8,padding:"20px 0"}}>No result yet. Use PREPARE & SPEAK to AI-format your script for natural delivery.</div>
+                  <div style={{color:GOLDDIM,fontSize:13,lineHeight:1.8,padding:"20px 0"}}>No result yet. Use PREPARE & SPEAK to format your script for natural delivery.</div>
                 )}
+              </div>
+            )}
+            {activeTab==="settings"&&(
+              <div>
+                <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:14}}>VOICE SETTINGS — {selected.name}</div>
+                {[["SPEED",speed,0.3,1.5,0.01,(v)=>setSpeed(v),`${speed.toFixed(2)}x`],["PITCH",pitchV,0.3,2.0,0.01,(v)=>setPitchV(v),`${pitchV.toFixed(2)}`],["PAUSE (ms)",pauseLen,200,2000,50,(v)=>setPauseLen(v),`${pauseLen}ms`],["VOLUME",volume,0.1,1.0,0.05,(v)=>setVolume(v),`${Math.round(volume*100)}%`]].map(([label,val,min,max,step,setter,display])=>(
+                  <div key={label} style={{marginBottom:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
+                      <span style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2}}>{label}</span>
+                      <span style={{color:WHITE,fontSize:12,fontWeight:900}}>{display}</span>
+                    </div>
+                    <input type="range" min={min} max={max} step={step} value={val} onChange={e=>setter(+e.target.value)} style={{width:"100%",accentColor:GOLD}}/>
+                  </div>
+                ))}
+                <div style={{background:"#0a0800",border:`1px solid ${GOLDDIM}`,padding:"10px 14px",marginTop:8}}>
+                  <div style={{color:GOLDDIM,fontSize:10,letterSpacing:2,marginBottom:6}}>JAMES DOCUMENTARY SETTINGS</div>
+                  <button onClick={()=>{setSpeed(0.62);setPitchV(0.86);setPauseLen(1600);setVolume(1.0);setSelVoice("james");setMood("Neutral");}} style={{...G("gold",true),fontSize:10}}>APPLY JAMES SETTINGS</button>
+                </div>
+                <div style={{...Card(),marginBottom:12}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}><span style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2}}>MOOD</span><span style={{color:WHITE,fontSize:11}}>{mood}</span></div><select value={mood} onChange={e=>setMood(e.target.value)} style={{width:"100%",background:"#111",border:`1px solid ${GOLDDIM}`,color:GOLD,padding:"6px 10px",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{["Neutral","Happy","Sad","Angry","Fearful","Surprised","Tender","Serious","Excited","Melancholic","Hopeful","Tense","Calm","Dramatic"].map(m=><option key={m} value={m}>{m}</option>)}</select></div>
               </div>
             )}
           </div>
         </div>
-      </div>
     </div>
   );
 }
@@ -2133,7 +2119,7 @@ function P4({ go, setUser }) {
   return (
     <div style={{...Sp,padding:40}}>
       <div style={{maxWidth:1000,margin:"0 auto"}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:18,marginBottom:36}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:18,marginBottom:36}}>
           <div style={{...Card()}}>
             <div style={{fontSize:11,color:GOLD,letterSpacing:3,marginBottom:8,fontWeight:700}}>EXISTING USER</div>
             <h2 style={{...H1,fontSize:18,marginBottom:18}}>SIGN IN</h2>
@@ -2158,20 +2144,6 @@ function P4({ go, setUser }) {
             <h2 style={{...H1,fontSize:16,marginBottom:10}}>EXPLORE FIRST</h2>
             <p style={{color:WHITE,fontSize:14,lineHeight:1.7,marginBottom:20}}>Browse 600+ AI tools before committing. No account required.</p>
             <button onClick={()=>{setUser({name:"Guest",plan:"Guest",isAdmin:false});go(5);}} style={{...G("out",false),width:"100%"}}>BROWSE AS GUEST</button>
-          </div>
-          <div style={{...Card(),border:`2px solid ${GOLD}`,textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:10}}>
-            <div style={{fontSize:36}}>✦</div>
-            <h2 style={{...H1,fontSize:16,margin:0}}>NEW PROJECT</h2>
-            <p style={{color:WHITE,fontSize:13,lineHeight:1.7,margin:0}}>Start a fresh project — clears the current session and begins from scratch.</p>
-            <button onClick={()=>{
-              if(window.confirm("Start a new project? This will clear your current session.")){
-                localStorage.removeItem("ms_timeline");
-                localStorage.removeItem("ms_medialib");
-                localStorage.removeItem("ms_page");
-                setUser({name:"Creator",plan:"Studio Trial",isAdmin:false});
-                go(5);
-              }
-            }} style={{...G("gold",false),width:"100%",padding:"12px"}}>START NEW PROJECT</button>
           </div>
         </div>
         <div style={{textAlign:"center",marginBottom:20}}>
@@ -2876,247 +2848,144 @@ function P18({ rendered, mediaLib }) {
   );
 }
 
-function TutPlayer({tut,onClose,onPrev,onNext,hasPrev,hasNext}:{tut:any,onClose:()=>void,onPrev:()=>void,onNext:()=>void,hasPrev:boolean,hasNext:boolean}){
-  const [step,setStep]=useState(0);
-  const [playing,setPlaying]=useState(true);
-  const [animKey,setAnimKey]=useState(0);
-  const timerRef=useRef<any>(null);
-  const stepDur=3200;
-  useEffect(()=>{setStep(0);setPlaying(true);setAnimKey(k=>k+1);},[tut]);
-  useEffect(()=>{
-    if(!playing)return;
-    timerRef.current=setInterval(()=>{
-      setStep(s=>{
-        if(s>=tut.steps.length-1){setPlaying(false);clearInterval(timerRef.current);return s;}
-        return s+1;
-      });
-    },stepDur);
-    return()=>clearInterval(timerRef.current);
-  },[playing,tut]);
-  const restart=()=>{setStep(0);setPlaying(true);setAnimKey(k=>k+1);};
-  const lc:Record<string,string>={Beginner:"#22c55e",Intermediate:"#f59e0b",Advanced:"#ef4444"};
-  return(
-    <div style={{background:"#030300",border:`2px solid ${GOLD}`,marginBottom:24,position:"relative"}}>
-      {/* Header bar */}
-      <div style={{background:"linear-gradient(135deg,#0a0800,#050400)",borderBottom:`1px solid ${GOLD}`,padding:"14px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12}}>
-        <div style={{display:"flex",alignItems:"center",gap:12}}>
-          <span style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:22,fontWeight:900,minWidth:32}}>{tut.n}</span>
-          <div>
-            <div style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:15,fontWeight:900,letterSpacing:2}}>{tut.t}</div>
-            <div style={{display:"flex",gap:10,alignItems:"center",marginTop:3}}>
-              <span style={{background:lc[tut.l]+"22",border:`1px solid ${lc[tut.l]}`,color:lc[tut.l],padding:"2px 8px",fontSize:10,fontWeight:900,letterSpacing:2}}>{tut.l.toUpperCase()}</span>
-              <span style={{color:DIM,fontSize:11,letterSpacing:1}}>{tut.steps.length} STEPS</span>
-            </div>
-          </div>
-        </div>
-        <button onClick={onClose} style={{background:"none",border:`1px solid ${GOLD}`,color:GOLD,width:28,height:28,cursor:"pointer",fontSize:14,fontWeight:900,flexShrink:0}}>✕</button>
-      </div>
-      {/* Animated screen demo */}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0}}>
-        {/* Left: animated screen */}
-        <div style={{background:"#000",borderRight:`1px solid ${GOLDDIM}`,padding:20,minHeight:320,position:"relative",overflow:"hidden"}}>
-          <div style={{fontSize:10,color:GOLDDIM,letterSpacing:3,marginBottom:10,fontWeight:700}}>LIVE DEMO — MANDASTRONG STUDIO</div>
-          {/* Simulated app screen */}
-          <div key={animKey} style={{background:"#0a0800",border:`1px solid ${GOLDDIM}`,borderRadius:0,padding:12,fontSize:12,color:WHITE,fontFamily:"'Rajdhani',sans-serif",lineHeight:1.7}}>
-            {/* Top bar sim */}
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:`1px solid ${GOLDDIM}`,paddingBottom:8,marginBottom:10}}>
-              <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <div style={{width:18,height:14,display:"flex",flexDirection:"column",gap:3,cursor:"pointer"}}>
-                  {[0,1,2].map(i=><div key={i} style={{height:2,background:GOLD,width:i===1?"70%":"100%"}}/>)}
-                </div>
-                <span style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:900,letterSpacing:2}}>MANDASTRONG</span>
-              </div>
-              <div style={{display:"flex",gap:6}}>
-                {["💾","📂"].map(ic=><span key={ic} style={{fontSize:12,cursor:"pointer"}}>{ic}</span>)}
-              </div>
-            </div>
-            {/* Step content */}
-            <div style={{minHeight:180}}>
-              {tut.frames&&tut.frames[step]?tut.frames[step]:
-                <div style={{padding:10}}>
-                  <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:10}}>STEP {step+1} OF {tut.steps.length}</div>
-                  <div style={{color:WHITE,fontSize:13,lineHeight:1.8,animation:"fadeIn .4s ease"}}>{tut.steps[step]}</div>
-                  {/* Animated cursor dot */}
-                  <div style={{width:10,height:10,borderRadius:"50%",background:GOLD,marginTop:14,animation:"pulse 1s infinite",boxShadow:`0 0 8px ${GOLD}`}}/>
-                </div>
-              }
-            </div>
-          </div>
-          {/* Progress bar */}
-          <div style={{marginTop:12,height:3,background:"#1a1400",borderRadius:0}}>
-            <div style={{height:"100%",background:`linear-gradient(90deg,${GOLDDIM},${GOLD})`,width:`${((step+1)/tut.steps.length)*100}%`,transition:"width .4s ease"}}/>
-          </div>
-          <div style={{display:"flex",justifyContent:"space-between",marginTop:6}}>
-            <span style={{color:DIM,fontSize:10,letterSpacing:1}}>STEP {step+1}/{tut.steps.length}</span>
-            <span style={{color:playing?GOLD:"#22c55e",fontSize:10,fontWeight:900,letterSpacing:2}}>{playing?"● PLAYING":"✓ COMPLETE"}</span>
-          </div>
-          {/* Playback controls */}
-          <div style={{display:"flex",gap:8,marginTop:10}}>
-            <button onClick={()=>{setStep(s=>Math.max(0,s-1));setPlaying(false);}} style={{background:"#0a0800",border:`1px solid ${GOLDDIM}`,color:WHITE,padding:"5px 12px",cursor:"pointer",fontSize:11,fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>◀ BACK</button>
-            <button onClick={restart} style={{background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,border:"none",color:"#000",padding:"5px 14px",cursor:"pointer",fontSize:11,fontFamily:"'Rajdhani',sans-serif",fontWeight:900}}>↺ REPLAY</button>
-            <button onClick={()=>{setStep(s=>Math.min(tut.steps.length-1,s+1));setPlaying(false);}} style={{background:"#0a0800",border:`1px solid ${GOLDDIM}`,color:WHITE,padding:"5px 12px",cursor:"pointer",fontSize:11,fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>NEXT ▶</button>
-          </div>
-        </div>
-        {/* Right: steps + tips */}
-        <div style={{padding:20,overflowY:"auto",maxHeight:420}}>
-          <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:12}}>ALL STEPS</div>
-          {tut.steps.map((s:string,i:number)=>(
-            <div key={i} onClick={()=>{setStep(i);setPlaying(false);}}
-              style={{display:"flex",gap:10,marginBottom:8,alignItems:"flex-start",padding:"8px 10px",cursor:"pointer",background:step===i?"#0a0800":"transparent",border:step===i?`1px solid ${GOLD}`:`1px solid ${GOLDDIM}33`,transition:"all .2s"}}>
-              <span style={{color:step===i?GOLD:GOLDDIM,fontWeight:900,fontSize:12,minWidth:20,flexShrink:0}}>{i+1}</span>
-              <span style={{color:step===i?WHITE:DIM,fontSize:12,lineHeight:1.6}}>{s}</span>
-            </div>
-          ))}
-          <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:10,marginTop:16}}>PRO TIPS</div>
-          {tut.tips.map((tip:string,i:number)=>(
-            <div key={i} style={{display:"flex",gap:8,marginBottom:8,alignItems:"flex-start"}}>
-              <span style={{color:GOLD,fontWeight:900,flexShrink:0,fontSize:12}}>✦</span>
-              <span style={{color:WHITE,fontSize:12,lineHeight:1.6}}>{tip}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* Bottom nav */}
-      <div style={{borderTop:`1px solid ${GOLDDIM}`,padding:"12px 20px",display:"flex",gap:10}}>
-        {hasPrev&&<button onClick={onPrev} style={{...G("out",true)}}>◀ PREV TUTORIAL</button>}
-        {hasNext&&<button onClick={onNext} style={{...G("out",true)}}>NEXT TUTORIAL ▶</button>}
-      </div>
-    </div>
-  );
-}
-
 function P19() {
   const [activeVid, setActiveVid] = useState(null);
 
   const tuts = [
     {
       n:"01", t:"Getting Started — Platform Overview & Navigation",
-      d:"MandaStrong Studio has 23 pages. Use the ☰ hamburger menu (top left) to jump to any page instantly. The footer at the bottom of every page shows your current page number and gives you quick access to SAVE PROJECT and MY PROJECTS. Pages 1–3 are the public-facing home, platform overview, and examples. Pages 4–18 are your full production pipeline. Pages 19–23 are tutorials, legal, Agent Grok, community, and the closing page. You do not need to follow the pages in order — use Quick Access to jump anywhere.",
-      dur:"5 min read", l:"Beginner",
-      steps:["1. Open the ☰ menu top-left — all 23 pages are listed","2. Click any page name to jump there instantly","3. The footer always shows your current page","4. Hit 💾 SAVE PROJECT in the footer to save your session","5. Hit 📂 MY PROJECTS to restore any previous session","6. Page 23 has the full How-To guide with all page instructions"],
+      d:"Full walkthrough of all 23 pages, the Quick Access menu, footer controls, and how to navigate the studio.",
+      dur:"12:00", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=MandaStrong+Studio+getting+started+tutorial",
       tips:["Use ☰ top left to jump to any page instantly","Footer shows your current page and lets you save your project","Page 23 has the full How-To guide"]
     },
     {
-      n:"02", t:"Writing Tools — AI Script Generator (Page 5)",
-      d:"Page 5 is your AI Writing Workstation with 50+ professional screenplay and storytelling tools. Each tool card shows the tool name and a one-line description. Click any card to open the tool input panel. Type your prompt — for example: 'A veteran returns home to find his family has moved on without him' — and hit AI CREATE. The platform generates a professional output you can copy, edit, or save directly to your Media Library. Tools cover: Logline, Treatment, Beat Sheet, Scene by Scene, Full Feature Script, Character Profiles, Dialogue, Voiceover Script, Documentary Outline, and more.",
-      dur:"7 min read", l:"Beginner",
-      steps:["1. Go to Page 5 — Writing Tools","2. Browse the tool cards — 50+ tools available","3. Click any tool card to open it","4. Type your story idea or prompt in the input box","5. Hit AI CREATE to generate your content","6. Copy or save the output to your Media Library"],
-      tips:["Click any tool card to open it","Use AI CREATE for instant professional scripts","Save results directly to your Media Library","Try Logline first — one sentence that defines your entire film"]
+      n:"02", t:"Writing Tools — Script to Screen in Minutes",
+      d:"How to use the 50+ writing tools on Page 5. From logline to full feature script using AI Create.",
+      dur:"9:30", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=AI+screenwriting+script+generator+tutorial",
+      tips:["Click any tool card to open it","Use AI CREATE for instant professional scripts","Save results to your Media Library"]
     },
     {
-      n:"03", t:"Voice Engine — 54 Characters & Narration (Page 6)",
-      d:"Page 6 is the Cinema Voice Engine. At the top of the page are the VOICE SETTINGS SLIDERS — Speed, Pitch, Pause, Volume, and Mood. These apply to whichever voice you select. Below the sliders are 54 voice character cards — filter by Gender, Age, and Origin to find your voice. Each card has a ▶ TEST button — click it to hear the voice instantly. For documentary narration, hit APPLY JAMES SETTINGS (Speed 0.62, Pitch 0.86, Pause 1600ms — the MandaStrong documentary standard). On the SPEAK tab, paste your script and hit PREPARE & SPEAK to have your chosen voice narrate it. Generated narration saves automatically to your Media Library.",
-      dur:"8 min read", l:"Beginner",
-      steps:["1. Go to Page 6 — Voice Engine","2. Set your sliders: Speed, Pitch, Pause, Volume, Mood","3. For documentary — hit APPLY JAMES SETTINGS","4. Browse 54 voice cards — filter by gender, age, origin","5. Hit ▶ TEST on any card to hear the voice","6. Click SPEAK tab — paste your script","7. Hit PREPARE & SPEAK — narration saves to Media Library"],
-      tips:["James: Speed 0.62, Pitch 0.86, Pause 1600ms — perfect documentary voice","Hit ▶ TEST on any voice card to hear it before committing","PREPARE & SPEAK auto-formats your script for natural delivery","54 voices — filter by origin to match your documentary's tone"]
+      n:"03", t:"Voice Engine — 54 Characters, Real Narration",
+      d:"Complete guide to Page 6. Selecting voices, setting pitch and rate, using the TEST button, and preparing narration for your documentary.",
+      dur:"14:20", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=AI+text+to+speech+voice+narration+tutorial",
+      tips:["James is your primary documentary narrator — pitch 0.86, rate 0.62","Hit TEST on any voice card to hear it instantly","Use PREPARE & SPEAK to AI-format your script before speaking"]
     },
     {
-      n:"04", t:"Music Video Studio — Full Production (Page 6)",
-      d:"The MUSIC VIDEO STUDIO is accessed from the gold button at the top of Page 6. It is a 4-step wizard. Step 1: Upload your audio track or paste a song link. Step 2: Choose your visual style (cinematic, anime, documentary, abstract, etc.). Step 3: Write a scene description for each section of the song — the more specific your description (lighting, mood, camera angle, location), the better the output. Step 4: Generate your music video. The completed video is saved to your Media Library and can be exported directly to YouTube, TikTok, or Instagram from Page 18.",
-      dur:"10 min read", l:"Intermediate",
-      steps:["1. Go to Page 6 — click 🎬 MUSIC VIDEO STUDIO (top right)","2. Step 1: Upload your audio track or paste a song link","3. Step 2: Choose your visual style","4. Step 3: Write your scene description — be detailed","5. Hit GENERATE to build your music video","6. Video saves to Media Library automatically","7. Export to social platforms from Page 18"],
-      tips:["The more detailed your scene description the better the output","Upload your own audio on Step 1 for beat-synced visuals","Choose 'Cinematic' style for a documentary feel","Export directly to YouTube, TikTok, Instagram from Page 18"]
+      n:"04", t:"Music Video Studio — Full Production Walkthrough",
+      d:"Step-by-step: Song setup, style selection, scene description, generating your music video, and exporting to social platforms.",
+      dur:"18:45", l:"Intermediate",
+      url:"https://www.youtube.com/results?search_query=AI+music+video+generator+tutorial",
+      tips:["Access from the MUSIC VIDEO STUDIO button on Page 6","Upload your own audio track on Step 1 for beat-synced video","The more detailed your scene description, the better the output","Download directly or share to YouTube, TikTok, Instagram"]
     },
     {
-      n:"05", t:"Video Generator — Cinematic Scene Builder (Page 8)",
-      d:"Page 8 is the MandaStrong Cinema Engine — your AI video scene generator. Type a detailed scene description in plain English: include the setting, lighting, mood, camera angle, and any characters. You can optionally upload a reference image to match a specific visual style. Set the scene duration (5–30 seconds). Hit 🎬 GENERATE SCENE. The engine builds your scene and saves it automatically to your Media Library with the scene name as its label. Hit NEXT SCENE to describe and generate the next clip. Repeat for every chapter of your film. A 90-minute documentary typically uses 10–15 generated scenes.",
-      dur:"10 min read", l:"Intermediate",
-      steps:["1. Go to Page 8 — Video Generator","2. Type your scene description — setting, lighting, mood, camera","3. Optionally upload a reference image for visual style","4. Set scene duration (5–30 seconds)","5. Hit 🎬 GENERATE SCENE","6. Scene saves to Media Library automatically","7. Hit NEXT SCENE and repeat for each chapter"],
-      tips:["Be specific: 'golden hour light, handheld camera, desert highway' beats 'outdoor scene'","Upload a reference image to lock in a visual style","Each generated scene is labelled by its name in your Media Library","Build your film chapter by chapter — one scene at a time"]
+      n:"05", t:"Video Generator — Generating Cinematic Scenes (Page 8)",
+      d:"How to describe any scene and have the MandaStrong Cinema Engine build it. Using reference images, duration settings, and saving to your Media Library.",
+      dur:"16:00", l:"Intermediate",
+      url:"https://www.youtube.com/results?search_query=AI+video+scene+generator+cinematic+tutorial",
+      tips:["Be specific in your scene description — lighting, mood, camera angle","Upload a reference image to match a visual style","Each scene saves automatically to your Media Library","Use NEXT SCENE to build your full film clip by clip"]
     },
     {
-      n:"06", t:"Timeline Editor — Assembling Your Film (Page 13)",
-      d:"Page 13 is the Timeline Editor — this is where you assemble your film. The timeline has three tracks: Video, Audio, and Text. Your Media Library is shown on the left. Drag any clip from the library to the Video track. Drag narration or music files to the Audio track. Use the Text track for titles, captions, and credits. Hit ⚡ SYNC ALL TRACKS to automatically populate all tracks from your Media Library in sequence. Use the duration slider (bottom of page) to set your film length: 60, 90, or 180 minutes. When your timeline is complete, hit → RENDER to send to the Render Engine on Page 16.",
-      dur:"9 min read", l:"Intermediate",
-      steps:["1. Go to Page 13 — Timeline Editor","2. Your Media Library clips appear on the left panel","3. Drag clips to the Video track","4. Drag audio/narration files to the Audio track","5. Add titles to the Text track","6. Hit ⚡ SYNC ALL TRACKS to auto-populate","7. Set film duration with the slider (60 / 90 / 180 min)","8. Hit → RENDER when timeline is ready"],
-      tips:["SYNC ALL TRACKS populates everything from your Media Library instantly","Drag to reorder clips — your sequence becomes your film","Set film duration before rendering — it locks the final length","Hit → RENDER only when your timeline is exactly how you want it"]
+      n:"06", t:"Timeline Editor — Building Your Film (Page 13)",
+      d:"Dragging clips to tracks, syncing audio and video, adjusting film duration from 60 to 180 minutes, and preparing for render.",
+      dur:"11:30", l:"Intermediate",
+      url:"https://www.youtube.com/results?search_query=video+timeline+editor+tutorial+beginners",
+      tips:["Hit ⚡ SYNC ALL TRACKS to auto-populate from your Media Library","Drag any clip from the library to any track","Set film duration with the slider — 60, 90, or 180 minutes","Hit → RENDER when your timeline is ready"]
     },
     {
-      n:"07", t:"Audio Mixer — Professional Sound Mix (Page 15)",
-      d:"Page 15 is the Audio Mixer. There are four fader channels: VOICE, MUSIC, EFX, and MASTER. Each fader has a slider (0–100) and a level meter. For documentary films use: VOICE 85, MUSIC 40, EFX 50, MASTER 85. For music videos use: MUSIC 75, VOICE 60, EFX 40, MASTER 85. For narrative films use: VOICE 75, MUSIC 55, EFX 65, MASTER 85. Hit SAVE PRESET to store your mix settings for future projects. The mix is applied automatically when you render on Page 16.",
-      dur:"6 min read", l:"Beginner",
-      steps:["1. Go to Page 15 — Audio Mixer","2. Set VOICE fader for narration level","3. Set MUSIC fader for score/background music","4. Set EFX fader for sound effects","5. Set MASTER fader for overall output level","6. Hit SAVE PRESET to store your mix","7. Mix applies automatically on Page 16 render"],
-      tips:["Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85","Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85","Narrative film: VOICE 75 · MUSIC 55 · EFX 65 · MASTER 85","Always set MASTER last — it controls total output volume"]
+      n:"07", t:"Audio Mixer — Professional Sound (Page 15)",
+      d:"Setting the perfect mix for documentary, narrative film, or music video. Recommended levels explained.",
+      dur:"7:15", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=audio+mixing+tutorial+for+beginners+film",
+      tips:["Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85","Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85","Hit SAVE PRESET to store your favourite mix"]
     },
     {
-      n:"08", t:"Render Engine — Exporting in 4K (Page 16)",
-      d:"Page 16 is the Render Engine. Choose your output quality: 480p (fast), 720p (standard), 1080p (recommended), or 4K (professional distribution). Choose codec: VP9 (better quality, smaller file) or VP8 (wider compatibility). Hit START RENDER. The engine processes every clip on your timeline, applies your audio mix from Page 15, and produces your finished film. If any clips are missing from the timeline, the engine regenerates them automatically using their saved names. When rendering is complete, three buttons appear: DOWNLOAD (saves to your device), PREVIEW (goes to Page 17), and EXPORT (goes to Page 18).",
-      dur:"8 min read", l:"Intermediate",
-      steps:["1. Go to Page 16 — Render Engine","2. Choose quality: 480p / 720p / 1080p / 4K","3. Choose codec: VP9 (recommended) or VP8","4. Hit START RENDER","5. Wait for the engine to process all clips","6. When complete: DOWNLOAD · PREVIEW · EXPORT","7. Missing clips are auto-regenerated from their names"],
-      tips:["1080p VP9 is the best balance of quality and file size","4K for festival submissions or professional distribution","VP9 produces smaller files than VP8 at the same quality","Always DOWNLOAD your film to your device before closing the browser"]
+      n:"08", t:"Render Engine — Exporting Your Film in 4K (Page 16)",
+      d:"Choosing quality settings, understanding VP9 vs VP8, starting the render, and what to do if clips need regenerating.",
+      dur:"10:45", l:"Intermediate",
+      url:"https://www.youtube.com/results?search_query=video+render+export+4K+tutorial",
+      tips:["1080p recommended for most use","4K for professional distribution","VP9 gives better quality at same file size","If clips are missing the engine regenerates them from their names automatically"]
     },
     {
-      n:"09", t:"Export & Distribute — Share Your Film (Page 18)",
-      d:"Page 18 is Export & Distribute. Your rendered film can be shared directly from this page to seven platforms: YouTube, Instagram, TikTok, Facebook, LinkedIn, Vimeo, and WhatsApp. Each platform button opens that platform's upload page in a new tab with your film ready to post. Hit DOWNLOAD first to save the file to your device as a backup. The page also shows your film metadata: title, duration, format, and file size.",
-      dur:"5 min read", l:"Beginner",
-      steps:["1. Complete your render on Page 16 first","2. Go to Page 18 — Export & Distribute","3. Hit DOWNLOAD to save film to your device","4. Click any social platform button to share","5. Platform opens in new tab — upload your film","6. Include MandaStrong Studio in your post description"],
-      tips:["Always DOWNLOAD before sharing — your local copy is your master","YouTube button opens youtube.com/upload directly","TikTok, Instagram, Facebook, LinkedIn, Vimeo, WhatsApp all one click","Mention MandaStrong Studio in your post to help others find the platform"]
+      n:"09", t:"Export & Distribute — Getting Your Film Out (Page 18)",
+      d:"Downloading your film, sharing to YouTube, TikTok, Instagram, Facebook, LinkedIn, Vimeo and WhatsApp directly from the platform.",
+      dur:"6:00", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=video+export+social+media+distribution+tutorial",
+      tips:["Hit DOWNLOAD to save to your device first","Each social platform button opens the upload page directly","Share your MandaStrong Studio credit in your post description"]
     },
     {
-      n:"10", t:"Full Workflow — Script to Finished Film",
-      d:"This is the complete MandaStrong Studio production workflow from first idea to finished film ready to distribute. Follow these steps in order for the cleanest result. The entire process can be completed in one session. A 90-minute documentary using this workflow typically takes 3–6 hours from blank page to finished render.",
-      dur:"15 min read", l:"Advanced",
-      steps:["STEP 1 — Page 5: Write your script, logline, and treatment using AI writing tools","STEP 2 — Page 8: Generate your cinematic scenes one by one — describe each scene in detail","STEP 3 — Page 6: Select your narrator voice — set James settings for documentary","STEP 4 — Page 6 (SPEAK tab): Paste your narration script and generate all voice tracks","STEP 5 — Page 12: Review and edit your script in the Script Editor","STEP 6 — Page 13: Open Timeline Editor — drag all clips to tracks — hit SYNC ALL TRACKS","STEP 7 — Page 15: Set your audio mix (Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85)","STEP 8 — Page 16: Choose quality (1080p VP9 recommended) — hit START RENDER","STEP 9 — Page 17: Preview your finished film","STEP 10 — Page 18: Download and distribute to all platforms"],
-      tips:["Save after every step — hit 💾 SAVE PROJECT in the footer","Generate all scenes on Page 8 before moving to Page 13","James voice (Speed 0.62, Pitch 0.86, Pause 1600ms) is the MandaStrong documentary standard","Download your finished film before closing the browser — always"]
+      n:"10", t:"AI For Humanity Documentary — Full Production Case Study",
+      d:"Complete case study: how the AI For Humanity documentary was built inside MandaStrong Studio from script to render. Real workflow. Real results.",
+      dur:"25:00", l:"Advanced",
+      url:"https://www.youtube.com/results?search_query=AI+documentary+filmmaking+tutorial+case+study",
+      tips:["James narration — pitch 0.86, rate 0.62, pause 1600ms","13 scenes generated on Page 8, synced on Page 13","Full production workflow: P8 → P6 → P13 → P15 → P16 → P17 → P18","Each chapter gets its own generated scene — total runtime 90 minutes"]
     },
     {
       n:"11", t:"Saving, Loading & Project History",
-      d:"MandaStrong Studio automatically saves your clips and media to IndexedDB in your browser — they survive page reloads and session changes. To manually save your full project state (page, timeline, settings, media library), hit 💾 SAVE PROJECT in the footer at any time. You will be prompted to name your project and add an optional note. To restore a saved session, hit 📂 MY PROJECTS in the footer. All saved sessions are listed with their date, name, and note. Click ▶ CONTINUE PROJECT next to any session to restore it exactly as you left it.",
-      dur:"5 min read", l:"Beginner",
-      steps:["1. Hit 💾 SAVE PROJECT in the footer to save at any time","2. Name your project and add a note when prompted","3. Hit 📂 MY PROJECTS to see all saved sessions","4. Click ▶ CONTINUE PROJECT to restore any session","5. Clips survive reloads automatically via browser storage","6. Always DOWNLOAD your finished film as a permanent backup"],
-      tips:["Save after every major step — it takes 2 seconds","MY PROJECTS shows every session you have saved with dates","Clips auto-survive browser reloads — but SAVE PROJECT saves everything","Download finished films to your device — browser storage can be cleared"]
+      d:"How to save your session, restore from the project history, and use IndexedDB clip persistence so nothing is ever lost.",
+      dur:"5:30", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=video+project+save+restore+tutorial",
+      tips:["Hit 💾 SAVE PROJECT in the footer at any time","📂 MY PROJECTS shows your full session history","Clips survive page reloads automatically via local storage","Always download your finished film before closing the browser"]
     },
     {
       n:"12", t:"Agent Grok — Your 24/7 AI Studio Assistant (Page 21)",
-      d:"Agent Grok is your built-in AI assistant on Page 21, available 24 hours a day, 7 days a week. Ask Grok anything about MandaStrong Studio: which tool to use, how to fix a problem, what settings to apply, how pricing works, or how to complete a specific production task. Grok knows every page, every tool, every workflow, and every setting in the platform. You can also access Grok from the floating chat button at the bottom-right of any page — you do not need to navigate to Page 21 to use it.",
-      dur:"4 min read", l:"Beginner",
-      steps:["1. Go to Page 21 — Agent Grok","2. Or click the floating chat button (bottom right, any page)","3. Type your question in plain English","4. Grok answers instantly — ask follow-up questions freely","5. Use quick-question buttons for common topics","6. Grok knows every tool, page, workflow, and price on the platform"],
-      tips:["Ask anything — Grok knows every tool and workflow","Use the floating chat button on any page for instant access","Ask 'what are the James voice settings?' for an instant answer","Grok can walk you through any production problem step by step"]
+      d:"How to use Agent Grok to get instant answers about any tool, workflow, pricing, or production question.",
+      dur:"4:00", l:"Beginner",
+      url:"https://www.youtube.com/results?search_query=AI+assistant+chatbot+creative+studio+tutorial",
+      tips:["Ask anything — tools, pricing, workflow, export settings","Use the quick-question buttons for instant answers","Agent Grok knows the entire MandaStrong Studio platform"]
     },
   ];
 
   const lc = { Beginner:"#22c55e", Intermediate:"#f59e0b", Advanced:"#ef4444" };
 
-  const lcMap:{[k:string]:string}={Beginner:"#22c55e",Intermediate:"#f59e0b",Advanced:"#ef4444"};
-
   return (
-    <div style={{...Sp,padding:"30px 40px 100px"}}>
-      <style>{`
-        @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes pulse{0%,100%{box-shadow:0 0 6px #e8c96d}50%{box-shadow:0 0 18px #e8c96d,0 0 30px #e8c96d55}}
-        @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-      `}</style>
-      <div style={{maxWidth:960,margin:"0 auto"}}>
+    <div style={{...Sp,padding:"30px 40px"}}>
+      <div style={{maxWidth:880,margin:"0 auto"}}>
         <div style={{fontSize:11,color:GOLD,letterSpacing:4,marginBottom:4,fontWeight:700}}>LEARNING CENTER</div>
         <h1 style={{...H1,fontSize:28,marginBottom:4}}>TUTORIALS</h1>
-        <div style={{color:WHITE,fontSize:13,marginBottom:28,lineHeight:1.8}}>
-          Interactive step-by-step tutorials for every part of MandaStrong Studio. Click any tutorial to launch the interactive player — each step auto-advances so you can follow along in real time.
+        <div style={{color:WHITE,fontSize:13,marginBottom:24,lineHeight:1.8}}>
+          Step-by-step guides for every part of MandaStrong Studio. Click any tutorial to open a full explanation and watch on YouTube.
         </div>
 
         {activeVid!==null&&(
-          <TutPlayer
-            tut={tuts[activeVid]}
-            onClose={()=>setActiveVid(null)}
-            onPrev={()=>setActiveVid((activeVid as number)-1)}
-            onNext={()=>setActiveVid((activeVid as number)+1)}
-            hasPrev={(activeVid as number)>0}
-            hasNext={(activeVid as number)<tuts.length-1}
-          />
+          <div style={{background:"#050500",border:`2px solid ${GOLD}`,padding:24,marginBottom:24,position:"relative"}}>
+            <button onClick={()=>setActiveVid(null)} style={{position:"absolute",top:12,right:12,background:"none",border:`1px solid ${GOLD}`,color:GOLD,width:28,height:28,cursor:"pointer",fontSize:14,fontWeight:900}}>✕</button>
+            <div style={{color:GOLD,fontSize:10,letterSpacing:3,fontWeight:900,marginBottom:4}}>TUTORIAL {tuts[activeVid].n} · {tuts[activeVid].l.toUpperCase()}</div>
+            <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:18,fontWeight:900,marginBottom:10,letterSpacing:2}}>{tuts[activeVid].t}</div>
+            <p style={{color:WHITE,fontSize:14,lineHeight:1.9,marginBottom:16}}>{tuts[activeVid].d}</p>
+            <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:10}}>PRO TIPS</div>
+            {tuts[activeVid].tips.map((tip,i)=>(
+              <div key={i} style={{display:"flex",gap:10,marginBottom:8,alignItems:"flex-start"}}>
+                <span style={{color:GOLD,fontWeight:900,flexShrink:0}}>✦</span>
+                <span style={{color:WHITE,fontSize:13,lineHeight:1.7}}>{tip}</span>
+              </div>
+            ))}
+            <div style={{marginTop:18,display:"flex",gap:10}}>
+              <button onClick={()=>window.open(tuts[activeVid].url,"_blank")}
+                style={{background:`linear-gradient(135deg,#a07820,#e8c96d)`,border:"none",color:"#000",padding:"12px 24px",cursor:"pointer",fontSize:12,fontWeight:900,letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>
+                ▶ WATCH ON YOUTUBE
+              </button>
+              {activeVid > 0 && <button onClick={()=>setActiveVid(activeVid-1)} style={{...G("out",true)}}>◀ PREV</button>}
+              {activeVid < tuts.length-1 && <button onClick={()=>setActiveVid(activeVid+1)} style={{...G("out",true)}}>NEXT ▶</button>}
+            </div>
+          </div>
         )}
 
         {tuts.map((t,idx)=>(
-          <div key={t.n} onClick={()=>{setActiveVid(idx);window.scrollTo(0,0);}}
-            style={{...Card(),marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",borderColor:activeVid===idx?GOLD:GOLDDIM,transition:"border-color .2s"}}
+          <div key={t.n} onClick={()=>setActiveVid(idx)}
+            style={{...Card(),marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",borderColor:activeVid===idx?GOLD:GOLDDIM}}
             onMouseEnter={e=>e.currentTarget.style.borderColor=GOLD}
             onMouseLeave={e=>e.currentTarget.style.borderColor=activeVid===idx?GOLD:GOLDDIM}>
             <div style={{display:"flex",alignItems:"center",gap:14}}>
-              <span style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:18,fontWeight:900,minWidth:32}}>{t.n}</span>
+              <span style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,minWidth:28}}>{t.n}</span>
               <div>
                 <div style={{color:WHITE,fontWeight:800,fontSize:14}}>{t.t}</div>
-                <div style={{color:DIM,fontSize:11,marginTop:3,letterSpacing:1}}>{t.steps.length} STEPS · {t.tips.length} PRO TIPS · {activeVid===idx?"▶ NOW PLAYING":"CLICK TO LAUNCH"}</div>
+                <div style={{color:DIM,fontSize:11,marginTop:2,letterSpacing:1}}>{t.dur} · {t.tips.length} PRO TIPS · CLICK TO EXPAND</div>
               </div>
             </div>
-            <span style={{background:lcMap[t.l]+"22",border:`1px solid ${lcMap[t.l]}`,color:lcMap[t.l],padding:"3px 10px",fontSize:11,fontWeight:900,letterSpacing:2,flexShrink:0}}>{t.l.toUpperCase()}</span>
+            <span style={{background:lc[t.l]+"22",border:`1px solid ${lc[t.l]}`,color:lc[t.l],padding:"3px 10px",fontSize:11,fontWeight:900,letterSpacing:2,flexShrink:0}}>{t.l.toUpperCase()}</span>
           </div>
         ))}
       </div>
@@ -3133,7 +3002,7 @@ function P20() {
         <div style={{background:"#050505",border:`2px solid ${GOLD}`,padding:"30px 32px",marginBottom:20}}>
           <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,letterSpacing:3,marginBottom:16,textAlign:"center"}}>TERMS OF SERVICE</div>
           <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:0}}>MandaStrong Studio is a professional cinema intelligence platform operated by MandaStrong Studio LLC, founded by Amanda Woolley. By accessing or using this platform you agree to be legally bound by these Terms of Service. Three subscription plans are available: Creator at $20 per month, Pro at $30 per month, and Studio at $50 per month, all of which auto-renew monthly unless cancelled before the renewal date. The Studio Plan includes a 7-day free trial at no charge. All payments are processed securely via Stripe and no refunds are issued for partial billing periods. You retain full ownership of all original content you upload to the platform. Studio Plan subscribers receive full commercial rights to AI-generated content produced using the platform's tools. MandaStrong Studio, its tools, interface, branding, and codebase remain the intellectual property of Amanda Woolley and MandaStrong Studio LLC and may not be reproduced, distributed, or resold. You agree to use this platform for lawful purposes only — prohibited activities include producing defamatory or harmful content, infringing intellectual property, reverse-engineering the platform, or sharing your account credentials. A meaningful portion of all subscription proceeds directly funds veterans mental health initiatives and school anti-bullying programmes, which are the founding missions of this platform. This platform is provided as-is without warranties of any kind, and MandaStrong Studio LLC shall not be liable for any indirect or consequential damages. For support or legal notices please contact us via MandaStrong1.Etsy.com or through Agent Grok on Page 21 of this platform. These Terms are governed by the laws of the jurisdiction in which MandaStrong Studio LLC is registered.</p>
-          <p style={{color:GOLDDIM,fontSize:11,marginTop:16,marginBottom:0,letterSpacing:1}}>MANDASTRONG STUDIO LLC · AMANDA WOOLLEY, FOUNDER · EFFECTIVE MARCH 2026</p>
+          <p style={{color:GOLDDIM,fontSize:11,marginTop:16,marginBottom:0,letterSpacing:1}}>MANDASTRONG STUDIO LLC · AMANDA WOOLLEY, FOUNDER · EFFECTIVE MARCH 2026 · mandastrongstudio2026.bolt.host</p>
         </div>
         <div style={{background:"#050505",border:`2px solid ${GOLD}`,padding:"30px 32px"}}>
           <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,letterSpacing:3,marginBottom:16,textAlign:"center"}}>DISCLAIMER</div>
@@ -3146,92 +3015,47 @@ function P20() {
 }
 
 function P21() {
-  const [msgs,setMsgs]=useState([{role:"assistant",content:"Hello. I am Agent Grok — your 24/7 MandaStrong Studio assistant. Ask me anything about the platform, tools, workflow, pricing, or your production."}]);
+  const [msgs,setMsgs]=useState([{role:"assistant",content:"Ask me anything about your production."}]);
   const [inp,setInp]=useState("");const [loading,setLoading]=useState(false);
   const bot=useRef(null);
-  const qs=["How do I export my film?","What voices are on Page 6?","How does the timeline work?","What are the pricing plans?","How do I generate a scene?","How do I save my project?"];
+  const qs=["How do I export in 8K?","What AI tools do you have?","How does the timeline work?","Tell me about pricing"];
   useEffect(()=>{bot.current&&bot.current.scrollIntoView({behavior:"smooth"});},[msgs]);
   const send=async()=>{
     if(!inp.trim())return;const q=inp.trim();setInp("");setLoading(true);
     setMsgs(p=>[...p,{role:"user",content:q}]);
     try{
-      const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,system:"You are Agent Grok, 24/7 assistant for MandaStrong Studio — professional cinema AI platform with 600+ tools, 8K export, films up to 3 hours. Plans: Creator $20/mo, Pro $30/mo, Studio $50/mo with 7-day free trial. Pages: 1-Home, 2-Platform, 3-Examples, 4-Login/Pricing, 5-Writing Tools, 6-Voice Engine (54 human voices, sliders at top), 7-Image Tools, 8-Video Generator, 9-Motion/VFX, 10-Enhancement, 11-Media Library, 12-Script Editor, 13-Timeline Editor, 14-Enhancement Studio, 15-Audio Mixer, 16-Render Engine, 17-Film Preview, 18-Export & Distribute, 19-Tutorials, 20-Terms, 21-Agent Grok, 22-Community Hub, 23-That's All Folks. Be helpful, professional, and concise.",messages:[...msgs.filter(m=>m.role!=="system"),{role:"user",content:q}]})});
-      const d=await r.json();setMsgs(p=>[...p,{role:"assistant",content:d.content&&d.content[0]?d.content[0].text:"I'm here to help — please try again."}]);
-    }catch(e){setMsgs(p=>[...p,{role:"assistant",content:"Unable to connect right now. Please check your connection and try again."}]);}
+      const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,system:"You are Agent Grok, 24/7 assistant for MandaStrong Studio — professional cinema AI platform, 600+ tools, 8K export, films up to 3 hours, plans $20/$30/$50/mo with 7-day free trial. Be helpful and concise.",messages:[...msgs.filter(m=>m.role!=="system"),{role:"user",content:q}]})});
+      const d=await r.json();setMsgs(p=>[...p,{role:"assistant",content:d.content&&d.content[0]?d.content[0].text:"Let me help!"}]);
+    }catch(e){setMsgs(p=>[...p,{role:"assistant",content:"Unable to connect — check your connection and try again."}]);}
     setLoading(false);
   };
   return (
-    <div style={{...Sp,padding:"0 0 100px"}}>
-      {/* Header */}
-      <div style={{background:"linear-gradient(135deg,#0a0800,#050400)",borderBottom:`2px solid ${GOLD}`,padding:"24px 40px",display:"flex",alignItems:"center",gap:20}}>
-        <div style={{width:56,height:56,background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontFamily:"'Cinzel',serif",fontSize:28,fontWeight:900,color:"#000",boxShadow:`0 0 24px ${GOLD}55`}}>G</div>
-        <div>
-          <h1 style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:22,fontWeight:900,letterSpacing:4,margin:0}}>AGENT GROK</h1>
-          <div style={{color:WHITE,fontSize:12,letterSpacing:2,marginTop:4}}>24/7 AI STUDIO ASSISTANT · MANDASTRONG STUDIO</div>
+    <div style={{...Sp,padding:40}}>
+      <div style={{maxWidth:680,margin:"0 auto"}}>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <div style={{width:52,height:52,background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 12px",fontFamily:"'Cinzel',serif",fontSize:26,fontWeight:900,color:"#000"}}>G</div>
+          <h1 style={{...H1,fontSize:24}}>AGENT GROK</h1>
+          <div style={{color:"#22c55e",fontSize:11,letterSpacing:3,marginTop:4,fontWeight:900}}>● ONLINE</div>
         </div>
-        <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:8}}>
-          <div style={{width:8,height:8,borderRadius:"50%",background:"#22c55e",boxShadow:"0 0 8px #22c55e"}}/>
-          <span style={{color:"#22c55e",fontSize:11,fontWeight:900,letterSpacing:3}}>ONLINE</span>
-        </div>
-      </div>
-
-      <div style={{maxWidth:820,margin:"0 auto",padding:"28px 24px 0"}}>
-        {/* Quick questions */}
-        <div style={{marginBottom:16}}>
-          <div style={{color:GOLDDIM,fontSize:10,letterSpacing:3,marginBottom:8,fontWeight:700}}>QUICK QUESTIONS</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-            {qs.map(q=>(
-              <button key={q} onClick={()=>setInp(q)}
-                style={{background:"#0a0800",border:`1px solid ${GOLDDIM}`,color:WHITE,padding:"6px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,transition:"all .15s"}}
-                onMouseEnter={e=>{e.currentTarget.style.borderColor=GOLD;e.currentTarget.style.color=GOLD;}}
-                onMouseLeave={e=>{e.currentTarget.style.borderColor=GOLDDIM;e.currentTarget.style.color=WHITE;}}>
-                {q}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Chat window */}
-        <div style={{background:"#050500",border:`1px solid ${GOLDDIM}`,minHeight:420,maxHeight:520,overflowY:"auto",marginBottom:12,display:"flex",flexDirection:"column",gap:0}}>
+        <div style={{...Card(),height:290,overflowY:"auto",marginBottom:10,display:"flex",flexDirection:"column",gap:8,padding:12}}>
           {msgs.map((m,i)=>(
-            <div key={i} style={{padding:"16px 20px",borderBottom:`1px solid ${GOLDDIM}22`,background:m.role==="user"?"#0a0800":"transparent"}}>
-              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-                <div style={{width:28,height:28,background:m.role==="user"?GOLDDIM:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Cinzel',serif",fontSize:12,fontWeight:900,color:"#000",flexShrink:0}}>
-                  {m.role==="user"?"U":"G"}
-                </div>
-                <span style={{fontSize:10,color:GOLD,fontWeight:900,letterSpacing:3}}>{m.role==="user"?"YOU":"AGENT GROK"}</span>
-              </div>
-              <div style={{color:WHITE,fontSize:14,lineHeight:1.8,paddingLeft:38,whiteSpace:"pre-wrap"}}>{m.content}</div>
+            <div key={i} style={{padding:"10px 14px",background:m.role==="user"?"rgba(232,201,109,0.08)":"rgba(26,82,118,0.2)",borderLeft:`2px solid ${m.role==="user"?GOLD:"#2980b9"}`}}>
+              <span style={{fontSize:11,color:GOLD,display:"block",marginBottom:4,fontWeight:900,letterSpacing:2}}>{m.role==="user"?"YOU":"AGENT GROK"}</span>
+              <span style={{color:WHITE,fontSize:14,lineHeight:1.7}}>{m.content}</span>
             </div>
           ))}
-          {loading&&(
-            <div style={{padding:"16px 20px",background:"transparent"}}>
-              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-                <div style={{width:28,height:28,background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Cinzel',serif",fontSize:12,fontWeight:900,color:"#000"}}>G</div>
-                <span style={{fontSize:10,color:GOLD,fontWeight:900,letterSpacing:3}}>AGENT GROK</span>
-              </div>
-              <div style={{paddingLeft:38,display:"flex",gap:6,alignItems:"center"}}>
-                <div style={{width:6,height:6,borderRadius:"50%",background:GOLD,animation:"pulse 1s infinite"}}/>
-                <div style={{width:6,height:6,borderRadius:"50%",background:GOLD,animation:"pulse 1s 0.2s infinite"}}/>
-                <div style={{width:6,height:6,borderRadius:"50%",background:GOLD,animation:"pulse 1s 0.4s infinite"}}/>
-                <span style={{color:GOLDDIM,fontSize:12,marginLeft:4}}>Thinking...</span>
-              </div>
-            </div>
-          )}
+          {loading&&<div style={{padding:"10px 14px",background:"rgba(26,82,118,0.2)",borderLeft:"2px solid #2980b9",color:WHITE,fontSize:13}}>Thinking...</div>}
           <div ref={bot}/>
         </div>
-
-        {/* Input */}
-        <div style={{display:"flex",gap:0,border:`1px solid ${GOLDDIM}`,background:"#000"}}>
-          <textarea value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}}
-            placeholder="Ask Agent Grok anything about MandaStrong Studio..."
-            style={{flex:1,minHeight:52,resize:"none",padding:"14px 16px",fontSize:14,background:"transparent",border:"none",color:WHITE,outline:"none",lineHeight:1.5,fontFamily:"'Rajdhani',sans-serif"}}/>
-          <button onClick={send} disabled={loading||!inp.trim()}
-            style={{background:loading||!inp.trim()?"#0a0800":`linear-gradient(135deg,${GOLDDIM},${GOLD})`,border:"none",borderLeft:`1px solid ${GOLDDIM}`,color:loading||!inp.trim()?GOLDDIM:"#000",padding:"0 28px",cursor:loading||!inp.trim()?"not-allowed":"pointer",fontSize:12,fontWeight:900,letterSpacing:2,fontFamily:"'Rajdhani',sans-serif",flexShrink:0,transition:"all .15s"}}>
-            {loading?"...":"SEND"}
-          </button>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>
+          {qs.map(q=><button key={q} onClick={()=>setInp(q)} style={{...G("out",true),fontSize:11}}>{q}</button>)}
         </div>
-        <div style={{color:GOLDDIM,fontSize:10,letterSpacing:2,marginTop:8,textAlign:"right"}}>PRESS ENTER TO SEND · SHIFT+ENTER FOR NEW LINE</div>
+        <div style={{display:"flex",gap:8}}>
+          <textarea value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}}
+            placeholder="Ask Agent Grok anything..."
+            style={{flex:1,height:50,resize:"none",padding:"10px 12px",fontSize:14,background:"#0a0a0a",border:`1px solid ${GOLDDIM}`,color:WHITE,outline:"none",lineHeight:1.5,fontFamily:"'Rajdhani',sans-serif"}}/>
+          <button onClick={send} disabled={loading||!inp.trim()} style={{...G("gold",false),height:50,padding:"0 22px",opacity:loading||!inp.trim()?0.5:1}}>SEND</button>
+        </div>
       </div>
     </div>
   );
@@ -3275,7 +3099,9 @@ function P23({ go }) {
       <video autoPlay loop playsInline preload="auto" muted
         style={{width:"100%",aspectRatio:"16/9",background:"#000",border:`1px solid ${GOLD}`,marginBottom:24,display:"block"}}
         onError={e=>{e.currentTarget.style.display="none";}}>
-        <source src="/thatsallfolks.mp4" type="video/mp4"/>
+        <source src="./background.mp4" type="video/mp4"/>
+        <source src="/background.mp4" type="video/mp4"/>
+        <source src="background.mp4" type="video/mp4"/>
       </video>
       <div style={{maxWidth:820,margin:"0 auto",textAlign:"center"}}>
         <div style={{fontSize:10,color:GOLD,letterSpacing:6,marginBottom:10,fontWeight:700}}>MANDASTRONG STUDIO · CINEMA INTELLIGENCE PLATFORM · 2026</div>
@@ -3289,7 +3115,7 @@ function P23({ go }) {
         </div>
         <div style={{...Card(),textAlign:"left",marginBottom:16,background:"#050505",border:`1px solid ${GOLD}`}}>
           <div style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:3,marginBottom:14,textAlign:"center"}}>✦ OUR MISSION ✦</div>
-          <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:"0 0 12px 0"}}>I am Amanda Woolley — author, creative producer, and founder of MandaStrong Studio. I built this platform because I believe technology should serve humanity, and art should serve truth. MandaStrong Studio supports two causes close to my heart: <strong style={{color:GOLD}}>veterans' mental health</strong> and <strong style={{color:GOLD}}>anti-bullying programmes, humanity and social skills</strong>.</p>
+          <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:"0 0 12px 0"}}>I am Amanda Woolley — author, creative producer, and founder of MandaStrong Studio. I built this platform because I believe technology should serve humanity, and art should serve truth. MandaStrong Studio supports two causes close to my heart: <strong style={{color:GOLD}}>veterans' mental health</strong> and <strong style={{color:GOLD}}>anti-bullying programmes in schools</strong>.</p>
           <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:0}}>We are a professional cinema intelligence platform giving creators access to <strong style={{color:GOLD}}>600+ AI filmmaking tools</strong>, a full production pipeline from script to screen, and films up to 3 hours long — on any device.</p>
         </div>
         <div onClick={()=>setGuideOpen(g=>!g)} style={{...Card(),marginBottom:guideOpen?0:16,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",border:`2px solid ${GOLD}`,background:"#0a0800"}}>
@@ -3353,28 +3179,14 @@ export default function App() {
     } else {
       vp.content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes";
     }
-    // Global responsive + Bolt badge suppression — every method
+    // Global responsive + Bolt badge suppression
     const style=document.createElement("style");
-    style.textContent=`[data-bolt-badge],a[href*="bolt.new"],.bolt-badge,#bolt-badge,[class*="bolt-badge"],[id*="bolt-badge"],img[src*="bolt"],a[href*="bolt.new"] img,div[class*="badge"][style*="bolt"],iframe[src*="bolt"],bolt-ai-badge{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;width:0!important;height:0!important;max-width:0!important;max-height:0!important;overflow:hidden!important;position:absolute!important;left:-9999px!important;}*{box-sizing:border-box!important;}body,html{margin:0;padding:0;width:100%;overflow-x:hidden;}@media(max-width:900px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr 1fr!important;}}@media(max-width:600px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr!important;}}`;
+    style.textContent=`[data-bolt-badge],a[href*="bolt.new"],.bolt-badge{display:none!important;}*{box-sizing:border-box!important;}body,html{margin:0;padding:0;width:100%;overflow-x:hidden;}[data-bolt-badge],a[href*='bolt.new'],.bolt-badge{display:none!important;}[data-bolt-badge],a[href*='bolt.new'],.bolt-badge{display:none!important;}@media(max-width:900px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr 1fr!important;}}@media(max-width:600px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr!important;}}`;
     document.head.appendChild(style);
-    const HIDE="display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;position:absolute!important;left:-9999px!important;";
-    const killBolt=()=>{
-      const sel='[data-bolt-badge],[class*="bolt-badge"],[id*="bolt-badge"],a[href*="bolt.new"],bolt-ai-badge,[data-testid*="bolt"]';
-      document.querySelectorAll(sel).forEach(el=>{(el as HTMLElement).style.cssText=HIDE;});
-      document.querySelectorAll('*').forEach(el=>{
-        try{
-          if(el.shadowRoot){el.shadowRoot.querySelectorAll(sel).forEach(s=>{(s as HTMLElement).style.cssText=HIDE;});}
-        }catch{}
-      });
-    };
-    killBolt();
-    const boltObserver=new MutationObserver(killBolt);
-    boltObserver.observe(document.body,{childList:true,subtree:true,attributes:true});
-    const boltInterval=setInterval(killBolt,500);
     // PWA install prompt capture
     const handleInstall=(e)=>{e.preventDefault();window.deferredInstallPrompt=e;};
     window.addEventListener("beforeinstallprompt",handleInstall);
-    return()=>{try{document.head.removeChild(link);}catch{} window.removeEventListener("beforeinstallprompt",handleInstall);boltObserver.disconnect();clearInterval(boltInterval);};
+    return()=>{try{document.head.removeChild(link);}catch{} window.removeEventListener("beforeinstallprompt",handleInstall);};
   },[]);
   const [user,setUser]=useState(()=>{try{return JSON.parse(localStorage.getItem("ms_user")||'{"name":"Guest","plan":"Guest","isAdmin":false}');}catch{return {name:"Guest",plan:"Guest",isAdmin:false};}});
   const [mediaLib,setMediaLib]=useState([]);
