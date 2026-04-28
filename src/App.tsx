@@ -2133,7 +2133,7 @@ function P4({ go, setUser }) {
   return (
     <div style={{...Sp,padding:40}}>
       <div style={{maxWidth:1000,margin:"0 auto"}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:18,marginBottom:36}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:18,marginBottom:36}}>
           <div style={{...Card()}}>
             <div style={{fontSize:11,color:GOLD,letterSpacing:3,marginBottom:8,fontWeight:700}}>EXISTING USER</div>
             <h2 style={{...H1,fontSize:18,marginBottom:18}}>SIGN IN</h2>
@@ -2158,6 +2158,20 @@ function P4({ go, setUser }) {
             <h2 style={{...H1,fontSize:16,marginBottom:10}}>EXPLORE FIRST</h2>
             <p style={{color:WHITE,fontSize:14,lineHeight:1.7,marginBottom:20}}>Browse 600+ AI tools before committing. No account required.</p>
             <button onClick={()=>{setUser({name:"Guest",plan:"Guest",isAdmin:false});go(5);}} style={{...G("out",false),width:"100%"}}>BROWSE AS GUEST</button>
+          </div>
+          <div style={{...Card(),border:`2px solid ${GOLD}`,textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:10}}>
+            <div style={{fontSize:36}}>✦</div>
+            <h2 style={{...H1,fontSize:16,margin:0}}>NEW PROJECT</h2>
+            <p style={{color:WHITE,fontSize:13,lineHeight:1.7,margin:0}}>Start a fresh project — clears the current session and begins from scratch.</p>
+            <button onClick={()=>{
+              if(window.confirm("Start a new project? This will clear your current session.")){
+                localStorage.removeItem("ms_timeline");
+                localStorage.removeItem("ms_medialib");
+                localStorage.removeItem("ms_page");
+                setUser({name:"Creator",plan:"Studio Trial",isAdmin:false});
+                go(5);
+              }
+            }} style={{...G("gold",false),width:"100%",padding:"12px"}}>START NEW PROJECT</button>
           </div>
         </div>
         <div style={{textAlign:"center",marginBottom:20}}>
@@ -3172,7 +3186,7 @@ function P23({ go }) {
         </div>
         <div style={{...Card(),textAlign:"left",marginBottom:16,background:"#050505",border:`1px solid ${GOLD}`}}>
           <div style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:3,marginBottom:14,textAlign:"center"}}>✦ OUR MISSION ✦</div>
-          <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:"0 0 12px 0"}}>I am Amanda Woolley — author, creative producer, and founder of MandaStrong Studio. I built this platform because I believe technology should serve humanity, and art should serve truth. MandaStrong Studio supports two causes close to my heart: <strong style={{color:GOLD}}>veterans' mental health</strong> and <strong style={{color:GOLD}}>anti-bullying programmes in schools</strong>.</p>
+          <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:"0 0 12px 0"}}>I am Amanda Woolley — author, creative producer, and founder of MandaStrong Studio. I built this platform because I believe technology should serve humanity, and art should serve truth. MandaStrong Studio supports two causes close to my heart: <strong style={{color:GOLD}}>veterans' mental health</strong> and <strong style={{color:GOLD}}>anti-bullying programmes, humanity and social skills</strong>.</p>
           <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:0}}>We are a professional cinema intelligence platform giving creators access to <strong style={{color:GOLD}}>600+ AI filmmaking tools</strong>, a full production pipeline from script to screen, and films up to 3 hours long — on any device.</p>
         </div>
         <div onClick={()=>setGuideOpen(g=>!g)} style={{...Card(),marginBottom:guideOpen?0:16,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",border:`2px solid ${GOLD}`,background:"#0a0800"}}>
