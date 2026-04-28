@@ -10,7 +10,7 @@ const getAllClipsFromDB=async()=>{try{const db=await openDB();return new Promise
 
 const GOLD = "#e8c96d";
 const GOLDDIM = "#a07820";
-const BG = "#000000";
+const BG = "#000000";A
 const BLACK = "#000000";
 const BG4 = "#080808";
 const WHITE = "#d4c9a8";
