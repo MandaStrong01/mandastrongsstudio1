@@ -1583,7 +1583,7 @@ function P8VideoGenerator({ onSave, user, filmDuration, setFilmDuration }) {
 The user has uploaded a reference image. Match its visual style, colour palette, lighting mood, and composition as closely as possible.`
         : "";
 
-      const directorPrompt=`You are the MandaStrong Cinema Engine. Write JavaScript canvas rendering code that creates a CINEMATIC, PHOTOREALISTIC scene. If the scene includes people, draw REAL HUMAN FIGURES with correct skin tones (warm peachy rgba values), facial features, clothing with shadows, body proportions (head H*0.06, torso H*0.2, legs H*0.25), and cast shadows. Make them look like real people, not stick figures.
+      const directorPrompt=`You are the MandaStrong Cinema Engine. Write JavaScript canvas rendering code that creates a CINEMATIC, PHOTOREALISTIC scene.
 
 SCENE: "${prompt}"
 DURATION: ${duration} seconds${refInstruction}
@@ -1823,7 +1823,6 @@ function drawFrame(ctx, W, H, t, sec) {`;
             )}
             <input ref={refMediaRef} type="file" accept="image/*,video/*" style={{display:"none"}} onChange={handleRefUpload}/>
           </div>
-
           <div style={{background:"#0a0a0a",border:`1px solid ${GOLDDIM}`,padding:14,marginBottom:14}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
               <span style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2}}>DURATION</span>
@@ -2839,16 +2838,16 @@ function P18({ rendered, mediaLib }) {
 function P19() {
   const [active,setActive]=useState(null);
   const tuts=[
-    {n:"01",t:"Getting Started — Platform Overview",d:"Full walkthrough of all 23 pages, Quick Access menu, footer controls and navigation.",dur:"12:00",l:"Beginner",tips:["Use ☰ top left to jump to any page instantly","Footer shows your current page","Page 23 has the full How-To guide"]},
-    {n:"02",t:"Writing Tools — Script to Screen",d:"How to use the 50+ writing tools on Page 5 using AI Create.",dur:"9:30",l:"Beginner",tips:["Click any tool card to open it","Use AI CREATE for instant scripts","Save results to your Media Library"]},
-    {n:"03",t:"Voice Engine — 54 Characters",d:"Selecting voices, setting pitch and rate, using TEST, preparing narration.",dur:"14:20",l:"Beginner",tips:["James is your primary documentary narrator","Hit TEST on any voice card to hear it","Use PREPARE & SPEAK to AI-format your script"]},
-    {n:"04",t:"Music Video Studio",d:"Step-by-step: Song setup, style selection, scene description, generating your music video.",dur:"18:45",l:"Intermediate",tips:["Access from MUSIC VIDEO STUDIO button on Page 6","Upload your own audio track for beat-synced video","The more detailed your scene description, the better"]},
-    {n:"05",t:"Video Generator — Cinematic Scenes",d:"Describe any scene and have the Cinema Engine build it. Reference images, duration settings.",dur:"16:00",l:"Intermediate",tips:["Be specific — lighting, mood, camera angle","Upload a reference image to match a visual style","Each scene saves automatically to your Media Library"]},
-    {n:"06",t:"Timeline Editor — Building Your Film",d:"Dragging clips to tracks, syncing audio and video, adjusting film duration.",dur:"11:30",l:"Intermediate",tips:["Hit ⚡ SYNC ALL TRACKS to auto-populate","Set film duration — 60, 90, or 180 minutes","Hit → RENDER when your timeline is ready"]},
-    {n:"07",t:"Audio Mixer — Professional Sound",d:"Setting the perfect mix for documentary, narrative film, or music video.",dur:"7:15",l:"Beginner",tips:["Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85","Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85"]},
-    {n:"08",t:"Render Engine — Exporting in 4K",d:"Quality settings, VP9 vs VP8, starting the render, handling missing clips.",dur:"10:45",l:"Intermediate",tips:["1080p recommended for most use","4K for professional distribution","VP9 gives better quality at same file size"]},
-    {n:"09",t:"Export & Distribute",d:"Downloading your film, sharing to all social platforms directly.",dur:"6:00",l:"Beginner",tips:["Hit DOWNLOAD to save to your device first","Each social platform button opens the upload page directly"]},
-    {n:"10",t:"Saving & Project History",d:"How to save your session, restore from history, clip persistence.",dur:"5:30",l:"Beginner",tips:["Hit 💾 SAVE PROJECT in the footer at any time","📂 MY PROJECTS shows your full session history"]},
+    {n:"01",t:"Getting Started — Platform Overview",d:"Full walkthrough of all 23 pages, Quick Access menu, footer controls and navigation.",l:"Beginner",tips:["Use ☰ top left to jump to any page instantly","Footer shows your current page","Page 23 has the full How-To guide"]},
+    {n:"02",t:"Writing Tools — Script to Screen",d:"How to use the 50+ writing tools on Page 5 using AI Create.",l:"Beginner",tips:["Click any tool card to open","Use AI CREATE for instant scripts","Save results to your Media Library"]},
+    {n:"03",t:"Voice Engine — 54 Characters",d:"Selecting voices, setting sliders, using TEST, preparing narration for your documentary.",l:"Beginner",tips:["James is your primary documentary narrator — pitch 0.86, rate 0.62","Hit TEST on any voice card to hear it instantly","Use PREPARE & SPEAK to AI-format your script"]},
+    {n:"04",t:"Music Video Studio",d:"Step-by-step: Song setup, style selection, scene description, generating your music video.",l:"Intermediate",tips:["Access from MUSIC VIDEO STUDIO button on Page 6","Upload your own audio track for beat-synced video","The more detailed your scene description, the better"]},
+    {n:"05",t:"Video Generator — Cinematic Scenes",d:"Describe any scene and have the Cinema Engine build it. Reference images, duration settings.",l:"Intermediate",tips:["Be specific — lighting, mood, camera angle","Upload a reference image to match a visual style","Each scene saves automatically to your Media Library"]},
+    {n:"06",t:"Timeline Editor — Building Your Film",d:"Dragging clips to tracks, syncing audio and video, adjusting film duration.",l:"Intermediate",tips:["Hit ⚡ SYNC ALL TRACKS to auto-populate","Set film duration — 60, 90, or 180 minutes","Hit → RENDER when your timeline is ready"]},
+    {n:"07",t:"Audio Mixer — Professional Sound",d:"Setting the perfect mix for documentary, narrative film, or music video.",l:"Beginner",tips:["Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85","Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85"]},
+    {n:"08",t:"Render Engine — Exporting in 4K",d:"Quality settings, starting the render, handling missing clips.",l:"Intermediate",tips:["1080p recommended for most use","4K for professional distribution","VP9 gives better quality at same file size"]},
+    {n:"09",t:"Export & Distribute",d:"Downloading your film, sharing to all social platforms.",l:"Beginner",tips:["Download to device first","Each social platform button opens the upload page directly"]},
+    {n:"10",t:"Saving & Project History",d:"Save your session, restore from history, clip persistence so nothing is lost.",l:"Beginner",tips:["Hit 💾 SAVE PROJECT in the footer at any time","📂 MY PROJECTS shows your full session history"]},
   ];
   const lc={Beginner:"#22c55e",Intermediate:"#f59e0b",Advanced:"#ef4444"};
   return (
@@ -2870,12 +2869,7 @@ function P19() {
             <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:18,fontWeight:900,marginBottom:10}}>{tuts[active].t}</div>
             <p style={{color:WHITE,fontSize:14,lineHeight:1.9,marginBottom:16}}>{tuts[active].d}</p>
             <div style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2,marginBottom:10}}>PRO TIPS</div>
-            {tuts[active].tips.map((tip,i)=>(
-              <div key={i} style={{display:"flex",gap:10,marginBottom:8}}>
-                <span style={{color:GOLD,fontWeight:900,flexShrink:0}}>✦</span>
-                <span style={{color:WHITE,fontSize:13,lineHeight:1.7}}>{tip}</span>
-              </div>
-            ))}
+            {tuts[active].tips.map((tip,i)=>(<div key={i} style={{display:"flex",gap:10,marginBottom:8}}><span style={{color:GOLD,fontWeight:900,flexShrink:0}}>✦</span><span style={{color:WHITE,fontSize:13,lineHeight:1.7}}>{tip}</span></div>))}
             <div style={{marginTop:18,display:"flex",gap:10}}>
               {active>0&&<button onClick={()=>setActive(active-1)} style={{...G("out",true)}}>◀ PREV</button>}
               {active<tuts.length-1&&<button onClick={()=>setActive(active+1)} style={{...G("gold",true)}}>NEXT ▶</button>}
@@ -2891,7 +2885,7 @@ function P19() {
               <span style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,minWidth:28}}>{t.n}</span>
               <div>
                 <div style={{color:WHITE,fontWeight:800,fontSize:14}}>{t.t}</div>
-                <div style={{color:DIM,fontSize:11,marginTop:2}}>{t.dur} · {t.tips.length} TIPS · CLICK TO EXPAND</div>
+                <div style={{color:DIM,fontSize:11,marginTop:2}}>{t.tips.length} TIPS · CLICK TO EXPAND</div>
               </div>
             </div>
             <span style={{background:lc[t.l]+"22",border:`1px solid ${lc[t.l]}`,color:lc[t.l],padding:"3px 10px",fontSize:11,fontWeight:900,letterSpacing:2,flexShrink:0}}>{t.l.toUpperCase()}</span>
@@ -3037,27 +3031,29 @@ function P23({ go }) {
         </div>
         <div style={{...Card(),textAlign:"left",marginBottom:16,background:"#050505",border:`1px solid ${GOLD}`}}>
           <div style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:3,marginBottom:14,textAlign:"center"}}>✦ OUR MISSION ✦</div>
-          <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:"0 0 12px 0"}}>I am Amanda Woolley — author, creative producer, and founder of MandaStrong Studio. I built this platform because I believe technology should serve humanity, and art should serve truth. MandaStrong Studio supports two causes: <strong style={{color:GOLD}}>veterans' mental health</strong> and <strong style={{color:GOLD}}>anti-bullying programmes in schools</strong>.</p>
-          <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:0}}>We give creators access to <strong style={{color:GOLD}}>600+ AI filmmaking tools</strong>, a full production pipeline, and films up to 3 hours long — on any device.</p>
+          <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:"0 0 12px 0"}}>I am Amanda Woolley — author, creative producer, and founder of MandaStrong Studio. I built this platform because I believe technology should serve humanity, and art should serve truth. MandaStrong Studio supports two causes close to my heart: <strong style={{color:GOLD}}>veterans' mental health</strong> and <strong style={{color:GOLD}}>anti-bullying programmes in schools</strong>.</p>
+          <p style={{color:WHITE,fontSize:14,lineHeight:2,margin:0}}>We are a professional cinema intelligence platform giving creators access to <strong style={{color:GOLD}}>600+ AI filmmaking tools</strong>, a full production pipeline from script to screen, and films up to 3 hours long — on any device.</p>
         </div>
         <div onClick={()=>setGuideOpen(g=>!g)} style={{...Card(),marginBottom:guideOpen?0:16,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",border:`2px solid ${GOLD}`,background:"#0a0800"}}>
-          <span style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:3}}>📖 MANDASTRONG STUDIO — HOW TO USE GUIDE</span>
+          <span style={{color:GOLD,fontWeight:900,fontSize:14,letterSpacing:3}}>📖 MANDASTRONG STUDIO — COMPLETE HOW TO USE GUIDE</span>
           <span style={{color:GOLD,fontSize:18}}>{guideOpen?"▲":"▼"}</span>
         </div>
         {guideOpen&&(
           <div style={{...Card(),textAlign:"left",marginBottom:16,padding:"24px 28px",border:`2px solid ${GOLD}`,borderTopWidth:0}}>
             {[
-              {t:"GETTING STARTED",c:"Use ☰ to jump to any page. Hit 💾 SAVE PROJECT. 📂 MY PROJECTS restores your session."},
-              {t:"PAGE 4 — LOGIN & PRICING",c:"Creator $20/mo · Pro $30/mo · Studio $50/mo with 7-day free trial."},
-              {t:"PAGE 6 — VOICE ENGINE",c:"54 voices. Filter, test, set sliders and Mood. Hit APPLY JAMES SETTINGS for documentary."},
-              {t:"PAGE 8 — VIDEO GENERATOR",c:"Describe any scene. Hit 🎬 GENERATE SCENE. Saves to your Media Library."},
-              {t:"PAGE 13 — TIMELINE",c:"Drag clips. Hit ⚡ SYNC. Hit → RENDER."},
-              {t:"PAGE 15 — AUDIO MIXER",c:"Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85."},
-              {t:"PAGE 16 — RENDER",c:"Choose quality up to 4K. Hit START RENDER."},
-              {t:"PAGE 18 — EXPORT",c:"Share to YouTube, TikTok, Instagram, Facebook, LinkedIn, Vimeo, WhatsApp."},
+              {t:"GETTING STARTED",c:"Use ☰ to jump to any of the 23 pages. Hit 💾 SAVE PROJECT in the footer. 📂 MY PROJECTS restores exactly where you left off."},
+              {t:"PAGE 4 — LOGIN & PRICING",c:"Creator $20/mo · Pro $30/mo · Studio $50/mo with 7-day free trial. All payments via Stripe."},
+              {t:"PAGE 6 — VOICE ENGINE",c:"54 voice characters. Filter by gender, age, origin. Hit ▶ TEST. Set Speed, Pitch, Pause, Volume and Mood in the SLIDERS tab. Hit APPLY JAMES SETTINGS for documentary. Paste your script on SPEAK and hit PREPARE & SPEAK."},
+              {t:"PAGE 8 — VIDEO GENERATOR",c:"Describe any scene in plain English. Hit 🎬 GENERATE SCENE. Every clip saves automatically to your Media Library."},
+              {t:"PAGE 13 — TIMELINE EDITOR",c:"Drag clips to Video, Audio and Text tracks. Hit ⚡ SYNC ALL TRACKS. Hit → RENDER when ready."},
+              {t:"PAGE 15 — AUDIO MIXER",c:"Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85. Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85."},
+              {t:"PAGE 16 — RENDER ENGINE",c:"Choose quality up to 4K. Hit START RENDER. Download, Preview on Page 17, or Export on Page 18."},
+              {t:"PAGE 18 — EXPORT & DISTRIBUTE",c:"Share directly to YouTube, Instagram, TikTok, Facebook, LinkedIn, Vimeo and WhatsApp."},
+              {t:"PAGE 21 — AGENT GROK",c:"Your 24/7 AI studio assistant. Ask anything about tools, workflow, pricing or production."},
+              {t:"RECOMMENDED WORKFLOW",c:"Page 8 → Page 6 → Page 13 → Page 15 → Page 16 → Page 17 → Page 18. Save at every stage."},
             ].map(({t,c})=>(
-              <div key={t} style={{borderBottom:`1px solid ${GOLDDIM}33`,paddingBottom:12,marginBottom:12}}>
-                <div style={{color:GOLD,fontWeight:900,fontSize:12,letterSpacing:2,marginBottom:4}}>✦ {t}</div>
+              <div key={t} style={{borderBottom:`1px solid ${GOLDDIM}33`,paddingBottom:14,marginBottom:14}}>
+                <div style={{color:GOLD,fontWeight:900,fontSize:12,letterSpacing:2,marginBottom:6}}>✦ {t}</div>
                 <div style={{color:WHITE,fontSize:13,lineHeight:1.8}}>{c}</div>
               </div>
             ))}
@@ -3101,7 +3097,7 @@ export default function App() {
     }
     // Global responsive + Bolt badge suppression
     const style=document.createElement("style");
-    style.textContent=`*{box-sizing:border-box!important;}body,html{margin:0;padding:0;width:100%;overflow-x:hidden;}[data-bolt-badge],a[href*='bolt.new'],.bolt-badge{display:none!important;}[data-bolt-badge],a[href*='bolt.new'],.bolt-badge{display:none!important;}@media(max-width:900px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr 1fr!important;}}@media(max-width:600px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr!important;}}`;
+    style.textContent=`[data-bolt-badge],a[href*="bolt.new"],.bolt-badge{display:none!important;}*{box-sizing:border-box!important;}body,html{margin:0;padding:0;width:100%;overflow-x:hidden;}[data-bolt-badge],a[href*='bolt.new'],.bolt-badge{display:none!important;}[data-bolt-badge],a[href*='bolt.new'],.bolt-badge{display:none!important;}@media(max-width:900px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr 1fr!important;}}@media(max-width:600px){.grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr!important;}}`;
     document.head.appendChild(style);
     // PWA install prompt capture
     const handleInstall=(e)=>{e.preventDefault();window.deferredInstallPrompt=e;};
