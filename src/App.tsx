@@ -327,7 +327,7 @@ function ToolPanel({ tool, onClose, onSave }) {
       if (isVoice) {
         prompt = `Format this as cinematic narration, voice style: ${STOCK_VOICES.find(x=>x.id===selVoice)?.style}. Mark pauses as [pause] and emphasis as *word*:\n\n${describe}`;
       } else if (isVideoTool) {
-        prompt = `You are a professional film director at MandaStrong Studio. Tool: "${tool}".\n\nUser description: ${describe}\n\nGenerate a COMPLETE PRODUCTION-READY video prompt package:\n\n1. OPTIMISED VIDEO PROMPT\n2. SCENE BREAKDOWN (5-8 shots)\n3. CAMERA DIRECTIONS\n4. LIGHTING & COLOUR GRADE\n5. AUDIO NOTES\n6. DURATION ESTIMATE\n7. DIRECTOR'S NOTES\n\nMake it specific, cinematic and immediately production-ready.`;
+        prompt = `You are a professional film director at MandaStrong Studio. Tool: "${tool}". CRITICAL: Draw REAL photorealistic humans with warm skin tones rgba(220,170,130,1), proper faces with eyes nose and mouth, clothing with shadow gradients, correct body proportions. Multi-stop sky gradients, depth layers, physical lighting. NO cartoons NO stick figures NO flat shapes. \n\nUser description: ${describe}\n\nGenerate a COMPLETE PRODUCTION-READY video prompt package:\n\n1. OPTIMISED VIDEO PROMPT\n2. SCENE BREAKDOWN (5-8 shots)\n3. CAMERA DIRECTIONS\n4. LIGHTING & COLOUR GRADE\n5. AUDIO NOTES\n6. DURATION ESTIMATE\n7. DIRECTOR'S NOTES\n\nMake it specific, cinematic and immediately production-ready.`;
       } else if (isImageTool) {
         prompt = `You are a professional visual artist at MandaStrong Studio. Tool: "${tool}".\n\nUser description: ${describe}\n\nGenerate a COMPLETE IMAGE PROMPT PACKAGE:\n\n1. OPTIMISED PROMPT\n2. STYLE\n3. LIGHTING & COLOUR PALETTE\n4. COMPOSITION & FRAMING\n5. NEGATIVE PROMPT\n6. ASPECT RATIO & RESOLUTION\n7. STYLE REFERENCES`;
       } else if (isWritingTool) {
@@ -778,7 +778,7 @@ function renderFilm(ctx, W, H, t, sec, totalSec, beatNow) {`;
           method:"POST",
           headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
           body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,
-            messages:[{role:"user",content:`Write function renderFilm(ctx,W,H,t,sec,totalSec,beatNow) that renders a cinematic music video. Scene: "${sceneDesc}". Song: ${config.title}. Mood: ${config.mood}. t=0-1 overall progress. Draw REAL photorealistic humans with proper skin tones, faces, clothing. Draw ocean waves, a silhouetted figure on a windowsill with guitar, moonlight, candle glow, dark room. No abstract shapes — real cinematic humans and environments. Use acts based on t. Return only the function.`}]})
+            messages:[{role:"user",content:`Write function renderFilm(ctx,W,H,t,sec,totalSec,beatNow) that renders a cinematic music video. Scene: "${sceneDesc}". Song: ${config.title}. Mood: ${config.mood}. t=0-1 overall progress. Draw REAL photorealistic humans with warm skin tones rgba(220,170,130,1), proper faces with eyes nose and mouth, clothing with shadows and highlights, correct body proportions head=H*0.1 torso=H*0.22 legs=H*0.28. Draw ocean waves, a silhouetted figure on a windowsill with guitar, moonlight, candle glow, dark room. No abstract shapes — real cinematic humans and environments. Use acts based on t. Return only the function.`}]})
         });
         const sd = await simple.json();
         let sc = sd.content&&sd.content[0]?sd.content[0].text.trim():"";
@@ -1583,66 +1583,179 @@ function P8VideoGenerator({ onSave, user, filmDuration, setFilmDuration }) {
 The user has uploaded a reference image. Match its visual style, colour palette, lighting mood, and composition as closely as possible.`
         : "";
 
-      const directorPrompt=`You are the MandaStrong Cinema Engine. Write JavaScript canvas rendering code that creates a CINEMATIC, PHOTOREALISTIC scene.
-
-CRITICAL — THIS IS A PROFESSIONAL FILM PLATFORM. USERS ARE PAYING SUBSCRIBERS:
-- ALWAYS draw REAL HUMAN FIGURES when people are described. No stick figures, no abstract shapes.
-- Skin tones: warm peachy rgba e.g. rgba(220,170,130,1) for light skin, rgba(160,100,60,1) for darker skin
-- Draw proper faces: oval head, eyes as filled circles, nose line, mouth curve
-- Proper body: head=H*0.06, neck, shoulders, torso=H*0.2, arms, legs=H*0.25
-- Clothing: solid colour fills with highlight and shadow gradients
-- Hair: filled path shapes with natural colours
-- Cast shadows beneath each figure on the ground
-- ENVIRONMENTS must be photorealistic: multi-stop sky gradients, textured ground, depth layers
-- LIGHTING must be physical: radialGradient light sources, rim lighting on figures, volumetric rays
-- CAMERA must move: parallax layers, subtle Ken Burns zoom using t progress
-- COLOUR GRADE at end: cinematic teal/orange or warm amber overlays at low opacity
+      const directorPrompt=`You are the MandaStrong Cinema Engine — a professional cinematic renderer for a paying subscriber platform. Every frame must look like a real film. NO cartoons. NO flat colours. NO geometric placeholder shapes. NO stick figures.
 
 SCENE: "${prompt}"
 DURATION: ${duration} seconds${refInstruction}
 
-Write a function: function drawFrame(ctx, W, H, t, sec)
+Write: function drawFrame(ctx, W, H, t, sec)
 Where t=0 to 1 (progress), sec=current second, W=1920, H=1080
 
-CRITICAL REQUIREMENTS FOR PHOTOREALISTIC OUTPUT:
+════ PHOTOREALISTIC TECHNIQUES — USE ALL THAT APPLY ════
 
-LIGHTING - must be physically accurate:
-- Use multiple radialGradient light sources with proper falloff
-- Ambient occlusion: darker in corners and crevices
-- Rim lighting on figures: bright edge glow from light source direction
-- Specular highlights: bright spots on reflective surfaces
-- Volumetric light: god rays as semi-transparent gradients
+SKY (day):
+const sky=ctx.createLinearGradient(0,0,0,H*0.55);
+sky.addColorStop(0,"rgb(20,60,120)");sky.addColorStop(0.6,"rgb(80,140,200)");sky.addColorStop(1,"rgb(180,210,240)");
+ctx.fillStyle=sky;ctx.fillRect(0,0,W,H*0.55);
 
-HUMANS - must look real:
-- Skin tones: use rgba with warm peachy tones e.g. rgba(220,170,130,1)
-- Face: oval for head, smaller oval for face area, dots for eyes, curve for lips
-- Hair: filled path with natural hair colours
-- Clothing: solid fills with shadow and highlight gradients
-- Body proportions: head=H*0.06, torso=H*0.2, legs=H*0.25
-- Cast shadows on ground beneath each figure
+SKY (night):
+const sky=ctx.createLinearGradient(0,0,0,H*0.6);
+sky.addColorStop(0,"rgb(2,5,18)");sky.addColorStop(0.5,"rgb(5,15,45)");sky.addColorStop(1,"rgb(10,25,60)");
+ctx.fillStyle=sky;ctx.fillRect(0,0,W,H*0.6);
+// Stars
+for(let i=0;i<200;i++){ctx.fillStyle=`rgba(255,255,255,${0.3+Math.random()*0.7})`;ctx.fillRect(Math.sin(i*127.1)*W/2+W/2,Math.cos(i*311.7)*H*0.5,1,1);}
 
-ENVIRONMENTS - must look real:
-- Sky: multi-stop gradient from deep colour at top to lighter at horizon
-- Ground/floor: textured with subtle noise pattern
-- Buildings: boxes with window grids, varying heights, perspective depth
-- Water: animated sine wave layers with transparency and reflection gradient
-- Fire/candles: animated flickering radialGradient in orange/yellow
-- Fog/atmosphere: semi-transparent overlay gradients
+MOON with atmospheric glow:
+const mg=ctx.createRadialGradient(W*0.7,H*0.15,0,W*0.7,H*0.15,H*0.12);
+mg.addColorStop(0,"rgba(255,255,245,1)");mg.addColorStop(0.25,"rgba(240,235,210,0.8)");mg.addColorStop(0.6,"rgba(200,200,180,0.2)");mg.addColorStop(1,"rgba(0,0,0,0)");
+ctx.fillStyle=mg;ctx.fillRect(W*0.4,0,W*0.6,H*0.4);
 
-DEPTH & PERSPECTIVE:
-- Far objects: smaller, less saturated, more hazy
-- Near objects: larger, sharper, more saturated
+SUN with haze:
+const sg=ctx.createRadialGradient(W*0.6,H*0.25,0,W*0.6,H*0.25,H*0.3);
+sg.addColorStop(0,"rgba(255,255,200,1)");sg.addColorStop(0.1,"rgba(255,220,100,0.8)");sg.addColorStop(0.4,"rgba(255,160,30,0.3)");sg.addColorStop(1,"rgba(0,0,0,0)");
+ctx.fillStyle=sg;ctx.fillRect(0,0,W,H*0.6);
 
-CINEMATIC MOTION:
-- Camera parallax: far elements move slower than near ones
-- Breathing: subtle scale oscillation using Math.sin(sec*0.5)
-- Wind: leaves/particles drift with sine curves
-- Light flicker: candles/fires use Math.sin(sec*7)
+OCEAN (animated depth layers):
+for(let w=0;w<10;w++){
+  const wg=ctx.createLinearGradient(0,H*0.55+w*10,0,H);
+  wg.addColorStop(0,`rgba(${8+w*4},${25+w*8},${70+w*12},${0.5+w*0.05})`);
+  wg.addColorStop(1,"rgba(3,10,30,1)");
+  ctx.fillStyle=wg;ctx.beginPath();ctx.moveTo(0,H*0.58+w*10);
+  for(let x=0;x<=W;x+=4){ctx.lineTo(x,H*0.58+w*10+Math.sin(x*0.008+sec*(0.25+w*0.08)+w)*14+Math.sin(x*0.018+sec*0.4)*6);}
+  ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();
+}
+// Moonlight shimmer on water
+const sh=ctx.createLinearGradient(W*0.55,H*0.55,W*0.8,H);
+sh.addColorStop(0,"rgba(255,255,200,0)");sh.addColorStop(0.4,"rgba(255,255,180,0.14)");sh.addColorStop(1,"rgba(255,255,160,0)");
+ctx.fillStyle=sh;ctx.fillRect(W*0.4,H*0.5,W*0.5,H*0.5);
 
-COLOUR GRADING (apply last):
-- Warm scenes: slight orange overlay at 0.08 opacity
-- Night scenes: blue overlay
-- Cinematic: teal shadows, orange highlights
+GROUND/EARTH (textured):
+const gg=ctx.createLinearGradient(0,H*0.6,0,H);
+gg.addColorStop(0,"rgb(40,55,30)");gg.addColorStop(0.3,"rgb(30,42,20)");gg.addColorStop(1,"rgb(15,22,10)");
+ctx.fillStyle=gg;ctx.fillRect(0,H*0.6,W,H*0.4);
+// Ground texture
+for(let i=0;i<400;i++){ctx.fillStyle=`rgba(0,0,0,${0.04+Math.random()*0.04})`;ctx.fillRect(Math.random()*W,H*0.6+Math.random()*H*0.4,2+Math.random()*4,1);}
+
+DESERT/SAND:
+const dg=ctx.createLinearGradient(0,H*0.55,0,H);
+dg.addColorStop(0,"rgb(200,160,80)");dg.addColorStop(0.5,"rgb(180,140,60)");dg.addColorStop(1,"rgb(150,110,40)");
+ctx.fillStyle=dg;ctx.fillRect(0,H*0.55,W,H*0.45);
+
+CITY BUILDINGS (depth layers):
+const floors=[5,4,3,2,1];
+floors.forEach((layer,li)=>{
+  const bh=H*(0.1+layer*0.07),bw=W*(0.04+layer*0.01);
+  const bd=0.3+li*0.15;
+  for(let b=0;b<12-layer;b++){
+    const bx=b*(W/10)+layer*20;
+    const by=H*0.6-bh-Math.sin(b*2.3+layer)*H*0.08;
+    ctx.fillStyle=`rgba(${20+li*8},${20+li*8},${30+li*10},${bd})`;
+    ctx.fillRect(bx,by,bw,bh+H*0.4);
+    // Windows
+    for(let wy=0;wy<8;wy++)for(let wx=0;wx<3;wx++){
+      if(Math.random()>0.4)ctx.fillStyle=`rgba(255,230,150,${0.3+Math.random()*0.4})`;
+      else ctx.fillStyle="rgba(20,20,30,0.8)";
+      ctx.fillRect(bx+wx*(bw/3)+2,by+wy*(bh/9)+2,bw/3-4,bh/9-4);
+    }
+  }
+});
+
+REAL HUMAN FIGURE (full body — skin tone, clothing, face):
+const hx=W*0.4,hy=H*0.62,hh=H*0.3;
+// Shadow on ground
+const shad=ctx.createRadialGradient(hx,hy+hh*0.05,0,hx,hy+hh*0.05,hh*0.25);
+shad.addColorStop(0,"rgba(0,0,0,0.45)");shad.addColorStop(1,"rgba(0,0,0,0)");
+ctx.fillStyle=shad;ctx.beginPath();ctx.ellipse(hx,hy+hh*0.05,hh*0.25,hh*0.06,0,0,Math.PI*2);ctx.fill();
+// Legs
+ctx.fillStyle="rgba(40,40,80,0.95)"; // dark trousers
+ctx.fillRect(hx-hh*0.09,hy-hh*0.08,hh*0.08,hh*0.32);
+ctx.fillRect(hx+hh*0.01,hy-hh*0.08,hh*0.08,hh*0.32);
+// Torso
+const tg=ctx.createLinearGradient(hx-hh*0.13,hy-hh*0.5,hx+hh*0.13,hy-hh*0.5);
+tg.addColorStop(0,"rgba(60,80,120,0.9)");tg.addColorStop(0.5,"rgba(80,100,150,0.95)");tg.addColorStop(1,"rgba(40,60,100,0.9)");
+ctx.fillStyle=tg;ctx.fillRect(hx-hh*0.13,hy-hh*0.5,hh*0.26,hh*0.44);
+// Arms
+ctx.fillStyle="rgba(220,170,130,0.95)"; // skin
+ctx.fillRect(hx-hh*0.18,hy-hh*0.48,hh*0.06,hh*0.3); // left arm
+ctx.fillRect(hx+hh*0.12,hy-hh*0.48,hh*0.06,hh*0.3); // right arm
+// Neck
+ctx.fillStyle="rgba(210,165,125,0.95)";
+ctx.fillRect(hx-hh*0.04,hy-hh*0.55,hh*0.08,hh*0.07);
+// Head
+const hfg=ctx.createRadialGradient(hx+hh*0.02,hy-hh*0.67,0,hx,hy-hh*0.65,hh*0.1);
+hfg.addColorStop(0,"rgba(230,180,140,1)");hfg.addColorStop(0.6,"rgba(210,165,125,0.95)");hfg.addColorStop(1,"rgba(185,140,100,0.8)");
+ctx.fillStyle=hfg;ctx.beginPath();ctx.ellipse(hx,hy-hh*0.65,hh*0.09,hh*0.11,0,0,Math.PI*2);ctx.fill();
+// Hair
+ctx.fillStyle="rgba(40,25,10,0.95)";
+ctx.beginPath();ctx.ellipse(hx,hy-hh*0.73,hh*0.1,hh*0.06,0,Math.PI,Math.PI*2);ctx.fill();
+// Eyes
+ctx.fillStyle="rgba(30,20,15,0.9)";
+ctx.beginPath();ctx.ellipse(hx-hh*0.03,hy-hh*0.67,hh*0.015,hh*0.01,0,0,Math.PI*2);ctx.fill();
+ctx.beginPath();ctx.ellipse(hx+hh*0.03,hy-hh*0.67,hh*0.015,hh*0.01,0,0,Math.PI*2);ctx.fill();
+
+INTERIOR ROOM (walls, floor, furniture depth):
+// Back wall
+const rg=ctx.createLinearGradient(0,0,0,H);
+rg.addColorStop(0,"rgb(15,10,5)");rg.addColorStop(1,"rgb(8,5,2)");
+ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);
+// Floor perspective
+const fg=ctx.createLinearGradient(0,H*0.6,0,H);
+fg.addColorStop(0,"rgb(25,18,10)");fg.addColorStop(1,"rgb(12,8,4)");
+ctx.fillStyle=fg;ctx.fillRect(0,H*0.6,W,H*0.4);
+// Floor boards
+for(let i=0;i<8;i++){ctx.fillStyle="rgba(0,0,0,0.2)";ctx.fillRect(0,H*0.6+i*(H*0.4/8),W,1);}
+
+CANDLE with flicker:
+const cf=0.94+Math.sin(sec*9.1)*0.04+Math.sin(sec*13.7)*0.02;
+const candleX=W*0.7,candleY=H*0.58;
+ctx.fillStyle="rgba(235,215,180,0.95)";ctx.fillRect(candleX-6,candleY,12,38);
+const flameg=ctx.createRadialGradient(candleX,candleY-14*cf,0,candleX,candleY-8,26*cf);
+flameg.addColorStop(0,"rgba(255,255,200,1)");flameg.addColorStop(0.2,"rgba(255,200,50,0.9)");flameg.addColorStop(0.5,"rgba(255,120,10,0.6)");flameg.addColorStop(1,"rgba(255,60,0,0)");
+ctx.fillStyle=flameg;ctx.fillRect(candleX-26,candleY-38,52,40);
+const roomglow=ctx.createRadialGradient(candleX,candleY,0,candleX,candleY,W*0.38);
+roomglow.addColorStop(0,"rgba(255,140,20,0.16)");roomglow.addColorStop(1,"rgba(0,0,0,0)");
+ctx.fillStyle=roomglow;ctx.fillRect(0,0,W,H);
+
+FIRE (large):
+for(let f=0;f<5;f++){
+  const fx2=W*0.4+f*W*0.04,fy2=H*0.6;
+  const fh2=H*(0.15+Math.sin(sec*4+f)*0.05);
+  const fg2=ctx.createRadialGradient(fx2,fy2,0,fx2,fy2-fh2,fh2);
+  fg2.addColorStop(0,"rgba(255,255,150,0.9)");fg2.addColorStop(0.2,"rgba(255,180,20,0.8)");fg2.addColorStop(0.6,"rgba(255,60,0,0.5)");fg2.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle=fg2;ctx.fillRect(fx2-fh2,fy2-fh2*1.5,fh2*2,fh2*1.5);
+}
+
+RAIN:
+for(let r=0;r<120;r++){
+  const rx=((r*173.3+sec*180)%W);const ry=((r*97.7+sec*320)%H);
+  ctx.strokeStyle="rgba(180,200,220,0.35)";ctx.lineWidth=0.8;
+  ctx.beginPath();ctx.moveTo(rx,ry);ctx.lineTo(rx+4,ry+18);ctx.stroke();
+}
+
+FOG/ATMOSPHERE:
+const fog=ctx.createLinearGradient(0,H*0.4,0,H*0.7);
+fog.addColorStop(0,"rgba(180,190,200,0)");fog.addColorStop(0.5,"rgba(180,190,200,0.12)");fog.addColorStop(1,"rgba(180,190,200,0)");
+ctx.fillStyle=fog;ctx.fillRect(0,H*0.4,W,H*0.3);
+
+CAMERA PARALLAX (always include):
+// Apply at start: ctx.save(); ctx.translate(-t*W*0.025,0); for far elements
+// Near elements move faster: ctx.translate(-t*W*0.06,0)
+// ctx.restore() after each layer
+
+VIGNETTE (always apply last before grade):
+const vig=ctx.createRadialGradient(W/2,H/2,W*0.15,W/2,H/2,W*0.85);
+vig.addColorStop(0,"rgba(0,0,0,0)");vig.addColorStop(1,"rgba(0,0,0,0.88)");
+ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
+
+COLOUR GRADE (always apply very last):
+ctx.fillStyle="rgba(0,12,35,0.07)";ctx.fillRect(0,0,W,H); // cool teal shadows
+ctx.fillStyle="rgba(18,4,0,0.05)";ctx.fillRect(0,H*0.65,W,H*0.35); // warm amber lows
+
+════════════════════════════════════════════════
+
+Now write function drawFrame(ctx, W, H, t, sec) that renders: "${prompt}"
+
+Use the techniques above that match the scene. Combine them. Add camera parallax. Add motion that changes with t and sec. Make it cinematic.
 
 Return ONLY the JavaScript function starting with:
 function drawFrame(ctx, W, H, t, sec) {`;
@@ -1675,7 +1788,7 @@ function drawFrame(ctx, W, H, t, sec) {`;
           method:"POST",
           headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
           body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,
-            messages:[{role:"user",content:`Write a cinematic canvas renderer for: "${prompt}". Function: function drawFrame(ctx,W,H,t,sec). REQUIRED: draw REAL human figures with warm skin tones rgba(220,170,130,1), proper faces with eyes and mouth, clothing with shadows, body proportions head=H*0.06 torso=H*0.2. Photorealistic environment with multi-stop gradients, depth, physical lighting. No stick figures. No abstract shapes. Return only the function.`}]})
+            messages:[{role:"user",content:`Write a photorealistic cinematic canvas renderer for: "${prompt}". Function: function drawFrame(ctx,W,H,t,sec). W=1920 H=1080. REQUIRED: real human figures with skin tones rgba(220,170,130,1), faces with eyes/nose/mouth, clothing with light and shadow gradients, body proportions head=H*0.08 torso=H*0.22 legs=H*0.28. Real environments: multi-stop sky gradients, layered terrain, depth. Animated: camera parallax, wave motion, candle flicker, breathing. Vignette last. NO cartoons NO stick figures NO flat shapes. Return only the function.`}]})
         });
         const rd=await retry.json();
         let rc=rd.content&&rd.content[0]?rd.content[0].text.trim():"";
@@ -2483,7 +2596,7 @@ function P16({ go, timeline, setRendered, mediaLib, setMediaLib, user, filmDurat
             method:"POST",
             headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
             body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,
-              messages:[{role:"user",content:"Write a JavaScript canvas function for this cinematic scene: \""+scenePrompt+"\". Function: function drawFrame(ctx,W,H,t,sec). Use gradients, colours, depth, atmosphere. t=0-1 progress. Return only the function."}]})
+              messages:[{role:"user",content:"Write a PHOTOREALISTIC cinematic canvas function for this scene: \""+scenePrompt+"\". Function: function drawFrame(ctx,W,H,t,sec). REQUIRED: real human figures with skin tones rgba(220,170,130,1), faces with eyes nose mouth, clothing with shadow gradients, correct body proportions. Multi-stop sky gradients, depth layers, physical lighting, animated motion. Vignette at end. NO cartoons NO stick figures NO flat shapes. t=0-1 progress. Return only the function."}]})
           });
           const d=await res.json();
           let code=d.content&&d.content[0]?d.content[0].text.trim():"";
@@ -2786,7 +2899,7 @@ function P17({ go, rendered, mediaLib }) {
   const [currentTime,setCurrentTime]=useState(0);
   const [duration,setDuration]=useState(0);
   const vs=rendered?.url||(mediaLib.find(a=>a.type&&a.type.startsWith("video"))?mediaLib.find(a=>a.type&&a.type.startsWith("video")).url:"");
-  const fmt=s=>{const m=Math.floor(s/60);const sc=Math.floor(s%60);return `${String(m).padStart(2,"0")}:${String(sc).padStart(2,"0")}`;};
+  const fmt=s=>{if(!s||!isFinite(s)||isNaN(s))return "00:00";const m=Math.floor(s/60);const sc=Math.floor(s%60);return `${String(m).padStart(2,"0")}:${String(sc).padStart(2,"0")}`;};
   const togglePlay=()=>{if(!videoRef.current)return;if(isPlaying){videoRef.current.pause();setIsPlaying(false);}else{videoRef.current.play();setIsPlaying(true);}};
   return (
     <div style={{...Sp,padding:40}}>
