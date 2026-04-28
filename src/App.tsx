@@ -1583,7 +1583,7 @@ function P8VideoGenerator({ onSave, user, filmDuration, setFilmDuration }) {
 The user has uploaded a reference image. Match its visual style, colour palette, lighting mood, and composition as closely as possible.`
         : "";
 
-      const directorPrompt=`You are the MandaStrong Cinema Engine. Write JavaScript canvas rendering code that creates a CINEMATIC, PHOTOREALISTIC scene.
+      const directorPrompt=`You are the MandaStrong Cinema Engine. Write JavaScript canvas rendering code that creates a CINEMATIC, PHOTOREALISTIC scene. If the scene includes people, draw REAL HUMAN FIGURES with correct skin tones (warm peachy rgba values), facial features, clothing with shadows, body proportions (head H*0.06, torso H*0.2, legs H*0.25), and cast shadows. Make them look like real people, not stick figures.
 
 SCENE: "${prompt}"
 DURATION: ${duration} seconds${refInstruction}
@@ -1823,6 +1823,7 @@ function drawFrame(ctx, W, H, t, sec) {`;
             )}
             <input ref={refMediaRef} type="file" accept="image/*,video/*" style={{display:"none"}} onChange={handleRefUpload}/>
           </div>
+
           <div style={{background:"#0a0a0a",border:`1px solid ${GOLDDIM}`,padding:14,marginBottom:14}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
               <span style={{color:GOLD,fontSize:11,fontWeight:900,letterSpacing:2}}>DURATION</span>
