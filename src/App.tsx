@@ -327,9 +327,9 @@ function ToolPanel({ tool, onClose, onSave }) {
       if (isVoice) {
         prompt = `Format this as cinematic narration, voice style: ${STOCK_VOICES.find(x=>x.id===selVoice)?.style}. Mark pauses as [pause] and emphasis as *word*:\n\n${describe}`;
       } else if (isVideoTool) {
-        prompt = `You are a professional film director at MandaStrong Studio. Tool: "${tool}".\n\nUser description: ${describe}\n\nIMPORTANT: Deliver EXACTLY what the user described. If they said photorealistic, use real-world settings and real humans. If they said animated, use animation style. If they described specific people, places, or objects, include them precisely. Do not substitute or generalise.\n\nGenerate a COMPLETE PRODUCTION-READY video prompt package:\n\n1. OPTIMISED VIDEO PROMPT (faithful to user's exact request)\n2. SCENE BREAKDOWN (5-8 shots)\n3. CAMERA DIRECTIONS\n4. LIGHTING & COLOUR GRADE\n5. AUDIO NOTES\n6. DURATION ESTIMATE\n7. DIRECTOR'S NOTES\n\nMake it specific, cinematic and immediately production-ready.`;
+        prompt = `You are a professional film director at MandaStrong Studio. Tool: "${tool}".\n\nUser description: ${describe}\n\nGenerate a COMPLETE PRODUCTION-READY video prompt package:\n\n1. OPTIMISED VIDEO PROMPT\n2. SCENE BREAKDOWN (5-8 shots)\n3. CAMERA DIRECTIONS\n4. LIGHTING & COLOUR GRADE\n5. AUDIO NOTES\n6. DURATION ESTIMATE\n7. DIRECTOR'S NOTES\n\nMake it specific, cinematic and immediately production-ready.`;
       } else if (isImageTool) {
-        prompt = `You are a professional visual artist at MandaStrong Studio. Tool: "${tool}".\n\nUser description: ${describe}\n\nIMPORTANT: Generate EXACTLY what the user described. If they said photorealistic, describe real-world settings, real humans with natural skin tones, real lighting. If they said a specific style, honour it exactly. Do not generalise or replace specifics.\n\nGenerate a COMPLETE IMAGE PROMPT PACKAGE:\n\n1. OPTIMISED PROMPT (faithful to user's exact request)\n2. STYLE\n3. LIGHTING & COLOUR PALETTE\n4. COMPOSITION & FRAMING\n5. NEGATIVE PROMPT\n6. ASPECT RATIO & RESOLUTION\n7. STYLE REFERENCES`;
+        prompt = `You are a professional visual artist at MandaStrong Studio. Tool: "${tool}".\n\nUser description: ${describe}\n\nGenerate a COMPLETE IMAGE PROMPT PACKAGE:\n\n1. OPTIMISED PROMPT\n2. STYLE\n3. LIGHTING & COLOUR PALETTE\n4. COMPOSITION & FRAMING\n5. NEGATIVE PROMPT\n6. ASPECT RATIO & RESOLUTION\n7. STYLE REFERENCES`;
       } else if (isWritingTool) {
         prompt = `You are a professional screenwriter at MandaStrong Studio. Tool: "${tool}".\n\nUser request: ${describe}\n\nGenerate complete, properly formatted, production-ready content.`;
       } else {
@@ -651,12 +651,6 @@ STRUCTURE: Divide the film into acts based on t:
 - Act 6 (t 0.90-1.0): Resolution — fade to close, final title
 
 TRANSITION between acts: smooth crossfade using ctx.globalAlpha
-
-CRITICAL: You must render EXACTLY and LITERALLY what the user described in the SCENE above.
-- If the user said "photorealistic" — draw real humans with skin tones (rgba(220,170,130,1)), real environments, real lighting physics. No abstract shapes.
-- If the user described specific people, places, animals, or objects — draw them accurately.
-- If the user said a style (anime, noir, watercolour, etc.) — match that style throughout.
-- The output must visually match what a human reading "${sceneDesc}" would expect to see.
 
 DRAW LITERALLY what is described. For this scene you must draw:
 
@@ -1594,23 +1588,15 @@ function P8VideoGenerator({ onSave, user, filmDuration, setFilmDuration }) {
 The user has uploaded a reference image. Match its visual style, colour palette, lighting mood, and composition as closely as possible.`
         : "";
 
-      const directorPrompt=`You are the MandaStrong Cinema Engine. Write JavaScript canvas rendering code that creates a CINEMATIC scene.
+      const directorPrompt=`You are the MandaStrong Cinema Engine. Write JavaScript canvas rendering code that creates a CINEMATIC, PHOTOREALISTIC scene.
 
 SCENE: "${prompt}"
 DURATION: ${duration} seconds${refInstruction}
 
-CRITICAL — RENDER EXACTLY WHAT THE USER DESCRIBED:
-- Read the SCENE description carefully and draw it literally and faithfully.
-- If they said "photorealistic" or described real people/places: use real human proportions, natural skin tones (rgba(220,170,130,1) range), real-world environments, physically accurate lighting.
-- If they described a specific style (cartoon, anime, oil painting, noir, etc.): apply that style consistently throughout every frame.
-- If they named specific objects, animals, locations, or people: include them explicitly in the rendering.
-- Do NOT replace specific descriptions with generic shapes or abstract art unless the user asked for that.
-- The canvas output must visually match what a person reading the scene description would expect to see.
-
 Write a function: function drawFrame(ctx, W, H, t, sec)
 Where t=0 to 1 (progress), sec=current second, W=1920, H=1080
 
-// REQUIREMENTS FOR HIGH-QUALITY OUTPUT:
+// CRITICAL REQUIREMENTS FOR PHOTOREALISTIC OUTPUT:
 
 // LIGHTING - must be physically accurate:
 - Use multiple radialGradient light sources with proper falloff
@@ -1681,7 +1667,7 @@ function drawFrame(ctx, W, H, t, sec) {`;
           method:"POST",
           headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
           body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,
-            messages:[{role:"user",content:`Write a canvas renderer for exactly this scene: "${prompt}". Function: function drawFrame(ctx,W,H,t,sec). Render LITERALLY what was described — if photorealistic use real humans with skin tones (rgba(220,170,130,1)), real environments, real lighting. If a specific style was mentioned, apply it. Match the user's description exactly. Return only the function.`}]})
+            messages:[{role:"user",content:`Write a cinematic canvas renderer for: "${prompt}". Function: function drawFrame(ctx,W,H,t,sec). Use photorealistic gradients, proper human figures with skin tones, depth, lighting. Return only the function.`}]})
         });
         const rd=await retry.json();
         let rc=rd.content&&rd.content[0]?rd.content[0].text.trim():"";
@@ -2489,7 +2475,7 @@ function P16({ go, timeline, setRendered, mediaLib, setMediaLib, user, filmDurat
             method:"POST",
             headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
             body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,
-              messages:[{role:"user",content:"Write a JavaScript canvas function that renders EXACTLY this scene: \""+scenePrompt+"\". Function: function drawFrame(ctx,W,H,t,sec). Render literally what is described — if photorealistic use real humans with natural skin tones (rgba(220,170,130,1)), real environments, accurate lighting. If a visual style is specified, apply it throughout. t=0-1 progress. Return only the function."}]})
+              messages:[{role:"user",content:"Write a JavaScript canvas function for this cinematic scene: \""+scenePrompt+"\". Function: function drawFrame(ctx,W,H,t,sec). Use gradients, colours, depth, atmosphere. t=0-1 progress. Return only the function."}]})
           });
           const d=await res.json();
           let code=d.content&&d.content[0]?d.content[0].text.trim():"";
