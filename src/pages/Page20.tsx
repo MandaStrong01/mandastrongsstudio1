@@ -1,122 +1,54 @@
-import { useState } from 'react';
-import { ArrowLeft, ArrowRight, Users, Share2, Star, Heart, ThumbsUp } from 'lucide-react';
-import Footer from '../components/Footer';
-import QuickAccess from '../components/QuickAccess';
-import GrokChat from '../components/GrokChat';
+// @ts-nocheck
+const GOLD = "#e8c96d";
+const GOLDDIM = "#a07820";
+const WHITE = "#d4c9a8";
+
+const Sp = { minHeight: "100vh", background: "#000000", color: WHITE, fontFamily: "'Rajdhani',sans-serif", paddingBottom: 160, width: "100%", overflowX: "hidden" as const };
 
 interface PageProps {
   onNavigate: (page: number) => void;
 }
 
 export default function Page20({ onNavigate }: PageProps) {
-  const [likes, setLikes] = useState<Record<number, { liked: boolean; loved: boolean }>>({});
-
-  const toggleLike = (id: number) => {
-    setLikes(prev => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        liked: !prev[id]?.liked
-      }
-    }));
-  };
-
-  const toggleLove = (id: number) => {
-    setLikes(prev => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        loved: !prev[id]?.loved
-      }
-    }));
-  };
+  const pp = (txt: string) => <p style={{ color: WHITE, fontSize: 13, lineHeight: 1.85, marginBottom: 8 }}>{txt}</p>;
+  const ss = (title: string, body: React.ReactNode) => (
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ color: GOLD, fontWeight: 900, fontSize: 12, letterSpacing: 2, marginBottom: 6, borderBottom: `1px solid ${GOLDDIM}44`, paddingBottom: 4 }}>{title}</div>
+      {body}
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
-      <div className="flex-1 flex flex-col px-4 py-12">
-        <div className="max-w-6xl w-full mx-auto">
-          <h1 className="text-5xl font-black text-purple-400 mb-4 text-center">Community Hub</h1>
-          <p className="text-xl text-white/70 text-center mb-8">Connect, Share, and Inspire</p>
+    <div style={{ ...Sp, padding: "30px 40px 80px" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto" }}>
+        <div style={{ fontSize: 11, color: GOLD, letterSpacing: 4, marginBottom: 4, fontWeight: 700 }}>LEGAL</div>
+        <h1 style={{ fontFamily: "'Cinzel',serif", color: GOLD, fontSize: 26, fontWeight: 900, letterSpacing: 4, marginBottom: 4 }}>TERMS OF SERVICE & DISCLAIMER</h1>
+        <div style={{ color: WHITE, fontSize: 11, marginBottom: 24, letterSpacing: 2 }}>EFFECTIVE MARCH 2026 · MANDASTRONG STUDIO LLC · mandastrongstudio2026.bolt.host</div>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-6 text-center hover:border-purple-400 transition-all cursor-pointer">
-              <Users className="w-12 h-12 mx-auto mb-4 text-purple-400" />
-              <h3 className="text-xl font-bold mb-2">Community</h3>
-              <p className="text-white/70">Join thousands of creators</p>
-            </div>
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-6 text-center hover:border-purple-400 transition-all cursor-pointer">
-              <Share2 className="w-12 h-12 mx-auto mb-4 text-purple-400" />
-              <h3 className="text-xl font-bold mb-2">Showcase</h3>
-              <p className="text-white/70">Share your projects</p>
-            </div>
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-6 text-center hover:border-purple-400 transition-all cursor-pointer">
-              <Star className="w-12 h-12 mx-auto mb-4 text-purple-400" />
-              <h3 className="text-xl font-bold mb-2">Featured</h3>
-              <p className="text-white/70">Get recognized</p>
-            </div>
+        <div style={{ background: "#050505", border: `2px solid ${GOLD}`, padding: "22px 26px", marginBottom: 20 }}>
+          <div style={{ fontFamily: "'Cinzel',serif", color: GOLD, fontSize: 16, fontWeight: 900, letterSpacing: 3, marginBottom: 16, textAlign: "center" }}>TERMS OF SERVICE</div>
+          {ss("1. ACCEPTANCE", <>{pp("By accessing or using MandaStrong Studio you agree to be legally bound by these Terms. If you do not agree, do not use this platform.")}</>)}
+          {ss("2. SUBSCRIPTIONS & BILLING", <>{pp("Creator $20/mo · Pro $30/mo · Studio $50/mo. All plans auto-renew monthly. Studio includes 7-day free trial. All payments via Stripe. No refunds for partial periods.")}</>)}
+          {ss("3. INTELLECTUAL PROPERTY", <>{pp("You retain full ownership of all original content. Studio Plan subscribers receive full commercial rights to AI-generated content. MandaStrong Studio and its codebase remain the intellectual property of Amanda Woolley and MandaStrong Studio LLC.")}</>)}
+          {ss("4. ACCEPTABLE USE", <>{pp("Lawful use only. Prohibited: defamatory content, infringing IP, reverse-engineering the platform, spam, malware, or sharing credentials.")}</>)}
+          {ss("5. SOCIAL MISSION", <>{pp("A meaningful portion of all subscription proceeds funds veterans mental health initiatives and school anti-bullying programmes.")}</>)}
+          {ss("6. LIMITATION OF LIABILITY", <>{pp("Provided as-is. No liability for indirect or consequential damages. Total liability capped at amounts paid in the prior 30 days.")}</>)}
+          <div style={{ borderTop: `1px solid ${GOLDDIM}`, paddingTop: 10, marginTop: 4 }}>
+            <p style={{ color: GOLDDIM, fontSize: 11, margin: 0, letterSpacing: 1 }}>MANDASTRONG STUDIO LLC · AMANDA WOOLLEY · MARCH 2026 · MandaStrong1.Etsy.com</p>
           </div>
+        </div>
 
-          <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-8 mb-8">
-            <h2 className="text-2xl font-bold mb-6 text-purple-400">Featured Projects</h2>
-            <p className="text-white/70 mb-6 text-center">A welcoming space for creators to share their artwork. Show your appreciation!</p>
-            <div className="grid md:grid-cols-3 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-black/50 rounded-lg border border-purple-500/30 p-4 hover:border-purple-400 transition-all">
-                  <div className="aspect-video bg-purple-900/20 rounded-lg mb-3 flex items-center justify-center">
-                    <Star className="w-8 h-8 text-purple-400" />
-                  </div>
-                  <h4 className="font-semibold mb-1">Creator Project #{i}</h4>
-                  <p className="text-xs text-white/60 mb-3">By MandaStrong Creator</p>
-                  <div className="flex gap-2 justify-center">
-                    <button
-                      onClick={() => toggleLike(i)}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg transition-all ${
-                        likes[i]?.liked
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-purple-900/30 text-white/70 hover:bg-purple-900/50'
-                      }`}
-                    >
-                      <ThumbsUp className="w-4 h-4" />
-                      <span className="text-sm">Like</span>
-                    </button>
-                    <button
-                      onClick={() => toggleLove(i)}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg transition-all ${
-                        likes[i]?.loved
-                          ? 'bg-red-600 text-white'
-                          : 'bg-purple-900/30 text-white/70 hover:bg-purple-900/50'
-                      }`}
-                    >
-                      <Heart className="w-4 h-4" />
-                      <span className="text-sm">Love</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex gap-4 justify-center">
-            <button
-              onClick={() => onNavigate(19)}
-              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Back
-            </button>
-            <button
-              onClick={() => onNavigate(21)}
-              className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
-            >
-              Next
-              <ArrowRight className="w-5 h-5" />
-            </button>
+        <div style={{ background: "#050505", border: `2px solid ${GOLD}`, padding: "22px 26px" }}>
+          <div style={{ fontFamily: "'Cinzel',serif", color: GOLD, fontSize: 16, fontWeight: 900, letterSpacing: 3, marginBottom: 16, textAlign: "center" }}>DISCLAIMER</div>
+          {ss("AI-GENERATED CONTENT", <>{pp("All outputs are generated algorithmically. Review all content before publication. You are solely responsible for fact-checking and compliance.")}</>)}
+          {ss("NO PROFESSIONAL ADVICE", <>{pp("Nothing generated constitutes legal, medical, financial, or professional advice. Always consult a qualified professional.")}</>)}
+          {ss("PLATFORM AVAILABILITY", <>{pp("Provided on an as-available basis. No guarantee of uninterrupted access or data retention. Back up all productions regularly.")}</>)}
+          {ss("USER RESPONSIBILITY", <>{pp("All responsibility for how content is deployed, distributed, monetised, or shared rests entirely with the user.")}</>)}
+          <div style={{ borderTop: `1px solid ${GOLDDIM}`, paddingTop: 10, marginTop: 4 }}>
+            <p style={{ color: GOLDDIM, fontSize: 11, margin: 0, letterSpacing: 1 }}>— AMANDA WOOLLEY · FOUNDER · MANDASTRONG STUDIO LLC · MARCH 2026</p>
           </div>
         </div>
       </div>
-      <QuickAccess onNavigate={onNavigate} />
-      <GrokChat onNavigate={onNavigate} />
-      <Footer />
     </div>
   );
 }

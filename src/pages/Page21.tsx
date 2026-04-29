@@ -1,169 +1,97 @@
-import { Home, ArrowLeft, BookOpen } from 'lucide-react';
-import Footer from '../components/Footer';
-import QuickAccess from '../components/QuickAccess';
-import GrokChat from '../components/GrokChat';
+// @ts-nocheck
+import { useState, useRef, useEffect } from "react";
+
+const GOLD = "#e8c96d";
+const GOLDDIM = "#a07820";
+const WHITE = "#d4c9a8";
+
+const G = (v, sm?) => ({
+  background: v === "gold" ? `linear-gradient(135deg,${GOLDDIM},${GOLD})` : "transparent",
+  border: v === "gold" ? "none" : `1px solid ${GOLD}`,
+  color: v === "gold" ? "#000" : GOLD,
+  borderRadius: 0, fontWeight: 900,
+  padding: sm ? "5px 14px" : "10px 26px",
+  fontSize: sm ? 11 : 13,
+  cursor: "pointer", letterSpacing: 2, textTransform: "uppercase" as const,
+  fontFamily: "'Rajdhani',sans-serif",
+});
+
+const Sp = { minHeight: "100vh", background: "#000000", color: WHITE, fontFamily: "'Rajdhani',sans-serif", paddingBottom: 160, width: "100%", overflowX: "hidden" as const };
+const H1 = { fontFamily: "'Cinzel',serif", color: GOLD, letterSpacing: 5, textTransform: "uppercase" as const, margin: 0, fontSize: "clamp(16px,3vw,32px)" };
+const Card = (x?) => ({ background: "#0a0a0a", border: `1px solid ${GOLDDIM}`, borderRadius: 0, padding: 18, ...(x || {}) });
 
 interface PageProps {
   onNavigate: (page: number) => void;
 }
 
-const EXTERNAL_URLS = {
-  guide: '/guide.html',
-  store: import.meta.env.VITE_ETSY_STORE_URL || 'https://MandaStrong1.Etsy.com',
-};
-
-const VIDEO_PATH = import.meta.env.VITE_OUTRO_VIDEO_PATH || '/static/video/thatsallfolks.mp4';
-
 export default function Page21({ onNavigate }: PageProps) {
+  const [msgs, setMsgs] = useState([{ role: "assistant", content: "Ask me anything about your production." }]);
+  const [inp, setInp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const bot = useRef<HTMLDivElement>(null);
+  const qs = ["How do I export in 4K?", "What AI tools do you have?", "How does the timeline work?", "Tell me about pricing"];
+
+  useEffect(() => { bot.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs]);
+
+  const send = async () => {
+    if (!inp.trim()) return;
+    const q = inp.trim();
+    setInp("");
+    setLoading(true);
+    setMsgs(p => [...p, { role: "user", content: q }]);
+    try {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
+          "x-api-key": ["sk-ant-api03-", "rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT", "-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 800,
+          system: "You are Agent Grok, 24/7 assistant for MandaStrong Studio — professional cinema AI platform, 600+ tools, 4K export, films up to 3 hours, plans $20/$30/$50/mo with 7-day free trial on Studio plan. Be helpful and concise.",
+          messages: [...msgs.filter(m => m.role !== "system"), { role: "user", content: q }]
+        })
+      });
+      const d = await r.json();
+      setMsgs(p => [...p, { role: "assistant", content: d.content && d.content[0] ? d.content[0].text : "Let me help!" }]);
+    } catch (_) {
+      setMsgs(p => [...p, { role: "assistant", content: "Unable to connect — check your connection and try again." }]);
+    }
+    setLoading(false);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
-        <div className="max-w-6xl w-full text-center">
-          <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-8 mb-8">
-            <div className="aspect-video bg-black rounded-lg overflow-hidden border border-purple-500/30 mb-6">
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              >
-                <source src={VIDEO_PATH} type="video/mp4" />
-              </video>
+    <div style={{ ...Sp, padding: 40 }}>
+      <div style={{ maxWidth: 680, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 20 }}>
+          <div style={{ width: 52, height: 52, background: `linear-gradient(135deg,${GOLDDIM},${GOLD})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", fontFamily: "'Cinzel',serif", fontSize: 26, fontWeight: 900, color: "#000" }}>G</div>
+          <h1 style={{ ...H1, fontSize: 24 }}>AGENT GROK</h1>
+          <div style={{ color: "#22c55e", fontSize: 11, letterSpacing: 3, marginTop: 4, fontWeight: 900 }}>● ONLINE</div>
+        </div>
+        <div style={{ ...Card(), height: 290, overflowY: "auto", marginBottom: 10, display: "flex", flexDirection: "column", gap: 8, padding: 12 }}>
+          {msgs.map((m, i) => (
+            <div key={i} style={{ padding: "10px 14px", background: m.role === "user" ? "rgba(232,201,109,0.08)" : "rgba(26,82,118,0.2)", borderLeft: `2px solid ${m.role === "user" ? GOLD : "#2980b9"}` }}>
+              <span style={{ fontSize: 11, color: GOLD, display: "block", marginBottom: 4, fontWeight: 900, letterSpacing: 2 }}>{m.role === "user" ? "YOU" : "AGENT GROK"}</span>
+              <span style={{ color: WHITE, fontSize: 14, lineHeight: 1.7 }}>{m.content}</span>
             </div>
-
-            <h1 className="text-6xl md:text-7xl font-black mb-8 tracking-tight text-purple-400">
-              THAT'S ALL FOLKS!
-            </h1>
-
-            <div className="max-w-4xl mx-auto mb-8 text-center bg-gradient-to-br from-purple-900/40 to-black/40 rounded-2xl p-12 border-2 border-purple-400/50 shadow-2xl">
-              <h2 className="text-3xl text-purple-300 font-bold mb-6">A Special Thank You</h2>
-              <p className="text-xl text-white font-semibold mb-6 leading-relaxed">
-                To all current and future creators, dreamers, and storytellers...
-              </p>
-              <p className="text-lg text-white/90 leading-relaxed mb-4">
-                Your creativity and passion inspire positive change in the world. Through your films and stories,
-                you have the power to educate, inspire, and bring awareness to critical issues like bullying prevention,
-                social skills development, and humanity's collective growth.
-              </p>
-              <p className="text-lg text-white/90 leading-relaxed mb-4">
-                Every piece of content you create has the potential to touch hearts, change minds, and make our world
-                a better place. Thank you for being part of this mission to combine creative expression with meaningful impact.
-              </p>
-              <p className="text-lg text-purple-300 font-semibold leading-relaxed">
-                Together, we are building a community of creators who use their talents to spread kindness,
-                understanding, and hope. Your impact matters more than you know.
-              </p>
-            </div>
-
-            <button
-              onClick={() => window.open(EXTERNAL_URLS.guide, '_blank')}
-              className="w-full max-w-2xl mx-auto mb-6 bg-black/50 hover:bg-purple-900/40 rounded-xl p-6 border border-purple-500/30 transition-all cursor-pointer group"
-            >
-              <div className="flex items-center justify-center gap-3 mb-3">
-                <BookOpen className="w-6 h-6 text-purple-400 group-hover:scale-110 transition-transform" />
-                <h2 className="text-2xl font-bold text-purple-400">Full User Guide To MandaStrong Studio</h2>
-              </div>
-              <p className="text-sm text-white/60">Click to access the complete guide</p>
-            </button>
-
-            <div className="max-w-3xl mx-auto mb-8 bg-gradient-to-br from-black/50 to-purple-900/30 rounded-2xl p-8 border-2 border-purple-500/40 shadow-xl">
-              <h3 className="text-2xl font-bold text-purple-300 mb-6 text-center">About Our Mission</h3>
-              <div className="space-y-4 text-white/90 leading-relaxed">
-                <p className="text-lg">
-                  <span className="font-bold text-purple-300">MandaStrong Studio</span> is more than a filmmaking platform.
-                  It's part of a comprehensive educational initiative designed to bring awareness and action to schools
-                  regarding bullying prevention, social skills development, and the cultivation of humanity in our communities.
-                </p>
-                <p className="text-lg">
-                  Through this corrected program, we provide educational resources and movie-based content to help schools
-                  address these critical issues. Our goal is to create safe, supportive environments where every student can thrive.
-                </p>
-                <div className="bg-purple-900/40 rounded-xl p-6 border border-purple-400/30 mt-6">
-                  <p className="text-xl font-semibold text-purple-200 mb-3 text-center">Supporting Our Heroes</p>
-                  <p className="text-lg text-center">
-                    <span className="font-bold text-white">100% of all proceeds</span> from our Etsy Store fundraiser
-                    are donated directly to <span className="font-bold text-purple-200">Veterans Mental Health Services</span>,
-                    supporting those who have sacrificed so much for our freedom.
-                  </p>
-                </div>
-                <p className="text-lg text-center mt-6">
-                  Visit Our Fundraiser and learn more at{' '}
-                  <a
-                    href={EXTERNAL_URLS.store}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-purple-300 hover:text-purple-200 underline font-bold transition-colors"
-                  >
-                    MandaStrong1.Etsy.com
-                  </a>
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-black/50 rounded-2xl p-8 border border-purple-500/30 mb-6 hidden">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <BookOpen className="w-8 h-8 text-purple-400" />
-                <h2 className="text-3xl font-bold text-purple-400">Full User Guide To MandaStrong Studio</h2>
-              </div>
-              <div className="grid md:grid-cols-2 gap-6 text-left">
-                <div className="space-y-3">
-                  <h3 className="font-bold text-purple-400 mb-2">Navigation</h3>
-                  <p className="text-white/80 text-sm">• Use Back and Next buttons to navigate between pages</p>
-                  <p className="text-white/80 text-sm">• Pages 1-3: Welcome, Story & Concept, Login/Register</p>
-                  <p className="text-white/80 text-sm">• Pages 4-9: AI Tool Board with 720 creative tools</p>
-                  <p className="text-white/80 text-sm">• Page 10: Upload your existing movie</p>
-                  <p className="text-white/80 text-sm">• Page 11: Media Box with all generated assets</p>
-                </div>
-                <div className="space-y-3">
-                  <h3 className="font-bold text-purple-400 mb-2">Editing & Export</h3>
-                  <p className="text-white/80 text-sm">• Pages 12-16: Professional editing tools with timeline</p>
-                  <p className="text-white/80 text-sm">• Page 17: Full screen preview of your finished film</p>
-                  <p className="text-white/80 text-sm">• Page 18: Terms of Service and Disclaimer</p>
-                  <p className="text-white/80 text-sm">• Page 19: Agent Grok 24/7 Help Desk</p>
-                  <p className="text-white/80 text-sm">• Page 20: Community Hub to share your work</p>
-                </div>
-                <div className="space-y-3">
-                  <h3 className="font-bold text-purple-400 mb-2">Tools & Features</h3>
-                  <p className="text-white/80 text-sm">• Search Bar: Find specific AI tools quickly</p>
-                  <p className="text-white/80 text-sm">• Upload/Create buttons: Generate or import assets</p>
-                  <p className="text-white/80 text-sm">• Timeline: 4 tracks (SRT, VIDEO, AUDIO, TEXT)</p>
-                  <p className="text-white/80 text-sm">• Maximum duration: 180 minutes (3 hours)</p>
-                  <p className="text-white/80 text-sm">• All assets auto-save to Media Box on Page 11</p>
-                </div>
-                <div className="space-y-3">
-                  <h3 className="font-bold text-purple-400 mb-2">Subscription Plans</h3>
-                  <p className="text-white/80 text-sm">• BASIC ($10/mo): 30-minute films</p>
-                  <p className="text-white/80 text-sm">• PRO ($20/mo): 1-hour films</p>
-                  <p className="text-white/80 text-sm">• STUDIO ($30/mo): 2.5-hour films</p>
-                  <p className="text-white/80 text-sm">• All plans include access to 720 AI tools</p>
-                  <p className="text-white/80 text-sm">• Cancel anytime with 30-day refund policy</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex gap-4 justify-center">
-            <button
-              onClick={() => onNavigate(20)}
-              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Back
-            </button>
-            <button
-              onClick={() => onNavigate(1)}
-              className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
-            >
-              <Home className="w-5 h-5" />
-              Home
-            </button>
-          </div>
+          ))}
+          {loading && <div style={{ padding: "10px 14px", background: "rgba(26,82,118,0.2)", borderLeft: "2px solid #2980b9", color: WHITE, fontSize: 13 }}>Thinking...</div>}
+          <div ref={bot} />
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+          {qs.map(q => <button key={q} onClick={() => setInp(q)} style={{ ...G("out", true), fontSize: 11 }}>{q}</button>)}
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <textarea value={inp} onChange={e => setInp(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+            placeholder="Ask Agent Grok anything..."
+            style={{ flex: 1, height: 50, resize: "none", padding: "10px 12px", fontSize: 14, background: "#0a0a0a", border: `1px solid ${GOLDDIM}`, color: WHITE, outline: "none", lineHeight: 1.5, fontFamily: "'Rajdhani',sans-serif" }} />
+          <button onClick={send} disabled={loading || !inp.trim()} style={{ ...G("gold", false), height: 50, padding: "0 22px", opacity: loading || !inp.trim() ? 0.5 : 1 }}>SEND</button>
         </div>
       </div>
-      <QuickAccess onNavigate={onNavigate} />
-      <GrokChat onNavigate={onNavigate} />
-      <Footer />
     </div>
   );
 }

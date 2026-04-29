@@ -1,230 +1,106 @@
-import { ArrowLeft, ArrowRight, MessageCircle, Clock, Headphones, Send } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
-import Footer from '../components/Footer';
-import QuickAccess from '../components/QuickAccess';
-import GrokChat from '../components/GrokChat';
+// @ts-nocheck
+import { useState } from "react";
+
+const GOLD = "#e8c96d";
+const GOLDDIM = "#a07820";
+const WHITE = "#d4c9a8";
+const DIM = "#aaaaaa";
+
+const G = (v, sm?) => ({
+  background: v === "gold" ? `linear-gradient(135deg,${GOLDDIM},${GOLD})` : "transparent",
+  border: v === "gold" ? "none" : `1px solid ${GOLD}`,
+  color: v === "gold" ? "#000" : GOLD,
+  borderRadius: 0, fontWeight: 900,
+  padding: sm ? "5px 14px" : "10px 26px",
+  fontSize: sm ? 11 : 13,
+  cursor: "pointer", letterSpacing: 2, textTransform: "uppercase" as const,
+  fontFamily: "'Rajdhani',sans-serif",
+});
+
+const Sp = { minHeight: "100vh", background: "#000000", color: WHITE, fontFamily: "'Rajdhani',sans-serif", paddingBottom: 160, width: "100%", overflowX: "hidden" as const };
+const H1 = { fontFamily: "'Cinzel',serif", color: GOLD, letterSpacing: 5, textTransform: "uppercase" as const, margin: 0, fontSize: "clamp(16px,3vw,32px)" };
+const Card = (x?) => ({ background: "#0a0a0a", border: `1px solid ${GOLDDIM}`, borderRadius: 0, padding: 18, ...(x || {}) });
 
 interface PageProps {
   onNavigate: (page: number) => void;
 }
 
-interface ChatMessage {
-  id: string;
-  message: string;
-  is_user: boolean;
-  created_at: string;
-}
+const tuts = [
+  { n: "01", t: "Getting Started — Platform Overview & Navigation", d: "Full walkthrough of all 23 pages, the Quick Access menu, footer controls, and how to navigate the studio.", dur: "12:00", l: "Beginner", url: "https://www.youtube.com/results?search_query=MandaStrong+Studio+getting+started+tutorial", tips: ["Use ☰ top left to jump to any page instantly", "Footer shows your current page and lets you save your project", "Page 23 has the full How-To guide"] },
+  { n: "02", t: "Writing Tools — Script to Screen in Minutes", d: "How to use the 50+ writing tools on Page 5. From logline to full feature script using AI Create.", dur: "9:30", l: "Beginner", url: "https://www.youtube.com/results?search_query=AI+screenwriting+script+generator+tutorial", tips: ["Click any tool card to open it", "Use AI CREATE for instant professional scripts", "Save results to your Media Library"] },
+  { n: "03", t: "Voice Engine — 54 Characters, Real Narration", d: "Complete guide to Page 6. Selecting voices, setting pitch and rate, using the TEST button, and preparing narration for your documentary.", dur: "14:20", l: "Beginner", url: "https://www.youtube.com/results?search_query=AI+text+to+speech+voice+narration+tutorial", tips: ["James is your primary documentary narrator — pitch 0.86, rate 0.62", "Hit TEST on any voice card to hear it instantly", "Use PREPARE & SPEAK to AI-format your script before speaking"] },
+  { n: "04", t: "Music Video Studio — Full Production Walkthrough", d: "Step-by-step: Song setup, style selection, scene description, generating your music video, and exporting to social platforms.", dur: "18:45", l: "Intermediate", url: "https://www.youtube.com/results?search_query=AI+music+video+generator+tutorial", tips: ["Access from the MUSIC VIDEO STUDIO button on Page 6", "Upload your own audio track on Step 1 for beat-synced video", "The more detailed your scene description, the better the output", "Download directly or share to YouTube, TikTok, Instagram"] },
+  { n: "05", t: "Video Generator — Generating Cinematic Scenes (Page 8)", d: "How to describe any scene and have the MandaStrong Cinema Engine build it. Using reference images, duration settings, and saving to your Media Library.", dur: "16:00", l: "Intermediate", url: "https://www.youtube.com/results?search_query=AI+video+scene+generator+cinematic+tutorial", tips: ["Be specific in your scene description — lighting, mood, camera angle", "Upload a reference image to match a visual style", "Each scene saves automatically to your Media Library", "Use NEXT SCENE to build your full film clip by clip"] },
+  { n: "06", t: "Timeline Editor — Building Your Film (Page 13)", d: "Dragging clips to tracks, syncing audio and video, adjusting film duration from 60 to 180 minutes, and preparing for render.", dur: "11:30", l: "Intermediate", url: "https://www.youtube.com/results?search_query=video+timeline+editor+tutorial+beginners", tips: ["Hit ⚡ SYNC ALL TRACKS to auto-populate from your Media Library", "Drag any clip from the library to any track", "Set film duration with the slider — 60, 90, or 180 minutes", "Hit → RENDER when your timeline is ready"] },
+  { n: "07", t: "Audio Mixer — Professional Sound (Page 15)", d: "Setting the perfect mix for documentary, narrative film, or music video. Recommended levels explained.", dur: "7:15", l: "Beginner", url: "https://www.youtube.com/results?search_query=audio+mixing+tutorial+for+beginners+film", tips: ["Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85", "Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85", "Hit SAVE PRESET to store your favourite mix"] },
+  { n: "08", t: "Render Engine — Exporting Your Film in 4K (Page 16)", d: "Choosing quality settings, understanding VP9 vs VP8, starting the render, and what to do if clips need regenerating.", dur: "10:45", l: "Intermediate", url: "https://www.youtube.com/results?search_query=video+render+export+4K+tutorial", tips: ["1080p recommended for most use", "4K for professional distribution", "VP9 gives better quality at same file size", "If clips are missing the engine regenerates them automatically"] },
+  { n: "09", t: "Export & Distribute — Getting Your Film Out (Page 18)", d: "Downloading your film, sharing to YouTube, TikTok, Instagram, Facebook, LinkedIn, Vimeo and WhatsApp directly from the platform.", dur: "6:00", l: "Beginner", url: "https://www.youtube.com/results?search_query=video+export+social+media+distribution+tutorial", tips: ["Hit DOWNLOAD to save to your device first", "Each social platform button opens the upload page directly", "Share your MandaStrong Studio credit in your post description"] },
+  { n: "10", t: "AI For Humanity Documentary — Full Production Case Study", d: "Complete case study: how the AI For Humanity documentary was built inside MandaStrong Studio from script to render.", dur: "25:00", l: "Advanced", url: "https://www.youtube.com/results?search_query=AI+documentary+filmmaking+tutorial+case+study", tips: ["James narration — pitch 0.86, rate 0.62, pause 1600ms", "13 scenes generated on Page 8, synced on Page 13", "Full workflow: P8 → P6 → P13 → P15 → P16 → P17 → P18", "Each chapter gets its own generated scene — total runtime 90 minutes"] },
+  { n: "11", t: "Saving, Loading & Project History", d: "How to save your session, restore from the project history, and use IndexedDB clip persistence so nothing is ever lost.", dur: "5:30", l: "Beginner", url: "https://www.youtube.com/results?search_query=video+project+save+restore+tutorial", tips: ["Hit 💾 SAVE PROJECT in the footer at any time", "📂 MY PROJECTS shows your full session history", "Clips survive page reloads automatically via local storage", "Always download your finished film before closing the browser"] },
+  { n: "12", t: "Agent Grok — Your 24/7 AI Studio Assistant (Page 21)", d: "How to use Agent Grok to get instant answers about any tool, workflow, pricing, or production question.", dur: "4:00", l: "Beginner", url: "https://www.youtube.com/results?search_query=AI+assistant+chatbot+creative+studio+tutorial", tips: ["Ask anything — tools, pricing, workflow, export settings", "Use the quick-question buttons for instant answers", "Agent Grok knows the entire MandaStrong Studio platform"] },
+];
+
+const lc: Record<string, string> = { Beginner: "#22c55e", Intermediate: "#f59e0b", Advanced: "#ef4444" };
 
 export default function Page19({ onNavigate }: PageProps) {
-  const { user } = useAuth();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [sending, setSending] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [activeVid, setActiveVid] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      loadMessages();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const loadMessages = async () => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('chat_messages')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-      setMessages(data || []);
-    } catch (error) {
-      console.error('Error loading messages:', error);
-    }
-  };
-
-  const generateAIResponse = (userMessage: string): string => {
-    const lowerMessage = userMessage.toLowerCase();
-
-    if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-      return "Hello there! Welcome to MandaStrong Studio! I'm here to help you create amazing movies. What can I assist you with today?";
-    } else if (lowerMessage.includes('help')) {
-      return "I'm happy to help! I can assist with uploading media, using our AI tools, editing videos, and navigating the platform. What would you like to learn about?";
-    } else if (lowerMessage.includes('upload')) {
-      return "Great question! To upload media, visit Page 10 (Timeline Editor) or Page 11 (Media Box) and click the 'Upload' button. You can upload videos, images, and audio files. They'll appear in your Media Box automatically!";
-    } else if (lowerMessage.includes('ai tool')) {
-      return "Wonderful! MandaStrong Studio has over 720 AI tools across Pages 4-9. Each tool helps you create amazing content - just click any tool to get started. Your creations are automatically saved to your Media Box!";
-    } else if (lowerMessage.includes('edit')) {
-      return "Excellent! You can view your media on the Editor Dashboard (Page 11). For advanced editing, explore the Timeline Editor (Page 10), Audio Studio (Page 13), Text Creator (Page 14), Animation Lab (Page 15), and Visual FX (Page 16).";
-    } else if (lowerMessage.includes('export') || lowerMessage.includes('download')) {
-      return "Perfect! To export your project, go to the Visual FX page (Page 16) and use the Export button. You can choose different quality settings and formats that work best for you!";
-    } else if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('plan')) {
-      return "Great question! We have three wonderful plans: Basic ($40/month), Pro ($39/month), and Studio ($50/month). Each plan gives you full access to all our AI tools!";
-    } else {
-      return "Thank you for reaching out! I'm here to help make your creative journey fun and easy. Feel free to ask me anything about MandaStrong Studio - I'm always happy to assist!";
-    }
-  };
-
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || !user || sending) return;
-
-    setSending(true);
-    try {
-      const { error: userError } = await supabase
-        .from('chat_messages')
-        .insert({
-          user_id: user.id,
-          message: inputMessage.trim(),
-          is_user: true,
-        });
-
-      if (userError) throw userError;
-
-      const aiResponse = generateAIResponse(inputMessage);
-
-      const { error: aiError } = await supabase
-        .from('chat_messages')
-        .insert({
-          user_id: user.id,
-          message: aiResponse,
-          is_user: false,
-        });
-
-      if (aiError) throw aiError;
-
-      setInputMessage('');
-      await loadMessages();
-    } catch (error) {
-      console.error('Error sending message:', error);
-      alert('Failed to send message');
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-black to-purple-900/20 text-white flex flex-col">
-      <div className="flex-1 flex flex-col px-4 py-12">
-        <div className="max-w-6xl w-full mx-auto">
-          <h1 className="text-5xl font-black text-purple-400 mb-4 text-center">Agent Grok 24/7 Help Desk</h1>
-          <p className="text-xl text-white/70 text-center mb-8">Online Now - Ready to Assist You</p>
-
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-6 text-center">
-              <Clock className="w-12 h-12 mx-auto mb-4 text-purple-400" />
-              <h3 className="text-xl font-bold mb-2">24/7 Availability</h3>
-              <p className="text-white/70">Get help anytime, day or night</p>
-            </div>
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-6 text-center">
-              <MessageCircle className="w-12 h-12 mx-auto mb-4 text-purple-400" />
-              <h3 className="text-xl font-bold mb-2">Instant Responses</h3>
-              <p className="text-white/70">Quick answers to your questions</p>
-            </div>
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-6 text-center">
-              <Headphones className="w-12 h-12 mx-auto mb-4 text-purple-400" />
-              <h3 className="text-xl font-bold mb-2">Expert Support</h3>
-              <p className="text-white/70">AI-powered assistance</p>
-            </div>
-          </div>
-
-          <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-8 mb-8">
-            <h2 className="text-2xl font-bold mb-6 text-purple-400">Live Chat</h2>
-
-            <div className="bg-black/50 rounded-lg border border-purple-500/30 p-6 mb-4 h-96 overflow-y-auto">
-              <div className="space-y-4">
-                {messages.length === 0 ? (
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                      <MessageCircle className="w-5 h-5" />
-                    </div>
-                    <div className="bg-purple-900/30 rounded-lg p-4 flex-1">
-                      <p className="font-semibold mb-1">Agent Grok</p>
-                      <p className="text-white/80">
-                        Hello! I'm Agent Grok, your 24/7 assistant for MandaStrong Studio. How can I help you today?
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  messages.map((msg) => (
-                    <div key={msg.id} className={`flex items-start gap-3 ${msg.is_user ? 'flex-row-reverse' : ''}`}>
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        msg.is_user ? 'bg-blue-600' : 'bg-purple-600'
-                      }`}>
-                        <MessageCircle className="w-5 h-5" />
-                      </div>
-                      <div className={`rounded-lg p-4 flex-1 ${
-                        msg.is_user ? 'bg-blue-900/30' : 'bg-purple-900/30'
-                      }`}>
-                        <p className="font-semibold mb-1">{msg.is_user ? 'You' : 'Agent Grok'}</p>
-                        <p className="text-white/80">{msg.message}</p>
-                      </div>
-                    </div>
-                  ))
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Type your message here..."
-                disabled={sending}
-                className="flex-1 px-4 py-3 bg-black border border-purple-500/50 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-400 disabled:opacity-50"
-              />
-              <button
-                onClick={handleSendMessage}
-                disabled={sending || !inputMessage.trim()}
-                className="bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed text-white font-bold px-8 py-3 rounded-lg transition-all flex items-center gap-2"
-              >
-                <Send className="w-5 h-5" />
-                {sending ? 'Sending...' : 'Send'}
-              </button>
-            </div>
-          </div>
-
-          <div className="flex gap-4 justify-center">
-            <button
-              onClick={() => onNavigate(18)}
-              className="flex items-center gap-2 bg-black text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-900 transition-all border border-purple-500"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Back
-            </button>
-            <button
-              onClick={() => onNavigate(20)}
-              className="flex items-center gap-2 bg-purple-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-purple-500 transition-all"
-            >
-              Next
-              <ArrowRight className="w-5 h-5" />
-            </button>
+    <div style={{ ...Sp, padding: "30px 40px" }}>
+      <style>{`@keyframes p2{0%,100%{opacity:.4}50%{opacity:1}}`}</style>
+      <div style={{ maxWidth: 880, margin: "0 auto" }}>
+        <div style={{ fontSize: 11, color: GOLD, letterSpacing: 4, marginBottom: 4, fontWeight: 700 }}>LEARNING CENTER</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 4, flexWrap: "wrap" }}>
+          <h1 style={{ ...H1, fontSize: 28, margin: 0 }}>TUTORIALS</h1>
+          <div style={{ background: "#0a0500", border: `1px solid ${GOLD}`, padding: "4px 14px", display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 7, height: 7, borderRadius: "50%", background: GOLD, animation: "p2 1.5s ease-in-out infinite" }} />
+            <span style={{ color: GOLD, fontSize: 11, fontWeight: 900, letterSpacing: 2 }}>VIDEO CREATION IN PROGRESS</span>
           </div>
         </div>
+        <div style={{ color: WHITE, fontSize: 13, marginBottom: 24, lineHeight: 1.8 }}>
+          Step-by-step guides for every part of MandaStrong Studio. Click any tutorial to open a full explanation and watch on YouTube.
+        </div>
+
+        {activeVid !== null && (
+          <div style={{ background: "#050500", border: `2px solid ${GOLD}`, padding: 24, marginBottom: 24, position: "relative" }}>
+            <button onClick={() => setActiveVid(null)} style={{ position: "absolute", top: 12, right: 12, background: "none", border: `1px solid ${GOLD}`, color: GOLD, width: 28, height: 28, cursor: "pointer", fontSize: 14, fontWeight: 900 }}>✕</button>
+            <div style={{ color: GOLD, fontSize: 10, letterSpacing: 3, fontWeight: 900, marginBottom: 4 }}>TUTORIAL {tuts[activeVid].n} · {tuts[activeVid].l.toUpperCase()}</div>
+            <div style={{ fontFamily: "'Cinzel',serif", color: GOLD, fontSize: 18, fontWeight: 900, marginBottom: 10, letterSpacing: 2 }}>{tuts[activeVid].t}</div>
+            <p style={{ color: WHITE, fontSize: 14, lineHeight: 1.9, marginBottom: 16 }}>{tuts[activeVid].d}</p>
+            <div style={{ color: GOLD, fontSize: 11, fontWeight: 900, letterSpacing: 2, marginBottom: 10 }}>PRO TIPS</div>
+            {tuts[activeVid].tips.map((tip, i) => (
+              <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8, alignItems: "flex-start" }}>
+                <span style={{ color: GOLD, fontWeight: 900, flexShrink: 0 }}>✦</span>
+                <span style={{ color: WHITE, fontSize: 13, lineHeight: 1.7 }}>{tip}</span>
+              </div>
+            ))}
+            <div style={{ marginTop: 18, display: "flex", gap: 10 }}>
+              <button onClick={() => window.open(tuts[activeVid].url, "_blank")}
+                style={{ background: `linear-gradient(135deg,#a07820,#e8c96d)`, border: "none", color: "#000", padding: "12px 24px", cursor: "pointer", fontSize: 12, fontWeight: 900, letterSpacing: 2, fontFamily: "'Rajdhani',sans-serif" }}>
+                ▶ WATCH ON YOUTUBE
+              </button>
+              {activeVid > 0 && <button onClick={() => setActiveVid(activeVid - 1)} style={{ ...G("out", true) }}>◀ PREV</button>}
+              {activeVid < tuts.length - 1 && <button onClick={() => setActiveVid(activeVid + 1)} style={{ ...G("out", true) }}>NEXT ▶</button>}
+            </div>
+          </div>
+        )}
+
+        {tuts.map((t, idx) => (
+          <div key={t.n} onClick={() => setActiveVid(activeVid === idx ? null : idx)}
+            style={{ ...Card(), marginBottom: 8, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", borderColor: activeVid === idx ? GOLD : GOLDDIM }}
+            onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.borderColor = GOLD}
+            onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.borderColor = activeVid === idx ? GOLD : GOLDDIM}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <span style={{ fontFamily: "'Cinzel',serif", color: GOLD, fontSize: 16, fontWeight: 900, minWidth: 28 }}>{t.n}</span>
+              <div>
+                <div style={{ color: WHITE, fontWeight: 800, fontSize: 14 }}>{t.t}</div>
+                <div style={{ color: DIM, fontSize: 11, marginTop: 2, letterSpacing: 1 }}>{t.dur} · {t.tips.length} PRO TIPS · CLICK TO EXPAND</div>
+              </div>
+            </div>
+            <span style={{ background: lc[t.l] + "22", border: `1px solid ${lc[t.l]}`, color: lc[t.l], padding: "3px 10px", fontSize: 11, fontWeight: 900, letterSpacing: 2, flexShrink: 0 }}>{t.l.toUpperCase()}</span>
+          </div>
+        ))}
       </div>
-      <QuickAccess onNavigate={onNavigate} />
-      <GrokChat onNavigate={onNavigate} />
-      <Footer />
     </div>
   );
 }
