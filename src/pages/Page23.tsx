@@ -42,9 +42,9 @@ export default function Page23({ onNavigate }: PageProps) {
       <video autoPlay loop playsInline preload="auto" muted
         style={{ width: "100%", aspectRatio: "16/9", background: "#000", border: `1px solid ${GOLD}`, marginBottom: 24, display: "block" }}
         onError={e => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }}>
-        <source src="./background.mp4" type="video/mp4" />
-        <source src="/background.mp4" type="video/mp4" />
-        <source src="background.mp4" type="video/mp4" />
+        <source src="./thatsallfolks.mp4" type="video/mp4" />
+        <source src="/thatsallfolks.mp4" type="video/mp4" />
+        <source src="thatsallfolks.mp4" type="video/mp4" />
       </video>
 
       <div style={{ maxWidth: 820, margin: "0 auto", textAlign: "center" }}>

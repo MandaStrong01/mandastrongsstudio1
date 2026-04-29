@@ -732,14 +732,23 @@ export default function Page6({ onNavigate, onSave }: PageProps) {
                   <div style={{ color: GOLDDIM, fontSize: 10, letterSpacing: 2, marginBottom: 6 }}>JAMES DOCUMENTARY SETTINGS</div>
                   <button onClick={() => { setSpeed(0.62); setPitchV(0.86); setPauseLen(1600); setVolume(1.0); setSelVoice("james"); setMood("Neutral"); }} style={{ ...G("gold", true), fontSize: 10 }}>APPLY JAMES SETTINGS</button>
                 </div>
-                <div style={{ ...Card(), marginBottom: 12 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                <div style={{ background: "#0a0800", border: `1px solid ${GOLDDIM}`, padding: "12px 14px", marginTop: 8 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
                     <span style={{ color: GOLD, fontSize: 11, fontWeight: 900, letterSpacing: 2 }}>MOOD</span>
-                    <span style={{ color: WHITE, fontSize: 11 }}>{mood}</span>
+                    <span style={{ color: GOLD, fontSize: 12, fontWeight: 900 }}>{mood}</span>
                   </div>
-                  <select value={mood} onChange={e => setMood(e.target.value)} style={{ width: "100%", background: "#111", border: `1px solid ${GOLDDIM}`, color: GOLD, padding: "6px 10px", fontSize: 12, outline: "none", fontFamily: "'Rajdhani',sans-serif", fontWeight: 700 }}>
-                    {["Neutral", "Happy", "Sad", "Angry", "Fearful", "Surprised", "Tender", "Serious", "Excited", "Melancholic", "Hopeful", "Tense", "Calm", "Dramatic"].map(m => <option key={m} value={m}>{m}</option>)}
-                  </select>
+                  <input type="range" min={0} max={13} step={1}
+                    value={["Neutral","Calm","Tender","Hopeful","Happy","Excited","Serious","Melancholic","Sad","Tense","Dramatic","Fearful","Angry","Surprised"].indexOf(mood) >= 0 ? ["Neutral","Calm","Tender","Hopeful","Happy","Excited","Serious","Melancholic","Sad","Tense","Dramatic","Fearful","Angry","Surprised"].indexOf(mood) : 0}
+                    onChange={e => setMood(["Neutral","Calm","Tender","Hopeful","Happy","Excited","Serious","Melancholic","Sad","Tense","Dramatic","Fearful","Angry","Surprised"][+e.target.value])}
+                    style={{ width: "100%", accentColor: GOLD, marginBottom: 8 }} />
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 }}>
+                    {["Neutral","Calm","Tender","Hopeful","Happy","Excited","Serious","Melancholic","Sad","Tense","Dramatic","Fearful","Angry","Surprised"].map(m => (
+                      <button key={m} onClick={() => setMood(m)}
+                        style={{ background: mood === m ? GOLD : "#111", border: `1px solid ${mood === m ? "#000" : GOLDDIM}`, color: mood === m ? "#000" : WHITE, padding: "3px 8px", cursor: "pointer", fontSize: 9, fontWeight: 900, letterSpacing: 1 }}>
+                        {m}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}

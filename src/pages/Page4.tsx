@@ -21,9 +21,9 @@ const H1 = { fontFamily: "'Cinzel',serif", color: GOLD, letterSpacing: 5, textTr
 const Card = (x?) => ({ background: "#0a0a0a", border: `1px solid ${GOLDDIM}`, borderRadius: 0, padding: 18, ...(x || {}) });
 
 const STRIPE = {
-  basic: "https://buy.stripe.com/test_basic",
-  pro: "https://buy.stripe.com/test_pro",
-  studio: "https://buy.stripe.com/test_studio",
+  basic: "https://buy.stripe.com/4gM5kFaVYfjN7EX0vMafS00",
+  pro: "https://buy.stripe.com/14A00l8NQ0oTbVd3HYafS01",
+  studio: "https://buy.stripe.com/fZubJ35BE3B53oHdiyafS02",
 };
 
 interface PageProps {
