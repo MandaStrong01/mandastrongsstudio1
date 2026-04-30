@@ -2993,7 +2993,7 @@ function P20() {
       <div style={{maxWidth:900,margin:"0 auto"}}>
         <div style={{fontSize:11,color:GOLD,letterSpacing:4,marginBottom:4,fontWeight:700}}>LEGAL</div>
         <h1 style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:26,fontWeight:900,letterSpacing:4,marginBottom:4}}>TERMS OF SERVICE & DISCLAIMER</h1>
-        <div style={{color:WHITE,fontSize:11,marginBottom:24,letterSpacing:2}}>EFFECTIVE MARCH 2026 · MANDASTRONG STUDIO LLC · mandastrongstudio2026.bolt.host</div>
+        <div style={{color:WHITE,fontSize:11,marginBottom:24,letterSpacing:2}}>EFFECTIVE MARCH 2026 · MANDASTRONG STUDIO LLC · MandaStrong1.Etsy.com</div>
         <div style={{background:"#050505",border:`2px solid ${GOLD}`,padding:"22px 26px",marginBottom:20}}>
           <div style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:16,fontWeight:900,letterSpacing:3,marginBottom:4,textAlign:"center"}}>TERMS OF SERVICE</div>
           <div style={{color:WHITE,fontSize:11,textAlign:"center",letterSpacing:2,marginBottom:18,paddingBottom:14,borderBottom:`1px solid ${GOLDDIM}`}}>By using MandaStrong Studio you agree to be legally bound by these Terms.</div>
