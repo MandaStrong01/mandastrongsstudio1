@@ -354,9 +354,9 @@ function ToolPanel({ tool, onClose, onSave }) {
       } else {
         prompt = `You are a professional at MandaStrong Studio cinema AI platform. Tool: "${tool}".\n\nUser request: ${describe}\n\nGenerate complete, detailed, professional, production-ready content.`;
       }
-      const res = await fetch("https://api.anthropic.com/v1/messages",{
+      const res = await fetch("https://njqfexhltjwpgvctmyaw.supabase.co/functions/v1/claude-proxy",{
         method:"POST",
-        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
+        headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,
           messages:[{role:"user",content:prompt}]})
       });
@@ -767,9 +767,9 @@ Use all of this. Build each act with different compositions — establish wide, 
 Return ONLY the function starting with exactly:
 function renderFilm(ctx, W, H, t, sec, totalSec, beatNow) {`;
 
-      const res = await fetch("https://api.anthropic.com/v1/messages",{
+      const res = await fetch("https://njqfexhltjwpgvctmyaw.supabase.co/functions/v1/claude-proxy",{
         method:"POST",
-        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
+        headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,messages:[{role:"user",content:filmPrompt}]})
       });
       const d = await res.json();
@@ -793,9 +793,9 @@ function renderFilm(ctx, W, H, t, sec, totalSec, beatNow) {`;
       }catch(e){
         addLog("Compile error: "+e.message+". Retrying...");
         // Retry with simpler prompt
-        const simple = await fetch("https://api.anthropic.com/v1/messages",{
+        const simple = await fetch("https://njqfexhltjwpgvctmyaw.supabase.co/functions/v1/claude-proxy",{
           method:"POST",
-          headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
+          headers:{"Content-Type":"application/json"},
           body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,
             messages:[{role:"user",content:`Write function renderFilm(ctx,W,H,t,sec,totalSec,beatNow) that renders a cinematic music video. Scene: "${sceneDesc}". Song: ${config.title}. Mood: ${config.mood}. t=0-1 overall progress. Draw ocean waves, a silhouetted figure on a windowsill with guitar, moonlight, candle glow, dark room. Use acts based on t. Return only the function.`}]})
         });
@@ -1398,7 +1398,7 @@ function P6Voice({ onSave }) {
     if(!text.trim())return;
     setLoading(true);setProcessed("");setSaved(false);
     try{
-      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
+      const res=await fetch("https://njqfexhltjwpgvctmyaw.supabase.co/functions/v1/claude-proxy",{method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,messages:[{role:"user",content:`You are a speech coach preparing text for TTS. Speaker: ${selected.name} — ${selected.style}. Break into short sentences, add commas for natural pauses, spell out numbers. Output ONLY the reformatted text:\n\n${text}`}]})});
       const d=await res.json();
       const out=d.content&&d.content[0]?d.content[0].text.trim():text;
@@ -1662,9 +1662,9 @@ Now write the complete drawFrame function for the scene above. Use everything th
 Return ONLY the JavaScript function starting with:
 function drawFrame(ctx, W, H, t, sec) {`;
 
-      const res=await fetch("https://api.anthropic.com/v1/messages",{
+      const res=await fetch("https://njqfexhltjwpgvctmyaw.supabase.co/functions/v1/claude-proxy",{
         method:"POST",
-        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
+        headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,
           messages:[{role:"user",content:directorPrompt}]})
       });
@@ -1686,9 +1686,9 @@ function drawFrame(ctx, W, H, t, sec) {`;
         drawFn=new Function("ctx","W","H","t","sec",body);
       }catch(e){
         addLog("Retrying with simplified renderer...");
-        const retry=await fetch("https://api.anthropic.com/v1/messages",{
+        const retry=await fetch("https://njqfexhltjwpgvctmyaw.supabase.co/functions/v1/claude-proxy",{
           method:"POST",
-          headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
+          headers:{"Content-Type":"application/json"},
           body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,
             messages:[{role:"user",content:`Write a cinematic canvas renderer for: "${prompt}". Function: function drawFrame(ctx,W,H,t,sec). Use photorealistic gradients, proper human figures with skin tones, depth, lighting. Return only the function.`}]})
         });
@@ -2495,9 +2495,9 @@ function P16({ go, timeline, setRendered, mediaLib, setMediaLib, user, filmDurat
         const scenePrompt=sceneName.replace(/\.[^.]+$/,"").replace(/_/g," ").replace(/\d+s$/,"").trim();
         log("  Regenerating: "+scenePrompt.slice(0,40)+"...");
         try{
-          const res=await fetch("https://api.anthropic.com/v1/messages",{
+          const res=await fetch("https://njqfexhltjwpgvctmyaw.supabase.co/functions/v1/claude-proxy",{
             method:"POST",
-            headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
+            headers:{"Content-Type":"application/json"},
             body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,
               messages:[{role:"user",content:"Write a JavaScript canvas function for this cinematic scene: \""+scenePrompt+"\". Function: function drawFrame(ctx,W,H,t,sec). Use gradients, colours, depth, atmosphere. t=0-1 progress. Return only the function."}]})
           });
@@ -2890,9 +2890,9 @@ function P19() {
     setGenerating(idx);
     const t = tuts[idx];
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages",{
+      const res = await fetch("https://njqfexhltjwpgvctmyaw.supabase.co/functions/v1/claude-proxy",{
         method:"POST",
-        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
+        headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,
           messages:[{role:"user",content:`Write a JavaScript canvas drawFrame function for a tutorial video. Scene: A real human teacher (professional woman, 35, warm smile, dark blazer, light skin tone rgba(230,185,145,1)) sits at a modern desk facing camera. Behind her: a large screen showing "${t.t}". She speaks directly to camera with confidence and warmth. Studio lighting — soft key light from left, fill from right. Clean professional background. Animated text lower-third shows "TUTORIAL ${t.n}: ${t.t.toUpperCase()}". Camera slowly pushes in over duration. Function: function drawFrame(ctx,W,H,t,sec). W=1280 H=720. Return only the function.`}]})
       });
@@ -3045,9 +3045,9 @@ function P21() {
     setInp("");setLoading(true);
     setMsgs(p=>[...p,{role:"user",content:question}]);
     try{
-      const r=await fetch("https://api.anthropic.com/v1/messages",{
+      const r=await fetch("https://njqfexhltjwpgvctmyaw.supabase.co/functions/v1/claude-proxy",{
         method:"POST",
-        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
+        headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,
           system:"You are the MandaStrong Studio AI Production Assistant — a professional, knowledgeable, and concise guide for a world-class cinema intelligence platform. The platform has 23 pages, 600+ AI tools, 8K export, films up to 3 hours, three subscription plans ($20/$30/$50 per month with 7-day free trial on Studio). Speak with authority and warmth. Be specific and practical. Never use filler phrases. Answer as a seasoned film production professional would.",
           messages:[...msgs.filter(m=>m.role!=="system"),{role:"user",content:question}]})
@@ -3256,7 +3256,7 @@ export default function App() {
     // Security: add meta CSP and security tags
     const cspMeta = document.createElement("meta");
     cspMeta.httpEquiv = "Content-Security-Policy";
-    cspMeta.content = "default-src 'self' https://api.anthropic.com https://fonts.googleapis.com https://fonts.gstatic.com https://buy.stripe.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' https://api.anthropic.com;";
+    cspMeta.content = "default-src 'self' https://mandastrongstudio2026.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com https://buy.stripe.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' https://mandastrongstudio2026.supabase.co;";
     document.head.appendChild(cspMeta);
     const referrerMeta = document.createElement("meta");
     referrerMeta.name = "referrer";
