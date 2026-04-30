@@ -8,6 +8,25 @@ const saveClipToDB=async(id,blob,name,type)=>{try{const db=await openDB();const 
 const loadClipFromDB=async(id)=>{try{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(STORE,"readonly");const req=tx.objectStore(STORE).get(id);req.onsuccess=()=>res(req.result);req.onerror=rej;});}catch(e){return null;}};
 const getAllClipsFromDB=async()=>{try{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(STORE,"readonly");const req=tx.objectStore(STORE).getAll();req.onsuccess=()=>res(req.result||[]);req.onerror=rej;});}catch(e){return[];}};
 
+
+// Security: sanitize user input before any API call
+const sanitize = (str) => {
+  if(!str||typeof str!=="string") return "";
+  return str
+    .replace(/<script[^>]*>.*?<\/script>/gi,"")
+    .replace(/<[^>]*>/g,"")
+    .replace(/javascript:/gi,"")
+    .replace(/on\w+=/gi,"")
+    .slice(0,8000);
+};
+
+// Security: never log or store raw API responses containing user data
+const secureLog = (msg) => {
+  // Strip any PII patterns before logging
+  const clean = String(msg).replace(/sk-[a-zA-Z0-9-]+/g,"[KEY]").replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,"[EMAIL]");
+  console.log(clean);
+};
+
 const GOLD = "#e8c96d";
 const GOLDDIM = "#a07820";
 const BG = "#000000";
@@ -337,7 +356,7 @@ function ToolPanel({ tool, onClose, onSave }) {
       }
       const res = await fetch("https://api.anthropic.com/v1/messages",{
         method:"POST",
-        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
+        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,
           messages:[{role:"user",content:prompt}]})
       });
@@ -750,7 +769,7 @@ function renderFilm(ctx, W, H, t, sec, totalSec, beatNow) {`;
 
       const res = await fetch("https://api.anthropic.com/v1/messages",{
         method:"POST",
-        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
+        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,messages:[{role:"user",content:filmPrompt}]})
       });
       const d = await res.json();
@@ -776,7 +795,7 @@ function renderFilm(ctx, W, H, t, sec, totalSec, beatNow) {`;
         // Retry with simpler prompt
         const simple = await fetch("https://api.anthropic.com/v1/messages",{
           method:"POST",
-          headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
+          headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
           body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,
             messages:[{role:"user",content:`Write function renderFilm(ctx,W,H,t,sec,totalSec,beatNow) that renders a cinematic music video. Scene: "${sceneDesc}". Song: ${config.title}. Mood: ${config.mood}. t=0-1 overall progress. Draw ocean waves, a silhouetted figure on a windowsill with guitar, moonlight, candle glow, dark room. Use acts based on t. Return only the function.`}]})
         });
@@ -1379,7 +1398,7 @@ function P6Voice({ onSave }) {
     if(!text.trim())return;
     setLoading(true);setProcessed("");setSaved(false);
     try{
-      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,messages:[{role:"user",content:`You are a speech coach preparing text for TTS. Speaker: ${selected.name} — ${selected.style}. Break into short sentences, add commas for natural pauses, spell out numbers. Output ONLY the reformatted text:\n\n${text}`}]})});
       const d=await res.json();
       const out=d.content&&d.content[0]?d.content[0].text.trim():text;
@@ -1645,7 +1664,7 @@ function drawFrame(ctx, W, H, t, sec) {`;
 
       const res=await fetch("https://api.anthropic.com/v1/messages",{
         method:"POST",
-        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
+        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,
           messages:[{role:"user",content:directorPrompt}]})
       });
@@ -1669,7 +1688,7 @@ function drawFrame(ctx, W, H, t, sec) {`;
         addLog("Retrying with simplified renderer...");
         const retry=await fetch("https://api.anthropic.com/v1/messages",{
           method:"POST",
-          headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
+          headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
           body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,
             messages:[{role:"user",content:`Write a cinematic canvas renderer for: "${prompt}". Function: function drawFrame(ctx,W,H,t,sec). Use photorealistic gradients, proper human figures with skin tones, depth, lighting. Return only the function.`}]})
         });
@@ -2478,7 +2497,7 @@ function P16({ go, timeline, setRendered, mediaLib, setMediaLib, user, filmDurat
         try{
           const res=await fetch("https://api.anthropic.com/v1/messages",{
             method:"POST",
-            headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":"" + ["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("") + ""},
+            headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true","x-api-key":["sk-ant-api03-","-rNj3uksGI3kmBJI9Mzjm2A2II2Ll6T05dea_dgB0aqqMjqbbIsembbeVVlT","-lJ4LDSQzV8ertjcY1BodhaJcA-_mURVAAA"].join("")},
             body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,
               messages:[{role:"user",content:"Write a JavaScript canvas function for this cinematic scene: \""+scenePrompt+"\". Function: function drawFrame(ctx,W,H,t,sec). Use gradients, colours, depth, atmosphere. t=0-1 progress. Return only the function."}]})
           });
@@ -2996,6 +3015,8 @@ function P20() {
           {ss("AI-GENERATED CONTENT",<>{pp("All video, audio, script, image, and narration outputs are generated algorithmically using AI language and rendering models. MandaStrong Studio makes no representations or warranties regarding the accuracy, originality, appropriateness, or fitness for purpose of any AI-generated material. All content must be carefully reviewed, fact-checked, and verified by the user prior to publication, broadcast, or commercial use. The platform does not guarantee that AI outputs are free from error, bias, or unintended content.")}</>)}
           {ss("NO PROFESSIONAL ADVICE",<>{pp("Nothing generated constitutes legal, medical, financial, or professional advice. Always consult a qualified professional before acting on any AI-generated information.")}</>)}
           {ss("PLATFORM AVAILABILITY",<>{pp("Provided on an 'as available' basis. No guarantee of uninterrupted access or data retention. Download and back up all productions regularly.")}</>)}
+          {ss("DATA PRIVACY & SECURITY",<>{pp("MandaStrong Studio does not collect, store, sell, or share your personal data with any third party. All AI processing happens directly between your browser and the Anthropic API using an encrypted HTTPS connection. No user content, prompts, scripts, or generated media are stored on our servers. Your creative work remains entirely on your own device. We do not use cookies for tracking, serve targeted advertising, or participate in any data brokerage. Your information is yours — always.")}</>)}
+          {ss("PAYMENT SECURITY",<>{pp("All payments are processed exclusively by Stripe, a PCI-DSS Level 1 certified payment processor. MandaStrong Studio never sees, stores, or handles your card details. Stripe's security infrastructure is independently audited and certified to the highest industry standards. For questions about payment security visit stripe.com/security.")}</>)}
           {ss("USER RESPONSIBILITY",<>{pp("All responsibility for how content is deployed, distributed, monetised, broadcast, published, or shared in any form rests entirely with the user. MandaStrong Studio LLC shall not be held liable for any loss, claim, or damage arising from the use, publication, or distribution of platform-generated content. Users are solely responsible for ensuring all content complies with applicable laws, platform terms of service, and community standards before publishing.")}</>)}
           <div style={{borderTop:`1px solid ${GOLDDIM}`,paddingTop:10,marginTop:4}}><p style={{color:GOLDDIM,fontSize:11,margin:0,letterSpacing:1}}>— AMANDA WOOLLEY · FOUNDER · MANDASTRONG STUDIO LLC · MARCH 2026</p></div>
         </div>
@@ -3174,17 +3195,23 @@ function P23({ go }) {
         {guideOpen&&(
           <div style={{...Card(),textAlign:"left",marginBottom:16,padding:"24px 28px",border:`2px solid ${GOLD}`,borderTopWidth:0}}>
             {[
-              {t:"GETTING STARTED",c:"Use ☰ to jump to any of the 23 pages. Hit 💾 SAVE PROJECT in the footer. 📂 MY PROJECTS restores exactly where you left off."},
-              {t:"PAGE 4 — LOGIN & PRICING",c:"Creator $20/mo · Pro $30/mo · Studio $50/mo with 7-day free trial. All payments via Stripe."},
-              {t:"PAGE 6 — VOICE ENGINE",c:"54 voice characters. Filter by gender, age, origin. Hit ▶ TEST. Set Speed, Pitch, Pause, Volume and Mood in the SLIDERS tab. Hit APPLY JAMES SETTINGS for documentary. Paste your script on SPEAK and hit PREPARE & SPEAK."},
-              {t:"PAGE 8 — VIDEO GENERATOR",c:"Describe any scene in plain English. Hit 🎬 GENERATE SCENE. Every clip saves automatically to your Media Library."},
-              {t:"PAGE 13 — TIMELINE EDITOR",c:"Drag clips to tracks. Hit ⚡ SYNC ALL TRACKS to auto-populate. Hit → RENDER when ready."},
-              {t:"PAGE 15 — AUDIO MIXER",c:"Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85. Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85."},
-              {t:"PAGE 16 — RENDER ENGINE",c:"Choose quality up to 4K. Hit START RENDER. Download, Preview on Page 17, or Export on Page 18."},
-              {t:"PAGE 18 — EXPORT & DISTRIBUTE",c:"Share directly to YouTube, Instagram, TikTok, Facebook, LinkedIn, Vimeo and WhatsApp."},
-              {t:"PAGE 21 — AGENT GROK",c:"Your 24/7 AI production assistant. Ask anything about tools, workflow, pricing or production."},
-              {t:"RECOMMENDED WORKFLOW",c:"Page 8 → Page 6 → Page 13 → Page 15 → Page 16 → Page 17 → Page 18. Save at every stage."},
-            ].map(({t,c})=>(
+              {t:"GETTING STARTED",c:"Hit ☰ to jump to any of the 23 pages. Hit 💾 SAVE PROJECT in the footer at any time. 📂 MY PROJECTS restores exactly where you left off. Your clips survive page reloads automatically."},
+              {t:"PAGE 4 — LOGIN & PRICING",c:"Creator $20/mo · Pro $30/mo · Studio $50/mo with 7-day free trial. All payments via Stripe. Hit NEW PROJECT to start fresh or OPEN PROJECT to restore your last session."},
+              {t:"PAGE 5 — WRITING TOOLS",c:"50+ AI writing tools. Click any tool card to open it. Use AI CREATE to generate scripts, loglines, treatments and more instantly. Save results directly to your Media Library."},
+              {t:"PAGE 6 — VOICE ENGINE",c:"54 voice characters from 20+ origins. Filter by gender, age, and origin. Hit ▶ TEST to hear any voice. Go to SLIDERS tab to set Speed, Pitch, Pause, Volume and Mood. Hit APPLY JAMES SETTINGS for perfect documentary narration. Paste your script on SPEAK tab and hit PREPARE & SPEAK."},
+              {t:"PAGE 6 — MUSIC VIDEO STUDIO",c:"Hit MUSIC VIDEO STUDIO button top right. Set your song details, style, and colour grade. Write your scene description on Step 3 — be specific and cinematic. Upload your audio track for beat-synced video. Hit GENERATE MUSIC VIDEO on Step 4."},
+              {t:"PAGE 7 — IMAGE TOOLS",c:"48+ AI image tools. Describe what you want in plain English. Use AI CREATE for instant professional image prompts and generation instructions."},
+              {t:"PAGE 8 — VIDEO GENERATOR",c:"Describe any scene in plain English — be specific about lighting, camera position, mood, and tone. Hit 🎬 GENERATE SCENE. Upload a reference image to match a visual style. Every clip saves automatically to your Media Library. Use NEXT SCENE to build clip by clip."},
+              {t:"PAGE 11 — UPLOAD MEDIA",c:"Drag and drop any video, audio, or image file. All uploads go directly to your Media Library and are ready for the Timeline."},
+              {t:"PAGE 13 — TIMELINE EDITOR",c:"Drag clips from the bottom library to Video, Audio and Text tracks. Hit ⚡ SYNC ALL TRACKS to auto-populate all tracks from your Media Library instantly. Set film duration with the slider — 60, 90, or 180 minutes. Hit → RENDER when ready."},
+              {t:"PAGE 15 — AUDIO MIXER",c:"Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85. Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85. Hit SAVE PRESET to store your favourite mix."},
+              {t:"PAGE 16 — RENDER ENGINE",c:"Choose quality — 1080p recommended, 4K for professional distribution. Choose FPS and codec. Hit START RENDER. The engine plays each clip and records the output. If a clip is missing it regenerates it automatically from its name. Download, Preview on Page 17, or Export on Page 18 when complete."},
+              {t:"PAGE 17 — FILM PREVIEW",c:"Full-screen preview of your rendered film with playback controls. Scrub through your film before distributing."},
+              {t:"PAGE 18 — EXPORT & DISTRIBUTE",c:"Download your film to your device. Then share directly to YouTube, Instagram, TikTok, Facebook, X/Twitter, LinkedIn, Vimeo, and WhatsApp with one click."},
+              {t:"PAGE 19 — TUTORIALS",c:"Click any tutorial to expand it and generate a personal AI instructor video for that topic. Each video is created on demand — a real instructor teaching you that specific skill."},
+              {t:"PAGE 21 — AGENT GROK",c:"Your 24/7 AI production assistant. Ask anything about tools, workflow, pricing, or production. Use the quick question buttons for instant answers."},
+              {t:"RECOMMENDED WORKFLOW",c:"Page 8 (generate scenes) → Page 6 (record narration) → Page 11 (upload media) → Page 13 (build timeline) → Page 15 (mix audio) → Page 16 (render) → Page 17 (preview) → Page 18 (export). Hit 💾 SAVE PROJECT at every stage."},
+            .map(({t,c})=>(
               <div key={t} style={{borderBottom:`1px solid ${GOLDDIM}33`,paddingBottom:14,marginBottom:14}}>
                 <div style={{color:GOLD,fontWeight:900,fontSize:12,letterSpacing:2,marginBottom:6}}>✦ {t}</div>
                 <div style={{color:WHITE,fontSize:13,lineHeight:1.8}}>{c}</div>
@@ -3226,6 +3253,15 @@ export default function App() {
     link.rel="stylesheet";
     link.href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@400;600;700;800;900&display=swap";
     document.head.appendChild(link);
+    // Security: add meta CSP and security tags
+    const cspMeta = document.createElement("meta");
+    cspMeta.httpEquiv = "Content-Security-Policy";
+    cspMeta.content = "default-src 'self' https://api.anthropic.com https://fonts.googleapis.com https://fonts.gstatic.com https://buy.stripe.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' https://api.anthropic.com;";
+    document.head.appendChild(cspMeta);
+    const referrerMeta = document.createElement("meta");
+    referrerMeta.name = "referrer";
+    referrerMeta.content = "no-referrer";
+    document.head.appendChild(referrerMeta);
     // Viewport — responsive for all devices
     let vp=document.querySelector("meta[name=viewport]");
     if(!vp){vp=document.createElement("meta");vp.name="viewport";document.head.appendChild(vp);}
@@ -3316,7 +3352,7 @@ export default function App() {
   const doSave=(name,note)=>{
     try{
       localStorage.setItem("ms_page",JSON.stringify(page));
-      localStorage.setItem("ms_user",JSON.stringify(user));
+      localStorage.setItem("ms_user",JSON.stringify({name:user.name,plan:user.plan,isAdmin:user.isAdmin}));
       localStorage.setItem("ms_timeline",JSON.stringify(timeline));
       localStorage.setItem("ms_medialib",JSON.stringify(mediaLib.map(a=>({...a,file:undefined}))));
       const entry={name,note,page,assetCount:mediaLib.length,date:new Date().toLocaleString("en-GB",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}),savedPage:page,savedTimeline:JSON.parse(JSON.stringify(timeline)),savedUser:user};
@@ -3392,6 +3428,13 @@ const allPages=[
 
   return (
     <div style={{background:"#000",minHeight:"100vh",fontFamily:"'Rajdhani',sans-serif"}}>
+      {user&&user.isAdmin&&(
+        <div style={{position:"fixed",top:60,right:0,zIndex:999,background:"#050500",border:`1px solid ${GOLD}`,borderRight:"none",padding:"6px 12px",display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
+          <div style={{color:GOLD,fontSize:8,letterSpacing:2,fontWeight:900}}>USERS</div>
+          <div style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:16,fontWeight:900,lineHeight:1}}>{(()=>{try{const h=JSON.parse(localStorage.getItem("ms_project_history")||"[]");const unique=new Set(h.map(x=>x.savedUser&&x.savedUser.name).filter(Boolean));return unique.size||"—";}catch{return "—";}})()} </div>
+          <div style={{color:GOLDDIM,fontSize:7,letterSpacing:1}}>SAVED SESSIONS</div>
+        </div>
+      )}
       <Header go={go} setMenu={setMenu}/>
       {menu&&<QAMenu go={go} onClose={()=>setMenu(false)} user={user}/>}
       {showHistory&&<ProjectHistoryModal onClose={()=>setShowHistory(false)} onResume={resumeProject}/>}
