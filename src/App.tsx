@@ -1538,6 +1538,28 @@ function P6Voice({ onSave }) {
   );
 }
 
+
+// Cinema Engine techniques — defined as string to avoid Babel parsing
+const CINEMA_TECHNIQUES = [
+  "OCEAN: 10 animated wave layers. Each layer: const wg=ctx.createLinearGradient(0,H*0.55,0,H); wg.addColorStop(0,rgba deep blue); wg.addColorStop(1,rgba near black); ctx.beginPath; moveTo; lineTo loop with Math.sin(x*0.007+sec*(0.2+w*0.07)+w)*18; closePath; fill.",
+  "MOON: const mg=ctx.createRadialGradient(moonX,moonY,0,moonX,moonY,H*0.1); addColorStop(0,rgba(255,255,245,1)); addColorStop(0.3,rgba(240,235,210,0.7)); addColorStop(1,rgba(0,0,0,0)); fillStyle=mg; fillRect covering sky.",
+  "CANDLE: const flk=0.93+Math.sin(sec*9.1)*0.05; const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,H*0.28*flk); addColorStop(0,rgba(255,255,200,0.95)); addColorStop(0.2,rgba(255,180,40,0.7)); addColorStop(1,rgba(0,0,0,0)); fillStyle=cg; fillRect(0,0,W,H).",
+  "HUMAN FIGURE: const hh=H*0.32,hx=W*0.45,hy=H*0.65. Shadow: radialGradient ellipse. Legs: fillRect rgba(30,30,60). Torso: fillRect with linearGradient clothing. Arms: fillRect rgba(220,170,130,0.95). Neck: fillRect skin tone. Head: ellipse rgba(235,185,145). Hair: arc path dark. Eyes: two small ellipses. Mouth: arc stroke.",
+  "CURTAINS: ctx.beginPath; moveTo top; bezierCurveTo with Math.sin(sec*0.8)*25 sway; stroke rgba(200,190,170,0.5).",
+  "NIGHT SKY: linearGradient rgb(2,4,15) to rgb(8,20,55). Stars: 200 dots using fillRect at (i*173)%W,(i*97)%H with sin flicker.",
+  "VIGNETTE: createRadialGradient W/2,H/2 inner 0 opacity to outer rgba(0,0,0,0.92). fillRect(0,0,W,H).",
+  "LETTERBOX: fillStyle black; fillRect(0,0,W,H*0.074); fillRect(0,H*0.926,W,H*0.074).",
+  "COLOUR GRADE: fillStyle rgba(0,12,35,0.07); fillRect(0,0,W,H). Then rgba(18,4,0,0.05); fillRect(0,H*0.6,W,H*0.4).",
+  "PARALLAX: ctx.save(); ctx.translate(-t*W*0.015,0); draw far; ctx.restore(). Mid: -t*W*0.035. Near: -t*W*0.07.",
+  "HORROR: darkness overlay rgba(0,0,0,0.15), red tint rgba(60,0,0,0.08), flicker Math.sin(sec*7.3), deep vignette.",
+  "NOIR: near-black base, venetian blind strips alternating light/dark, rain lines, heavy vignette 0.95.",
+  "B&W: after scene ctx.save(); ctx.globalCompositeOperation=saturation; fillStyle rgba(0,0,0,1); fillRect; ctx.restore().",
+  "CITY: 20 building rects varying heights, window grids with random lit rgba(255,240,180) cells.",
+  "FIRE: 6 overlapping radialGradients orange/yellow at varying heights animated with Math.sin(sec*3+f).",
+  "RAIN: 150 angled strokeStyle lines at rgba(180,200,220,0.3) moving with sec.",
+  "CAMERA ZOOM: ctx.translate(W/2,H/2); ctx.scale(1+t*0.04,1+t*0.04); ctx.translate(-W/2,-H/2).",
+].join(" | ");
+
 function P8VideoGenerator({ onSave, user, filmDuration, setFilmDuration }) {
   const canvasRef=useRef(null);
   const videoRef=useRef(null);
@@ -1588,7 +1610,7 @@ function P8VideoGenerator({ onSave, user, filmDuration, setFilmDuration }) {
 The user has uploaded a reference image. Match its visual style, colour palette, lighting mood, and composition as closely as possible.`
         : "";
 
-      const directorPrompt=`You are the MandaStrong Cinema Engine powering a global professional film platform. Write a complete JavaScript drawFrame function for this scene.
+      const directorPrompt=`You are the MandaStrong Cinema Engine powering a global professional film platform. Write a complete JavaScript drawFrame function for this scene. Use these exact canvas techniques: ${CINEMA_TECHNIQUES}.
 
 SCENE: "${prompt}"
 DURATION: ${duration} seconds${refInstruction}
