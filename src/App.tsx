@@ -1588,53 +1588,111 @@ function P8VideoGenerator({ onSave, user, filmDuration, setFilmDuration }) {
 The user has uploaded a reference image. Match its visual style, colour palette, lighting mood, and composition as closely as possible.`
         : "";
 
-      const directorPrompt=`You are the MandaStrong Cinema Engine. Write JavaScript canvas rendering code that creates a CINEMATIC, PHOTOREALISTIC scene.
+      const directorPrompt=`You are the MandaStrong Cinema Engine — a professional cinematic canvas renderer powering a global film platform. Your output must be STUNNING for ANY scene a user describes — urban, rural, space, underwater, historical, fantasy, documentary, music video, or anything else.
 
-SCENE: "${prompt}"
-DURATION: ${duration} seconds${refInstruction}
+Write function drawFrame(ctx, W, H, t, sec) where t=0-1 progress, sec=current second, W=1920, H=1080.
 
-Write a function: function drawFrame(ctx, W, H, t, sec)
-Where t=0 to 1 (progress), sec=current second, W=1920, H=1080
+UNIVERSAL RENDERING RULES — apply these to EVERY scene:
 
-// CRITICAL REQUIREMENTS FOR PHOTOREALISTIC OUTPUT:
+════ BACKGROUNDS ════
+Detect scene type from the prompt and apply:
+- NIGHT SKY: const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,"rgb(2,4,15)"); g.addColorStop(0.5,"rgb(5,12,40)"); g.addColorStop(1,"rgb(8,20,55)"); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); // Add 200 stars: for(let i=0;i<200;i++){ctx.fillStyle=`rgba(255,255,255,${0.3+Math.sin(i*127+sec)*0.4})`; ctx.fillRect((i*173)%W,(i*97)%H,1,1);}
+- DAY SKY: const g=ctx.createLinearGradient(0,0,0,H*0.6); g.addColorStop(0,"rgb(15,60,150)"); g.addColorStop(0.6,"rgb(80,150,220)"); g.addColorStop(1,"rgb(180,215,245)"); ctx.fillStyle=g; ctx.fillRect(0,0,W,H*0.6);
+- SUNSET: const g=ctx.createLinearGradient(0,0,0,H*0.7); g.addColorStop(0,"rgb(20,10,40)"); g.addColorStop(0.3,"rgb(180,50,10)"); g.addColorStop(0.7,"rgb(240,130,20)"); g.addColorStop(1,"rgb(255,200,80)"); ctx.fillStyle=g; ctx.fillRect(0,0,W,H*0.7);
+- INTERIOR ROOM: const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,"rgb(8,5,3)"); g.addColorStop(1,"rgb(3,2,1)"); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+- SPACE: ctx.fillStyle="#000"; ctx.fillRect(0,0,W,H); for(let i=0;i<400;i++){const sz=Math.random()>0.97?2:1; ctx.fillStyle=`rgba(255,255,255,${0.2+Math.random()*0.8})`; ctx.fillRect((i*173.3)%W,(i*97.7)%H,sz,sz);}
+- UNDERWATER: const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,"rgb(0,40,80)"); g.addColorStop(1,"rgb(0,10,30)"); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); // Light shafts from above
 
-// LIGHTING - must be physically accurate:
-- Use multiple radialGradient light sources with proper falloff
-- Ambient occlusion: darker in corners and crevices
-- Rim lighting on figures: bright edge glow from light source direction
-- Specular highlights: bright spots on reflective surfaces
-- Volumetric light: god rays as semi-transparent gradients
+════ ENVIRONMENTS ════
+- OCEAN: for(let w=0;w<10;w++){const wg=ctx.createLinearGradient(0,H*0.55,0,H); wg.addColorStop(0,`rgba(${8+w*5},${25+w*10},${70+w*15},${0.5+w*0.05})`); wg.addColorStop(1,"rgba(2,8,25,1)"); ctx.fillStyle=wg; ctx.beginPath(); ctx.moveTo(0,H*0.58+w*12); for(let x=0;x<=W;x+=3){ctx.lineTo(x,H*0.58+w*12+Math.sin(x*0.007+sec*(0.2+w*0.07)+w*0.9)*18+Math.sin(x*0.02+sec*0.5)*7);} ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.fill();}
+- GROUND/GRASS: const gg=ctx.createLinearGradient(0,H*0.6,0,H); gg.addColorStop(0,"rgb(20,50,15)"); gg.addColorStop(1,"rgb(8,22,5)"); ctx.fillStyle=gg; ctx.fillRect(0,H*0.6,W,H*0.4);
+- DESERT: const dg=ctx.createLinearGradient(0,H*0.55,0,H); dg.addColorStop(0,"rgb(200,165,80)"); dg.addColorStop(1,"rgb(140,100,40)"); ctx.fillStyle=dg; ctx.fillRect(0,H*0.55,W,H*0.45);
+- SNOW: const sg=ctx.createLinearGradient(0,H*0.6,0,H); sg.addColorStop(0,"rgb(220,230,245)"); sg.addColorStop(1,"rgb(180,200,225)"); ctx.fillStyle=sg; ctx.fillRect(0,H*0.6,W,H*0.4); for(let s=0;s<60;s++){ctx.fillStyle="rgba(255,255,255,0.8)"; ctx.fillRect(((s*173+sec*30)%W),(( s*97+sec*20)%H),2,2);}
+- CITY: for(let b=0;b<20;b++){const bh=H*(0.15+Math.sin(b*1.7)*0.12); const bw=W*0.04; const bx=b*(W/20); const bg=ctx.createLinearGradient(bx,H*0.6-bh,bx+bw,H*0.6-bh); bg.addColorStop(0,"rgba(20,20,35,0.95)"); bg.addColorStop(1,"rgba(10,10,20,0.98)"); ctx.fillStyle=bg; ctx.fillRect(bx,H*0.6-bh,bw-2,bh+H*0.4); for(let wy=0;wy<8;wy++){for(let wx=0;wx<3;wx++){ctx.fillStyle=Math.sin(b*wx+wy+sec*0.1)>0.3?`rgba(255,240,180,${0.4+Math.random()*0.4})`:"rgba(10,10,20,0.9)"; ctx.fillRect(bx+wx*(bw/3)+2,H*0.6-bh+wy*(bh/9)+2,bw/3-3,bh/9-3);}}}
 
-// HUMANS - must look real:
-- Skin tones: use rgba with warm peachy tones e.g. rgba(220,170,130,1)
-- Face: oval for head, smaller oval for face area, dots for eyes, curve for lips
-- Hair: filled path with natural hair colours
-- Clothing: solid fills with shadow and highlight gradients
-- Body proportions: head=H*0.06, torso=H*0.2, legs=H*0.25
-- Cast shadows on ground beneath each figure
+════ LIGHT SOURCES ════
+- MOON: const mr=ctx.createRadialGradient(W*moonX,H*moonY,0,W*moonX,H*moonY,H*0.1); mr.addColorStop(0,"rgba(255,255,245,1)"); mr.addColorStop(0.3,"rgba(240,235,210,0.7)"); mr.addColorStop(1,"rgba(0,0,0,0)"); ctx.fillStyle=mr; ctx.fillRect(0,0,W,H*0.5);
+- SUN: const sr=ctx.createRadialGradient(W*0.7,H*0.2,0,W*0.7,H*0.2,H*0.35); sr.addColorStop(0,"rgba(255,255,200,1)"); sr.addColorStop(0.15,"rgba(255,220,80,0.8)"); sr.addColorStop(0.5,"rgba(255,140,20,0.3)"); sr.addColorStop(1,"rgba(0,0,0,0)"); ctx.fillStyle=sr; ctx.fillRect(0,0,W,H*0.6);
+- CANDLE: const flk=0.93+Math.sin(sec*9.1)*0.05+Math.sin(sec*13.7)*0.02; const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,H*0.28*flk); cg.addColorStop(0,"rgba(255,255,200,0.95)"); cg.addColorStop(0.2,"rgba(255,180,40,0.7)"); cg.addColorStop(0.6,"rgba(255,80,0,0.3)"); cg.addColorStop(1,"rgba(0,0,0,0)"); ctx.fillStyle=cg; ctx.fillRect(0,0,W,H);
+- FIRE: for(let f=0;f<6;f++){const fh=H*(0.12+Math.sin(sec*3+f)*0.04); const fg=ctx.createRadialGradient(fx+f*20,fy,0,fx+f*20,fy-fh,fh); fg.addColorStop(0,"rgba(255,255,150,0.9)"); fg.addColorStop(0.3,"rgba(255,150,20,0.7)"); fg.addColorStop(0.7,"rgba(255,40,0,0.4)"); fg.addColorStop(1,"rgba(0,0,0,0)"); ctx.fillStyle=fg; ctx.fillRect(fx+f*20-fh,fy-fh*1.5,fh*2,fh*1.5);}
+- NEON/CITY LIGHTS: for each neon: ctx.shadowColor=color; ctx.shadowBlur=20; ctx.fillStyle=color; draw text or rect; ctx.shadowBlur=0;
 
-// ENVIRONMENTS - must look real:
-- Sky: multi-stop gradient from deep colour at top to lighter at horizon
-- Ground/floor: textured with subtle noise pattern
-- Buildings: boxes with window grids, varying heights, perspective depth
-- Water: animated sine wave layers with transparency and reflection gradient
-- Fire/candles: animated flickering radialGradient in orange/yellow
-- Fog/atmosphere: semi-transparent overlay gradients
+════ HUMAN FIGURES ════
+Always draw realistic figures. Use these proportions (hh = figure height):
+const hh=H*0.32, hx=W*0.45, hy=H*0.65;
+// Shadow
+const shd=ctx.createRadialGradient(hx,hy+2,0,hx,hy+2,hh*0.2); shd.addColorStop(0,"rgba(0,0,0,0.5)"); shd.addColorStop(1,"rgba(0,0,0,0)"); ctx.fillStyle=shd; ctx.beginPath(); ctx.ellipse(hx,hy+2,hh*0.18,hh*0.05,0,0,Math.PI*2); ctx.fill();
+// Legs
+ctx.fillStyle="rgba(30,30,60,0.95)"; ctx.fillRect(hx-hh*0.09,hy-hh*0.1,hh*0.08,hh*0.3); ctx.fillRect(hx+hh*0.01,hy-hh*0.1,hh*0.08,hh*0.3);
+// Torso with clothing gradient
+const tg=ctx.createLinearGradient(hx-hh*0.14,hy-hh*0.52,hx+hh*0.14,hy-hh*0.52); tg.addColorStop(0,"rgba(40,60,100,0.95)"); tg.addColorStop(0.5,"rgba(60,90,140,1)"); tg.addColorStop(1,"rgba(30,50,90,0.95)"); ctx.fillStyle=tg; ctx.fillRect(hx-hh*0.14,hy-hh*0.52,hh*0.28,hh*0.44);
+// Arms (skin)
+ctx.fillStyle="rgba(220,170,130,0.95)"; ctx.fillRect(hx-hh*0.2,hy-hh*0.5,hh*0.07,hh*0.28); ctx.fillRect(hx+hh*0.13,hy-hh*0.5,hh*0.07,hh*0.28);
+// Neck
+ctx.fillStyle="rgba(210,165,125,0.95)"; ctx.fillRect(hx-hh*0.045,hy-hh*0.57,hh*0.09,hh*0.07);
+// Head
+const hfg=ctx.createRadialGradient(hx+hh*0.02,hy-hh*0.68,0,hx,hy-hh*0.66,hh*0.11); hfg.addColorStop(0,"rgba(235,185,145,1)"); hfg.addColorStop(0.7,"rgba(215,168,128,0.95)"); hfg.addColorStop(1,"rgba(190,145,105,0.8)"); ctx.fillStyle=hfg; ctx.beginPath(); ctx.ellipse(hx,hy-hh*0.67,hh*0.095,hh*0.115,0,0,Math.PI*2); ctx.fill();
+// Hair
+ctx.fillStyle="rgba(35,22,8,0.95)"; ctx.beginPath(); ctx.ellipse(hx,hy-hh*0.75,hh*0.105,hh*0.065,0,Math.PI,Math.PI*2); ctx.fill();
+// Eyes
+ctx.fillStyle="rgba(25,15,10,0.9)"; ctx.beginPath(); ctx.ellipse(hx-hh*0.032,hy-hh*0.685,hh*0.016,hh*0.011,0,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.ellipse(hx+hh*0.032,hy-hh*0.685,hh*0.016,hh*0.011,0,0,Math.PI*2); ctx.fill();
+// Mouth
+ctx.strokeStyle="rgba(160,90,70,0.8)"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(hx,hy-hh*0.638,hh*0.025,0.1,Math.PI-0.1); ctx.stroke();
 
-// DEPTH & PERSPECTIVE:
-- Far objects: smaller, less saturated, more hazy
-- Near objects: larger, sharper, more saturated
+════ WEATHER ════
+- RAIN: for(let r=0;r<150;r++){ctx.strokeStyle="rgba(180,200,220,0.3)"; ctx.lineWidth=0.8; ctx.beginPath(); const rx=((r*173+sec*250)%W); const ry=((r*97+sec*400)%(H+50))-50; ctx.moveTo(rx,ry); ctx.lineTo(rx+5,ry+22); ctx.stroke();}
+- FOG: const fog=ctx.createLinearGradient(0,H*0.35,0,H*0.7); fog.addColorStop(0,"rgba(200,210,220,0)"); fog.addColorStop(0.5,"rgba(200,210,220,0.15)"); fog.addColorStop(1,"rgba(200,210,220,0)"); ctx.fillStyle=fog; ctx.fillRect(0,H*0.35,W,H*0.35);
+- SNOW FALLING: for(let s=0;s<100;s++){ctx.fillStyle="rgba(255,255,255,0.7)"; ctx.beginPath(); ctx.arc(((s*137+sec*40)%W),((s*79+sec*60)%H),1.5,0,Math.PI*2); ctx.fill();}
 
-// CINEMATIC MOTION:
-- Camera parallax: far elements move slower than near ones
-- Breathing: subtle scale oscillation using Math.sin(sec*0.5)
-- Wind: leaves/particles drift with sine curves
-- Light flicker: candles/fires use Math.sin(sec*7)
+════ CAMERA ════
+Always include parallax. Apply BEFORE drawing each layer:
+- Far bg: ctx.save(); ctx.translate(-t*W*0.015,0); [draw far elements]; ctx.restore();
+- Mid: ctx.save(); ctx.translate(-t*W*0.035,0); [draw mid elements]; ctx.restore();
+- Near: ctx.save(); ctx.translate(-t*W*0.07,0); [draw near elements]; ctx.restore();
+Slow zoom: ctx.save(); ctx.translate(W/2,H/2); ctx.scale(1+t*0.04,1+t*0.04); ctx.translate(-W/2,-H/2);
 
-COLOUR GRADING (apply last):
-- Warm scenes: slight orange overlay at 0.08 opacity
-- Night scenes: blue overlay
-- Cinematic: teal shadows, orange highlights
+════ POST-PROCESSING ════
+Apply EVERY frame in this order:
+1. VIGNETTE: const vig=ctx.createRadialGradient(W/2,H/2,W*0.12,W/2,H/2,W*0.88); vig.addColorStop(0,"rgba(0,0,0,0)"); vig.addColorStop(1,"rgba(0,0,0,0.92)"); ctx.fillStyle=vig; ctx.fillRect(0,0,W,H);
+2. LETTERBOX: ctx.fillStyle="#000"; ctx.fillRect(0,0,W,H*0.074); ctx.fillRect(0,H*0.926,W,H*0.074);
+3. COLOUR GRADE: ctx.fillStyle="rgba(0,12,35,0.07)"; ctx.fillRect(0,0,W,H); ctx.fillStyle="rgba(18,4,0,0.05)"; ctx.fillRect(0,H*0.6,W,H*0.4);
+4. FILM GRAIN: for(let g=0;g<25;g++){ctx.fillStyle=`rgba(${Math.random()>0.5?160:20},${Math.random()>0.5?160:20},${Math.random()>0.5?160:20},0.009)`; ctx.fillRect(Math.random()*W,Math.random()*H,1,1);}
+
+// GENRE & TONE GRADES
+// Detect genre/tone from prompt and apply:
+// HORROR: Heavy darkness, desaturate, red tint rgba(60,0,0,0.08), deep vignette 0.97, flicker shadows, occasional lightning flash, blood red moon, violent candle flicker, bare tree strokes, low ground fog
+// COMEDY: Bright saturated colours, yellow tint rgba(255,240,0,0.03), reduced vignette 0.5, bouncy motion Math.abs(Math.sin(sec*3)), bold primary clothing colours, high key lighting
+// ROMANCE: Warm grade rgba(255,180,120,0.06), bokeh circles scattered rgba(255,220,180,0.04), soft vignette 0.7, warm candle glow, fairy light particles
+// ACTION/THRILLER: High contrast, cool blue rgba(0,8,20,0.08), camera shake ctx.translate(Math.sin(sec*15)*2,0), fast motion blur ghost at 0.3 opacity
+// SCI-FI: Teal/cyan rgba(0,40,60,0.08), lens flares, grid floor lines, holographic text with ctx.shadowColor="#00ffff" shadowBlur=15, upward particle drift
+// DOCUMENTARY: Natural minimal grade rgba(255,200,150,0.03), steady handheld drift Math.sin(sec*0.3)*2, clean vignette 0.75, lower thirds title bar
+// WESTERN: Amber sepia rgba(120,70,10,0.08), dust particles drifting, heat shimmer at horizon
+// FANTASY/EPIC: Jewel tones purple/gold rgba(40,0,60,0.06), magic glowing particles, volumetric light shafts, lens flares from magical sources
+// NOIR: Deep darkness rgba(0,0,0,0.2), venetian blind light strips alternating, rain always present, heavy vignette 0.95, cigarette smoke rising curves, street lamp pools
+// ANIMATION/CARTOON: Bold outlines ctx.strokeStyle="#000" lineWidth=3, flat bright solid fills, bounce motion, cel shading dark outline offset
+// MUSICAL: Rainbow hsl cycling, sparkle effects, stage lighting beams, confetti particles hsl colours
+// PERIOD/HISTORICAL: Aged sepia rgba(180,150,80,0.06), film scratches vertical lines, heavy oval vignette, frame flicker rgba(255,255,255,Math.random()*0.02)
+
+// BLACK AND WHITE FILM — apply after drawing full scene:
+// ctx.save(); ctx.globalCompositeOperation="saturation"; ctx.fillStyle="rgba(0,0,0,1)"; ctx.fillRect(0,0,W,H); ctx.restore();
+// Then add grain, vertical scratches if(Math.random()>0.97), heavy vignette 0.97
+
+// SPECIAL ENVIRONMENTS:
+// FOREST: brown tree trunk rects, canopy dark green arcs, dappled light radialGradients, leaf texture dots
+// MOUNTAIN: jagged polygon peaks, snow white caps, atmospheric haze on far mountains, bird V-shapes
+// CHURCH: stone grey walls, stained glass coloured rect grid, candles, dust motes in light shafts
+// HOSPITAL: white clinical walls, fluorescent strips, green heartbeat sine wave line
+// BATTLEFIELD: grey smoke radialGradients drifting, orange explosion gradients, silhouetted figures, tracer light dots
+// UNDERWATER: caustic light circles on floor, bubble streams rising, fish oval+triangle shapes, coloured coral strokes
+// CONCERT/STAGE: spotlight beams narrow gradients, crowd head silhouettes, panning stage lights, ground fog
+// COURTROOM: wood panel warm brown rects, elevated judge bench, overhead lights, flag symbol
+
+════ INSTRUCTION ════
+Now render this specific scene: "${prompt}"
+Duration: ${duration} seconds. Use t and sec for ALL animation and motion.
+Pick the appropriate background, environment, lighting, figures, weather and camera from the techniques above.
+Combine them into a complete, beautiful, cinematic drawFrame function.
+Every element must animate smoothly. The scene must look like a real film frame.
 
 Return ONLY the JavaScript function starting with:
 function drawFrame(ctx, W, H, t, sec) {`;
