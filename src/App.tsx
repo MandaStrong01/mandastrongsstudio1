@@ -8,6 +8,7 @@ const saveClipToDB=async(id,blob,name,type)=>{try{const db=await openDB();const 
 const loadClipFromDB=async(id)=>{try{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(STORE,"readonly");const req=tx.objectStore(STORE).get(id);req.onsuccess=()=>res(req.result);req.onerror=rej;});}catch(e){return null;}};
 const getAllClipsFromDB=async()=>{try{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(STORE,"readonly");const req=tx.objectStore(STORE).getAll();req.onsuccess=()=>res(req.result||[]);req.onerror=rej;});}catch(e){return[];}};
 
+const sanitize=(str)=>{if(!str||typeof str!=="string")return "";return str.replace(/<script[^>]*>.*?<\/script>/gi,"").replace(/<[^>]*>/g,"").replace(/javascript:/gi,"").replace(/on\w+=/gi,"").slice(0,8000);};
 const GOLD = "#e8c96d";
 const GOLDDIM = "#a07820";
 const BG = "#000000";
@@ -1318,24 +1319,31 @@ Text to format:\n\n${text}`}]})
 
   const speakText=(t)=>{
     speechSynthesis.cancel();
-    const chunks=t.split(/(?<=[.!?…])\s+|(?<=\.\.\.)\s*/g).filter(s=>s.trim().length>0);
+    // Split on sentence ends AND ellipsis for natural micro-pauses
+    const chunks=t.split(/(?<=[.!?])\s+|(?<=\.\.\.)\s*/g).filter(s=>s.trim().length>0);
     let idx=0;
     const speakNext=()=>{
       if(idx>=chunks.length){setSpeaking(false);return;}
       const chunk=chunks[idx++];
       const isEllipsis=chunk.trim().endsWith("...");
       const isDouble=chunk.includes("\n\n");
-      const u=new SpeechSynthesisUtterance(chunk.replace(/\.\.\.$/,"").trim());
-      u.rate=speed*(0.97+Math.random()*0.06);
-      u.pitch=pitchV*(0.98+Math.random()*0.04);
+      const cleaned=chunk.replace(/\.\.\.$/,"").trim();
+      if(!cleaned){setTimeout(speakNext,pauseLen*0.4);return;}
+      const u=new SpeechSynthesisUtterance(cleaned);
+      // Subtle natural pitch/rate variation per sentence — sounds human, not robotic
+      u.rate=speed*(0.96+Math.random()*0.08);
+      u.pitch=pitchV*(0.97+Math.random()*0.06);
       u.volume=volume;
-      const match=sysVoices.find(v=>v.name===selected.systemVoice)||sysVoices.find(v=>v.lang&&v.lang.startsWith("en"))||sysVoices[0];
+      const match=sysVoices.find(v=>v.name===selected.systemVoice)||sysVoices.find(v=>v.lang&&v.lang.startsWith("en-"))||sysVoices.find(v=>v.lang&&v.lang.startsWith("en"))||sysVoices[0];
       if(match)u.voice=match;
-      const pause=isDouble?pauseLen*2.2:isEllipsis?pauseLen*0.45:pauseLen;
+      const pause=isDouble?pauseLen*2.4:isEllipsis?pauseLen*0.4:pauseLen;
       u.onend=()=>{setTimeout(speakNext,pause);};
-      speechSynthesis.speak(u);uttRef.current=u;
+      u.onerror=()=>{setTimeout(speakNext,100);};
+      speechSynthesis.speak(u);
+      uttRef.current=u;
     };
-    setSpeaking(true);speakNext();
+    setSpeaking(true);
+    speakNext();
   };;
 
   const filtered=VOICE_CHARACTERS.filter(v=>(filter.gender==="All"||v.gender===filter.gender)&&(filter.age==="All"||v.age===filter.age)&&(filter.origin==="All"||v.origin.includes(filter.origin)));
@@ -1390,13 +1398,20 @@ Text to format:\n\n${text}`}]})
               <div>
                 <div style={{color:GOLD,fontSize:11,letterSpacing:3,fontWeight:900,marginBottom:16}}>VOICE SETTINGS — {selected.name}</div>
                 <div style={{marginBottom:18}}>
-                  <div style={{color:GOLD,fontSize:10,letterSpacing:2,fontWeight:900,marginBottom:6}}>MOOD</div>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
+                    <span style={{color:GOLD,fontSize:10,letterSpacing:2,fontWeight:900}}>MOOD</span>
+                    <span style={{color:WHITE,fontSize:12,fontWeight:900}}>{mood}</span>
+                  </div>
                   <select value={mood} onChange={e=>setMood(e.target.value)}
-                    style={{width:"100%",background:"#0a0800",border:`1px solid ${GOLDDIM}`,color:WHITE,padding:"10px 12px",fontSize:13,fontFamily:"'Rajdhani',sans-serif",outline:"none"}}>
+                    style={{width:"100%",background:"#0a0800",border:`1px solid ${GOLDDIM}`,color:WHITE,padding:"10px 12px",fontSize:13,fontFamily:"'Rajdhani',sans-serif",outline:"none",marginBottom:8}}>
                     {["Neutral","Happy","Sad","Angry","Excited","Calm","Dramatic","Mysterious","Romantic","Fearful","Hopeful","Sarcastic","Melancholic","Authoritative","Warm","Cold"].map(m=>(
                       <option key={m} value={m} style={{background:"#000"}}>{m}</option>
                     ))}
                   </select>
+                  <input type="range" min={0} max={15} step={1}
+                    value={["Neutral","Happy","Sad","Angry","Excited","Calm","Dramatic","Mysterious","Romantic","Fearful","Hopeful","Sarcastic","Melancholic","Authoritative","Warm","Cold"].indexOf(mood)}
+                    onChange={e=>setMood(["Neutral","Happy","Sad","Angry","Excited","Calm","Dramatic","Mysterious","Romantic","Fearful","Hopeful","Sarcastic","Melancholic","Authoritative","Warm","Cold"][parseInt(e.target.value)])}
+                    style={{width:"100%",accentColor:GOLD}}/>
                 </div>
                 {[["SPEED",speed,0.3,1.5,0.01,(v)=>setSpeed(v),`${speed.toFixed(2)}x`],["PITCH",pitchV,0.3,2.0,0.01,(v)=>setPitchV(v),`${pitchV.toFixed(2)}`],["PAUSE (ms)",pauseLen,200,2000,50,(v)=>setPauseLen(v),`${pauseLen}ms`],["VOLUME",volume,0.1,1.0,0.05,(v)=>setVolume(v),`${Math.round(volume*100)}%`]].map(([label,val,min,max,step,setter,display])=>(
                   <div key={label} style={{marginBottom:18}}>
@@ -1453,6 +1468,44 @@ Text to format:\n\n${text}`}]})
     </div>
   );
 }
+// MandaStrong Cinema Engine — universal techniques string
+const CINEMA_TECHNIQUES = [
+  "OCEAN: 10 wave layers with Math.sin(x*0.007+sec*(0.2+w*0.07)+w)*18 animation, deep blue gradients.",
+  "MOON: createRadialGradient rgba(255,255,245,1) centre to transparent, silver shimmer column on water.",
+  "CANDLE: radialGradient flicker with Math.sin(sec*9.1)*0.05, warm amber glow filling room.",
+  "HUMAN FIGURE: head=ellipse rgba(235,185,145), eyes=two small ellipses, mouth=arc stroke, torso=rect with linearGradient clothing, arms=rects rgba(220,170,130), neck=rect, hair=arc path dark, shadow=radialGradient ellipse.",
+  "CURTAINS: bezierCurveTo with Math.sin(sec*0.8)*25 sway, semi-transparent warm white stroke.",
+  "NIGHT SKY: linearGradient rgb(2,4,15) to rgb(8,20,55), 200 star dots with sin flicker.",
+  "DAY SKY: linearGradient rgb(15,60,150) to rgb(180,215,245), optional cloud shapes.",
+  "SUNSET: linearGradient rgb(20,10,40) to rgb(240,130,20) to rgb(255,200,80).",
+  "INTERIOR ROOM: near-black gradient walls, warm light pools from sources.",
+  "SPACE: pure black fill, 400 star dots varying sizes, nebula radialGradients.",
+  "UNDERWATER: teal gradient, caustic light circles, bubble streams, fish silhouettes.",
+  "CITY: 20 building rects varying heights, window grids with random lit cells rgba(255,240,180).",
+  "FIRE: 6 overlapping orange radialGradients animated with Math.sin(sec*3+f).",
+  "RAIN: 150 angled strokeStyle lines rgba(180,200,220,0.3) moving with sec.",
+  "SNOW: white ground gradient, falling circle dots tracking with sec.",
+  "FOG: semi-transparent linear gradient layer at mid-height.",
+  "VIGNETTE: createRadialGradient transparent centre to rgba(0,0,0,0.92) edge, fillRect full canvas.",
+  "LETTERBOX: black bars top and bottom H*0.074.",
+  "COLOUR GRADE: rgba(0,12,35,0.07) teal overlay then rgba(18,4,0,0.05) warm shadow.",
+  "FILM GRAIN: 25 random 1px dots at 0.009 opacity.",
+  "PARALLAX: ctx.save translate(-t*W*0.015) far, -t*W*0.035 mid, -t*W*0.07 near, ctx.restore each.",
+  "CAMERA ZOOM: ctx.translate(W/2,H/2); ctx.scale(1+t*0.04,1+t*0.04); ctx.translate(-W/2,-H/2).",
+  "HORROR: darkness rgba(0,0,0,0.15), red tint rgba(60,0,0,0.08), vignette 0.97, shadow flicker Math.sin(sec*7), lightning if Math.sin(sec*2)>0.92.",
+  "NOIR: near-black base, venetian blind strips, rain always, vignette 0.95, street lamp pools.",
+  "BLACK AND WHITE: ctx.save();ctx.globalCompositeOperation='saturation';ctx.fillStyle='rgba(0,0,0,1)';ctx.fillRect(0,0,W,H);ctx.restore(); add grain and scratches.",
+  "COMEDY: bright colours, yellow tint rgba(255,240,0,0.03), bouncy Math.abs(Math.sin(sec*3)) motion.",
+  "ROMANCE: warm bokeh rgba(255,180,120,0.06), fairy light particles, soft vignette.",
+  "ACTION: cool blue rgba(0,8,20,0.08), camera shake ctx.translate(Math.sin(sec*15)*2,0).",
+  "SCI-FI: teal cyan grade, ctx.shadowColor='#00ffff' shadowBlur=15 holographic glow, grid lines.",
+  "WESTERN: amber sepia rgba(120,70,10,0.08), dust particle drift.",
+  "FANTASY: jewel tones rgba(40,0,60,0.06), magic glowing particles, light shafts.",
+  "DOCUMENTARY: natural grade rgba(255,200,150,0.03), gentle handheld drift Math.sin(sec*0.3)*2.",
+  "MUSICAL: rainbow hsl cycling hsl((sec*30)%360,70%,50%), confetti particles, stage beams.",
+  "PERIOD: sepia rgba(180,150,80,0.06), film scratches, heavy vignette, frame flicker.",
+].join(" | ");
+
 function P8VideoGenerator({ onSave, user, filmDuration, setFilmDuration }) {
   const canvasRef=useRef(null);
   const videoRef=useRef(null);
@@ -2788,7 +2841,7 @@ function P19() {
           const prog=frame/totalFrames;const s=frame/12;
           try{ctx2.clearRect(0,0,1280,720);fn(ctx2,1280,720,prog,s);}
           catch(e){ctx2.fillStyle="#111";ctx2.fillRect(0,0,1280,720);}
-          frame++;setTimeout(tick,80);
+          frame++;requestAnimationFrame(tick);
         };tick();
       });
       recorder.stop();
@@ -2880,6 +2933,8 @@ function P20() {
           {ss("AI-GENERATED CONTENT",<>{pp("All video, audio, script, image, and narration outputs are generated algorithmically using AI language and rendering models. MandaStrong Studio makes no representations or warranties regarding the accuracy, originality, appropriateness, or fitness for purpose of any AI-generated material. All content must be carefully reviewed, fact-checked, and verified by the user prior to publication, broadcast, or commercial use. The platform does not guarantee that AI outputs are free from error, bias, or unintended content.")}</>)}
           {ss("NO PROFESSIONAL ADVICE",<>{pp("Nothing generated constitutes legal, medical, financial, or professional advice. Always consult a qualified professional before acting on any AI-generated information.")}</>)}
           {ss("PLATFORM AVAILABILITY",<>{pp("Provided on an 'as available' basis. No guarantee of uninterrupted access or data retention. Download and back up all productions regularly.")}</>)}
+          {ss("DATA PRIVACY & SECURITY",<>{pp("MandaStrong Studio does not collect, store, sell or share your personal data with any third party. All AI processing happens through our secure Supabase server — your API calls never touch your browser directly. No user content, prompts, scripts or generated media are stored on our servers. Your creative work stays entirely on your own device. We do not use tracking cookies, serve targeted advertising or participate in any data brokerage. Your information is yours. Always.")}</>)}
+          {ss("PAYMENT SECURITY",<>{pp("All payments are processed exclusively by Stripe — a PCI-DSS Level 1 certified payment processor. MandaStrong Studio never sees, stores or handles your card details. Stripe's security infrastructure is independently audited and certified to the highest industry standard. Visit stripe.com/security for full details.")}</>)}
           {ss("USER RESPONSIBILITY",<>{pp("All responsibility for how content is deployed, distributed, monetised, broadcast, published, or shared in any form rests entirely with the user. MandaStrong Studio LLC shall not be held liable for any loss, claim, or damage arising from the use, publication, or distribution of platform-generated content. Users are solely responsible for ensuring all content complies with applicable laws, platform terms of service, and community standards before publishing.")}</>)}
           <div style={{borderTop:`1px solid ${GOLDDIM}`,paddingTop:10,marginTop:4}}><p style={{color:GOLDDIM,fontSize:11,margin:0,letterSpacing:1}}>— AMANDA WOOLLEY · FOUNDER · MANDASTRONG STUDIO LLC · MARCH 2026</p></div>
         </div>
@@ -2915,12 +2970,15 @@ function P21() {
     <div style={{...Sp,padding:"40px 40px 80px"}}>
       <div style={{maxWidth:720,margin:"0 auto"}}>
         <div style={{textAlign:"center",marginBottom:28}}>
-          <div style={{width:64,height:64,background:`linear-gradient(135deg,${GOLDDIM},${GOLD})`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",fontFamily:"'Cinzel',serif",fontSize:30,fontWeight:900,color:"#000",boxShadow:`0 0 30px ${GOLD}66`}}>G</div>
-          <h1 style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:22,fontWeight:900,letterSpacing:5,margin:"0 0 6px 0"}}>AGENT GROK</h1>
-          <div style={{color:WHITE,fontSize:12,letterSpacing:3,marginBottom:8}}>AI PRODUCTION ASSISTANT · MANDASTRONG STUDIO</div>
-          <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"#061406",border:"1px solid #22c55e",padding:"4px 14px"}}>
-            <div style={{width:6,height:6,borderRadius:"50%",background:"#22c55e"}}/>
-            <span style={{color:"#22c55e",fontSize:10,fontWeight:900,letterSpacing:3}}>ONLINE · 24/7</span>
+          <div style={{width:72,height:72,background:"#000",border:`2px solid ${GOLD}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",position:"relative",boxShadow:`0 0 40px ${GOLD}44, inset 0 0 20px ${GOLD}11`}}>
+            <div style={{fontFamily:"'Cinzel',serif",fontSize:34,fontWeight:900,color:GOLD,textShadow:`0 0 20px ${GOLD}`}}>G</div>
+            <div style={{position:"absolute",bottom:-3,right:-3,width:14,height:14,background:"#22c55e",border:"2px solid #000",borderRadius:"50%"}}/>
+          </div>
+          <h1 style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:24,fontWeight:900,letterSpacing:6,margin:"0 0 4px 0",textShadow:`0 0 20px ${GOLD}66`}}>AGENT GROK</h1>
+          <div style={{color:GOLDDIM,fontSize:10,letterSpacing:4,marginBottom:12}}>AI PRODUCTION ASSISTANT · MANDASTRONG STUDIO</div>
+          <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"#020a02",border:"1px solid #22c55e44",padding:"5px 16px",borderRadius:0}}>
+            <div style={{width:7,height:7,borderRadius:"50%",background:"#22c55e",boxShadow:"0 0 6px #22c55e"}}/>
+            <span style={{color:"#22c55e",fontSize:10,fontWeight:900,letterSpacing:4}}>ONLINE · AVAILABLE 24/7</span>
           </div>
         </div>
         <div style={{background:"#050505",border:`1px solid ${GOLDDIM}`,marginBottom:12}}>
@@ -3015,6 +3073,11 @@ function P23({ go }) {
         <source src="/background.mp4" type="video/mp4"/>
         <source src="background.mp4" type="video/mp4"/>
       </video>
+      <audio autoPlay loop preload="auto" style={{display:"none"}}>
+        <source src="./background.mp3" type="audio/mpeg"/>
+        <source src="/background.mp3" type="audio/mpeg"/>
+        <source src="background.mp3" type="audio/mpeg"/>
+      </audio>
       <div style={{maxWidth:820,margin:"0 auto",textAlign:"center"}}>
         <div style={{fontSize:10,color:GOLD,letterSpacing:6,marginBottom:10,fontWeight:700}}>MANDASTRONG STUDIO · CINEMA INTELLIGENCE PLATFORM · 2026</div>
         <h1 style={{fontFamily:"'Cinzel',serif",color:GOLD,fontSize:"clamp(22px,3vw,32px)",fontWeight:900,letterSpacing:5,textShadow:`0 0 30px ${GOLD}99`,marginBottom:6}}>THAT IS ALL FOLKS</h1>
@@ -3040,19 +3103,19 @@ function P23({ go }) {
         {guideOpen&&(
           <div style={{...Card(),textAlign:"left",marginBottom:0,padding:"24px 28px",border:`2px solid ${GOLD}`,borderTopWidth:0}}>
             {[
-              {t:"GETTING STARTED",c:"Hit the menu icon to jump to any of the 23 pages. Hit SAVE PROJECT in the footer. MY PROJECTS restores exactly where you left off."},
-              {t:"PAGE 4 — LOGIN AND PRICING",c:"Creator $20/mo · Pro $30/mo · Studio $50/mo with 7-day free trial. Hit NEW PROJECT to start fresh or OPEN PROJECT to restore your last session."},
-              {t:"PAGE 5 — WRITING TOOLS",c:"50+ AI writing tools. Click any tool card to open it. Use AI CREATE to generate scripts, loglines and treatments instantly."},
-              {t:"PAGE 6 — VOICE ENGINE",c:"54 voice characters. SLIDERS tab opens first — set Mood at the top, then Speed, Pitch, Pause and Volume. Hit APPLY JAMES SETTINGS for documentary narration. Go to SPEAK tab, paste your script and hit PREPARE AND SPEAK."},
-              {t:"PAGE 6 — MUSIC VIDEO STUDIO",c:"Hit MUSIC VIDEO STUDIO button top right on Page 6. Set song details, style, colour grade. Write cinematic scene description. Upload audio. Hit GENERATE MUSIC VIDEO."},
-              {t:"PAGE 8 — VIDEO GENERATOR",c:"Describe any scene in plain English. Be specific about lighting, camera position, mood, tone and genre. Hit GENERATE SCENE. Every clip saves automatically."},
-              {t:"PAGE 13 — TIMELINE EDITOR",c:"Drag clips to tracks. Hit SYNC ALL TRACKS to auto-populate. Set film duration. Hit RENDER when ready."},
-              {t:"PAGE 15 — AUDIO MIXER",c:"Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85. Music video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85."},
-              {t:"PAGE 16 — RENDER ENGINE",c:"Choose quality up to 4K. Hit START RENDER. Watch the render log. Download, Preview on Page 17, or Export on Page 18 when done."},
-              {t:"PAGE 18 — EXPORT AND DISTRIBUTE",c:"Share directly to YouTube, Instagram, TikTok, Facebook, X/Twitter, LinkedIn, Vimeo and WhatsApp."},
-              {t:"PAGE 19 — TUTORIALS",c:"Click any of the 12 lessons to expand it and hit GENERATE TUTORIAL VIDEO for a personal AI instructor video created just for you."},
-              {t:"PAGE 21 — AGENT GROK",c:"Your 24/7 AI production assistant. Ask anything about tools, workflow, pricing or production."},
-              {t:"RECOMMENDED WORKFLOW",c:"Page 8 then Page 6 then Page 13 then Page 15 then Page 16 then Page 17 then Page 18. Hit SAVE PROJECT at every stage."},
+              {t:"GETTING STARTED",c:"Hit the ☰ menu icon top left to jump to any of the 23 pages instantly. Hit 💾 SAVE PROJECT in the footer at any time during your session — this saves your entire project including all clips, settings and timeline. Hit 📂 MY PROJECTS to see your full history and restore any previous session exactly where you left off. Your video clips are stored automatically in your browser's IndexedDB — they survive page reloads without any action from you."},
+              {t:"PAGE 4 — LOGIN & PRICING",c:"Three plans: Creator $20/mo for individual filmmakers, Pro $30/mo for advanced tools, Studio $50/mo for the full professional platform — includes a 7-day free trial. All payments are processed securely by Stripe. Hit NEW PROJECT to start a clean session or OPEN PROJECT to restore your most recent work. Log in with your email and password to access your subscription tier."},
+              {t:"PAGE 5 — WRITING TOOLS",c:"50+ professional AI writing tools covering every stage of development. Click any tool card to open its dedicated workspace. Use AI CREATE on any tool for instant AI-generated professional output — loglines, treatments, full scripts, character bios, dialogue, scene breakdowns, pitch decks and more. Save any result directly to your Media Library for use in production. Tools are organised by category: Development, Script, Story, Character, and Production."},
+              {t:"PAGE 6 — VOICE ENGINE",c:"54 cinematic voice characters across 20+ origins, ages, and styles. The SLIDERS tab opens by default — set your Mood first (dropdown and slider at the top), then adjust Speed, Pitch, Pause length and Volume. Hit APPLY JAMES SETTINGS for perfect documentary narration at Speed 0.62, Pitch 0.86, Pause 1600ms. Browse voices in the left panel — filter by gender, age, origin. Hit ▶ TEST to hear any voice. Go to the SPEAK tab, paste your narration script, and hit 🎙 PREPARE & SPEAK — the AI reformats your text for natural human-sounding delivery before speaking it. Check the RESULT tab to copy or re-speak the AI-formatted version. Access MUSIC VIDEO STUDIO from the button top right."},
+              {t:"PAGE 6 — MUSIC VIDEO STUDIO",c:"Hit the MUSIC VIDEO STUDIO button top right on Page 6. Step 1: Enter your song title, artist name, genre and mood. Step 2: Choose your visual style and colour grade — Cinematic Teal and Orange, Film Noir, Warm Gold, or custom. Step 3: Write your cinematic scene description — be specific about lighting, camera position, figure placement, and mood. Upload your audio track for beat-synced generation. Step 4: Hit GENERATE MUSIC VIDEO. The Cinema Engine renders a full music video using your scene, style, and audio. Download or save to Media Library when complete."},
+              {t:"PAGE 8 — VIDEO GENERATOR",c:"The heart of MandaStrong Studio. Describe any scene in plain English — be as specific as possible about lighting (moonlight, candle, neon, daylight), camera position (close-up, wide, slow push-in), mood, tone, genre (noir, horror, romance, sci-fi, documentary, B&W), and any figures or environments. Hit 🎬 GENERATE SCENE. The MandaStrong Cinema Engine writes a custom canvas renderer for your exact scene — every clip is unique. Upload a reference image to visually guide the style. Set duration from 5 seconds to 5 minutes. Every generated clip saves automatically to your Media Library and to your browser storage. Hit NEXT SCENE to queue your next clip without losing the current one."},
+              {t:"PAGE 13 — TIMELINE EDITOR",c:"Drag clips from the Media Library at the bottom of the screen onto Video, Audio, and Text tracks. Hit ⚡ SYNC ALL TRACKS to automatically populate all three tracks from your full Media Library in one click. Use the duration slider to set your target film length — 60, 90, or 180 minutes. Clips can be reordered by dragging. The timeline shows your full film structure before committing to render. When your timeline looks right, hit → RENDER to send to the Render Engine on Page 16."},
+              {t:"PAGE 15 — AUDIO MIXER",c:"Professional 4-channel audio mixer for your film. Set VOICE (narration level), MUSIC (background score), EFX (sound effects), and MASTER (overall output). Recommended settings — Documentary: VOICE 85 · MUSIC 40 · EFX 50 · MASTER 85. Music Video: MUSIC 75 · VOICE 60 · EFX 40 · MASTER 85. Action/Thriller: VOICE 75 · MUSIC 65 · EFX 70 · MASTER 85. Hit SAVE PRESET to store your mix for future sessions. All levels are applied at render time."},
+              {t:"PAGE 16 — RENDER ENGINE",c:"The MandaStrong Render Engine processes every clip in your timeline and assembles your film. Choose output quality: 480p for draft review, 720p for web, 1080p recommended for most distribution, 4K for professional broadcast. Choose frame rate: 24fps for cinematic film look, 30fps for broadcast, 60fps for smooth action. Choose codec: VP9 for web or VP8 for compatibility. Hit START RENDER and watch the Render Log as each clip is processed in real time. Missing clips are regenerated automatically. When complete — Download the film directly, hit PREVIEW to watch on Page 17, or hit EXPORT to distribute on Page 18."},
+              {t:"PAGE 18 — EXPORT & DISTRIBUTE",c:"Download your rendered film to your device, then share to every major platform in one click. Supported platforms: YouTube (upload direct), Instagram (Reels and Feed), TikTok, Facebook, X/Twitter, LinkedIn, Vimeo, and WhatsApp. Each button opens the correct upload page for that platform. For best results: YouTube accepts up to 4K. Instagram Reels max 90 seconds. TikTok max 10 minutes. Always download to your device first as a backup before sharing."},
+              {t:"PAGE 19 — TUTORIALS",c:"12 step-by-step video lessons covering every part of the platform. Click any lesson title to expand it. Hit GENERATE TUTORIAL VIDEO and within seconds your personal AI instructor video is created — a professional instructor on screen walks you through that exact topic. Videos are generated fresh each time using the Cinema Engine. Tips and pro workflow notes are included under each lesson. Lessons are rated Beginner, Intermediate, or Advanced."},
+              {t:"PAGE 21 — AGENT GROK",c:"Your dedicated AI production assistant, available 24 hours a day, 7 days a week. Ask anything about any tool, workflow step, pricing plan, or production question. Use the quick question buttons for instant answers on the most common topics. Type any question in the input and hit SEND or press Enter. Agent Grok knows the full platform — all 23 pages, every tool, pricing, workflow, and production best practices. Treat it like having a senior film producer on call at all times."},
+              {t:"RECOMMENDED PRODUCTION WORKFLOW",c:"For a complete film: Page 5 (write your script) → Page 8 (generate video scenes one by one) → Page 6 (record your narration with James or chosen voice) → Page 11 (upload any additional media) → Page 13 (build your timeline — sync all tracks) → Page 15 (set your audio mix) → Page 16 (render your film) → Page 17 (preview and approve) → Page 18 (export and distribute). Hit 💾 SAVE PROJECT after every stage. The entire process from blank page to exported film can be completed in a single session."},
             ].map(({t,c})=>(
               <div key={t} style={{borderBottom:`1px solid ${GOLDDIM}33`,paddingBottom:14,marginBottom:14}}>
                 <div style={{color:GOLD,fontWeight:900,fontSize:11,letterSpacing:2,marginBottom:5}}>✦ {t}</div>
@@ -3092,6 +3155,9 @@ export default function App() {
     link.href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@400;600;700;800;900&display=swap";
     document.head.appendChild(link);
     // Viewport — responsive for all devices
+    // Security
+    const csp=document.createElement("meta");csp.httpEquiv="Content-Security-Policy";csp.content="default-src 'self' https://njqfexhltjwpgvctmyaw.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com https://buy.stripe.com;script-src 'self' 'unsafe-inline' 'unsafe-eval';style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;img-src 'self' data: blob:;media-src 'self' blob:;connect-src 'self' https://njqfexhltjwpgvctmyaw.supabase.co;";document.head.appendChild(csp);
+    const ref=document.createElement("meta");ref.name="referrer";ref.content="no-referrer";document.head.appendChild(ref);
     let vp=document.querySelector("meta[name=viewport]");
     if(!vp){vp=document.createElement("meta");vp.name="viewport";document.head.appendChild(vp);}
     // Set viewport based on device type
@@ -3257,6 +3323,15 @@ const allPages=[
 
   return (
     <div style={{background:"#000",minHeight:"100vh",fontFamily:"'Rajdhani',sans-serif"}}>
+      {user&&user.isAdmin&&(
+        <div style={{position:"fixed",top:58,right:0,zIndex:9999,background:"#050500",border:`1px solid ${GOLD}`,borderRight:"none",padding:"8px 12px",textAlign:"center",minWidth:58}}>
+          <div style={{color:GOLD,fontSize:8,letterSpacing:2,fontWeight:900,marginBottom:2}}>USERS</div>
+          <div style={{color:GOLD,fontFamily:"'Cinzel',serif",fontSize:20,fontWeight:900,lineHeight:1,marginBottom:2}}>
+            {(()=>{try{const h=JSON.parse(localStorage.getItem("ms_project_history")||"[]");return new Set(h.map(x=>x.savedUser&&x.savedUser.name).filter(Boolean)).size||"—";}catch{return "—";}})()}
+          </div>
+          <div style={{color:GOLDDIM,fontSize:7,letterSpacing:1}}>SESSIONS</div>
+        </div>
+      )}
       <Header go={go} setMenu={setMenu}/>
       {menu&&<QAMenu go={go} onClose={()=>setMenu(false)} user={user}/>}
       {showHistory&&<ProjectHistoryModal onClose={()=>setShowHistory(false)} onResume={resumeProject}/>}
